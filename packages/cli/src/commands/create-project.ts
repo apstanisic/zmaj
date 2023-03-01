@@ -65,7 +65,7 @@ async function createTemplate(config: { template?: string; path?: string }): Pro
 		SECRET_KEY: randomString(40),
 		APP_NAME: "Zmaj App",
 		APP_PORT: "5000",
-		APP_URL: "localhost:5000",
+		APP_URL: "http://localhost:5000",
 		"# Database": "",
 		DB_USERNAME: "db_user",
 		DB_PASSWORD: "db_password",

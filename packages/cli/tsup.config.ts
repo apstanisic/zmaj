@@ -46,11 +46,11 @@ async function copyExamplesToDistFolder(): Promise<void> {
 		await fse.writeFile(packageJsonPath, changedPackageJson, { encoding: "utf8" })
 
 		//
-		const envFilePath = path.join(basePath, ".env.dev")
-		const envFile = await fse.readFile(envFilePath, { encoding: "utf-8" })
-		// replace SECRET
-		const changedEnvFile = envFile.replace(/SECRET_KEY=[^\n]*/g, "SECRET_KEY=")
-		await fse.writeFile(envFilePath, changedEnvFile, { encoding: "utf8" })
+		// const envFilePath = path.join(basePath, ".env.dev")
+		// const envFile = await fse.readFile(envFilePath, { encoding: "utf-8" })
+		// // replace SECRET
+		// const changedEnvFile = envFile.replace(/SECRET_KEY=[^\n]*/g, "SECRET_KEY=")
+		// await fse.writeFile(envFilePath, changedEnvFile, { encoding: "utf8" })
 	}
 	console.log(`Finished copying examples`)
 }
