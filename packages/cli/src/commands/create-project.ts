@@ -35,7 +35,7 @@ async function createTemplate(config: { template?: string; path?: string }): Pro
 	folderName = folderName !== "" ? folderName : "zmaj-project"
 
 	const allTemplates = await fse.readdir(path.join(__dirname, "templates"))
-	let template =
+	const template =
 		config.template ??
 		(await select({
 			message: "Select template",

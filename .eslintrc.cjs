@@ -27,7 +27,6 @@ module.exports = {
 			node: true,
 		},
 	},
-	overrides: {},
 	rules: {
 		// fs-extra causing problem
 		"import/no-named-as-default-member": "off",
