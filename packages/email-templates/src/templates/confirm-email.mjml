@@ -1,0 +1,18 @@
+<mjml>
+	<mj-body background-color="#FFFFFF">
+		<mj-include path="../includes/header.mjml" />
+		<mj-section>
+			<mj-column>
+				<mj-text font-size="16px">Please click on button bellow to confirm email address</mj-text>
+				<mj-spacer />
+				<mj-button background-color="#1338BE" border-radius="8px" href="{ZMAJ_URL}"
+					>Confirm email</mj-button
+				>
+				<mj-spacer />
+				<mj-text font-size="16px">Or copy and paste this URL in browser:</mj-text>
+				<mj-text>{ZMAJ_URL}</mj-text>
+			</mj-column>
+		</mj-section>
+		<mj-include path="../includes/footer.mjml" />
+	</mj-body>
+</mjml>

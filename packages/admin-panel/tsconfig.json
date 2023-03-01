@@ -1,0 +1,14 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"target": "ESNext",
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"module": "ESNext",
+		"jsx": "react-jsx",
+		"baseUrl": "./",
+		"paths": {
+			"@admin-panel/*": ["src/*"]
+		}
+	},
+	"include": ["./src"]
+}

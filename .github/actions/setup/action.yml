@@ -1,0 +1,40 @@
+name: "Setup"
+description: "Setup node_modules and build"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: pnpm/action-setup@v2
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: "pnpm"
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path)" >> ${GITHUB_OUTPUT}
+
+    - uses: actions/cache@v3
+      name: Setup pnpm cache
+      with:
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install
+
+    - uses: actions/cache@v3
+      name: Setup turbo cache
+      with:
+        path: turbo-cache
+        key: ${{ runner.os }}-turbo-cache-${{ github.sha }}
+
+    - name: Format
+      shell: bash
+      run: npm run format
+
+    - name: Build packages
+      shell: bash
+      run: npm run build

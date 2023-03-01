@@ -1,0 +1,65 @@
+---
+title: Using Docker
+slug: using-docker
+---
+
+You don't have to have NodeJS to play with Zmaj. You can create `docker-compose.yml` with options bellow,
+or use it as a starting point for adapting it to your needs:
+
+```yml
+version: "3.9"
+services:
+  app:
+    image: astanisic/zmaj:0
+    depends_on:
+      - database
+      - email
+    ports:
+      - 5000:5000
+    volumes:
+      - zmaj_storage_volume:/app/files
+    environment:
+      APP_NAME: Zmaj Example
+      APP_URL: http://localhost:5000
+      APP_POR: 5000
+      #
+      SECRET_KEY: change_this_secret_key
+      #
+      DB_USERNAME: db_user
+      DB_PASSWORD: db_password
+      DB_DATABASE: dev_database
+      DB_PORT: 5432
+      DB_HOST: database
+      #
+      EMAIL_ENABLED: true
+      EMAIL_USER: noreply@example.com
+      EMAIL_PASSWORD: password
+      EMAIL_PORT: 1025
+      EMAIL_HOST: email
+
+  database:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: db_password
+      POSTGRES_DB: dev_database
+    volumes:
+      - zmaj_db_volume:/var/lib/postgresql/data
+
+  # enables email testing without external testing service
+  email:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+volumes:
+  zmaj_db_volume:
+  zmaj_storage_volume:
+```
+
+This file will run Zmaj in Docker, with Postgres database, and test email server.
+You can then go to `http://localhost:5000/admin/#/auth/init` to create admin user.

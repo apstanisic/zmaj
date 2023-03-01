@@ -1,0 +1,33 @@
+import {
+	ActivityLogCollection,
+	AuthSessionCollection,
+	DbMigrationCollection,
+	FileCollection,
+	CollectionMetadataCollection,
+	FieldMetadataCollection,
+	RelationMetadataCollection,
+	KeyValueCollection,
+	PermissionCollection,
+	RoleCollection,
+	SecurityTokenCollection,
+	TranslationCollection,
+	UserCollection,
+	WebhookCollection,
+} from "./modules"
+
+export const systemCollections = [
+	UserCollection,
+	RoleCollection,
+	PermissionCollection,
+	WebhookCollection,
+	AuthSessionCollection,
+	TranslationCollection,
+	SecurityTokenCollection,
+	KeyValueCollection,
+	CollectionMetadataCollection,
+	FieldMetadataCollection,
+	FileCollection,
+	ActivityLogCollection,
+	RelationMetadataCollection,
+	DbMigrationCollection,
+] as const

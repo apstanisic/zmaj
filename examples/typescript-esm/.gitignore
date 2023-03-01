@@ -1,0 +1,8 @@
+# Node modules
+node_modules
+# Build output
+dist
+# Environment variables should not be commited
+.env
+# Uploaded files will by default be stored here
+/files

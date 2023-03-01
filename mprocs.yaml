@@ -1,0 +1,16 @@
+procs:
+  api:
+    shell: "make serve_api"
+    autostart: false
+  panel:
+    shell: "make serve_admin_panel"
+    autostart: false
+  libs:
+    shell: "make dev_build"
+    autostart: false
+  docker:
+    shell: "make docker_dev_up"
+    autostart: false
+  docs:
+    shell: "make docs"
+    autostart: false

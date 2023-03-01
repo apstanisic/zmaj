@@ -1,0 +1,127 @@
+{
+	// use typescript from package.json, not from vscode
+	"typescript.tsdk": "node_modules/typescript/lib",
+	// speeds up eslint
+	"eslint.workingDirectories": [{ "pattern": "packages/**/" }],
+	// Use rome formatter for JS/TS since it's a lot faster
+	"[javascript][javascriptreact][typescript][typescriptreact]": {
+		"editor.defaultFormatter": "rome.rome"
+	},
+	// Use prettier formatter for css/html/json/md
+	"[css][html][json][jsonc][markdown][mjml]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	// Tailwind uses @apply
+	"css.lint.unknownAtRules": "ignore",
+	// use nestjs icons
+	"material-icon-theme.activeIconPack": "nest",
+	// Unit Vitest config
+	"vitest.commandLine": "npx vitest watch --config vitest-unit.config.ts ",
+	// Vitest extension is trying to run Playwright tests
+	"vitest.exclude": [
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/cypress/**",
+		"**/.{idea,git,cache,output,temp}/**",
+		"**/packages/e2e-tests/**"
+	],
+
+	// E2E Vitest config. For now there is no better way
+	// "vitest.include": ["**/*.{e2e-spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+	// "vitest.commandLine": "npx vitest watch --config vitest-e2e.config.ts ",
+	"cSpell.ignorePaths": [
+		"package-lock.json",
+		"node_modules",
+		"vscode-extension",
+		".git/objects",
+		".vscode",
+		".vscode-insiders",
+		"pnpm-lock.yaml"
+	],
+	// Valid words that are not in dictonary
+	"cSpell.words": [
+		"Aleksandar",
+		"astanisic",
+		"authz",
+		"avif",
+		"Buildx",
+		"Cacheable",
+		"casl",
+		"clsx",
+		"consts",
+		"daisyui",
+		"datagrid",
+		"DATEONLY",
+		"datetime",
+		"deletable",
+		"DOCKERHUB",
+		"dompurify",
+		"Dropzone",
+		"emsg",
+		"execa",
+		"falso",
+		"filechooser",
+		"fkey",
+		"footgun",
+		"headlessui",
+		"hljs",
+		"immer",
+		"Includeable",
+		"inited",
+		"instanceof",
+		"inversed",
+		"keyuri",
+		"minio",
+		"mjml",
+		"nestjs",
+		"ngneat",
+		"oidc",
+		"otplib",
+		"outro",
+		"overcomplicate",
+		"pechkin",
+		"picocolors",
+		"PKCE",
+		"pkey",
+		"pnpm",
+		"pnpx",
+		"preinstall",
+		"qrcode",
+		"radash",
+		"RDBMS",
+		"regexes",
+		"semibold",
+		"splitted",
+		"SSRF",
+		"Stanisic",
+		"Streamable",
+		"Struct",
+		"subquery",
+		"superstruct",
+		"tabpanel",
+		"tailwindcss",
+		"tanstack",
+		"testid",
+		"timestampz",
+		"Tiptap",
+		"todos",
+		"totp",
+		"treeshake",
+		"tsup",
+		"typeorm",
+		"Umzug",
+		"unchecking",
+		"unflatten",
+		"unlog",
+		"unserializable",
+		"Unstyled",
+		"urljoin",
+		"userinfo",
+		"varchar",
+		"vite",
+		"vitejs",
+		"vitest",
+		"Zmaj",
+		"zustand"
+	]
+}

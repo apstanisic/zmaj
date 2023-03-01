@@ -1,0 +1,38 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"globalDependencies": ["tsconfig.json"],
+	"pipeline": {
+		"//#format": {},
+		"tsc": {
+			"dependsOn": ["//#format"],
+			"inputs": ["src/**", "../../tsconfig.json", "tsconfig.json", "tsconfig.build.json"],
+			"outputs": []
+		},
+		"lint": {
+			"dependsOn": ["//#format"],
+			"inputs": ["src/**", "../../.eslintrc.cjs", ".eslintrc.cjs"],
+			"outputs": ["src/**"]
+		},
+		"test": {
+			"dependsOn": ["//#format"],
+			"inputs": ["src/**", "../../vitest-unit.config.ts", "tsconfig.json", "../../tsconfig.json"],
+			"outputs": []
+		},
+		"//#test-e2e-api": {
+			"dependsOn": ["//#format"],
+			"outputs": []
+		},
+		"//#test-e2e-gui": {
+			"dependsOn": ["//#format"],
+			"outputs": ["playwright-report/**"]
+		},
+		"prebuild": {
+			"dependsOn": [],
+			"outputs": ["dist/**", "build/**"]
+		},
+		"build": {
+			"dependsOn": ["//#format", "^build", "prebuild"],
+			"outputs": ["dist/**", "build/**"]
+		}
+	}
+}

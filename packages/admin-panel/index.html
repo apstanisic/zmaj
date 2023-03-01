@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Zmaj</title>
+
+		<script>
+			// bug in vite
+			// FIXME
+			const global = {}
+		</script>
+	</head>
+	<body class="app-font">
+		<script>
+			// TODO
+			// For some reason, Webkit is not showing variable font normally,
+			// google fonts knows that, and it server truetype
+			// I do not want to have external code, so I simply remove variable font
+			// from Webkit, and use fallback font
+			if (typeof window.webkitConvertPointFromNodeToPage === "function") {
+				// this is webkit (really it is)
+				document.body.classList.remove("app-font")
+			}
+		</script>
+		<div id="root"></div>
+		<script type="module" src="/src/main.tsx"></script>
+	</body>
+</html>

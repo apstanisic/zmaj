@@ -1,0 +1,17 @@
+{
+	"name": "@zmaj-js/example-javascript-esm",
+	"license": "MIT",
+	"version": "0.0.10",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"start": "node src/index.js",
+		"dev": "node --watch src/index.js"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"dependencies": {
+		"zmaj": "workspace:*"
+	}
+}

@@ -1,0 +1,34 @@
+{
+	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
+	"homepage": "https://github.com/apstanisic/zmaj#readme",
+	"license": "MIT",
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/apstanisic/zmaj.git"
+	},
+	"bugs": {
+		"url": "https://github.com/apstanisic/zmaj/issues"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"name": "@zmaj-js/e2e-tests",
+	"version": "0.0.55",
+	"private": true,
+	"scripts": {
+		"lint": "eslint --fix src",
+		"tsc": "tsc",
+		"prepare-pw": "playwright install --with-deps",
+		"test-gui": "playwright test -c ./playwright.config.ts"
+	},
+	"dependencies": {
+		"@playwright/test": "~1.30.0",
+		"@zmaj-js/client-sdk": "workspace:*",
+		"@zmaj-js/common": "workspace:*",
+		"@zmaj-js/test-utils": "workspace:*",
+		"otplib": "^12.0.1",
+		"radash": "^10.7.0",
+		"zmaj": "workspace:*"
+	}
+}

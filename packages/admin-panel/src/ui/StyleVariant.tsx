@@ -1,0 +1,11 @@
+export type StyleVariant =
+	| "normal"
+	| "primary"
+	| "secondary"
+	| "accent"
+	| "success"
+	| "error"
+	| "warning"
+	| "info"
+	| "link"
+	| "transparent"

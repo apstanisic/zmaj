@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./",
+		"outDir": "./dist",
+		"incremental": false,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"target": "ES2020",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext"
+	},
+	"include": ["./src"],
+	"ts-node": {
+		"swc": true,
+		"esm": true
+	}
+}

@@ -1,0 +1,33 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "@tsconfig/node-lts-strictest-esm/tsconfig.json",
+	"compilerOptions": {
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		// `tsup` complains when incremental is true
+		"incremental": false,
+		// By default error in `catch` block has type `any`, this switches it to `unknown`
+		"useUnknownInCatchVariables": true,
+		// Disable global access for UMD libraries
+		"allowUmdGlobalAccess": false,
+		// Improves compilation speed
+		"isolatedModules": true,
+		// Allow import `.json` files
+		"resolveJsonModule": true,
+		// Do not emit. Using `tsup` for compiling. `tsup` takes care of generating DTS
+		"noEmit": true,
+		// Temporary
+		"lib": ["ES2022", "DOM"],
+		// Overwrites from strictest bellow
+		"exactOptionalPropertyTypes": false,
+		"importsNotUsedAsValues": "remove",
+		"noUnusedParameters": false,
+		"noUnusedLocals": false,
+		"allowUnreachableCode": true,
+		//
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true
+	},
+	"exclude": ["packages/*/build", "packages/*/dist"]
+}

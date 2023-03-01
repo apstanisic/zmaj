@@ -1,0 +1,47 @@
+{
+	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
+	"homepage": "https://github.com/apstanisic/zmaj#readme",
+	"license": "MIT",
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/apstanisic/zmaj.git"
+	},
+	"bugs": {
+		"url": "https://github.com/apstanisic/zmaj/issues"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"name": "@zmaj-js/full",
+	"version": "0.0.55",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"eslintConfig": {
+		"extends": "../../.eslintrc.cjs"
+	},
+	"scripts": {
+		"prebuild": "rimraf dist",
+		"lint": "eslint --fix src",
+		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/full",
+		"tsc": "tsc",
+		"build": "tsup --config ../../tsup.config.ts",
+		"dev": "tsup --config ../../tsup.config.ts --watch"
+	},
+	"dependencies": {
+		"@nestjs/serve-static": "^3.0.1",
+		"@zmaj-js/admin-panel": "workspace:*",
+		"@zmaj-js/api": "workspace:*",
+		"import-meta-resolve": "^2.2.1"
+	},
+	"description": "Zmaj is a library to make managing your database easier"
+}

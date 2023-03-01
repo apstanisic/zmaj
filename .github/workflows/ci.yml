@@ -1,0 +1,89 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - name: Build Success
+        run: echo "Build Success"
+
+  lint:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - name: Type Check
+        run: npm run tsc
+      - name: Lint
+        run: npm run lint
+
+  test-unit:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - name: Test
+        run: npx vitest run --config vitest-unit.config.ts
+
+  test-e2e-api:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" --env-file .env.test -p zmaj_test up -d
+
+      - name: Test API E2E
+        run: npm run test-e2e-api
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" --env-file .env.test -p zmaj_test down -v
+
+  test-e2e-gui:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ./.github/actions/setup
+
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" --env-file .env.test -p zmaj_test up -d
+
+      - name: Install playwright browsers
+        run: pnpm --filter='@zmaj-js/e2e-tests' run prepare-pw
+
+      - name: Run tests
+        run: npm run test-e2e-gui
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" --env-file .env.test -p zmaj_test down -v
+
+  test-package-formats:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+
+      - name: Test packaging
+        run: npm run test-packaging
