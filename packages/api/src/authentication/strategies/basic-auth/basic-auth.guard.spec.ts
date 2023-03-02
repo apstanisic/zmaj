@@ -1,4 +1,5 @@
 import { BadRequestException, ExecutionContext } from "@nestjs/common"
+import { createBasicToken } from "@zmaj-js/common"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { BasicAuthGuard } from "./basic-auth.guard"
 
@@ -50,14 +51,16 @@ describe("BasicAuthGuard", () => {
 		})
 
 		it("should check if Basic header is provided", async () => {
-			getRequest.mockReturnValue({ headers: { authorization: "Basic HELLO_WORLD" } })
+			const basicToken = createBasicToken("test@example.com", "password")
+			getRequest.mockReturnValue({ headers: { authorization: basicToken } })
 			superCanActivate.mockResolvedValue(true)
 			await guard.canActivate(mockContext)
 			expect(superCanActivate).toBeCalledWith(mockContext)
 		})
 
 		it("should pass error to NestJS if auth fails", async () => {
-			getRequest.mockReturnValue({ headers: { authorization: "Basic HELLO_WORLD" } })
+			const basicToken = createBasicToken("test@example.com", "password")
+			getRequest.mockReturnValue({ headers: { authorization: basicToken } })
 			superCanActivate.mockRejectedValue(new BadRequestException())
 			await expect(guard.canActivate(mockContext)).rejects.toThrow(BadRequestException)
 		})

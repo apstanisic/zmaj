@@ -1,4 +1,5 @@
 import { BadRequestException, ExecutionContext, UnauthorizedException } from "@nestjs/common"
+import { createBasicToken } from "@zmaj-js/common"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { JwtGuard } from "./jwt.guard"
 
@@ -42,7 +43,8 @@ describe("JwtGuard", () => {
 			const res1 = await guard.canActivate(mockContext)
 			expect(res1).toEqual(true)
 
-			getRequest.mockReturnValue({ query: {}, headers: { authorization: "Basic HELLO" } })
+			const basicToken = createBasicToken("test@example.com", "password")
+			getRequest.mockReturnValue({ query: {}, headers: { authorization: basicToken } })
 			const res2 = await guard.canActivate(mockContext)
 			expect(res2).toEqual(true)
 

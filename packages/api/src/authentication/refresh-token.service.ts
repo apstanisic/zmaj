@@ -26,6 +26,7 @@ export class RefreshTokenService {
 			sameSite: "lax",
 			expires: this.getExpirationDate(),
 			signed: true,
+			secure: true,
 		})
 	}
 

@@ -41,7 +41,7 @@
 		"@zmaj-js/cli": "workspace:*",
 		"@zmaj-js/full": "workspace:*"
 	},
-	"description": "Zmaj is a library to make managing your database easier",
+	"description": "Zmaj is a headless CMS for managing databases",
 	"bin": {
 		"zmaj": "dist/bin.js"
 	}

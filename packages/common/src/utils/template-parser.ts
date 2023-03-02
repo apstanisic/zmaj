@@ -10,6 +10,8 @@ type ParseOptions = {
 	fallback?: unknown
 }
 
+const templateRegex = /\{(.*?)\}/g
+
 /**
  * Simple template engine that replaces {key} with value.
  *
@@ -37,7 +39,6 @@ export class TemplateParser {
 	 * private regex = /(?<=\{)(.*?)(?=\})/g
 	 * ```
 	 */
-	private regex = /\{(.*?)\}/g
 
 	addPipe(name: string, pipe: TemplateParserPipe): void {
 		this.availablePipes[name] = pipe
@@ -50,7 +51,7 @@ export class TemplateParser {
 	 * @returns parsed template
 	 */
 	parse(template: string, values: Struct<unknown> = {}, options: ParseOptions = {}): string {
-		const toReplace = template.match(this.regex) ?? []
+		const toReplace = template.match(templateRegex) ?? []
 		for (const item of toReplace) {
 			const value = this.parseVar(trim(item, "{}"), values)
 			template = template.replace(item, value)

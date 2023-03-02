@@ -5,17 +5,11 @@ import { qsParse } from "@zmaj-js/common"
 import cookieParser from "cookie-parser"
 import session from "express-session"
 import { isArray, unique } from "radash"
-import { KeyValueStorageService, RepoManager } from ".."
 import { GlobalConfig } from "./global-app.config"
 
 @Injectable()
 export class AppService {
-	constructor(
-		private config: GlobalConfig,
-		private securityConfig: SecurityConfig,
-		private repo: RepoManager,
-		private keyVal: KeyValueStorageService,
-	) {}
+	constructor(private config: GlobalConfig, private securityConfig: SecurityConfig) {}
 
 	configureApp(app: NestExpressApplication): void {
 		// use custom query parser (qs with custom params)
@@ -27,7 +21,9 @@ export class AppService {
 			session({
 				secret: this.config.secretKey,
 				resave: false,
+
 				saveUninitialized: false,
+				cookie: { secure: true, httpOnly: true },
 			}),
 		)
 
