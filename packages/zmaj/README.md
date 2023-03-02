@@ -30,7 +30,7 @@ You can then run `npx zmaj create-admin` to create admin user.
 
 You can run Zmaj without NodeJS with docker-compose, [read more](https://zmaj.vercel.app/docs/getting-started/using-docker).
 
-### Creating first user
+## Creating first user
 
 You can create admin user using Zmaj CLI.
 This command requires file `.env` file, with configured database params and secret key, so we can connect to DB to create user.
