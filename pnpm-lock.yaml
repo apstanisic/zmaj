@@ -140,10 +140,8 @@ importers:
       '@types/dompurify': ^2.4.0
       '@types/file-saver': ^2.0.5
       '@types/pluralize': 0.0.29
-      '@types/prismjs': ^1.26.0
       '@types/react': ^18.0.28
       '@types/react-dom': ^18.0.11
-      '@types/react-syntax-highlighter': ^15.5.6
       '@zmaj-js/client-sdk': workspace:*
       '@zmaj-js/common': workspace:*
       '@zmaj-js/rich-input': workspace:*
@@ -224,10 +222,8 @@ importers:
       '@types/dompurify': 2.4.0
       '@types/file-saver': 2.0.5
       '@types/pluralize': 0.0.29
-      '@types/prismjs': 1.26.0
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.11
-      '@types/react-syntax-highlighter': 15.5.6
       autoprefixer: 10.4.13_postcss@8.4.21
       daisyui: 2.51.1_gbtt6ss3tbiz4yjtvdr6fbrj44
       postcss: 8.4.21
@@ -255,7 +251,6 @@ importers:
       '@types/express': ^4.17.17
       '@types/express-session': ^1.17.6
       '@types/flat': ^5.0.2
-      '@types/lodash-es': ^4.17.6
       '@types/ms': ^0.7.31
       '@types/nodemailer': ^6.4.7
       '@types/passport': 1.0.12
@@ -274,7 +269,6 @@ importers:
       '@zmaj-js/test-utils': workspace:^0.0.55
       argon2: ^0.30.3
       axios: ^1.3.4
-      busboy: ^1.6.0
       cache-manager: ^5.1.7
       cookie-parser: ^1.4.6
       date-fns: ^2.29.3
@@ -283,10 +277,8 @@ importers:
       express-session: ^1.17.3
       fast-json-patch: ^3.1.1
       flat: ^5.0.2
-      immer: ^9.0.19
       ioredis: ^5.3.1
       knex: ^2.4.2
-      lodash-es: ^4.17.21
       ms: ^2.1.3
       nodemailer: ^6.9.1
       openid-client: ^5.4.0
@@ -307,7 +299,6 @@ importers:
       reflect-metadata: ^0.1.13
       rxjs: ^7.8.0
       sharp: ^0.31.3
-      tslib: ^2.5.0
       type-fest: ^3.6.1
       ua-parser-js: ^1.0.33
       umzug: ^3.2.1
@@ -329,7 +320,6 @@ importers:
       '@zmaj-js/storage-s3': link:../storage-s3
       argon2: 0.30.3
       axios: 1.3.4
-      busboy: 1.6.0
       cache-manager: 5.1.7
       cookie-parser: 1.4.6
       date-fns: 2.29.3
@@ -338,10 +328,8 @@ importers:
       express-session: 1.17.3
       fast-json-patch: 3.1.1
       flat: 5.0.2
-      immer: 9.0.19
       ioredis: 5.3.1
       knex: 2.4.2_pg@8.9.0
-      lodash-es: 4.17.21
       ms: 2.1.3
       nodemailer: 6.9.1
       openid-client: 5.4.0
@@ -362,7 +350,6 @@ importers:
       reflect-metadata: 0.1.13
       rxjs: 7.8.0
       sharp: 0.31.3
-      tslib: 2.5.0
       type-fest: 3.6.1
       ua-parser-js: 1.0.33
       umzug: 3.2.1
@@ -379,7 +366,6 @@ importers:
       '@types/express': 4.17.17
       '@types/express-session': 1.17.6
       '@types/flat': 5.0.2
-      '@types/lodash-es': 4.17.6
       '@types/ms': 0.7.31
       '@types/nodemailer': 6.4.7
       '@types/passport': 1.0.12
@@ -8019,16 +8005,6 @@ packages:
       shell-exec: 1.0.2
     dev: true
 
-  /@types/lodash-es/4.17.6:
-    resolution: {integrity: sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg==}
-    dependencies:
-      '@types/lodash': 4.14.191
-    dev: true
-
-  /@types/lodash/4.14.191:
-    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
-    dev: true
-
   /@types/mdast/3.0.10:
     resolution: {integrity: sha512-W864tg/Osz1+9f4lrGTZpCSO5/z4608eUp19tbozkq2HJK6i3z1kT0H9tlADXuYIb1YYOBByU4Jsqkk75q48qA==}
     dependencies:
@@ -8160,10 +8136,6 @@ packages:
     resolution: {integrity: sha512-BYOID+l2Aco2nBik+iYS4SZX0Lf20KPILP5RGmM1IgzdwNdTs0eebiFriOPcej1sX9mLnSoiNte5zcFxssgpGA==}
     dev: true
 
-  /@types/prismjs/1.26.0:
-    resolution: {integrity: sha512-ZTaqn/qSqUuAq1YwvOFQfVW1AR/oQJlLSZVustdjwI+GZ8kr0MSHBj0tsXPW1EqHubx50gtBEjbPGsdZwQwCjQ==}
-    dev: true
-
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
 
@@ -8204,12 +8176,6 @@ packages:
     dependencies:
       '@types/history': 4.7.11
       '@types/react': 18.0.28
-
-  /@types/react-syntax-highlighter/15.5.6:
-    resolution: {integrity: sha512-i7wFuLbIAFlabTeD2I1cLjEOrG/xdMa/rpx2zwzAoGHuXJDhSqp9BSfDlMHSh9JSuNfxHk9eEmMX6D55GiyjGg==}
-    dependencies:
-      '@types/react': 18.0.28
-    dev: true
 
   /@types/react/18.0.28:
     resolution: {integrity: sha512-RD0ivG1kEztNBdoAK7lekI9M+azSnitIn85h4iOiaLjaTrMjzslhaqCGaI4IyCJ1RljWiLCEu4jyrLLgqxBTew==}
@@ -13794,10 +13760,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
-
-  /lodash-es/4.17.21:
-    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-    dev: false
 
   /lodash.castarray/4.4.0:
     resolution: {integrity: sha512-aVx8ztPv7/2ULbArGJ2Y42bG1mEQ5mGjpdvrbJcJFU3TbYybe+QlLS4pst9zV52ymy2in1KpFPiZnAOATxD4+Q==}

@@ -199,7 +199,6 @@ describe("SequelizeRepository", () => {
 		it("should allow returning hidden fields", async () => {
 			const changedInfra = modifyTestInfra((draft) => {
 				draft.find((c) => c.tableName === "posts")!.fields["body"]!.canRead = false
-				// .fullFields.find((f) => f.columnName === "body")!.canRead = false
 			})
 
 			ormS.generateModels(changedInfra)

@@ -12,7 +12,6 @@ import {
 	RuntimeSettingsSchema,
 	Settings,
 } from "@zmaj-js/common"
-import { freeze } from "immer"
 import { ReadonlyDeep } from "type-fest"
 import { KeyValueStorageService } from "../key-value-storage/key-value-storage.service"
 
@@ -45,19 +44,14 @@ export class RuntimeSettingsService implements OnModuleInit {
 			value: JSON.stringify(merged),
 		})
 		this._settings = this.parseSettings(updated.value)
-		return this._settings
+		return structuredClone(this._settings)
 	}
 
 	private parseSettings(val?: string | null): ReadonlyDeep<Settings> {
-		const parsed = RuntimeSettingsSchema.parse(JSON.parse(val ?? "{}")) //
-
-		return freeze(
-			{
-				data: parsed,
-				meta: { signUpDynamic: this.authConfig.isSignUpDynamic() },
-			},
-			true,
-		)
+		return {
+			data: RuntimeSettingsSchema.parse(JSON.parse(val ?? "{}")),
+			meta: { signUpDynamic: this.authConfig.isSignUpDynamic() },
+		}
 	}
 
 	private async getSettingsFromDb(): Promise<ReadonlyDeep<Settings>> {

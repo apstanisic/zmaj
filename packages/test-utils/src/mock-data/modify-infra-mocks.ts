@@ -5,6 +5,9 @@ import { allMockCollectionDefs } from "./mock-collection-defs.js"
 
 setAutoFreeze(false)
 
+/**
+ * @deprecated Get rid of this
+ */
 export function modifyTestInfra(
 	fn: (draft: WritableDeep<CollectionDef[]>) => void,
 ): CollectionDef[] {

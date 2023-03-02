@@ -7,14 +7,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraStateService } from "./infra-state/infra-state.service"
 import { UserInfraService } from "./user-infra.service"
 
-// jest.mock("immer", () => ({
-// 	produce: vi.fn((data: any, fn: (data: any) => void) => {
-// 		const toMutate = cloneDeep(data)
-// 		fn(toMutate)
-// 		return toMutate
-// 	}),
-// }))
-
 describe("InfraService", () => {
 	let service: UserInfraService
 	let authzS: AuthorizationService
