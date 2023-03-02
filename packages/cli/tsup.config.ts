@@ -21,7 +21,6 @@ async function copyExamplesToDistFolder(): Promise<void> {
 	// copy examples to `templates` folder, but without `node_modules`, and `dist` folder
 	await fse.copy("../../examples", "./dist/templates", {
 		filter(src, dest) {
-			// console.log({ src, dest })
 			if (src.includes("/node_modules")) return false
 			if (src.includes(".turbo")) return false
 			// do not copy `dist` folder if I accidentally build project while running examples

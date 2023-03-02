@@ -44,7 +44,6 @@ export const ActivityLogChanges = memo(() => {
 					{fields.map((key, i) => {
 						const oldV = previous[key]
 						const newV = current[key]
-						// console.log({ oldV, newV })
 
 						const isAdd = isNil(oldV) && !isNil(newV)
 						const isDel = !isNil(oldV) && isNil(newV)

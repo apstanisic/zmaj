@@ -28,11 +28,6 @@ export class DatabaseConfig extends ZodDto(DatabaseConfigSchema) {
 		appConfig: ConfigService,
 	) {
 		const type: any = params.type ?? appConfig.get<string>("DB_TYPE")
-		// const filename = params.filename ?? appConfig.get<string>("DB_FILENAME")
-		// console.log({
-		// 	q: params.filename,
-		// 	w: appConfig.get<string>("DB_FILENAME"),
-		// })
 
 		const username = params.username ?? appConfig.get<string>("DB_USERNAME")
 		const password = params.password ?? appConfig.get<string>("DB_PASSWORD")

@@ -23,9 +23,7 @@ export const ToOneInputCurrentValue = memo((props: ManyToOneInputCurrentValuePro
 
 	// button ref is needed so that we can click on label above button and select button
 	const buttonRef = useRef<HTMLButtonElement | null>(null)
-	// console.log(props.template, selected, useChoicesContext().selectedChoices)
 	const { errors } = useFormState()
-	// console.log(errors[props.fieldName]?.message?.toString())
 
 	return (
 		<InputWrapper

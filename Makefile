@@ -3,7 +3,7 @@ default:
 
 # Start docker with values for development
 docker_dev_up:
-	@docker-compose --env-file .env.dev -p zmaj_dev up
+	@docker-compose --env-file .env.dev -p zmaj_dev up --abort-on-container-exit
 # Start docker with values for testing, detached
 docker_test_up:
 	@docker-compose --env-file .env.test -p zmaj_test up -d

@@ -7,7 +7,6 @@ import { usePublicInfo } from "../hooks/use-public-info"
  */
 export function OidcProviders(): JSX.Element {
 	const oidc = usePublicInfo().data?.oidc ?? []
-	// console.log({ oidc })
 
 	return (
 		<>

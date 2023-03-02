@@ -10,6 +10,8 @@ procs:
     autostart: false
   docker:
     shell: "make docker_dev_up"
+    # SIGINT not working for some reason. But you can press ctrl+c to stop containers
+    stop: SIGTERM
     autostart: false
   docs:
     shell: "make docs"

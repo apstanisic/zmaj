@@ -14,7 +14,6 @@ export const MigrationNameSchema = z
 			if (withDate) return val
 
 			const date = format(new Date(), "yyyy_MM_dd_HH_mm_ss")
-			console.log(`${date}__${val.trim()}`)
 
 			return `${date}__${val.trim()}`
 		}, //

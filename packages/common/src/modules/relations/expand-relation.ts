@@ -79,7 +79,6 @@ export function expandRelation(
 	if (!relation.mtmFkName) return relationEx
 
 	if (fk.referencedTable !== collection.tableName) {
-		// console.log(fk.pkTable, collection.tableName)
 		throw new Error("7687234")
 	}
 

@@ -94,9 +94,6 @@ export class AuthClient {
 
 	/** Get current user */
 	get currentUser(): AuthUser | undefined {
-		console.log("auth cl")
-		console.log(this.#state["_currentUser"])
-
 		return this.#state.currentUser
 	}
 

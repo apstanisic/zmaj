@@ -86,8 +86,6 @@ export class S3Storage extends BaseStorage {
 			const isMissing = error.$metadata.httpStatusCode === 404
 			if (isMissing) return false
 
-			// console.log(error)
-
 			throw new InvalidProviderError("Problem getting info from S3")
 		}
 	}

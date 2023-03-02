@@ -60,7 +60,6 @@ export function initDataProvider(sdk: ZmajSdk, collections?: CollectionDef[]): D
 	function transformRecord(resource: string, record: Struct): RaRecord {
 		const pkField = pkFields[resource]
 		if (pkField === undefined || pkField === "id") return record as RaRecord
-		// console.log(resource, record, pkField)
 		return {
 			...record,
 			id: record[pkField] ?? v4(), // this is not best idea

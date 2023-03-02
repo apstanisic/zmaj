@@ -15,34 +15,7 @@ export class AppService {
 		private securityConfig: SecurityConfig,
 		private repo: RepoManager,
 		private keyVal: KeyValueStorageService,
-	) {
-		// keyVal.updateOrCreate({ key: "TEST", value: "my-val", namespace: "test" }).then((r) => {
-		// 	console.log({ r })
-		// })
-		// keyVal.updateOrCreate({ key: "TEST2", value: "my-val", namespace: "test" }).then((r) => {
-		// 	console.log({ r })
-		// })
-		// repo
-		// 	.getRepo(SecurityTokenCollection)
-		// 	.findWhere({})
-		// 	.then((r) => {
-		// 		console.log(r)
-		// 		console.log(r[1]!.createdAt)
-		// 		console.log(new Date())
-		// 	})
-		// repo.getRepo("posts").createOne({
-		// 	data: {
-		// 		val: addYears(new Date(), 5),
-		// 		valDate: addYears(new Date(), 5),
-		// 	},
-		// })
-		// repo
-		// 	.getRepo("posts")
-		// 	.findWhere({})
-		// 	.then((r) => {
-		// 		console.log(r)
-		// 	})
-	}
+	) {}
 
 	configureApp(app: NestExpressApplication): void {
 		// use custom query parser (qs with custom params)

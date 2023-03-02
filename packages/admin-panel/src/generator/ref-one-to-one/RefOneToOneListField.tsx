@@ -14,7 +14,6 @@ import { RefOneToOneInternalProps } from "./ref-one-to-one-props.type"
 export const RefOneToOneListField = memo((props: Omit<RefOneToOneInternalProps, "className">) => {
 	const { relation } = props
 
-	console.log("here")
 	return (
 		<div className="w-full font-bold">
 			<MyReferenceOneField

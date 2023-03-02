@@ -135,7 +135,6 @@ export class SequelizeModelsGenerator {
 			// } else if (rel.type === "many-to-many") {
 			// 	//
 			// 	const first = alphabetical([rel.leftTable, rel.rightTable], (v) => v)[0] === rel.leftTable
-			// 	// console.log(first)
 
 			// 	// const isFirst = [rel.leftTable, rel.rightTable].sort()[0] === rel.leftTable
 			// 	if (first) {

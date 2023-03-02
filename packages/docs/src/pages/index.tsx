@@ -14,7 +14,14 @@ export default function Home(): JSX.Element {
 			<header className={clsx("hero hero--primary", styles.heroBanner)}>
 				<div className="container">
 					<h1 className={clsx("hero__title")}>{siteConfig.title}</h1>
-					<img src="/logo.svg" style={{ height: 180, width: 180 }} />
+					<img
+						src="/logo.svg"
+						style={{
+							height: 180,
+							width: 180,
+							filter: "grayscale(1)",
+						}}
+					/>
 					<p
 						style={{
 							maxWidth: 600,
@@ -48,7 +55,7 @@ export default function Home(): JSX.Element {
 						width: "100%",
 					}}
 				>
-					<div style={{ maxWidth: 900, height: 400, width: "100%" }}>
+					<div style={{ maxWidth: 900, width: "100%" }}>
 						<div style={{ padding: "47.47% 0 0 0", position: "relative" }}>
 							<iframe
 								src="https://player.vimeo.com/video/802065159?h=b00d10489f&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"

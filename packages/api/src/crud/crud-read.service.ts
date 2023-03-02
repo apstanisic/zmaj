@@ -65,7 +65,6 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 			const { page, sort, count, fields } = afterEmit2.options
 			const filter = afterEmit2.filter
 			const limit = afterEmit2.options.limit ?? 20
-			// console.log({ sort })
 			if (!isEmpty(sort)) {
 				const fieldsCanRead = this.authz.getRuleFields({
 					action: "read",

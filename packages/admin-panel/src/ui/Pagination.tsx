@@ -24,7 +24,6 @@ export type PaginationProps = {
 export function Pagination(props: PaginationProps): JSX.Element {
 	const { page, setPage } = props
 	const totalPages = max([Math.ceil(props.total / props.perPage), 1])!
-	// console.log({ totalPages, total: props.total, perPage: props.perPage })
 
 	return (
 		<div

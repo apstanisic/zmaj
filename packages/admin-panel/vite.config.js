@@ -17,19 +17,14 @@ export default defineConfig((config) => {
 				config.mode === "production" ? "/api" : "http://localhost:5000/api",
 			), //
 		},
+
 		resolve: {
 			alias: {
 				"@admin-panel": resolve(__dirname, "src"),
 			},
 		},
 		build: {
-			// lib: {
-			// 	entry: resolve(__dirname, "src/ZmajAdminPanel.tsx"),
-			// 	// name: "ZmajAdminPanel",
-			// 	formats: ["es"],
-			// },
-			// minify: false,
-
+			minify: false,
 			// TODO, Reduce size, not priority right now
 			chunkSizeWarningLimit: 5000,
 		},

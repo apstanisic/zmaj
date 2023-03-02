@@ -59,24 +59,11 @@ export async function namespaceCollection(params: NamespaceOptions): Promise<voi
 			void route.continue()
 			return
 		}
-		// console.log("Intercepted for " + params.collection, url.toString())
 
 		const query = qsParse(url.search)
 		const toAdd = { [field]: { $like: `%${suffix}` } }
 		const newFilter = joinFilters(query["filter"], toAdd)
 		url.search = qsStringify({ ...query, filter: newFilter }, { charset: "utf-8" })
-		// console.log(1, "  ", req.url())
-		// console.log(2, "  ", url.toString())
-		// console.log(3, "  ", qsStringify({ ...query, filter: newFilter }))
-		// console.log(4, "  ", decodeURI(qsStringify({ ...query, filter: newFilter })))
-		// const use =
-
-		// console.log({
-		// 	og: req.url(),
-		// 	nw: url.toString(), //
-		// 	ogT: typeof req.url(),
-		// 	nwT: typeof url.toString(), //
-		// })
 
 		// not working currently in firefox
 		// it works if i provide og url, but not modified, I checked, and modified is valid

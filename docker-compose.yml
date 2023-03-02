@@ -21,6 +21,7 @@ services:
 
   storage:
     image: minio/minio
+    restart: unless-stopped
     # command: server /data --console-address ":36505"
     command: server /data --console-address ":${DCU_MINIO_GUI_PORT:?err}"
     environment:
@@ -36,7 +37,7 @@ services:
   # enables email testing without external testing service
   email:
     image: mailhog/mailhog
-
+    restart: unless-stopped
     ports:
       - ${EMAIL_PORT:?err}:1025
       - ${DCU_EMAIL_GUI_PORT:?err}:8025

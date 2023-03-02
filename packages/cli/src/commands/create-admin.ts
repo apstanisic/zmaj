@@ -33,14 +33,16 @@ async function createAdmin(cliParams: {
 
 	log.warn("Make sure that database is running")
 
-	const email = await text({
-		message: "Enter admin email",
-		placeholder: "admin@example.com",
-		validate(value) {
-			if (!isEmail(value)) return "Invalid email"
-			return
-		},
-	})
+	const email =
+		cliParams.email ??
+		(await text({
+			message: "Enter admin email",
+			placeholder: "admin@example.com",
+			validate(value) {
+				if (!isEmail(value)) return "Invalid email"
+				return
+			},
+		}))
 
 	if (isCancel(email)) processExit()
 
