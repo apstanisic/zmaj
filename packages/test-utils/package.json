@@ -43,7 +43,6 @@
 		"@zmaj-js/common": "workspace:*",
 		"date-fns": "^2.29.3",
 		"flat": "^5.0.2",
-		"immer": "^9.0.19",
 		"qs": "^6.11.0",
 		"radash": "^10.7.0",
 		"type-fest": "^3.6.1",

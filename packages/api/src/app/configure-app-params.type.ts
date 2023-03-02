@@ -13,9 +13,6 @@ import { StorageConfigParams } from "../storage/storage.config"
 import { CustomModule, CustomProvider } from "./custom-modules.module"
 import { GlobalConfigParams } from "./global-app.config"
 
-// prevents immer from freezing object as it leads to problems with MikroORM
-// setAutoFreeze(false)
-
 export type ConfigureAppParams = {
 	/**
 	 * Any external modules that user wants
