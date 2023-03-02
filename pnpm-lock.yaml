@@ -266,7 +266,7 @@ importers:
       '@zmaj-js/email-templates': workspace:*
       '@zmaj-js/storage-core': workspace:*
       '@zmaj-js/storage-s3': workspace:*
-      '@zmaj-js/test-utils': workspace:^0.1.0
+      '@zmaj-js/test-utils': workspace:^0.1.1
       argon2: ^0.30.3
       axios: ^1.3.4
       cache-manager: ^5.1.7
