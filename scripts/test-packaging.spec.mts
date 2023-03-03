@@ -1,5 +1,5 @@
 import { ExecaChildProcess, execaCommand } from "execa"
-import killPort from "kill-port"
+import getPort from "get-port"
 import { readdirSync } from "node:fs"
 import { rmdir, writeFile } from "node:fs/promises"
 import path, { dirname, join } from "node:path"
@@ -11,7 +11,9 @@ const sleep = promisify(setTimeout)
 
 const cliCommands = {
 	dockerUp: "docker-compose --env-file .env -p zmaj_example up -d",
-	dockerDown: "docker-compose --env-file .env -p zmaj_example down -v",
+	// dockerDown: "docker-compose --env-file .env -p zmaj_example down -v",
+	dockerDown: "docker-compose -p zmaj_example --env-file .env -p kill",
+	dockerRm: "docker-compose -p zmaj_example --env-file .env -p rm -fsv",
 	startApi: "npm run dev",
 }
 
@@ -20,8 +22,6 @@ const repoRootPath = join(dir, "..")
 const examplesFolderPath = join(repoRootPath, "examples")
 const examples = readdirSync(examplesFolderPath)
 
-let _port = 15540
-
 /**
  * Depends on `npx turbo build`
  */
@@ -29,26 +29,15 @@ describe.each(examples)(
 	'Testing example project "%s"',
 	(example) => {
 		const cwd = join(repoRootPath, "examples", example)
-		const runningProcesses: ExecaChildProcess[] = []
+		let zmajProcess: ExecaChildProcess | undefined
+		let port: number = 17100
 
-		async function getEnv(): Promise<{ APP_PORT: string; SECRET_KEY: string }> {
+		function getEnv(port: number): { APP_PORT: string } & Record<string, string> {
 			return {
-				APP_PORT: String(_port),
-				SECRET_KEY: "hello_world_testing_packaging",
-			}
-		}
-
-		beforeEach(async () => {
-			_port += 1
-			// ignore error if no process is running
-			await killPort(_port).catch(() => {})
-
-			const envs = {
-				//
+				APP_PORT: String(port),
+				APP_URL: `http://localhost:${port}`,
 				SECRET_KEY: "hello_world_testing_packaging",
 				APP_NAME: "Zmaj App",
-				APP_PORT: _port,
-				APP_URL: `http://localhost:${_port}`,
 				//
 				DB_USERNAME: "db_user",
 				DB_PASSWORD: "db_password",
@@ -56,23 +45,33 @@ describe.each(examples)(
 				DB_HOST: "localhost",
 				DB_PORT: "5432",
 			}
-			const envsString = Object.entries(envs)
+		}
+
+		beforeEach(async () => {
+			port = await getPort({ port: getPort.makeRange(port + 1, 18000) })
+
+			const envsString = Object.entries(getEnv(port))
 				.map(([k, v]) => `${k}=${v}`)
 				.join("\n")
+			await writeFile(path.join(cwd, ".env"), envsString, { encoding: "utf-8" })
+			await sleep(500)
+			await execaCommand(cliCommands.dockerDown, { cwd }).catch((e) => undefined)
+			await sleep(500)
+			await execaCommand(cliCommands.dockerRm, { cwd }).catch((e) => undefined)
+			await sleep(500)
 
-			await writeFile(path.join(cwd, ".env"), envsString)
-			await execaCommand(cliCommands.dockerDown, { cwd })
-			await execaCommand(cliCommands.dockerUp, { cwd })
-			await sleep(3000)
-		}, 30_000)
+			execaCommand(cliCommands.dockerUp, { cwd, killSignal: "SIGKILL" })
+			await sleep(5000)
+		}, 20_000)
 
 		afterEach(async () => {
-			for (const pr of runningProcesses) {
-				pr.kill("SIGTERM", { forceKillAfterTimeout: 2000 })
-			}
-			await sleep(2500)
-
-			await execaCommand(cliCommands.dockerDown, { cwd })
+			const success = zmajProcess?.kill("SIGKILL")
+			zmajProcess = undefined
+			if (success === false) throw new Error("Can't kill old Zmaj process")
+			await sleep(3000)
+			await execaCommand(cliCommands.dockerDown, { cwd }).catch((e) => undefined)
+			await sleep(500)
+			await execaCommand(cliCommands.dockerRm, { cwd }).catch((e) => undefined)
 			await sleep(2000)
 		}, 30_000)
 
@@ -82,11 +81,11 @@ describe.each(examples)(
 
 		it("should start dev mode successfully", async () => {
 			expect.assertions(4)
-			const env = await getEnv()
-			const dev = execaCommand("npm run dev", { cwd, env })
-			runningProcesses.push(dev)
-			dev.stderr?.pipe(process.stderr)
-			await sleep(5000)
+			const env = getEnv(port)
+			zmajProcess = execaCommand("npm run dev", { cwd, env })
+			zmajProcess.stderr?.pipe(process.stderr)
+			// this timeout is important, since it needs to setup a database
+			await sleep(8000)
 
 			const responseApiRaw = await fetch(`http://localhost:${env.APP_PORT}/api`)
 			const resultApiJson = await responseApiRaw.json()
@@ -100,28 +99,36 @@ describe.each(examples)(
 			expect(responseAdminPanelText.startsWith("<!DOCTYPE html>")).toEqual(true)
 		}, 60_000)
 
-		it.skipIf(example.includes("javascript"))(
-			"should build project and start it successfully",
-			async () => {
-				expect.assertions(2)
-				const env = await getEnv()
-				// do not throw if dist folder does not exist
-				await rmdir(join(cwd, "dist")).catch(() => {})
-				await execaCommand("npm run build", { cwd })
-				const start = execaCommand("npm run start", { cwd, env })
-				runningProcesses.push(start)
-				start.stderr?.pipe(process.stderr)
-				await sleep(3000)
+		it("should build project and start it successfully", async () => {
+			if (example.includes("javascript")) {
+				expect(1).toEqual(1)
+				return
+			}
+			expect.assertions(4)
+			const env = getEnv(port)
+			// remove dist, but do not throw if dist folder does not exist
+			await rmdir(join(cwd, "dist")).catch(() => {})
+			await sleep(2000)
+			await execaCommand("npm run build", { cwd })
+			await sleep(2000)
+			zmajProcess = execaCommand("npm run start", { cwd, env })
+			zmajProcess.stderr?.pipe(process.stderr)
+			// this timeout is important, since it needs to setup a database
+			await sleep(6000)
 
-				const result = await fetch(`http://localhost:${env.APP_PORT}/api`).then((r) => r.json())
-				expect(result).toEqual({ message: "API successfully reached." })
-				const resultHtml = await fetch(`http://localhost:${env.APP_PORT}/admin`).then((r) =>
-					r.text(),
-				)
-				expect(resultHtml.startsWith("<!DOCTYPE html>")).toEqual(true)
-			},
-			60_000,
-		)
+			const responseApiRaw = await fetch(`http://localhost:${env.APP_PORT}/api`).catch((e) => {
+				throw new Error("Can't react server, ", { cause: e })
+			})
+			const responseApiJson = await responseApiRaw.json()
+
+			expect(responseApiRaw.ok).toEqual(true)
+			expect(responseApiJson).toEqual({ message: "API successfully reached." })
+
+			const responseAdminPanelRaw = await fetch(`http://localhost:${env.APP_PORT}/admin`)
+			const responseAdminPanelText = await responseAdminPanelRaw.text()
+			expect(responseAdminPanelRaw.ok).toEqual(true)
+			expect(responseAdminPanelText.startsWith("<!DOCTYPE html>")).toEqual(true)
+		}, 60_000)
 	},
 	{ timeout: 500_000 },
 )

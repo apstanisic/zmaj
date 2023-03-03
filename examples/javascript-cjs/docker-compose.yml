@@ -18,7 +18,7 @@ services:
     ports:
       # SMTP port
       - 1025:1025
-      # HTTP port to see send emails
+      # HTTP port to see sent emails
       - 8025:8025
 
 volumes:
