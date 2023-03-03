@@ -8,6 +8,7 @@ import {
 	ADMIN_ROLE_ID,
 	AuthSession,
 	AuthSessionCollection,
+	PublicAuthSession,
 	qsStringify,
 	times,
 	User,
@@ -77,6 +78,7 @@ describe("AuthSessionsController e2e", () => {
 
 			const data: AuthSession[] = res.body.data
 			const sessionIds = sessions.map((s) => s.id)
+			expect(data.every((session) => session.refreshToken === undefined)).toEqual(true)
 			data.forEach((s) => {
 				expect(sessionIds).toContain(s.id)
 			})
@@ -93,7 +95,10 @@ describe("AuthSessionsController e2e", () => {
 				.get(`/api/auth/sessions/${session.id}`)
 				.auth(user.email, "password")
 
-			expect(res.body.data).toEqual({
+			const data = res.body.data as PublicAuthSession
+			expect((data as AuthSession).refreshToken).toBeUndefined()
+
+			expect(data).toEqual({
 				...fixTestDate(omit(session, ["refreshToken", "validUntil"])), //
 				browser: {
 					name: "Chrome",
@@ -118,8 +123,11 @@ describe("AuthSessionsController e2e", () => {
 				.delete(`/api/auth/sessions/${session.id}`)
 				.auth(user.email, "password")
 
+			const data = res.body.data as PublicAuthSession
+			expect((data as AuthSession).refreshToken).toBeUndefined()
+
 			expect(res.statusCode).toBe(200)
-			expect(res.body.data).toEqual({
+			expect(data).toEqual({
 				...fixTestDate(omit(session, ["refreshToken", "validUntil"])), //
 				browser: {
 					name: "Chrome",

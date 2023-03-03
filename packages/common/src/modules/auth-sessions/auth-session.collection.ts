@@ -20,7 +20,7 @@ export const AuthSessionCollection = DefineCollection<AuthSession>({
 			columnName: "last_used",
 			isUpdatedAt: true,
 		},
-		refreshToken: { dataType: "short-text", columnName: "refresh_token", canRead: true },
+		refreshToken: { dataType: "short-text", columnName: "refresh_token", canRead: false },
 		userAgent: { dataType: "short-text", columnName: "user_agent" },
 		validUntil: { dataType: "datetime", columnName: "valid_until" },
 		userId: { dataType: "uuid", columnName: "user_id", isForeignKey: true },

@@ -20,7 +20,7 @@ export type AuthSession = {
 	/**
 	 * Refresh token
 	 */
-	refreshToken: string
+	refreshToken?: string
 
 	/**
 	 * When was this session last used
