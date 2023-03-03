@@ -29,4 +29,10 @@ describe("templateParser", () => {
 		const parsed = templateParser.parse("  hello ", {})
 		expect(parsed).toBe("hello")
 	})
+	it("should be safe against polynomial regex attack", () => {
+		const val = "{".repeat(154773) + "\n{}/g"
+		const start = Date.now()
+		templateParser.parse(val)
+		expect(Date.now() - start).toBeLessThan(30)
+	})
 })

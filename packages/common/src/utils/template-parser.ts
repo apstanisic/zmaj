@@ -10,7 +10,10 @@ type ParseOptions = {
 	fallback?: unknown
 }
 
-const templateRegex = /\{(.*?)\}/g
+// const templateRegex = /\{(.*?)\}/g
+// This regex does not allow nested "{{}}", which is desired behavior
+// It does not allow escaping, but that's outside the scope
+const templateRegex = /\{([^{}]*?)\}/g
 
 /**
  * Simple template engine that replaces {key} with value.
