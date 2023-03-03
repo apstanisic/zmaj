@@ -12,7 +12,7 @@ import {
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
-import { DataType, DataTypes, QueryInterface, Sequelize } from "@sequelize/core"
+import { DataType, DataTypes, QueryInterface, Sequelize } from "sequelize"
 import { alphabetical, isEqual } from "radash"
 import { z } from "zod"
 import { SequelizeService } from "./sequelize.service"

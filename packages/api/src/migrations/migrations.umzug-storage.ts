@@ -1,5 +1,5 @@
+import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
 import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { BootstrapRepoManager } from "@api/sequelize/sequelize.module"
 import { Injectable } from "@nestjs/common"
 import { DbMigration, DbMigrationCollection } from "@zmaj-js/common"
 import { SnakeCasedProperties } from "type-fest"

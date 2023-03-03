@@ -9,7 +9,7 @@ import { SequelizeRepoManager } from "@api/sequelize/sequelize.repo-manager"
 import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { Injectable } from "@nestjs/common"
 import { rand } from "@ngneat/falso"
-import { DataTypes, QueryInterface } from "@sequelize/core"
+import { DataTypes, QueryInterface } from "sequelize"
 import { ADMIN_ROLE_ID, systemCollections, times, User, UserCollection } from "@zmaj-js/common"
 import {
 	allMockCollectionDefs,

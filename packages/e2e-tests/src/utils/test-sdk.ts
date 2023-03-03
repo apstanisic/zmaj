@@ -1,7 +1,7 @@
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { createBasicToken, qsStringify, Struct, throwErr } from "@zmaj-js/common"
 
-export const playwrightAuthorizationHeader = createBasicToken("admin@examplel.com", "password")
+export const playwrightAuthorizationHeader = createBasicToken("admin@example.com", "password")
 
 function buildSdk(): ZmajSdk {
 	const sdk = new ZmajSdk({ url: "http://localhost:7100/api" })

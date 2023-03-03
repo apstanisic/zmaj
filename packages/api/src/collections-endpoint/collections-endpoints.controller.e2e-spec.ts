@@ -4,7 +4,7 @@ import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-modu
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
 import { randEmail, randFirstName, randNumber, randPastDate } from "@ngneat/falso"
-import { DataTypes, QueryInterface } from "@sequelize/core"
+import { DataTypes, QueryInterface } from "sequelize"
 import { qsStringify, times, User, uuidRegex } from "@zmaj-js/common"
 import { camel } from "radash"
 import supertest from "supertest"

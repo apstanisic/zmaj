@@ -9,8 +9,6 @@ import { SequelizeAlterSchemaService } from "./sequelize-alter-schema.service"
 import { SequelizeSchemaInfoService } from "./sequelize-schema-info.service"
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 
-export { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-
 @Global()
 @Module({
 	providers: [

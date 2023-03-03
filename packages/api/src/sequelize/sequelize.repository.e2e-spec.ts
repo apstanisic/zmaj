@@ -662,7 +662,12 @@ describe("SequelizeRepository", () => {
 		it("should return plain object", async () => {
 			const res = await repo.createMany({ data: [post1] })
 			expect(isObject(res.at(0))).toEqual(true)
-			//
+		})
+
+		it("should return date as valid Date", async () => {
+			const res = await repo.createMany({ data: [post1] })
+			const item = res[0]!
+			expect(item.createdAt).toBeInstanceOf(Date)
 		})
 
 		it("should use provided trx", async () => {

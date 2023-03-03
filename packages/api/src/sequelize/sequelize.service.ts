@@ -2,18 +2,12 @@ import { DatabaseConfig } from "@api/database/database.config"
 import { RawQueryOptions } from "@api/database/orm-specs/RawQueryOptions"
 import { TransactionIsolationLevel } from "@api/database/orm-specs/TransactionIsolationLevel"
 import { Injectable, Logger, OnModuleDestroy } from "@nestjs/common"
-import {
-	ISOLATION_LEVELS,
-	ModelStatic,
-	QueryInterface,
-	Sequelize,
-	Transaction,
-} from "@sequelize/core"
+import { ModelStatic, QueryInterface, Sequelize, Transaction } from "sequelize"
 import { CollectionDef, Struct } from "@zmaj-js/common"
 import { WritableDeep } from "type-fest"
 import { SequelizeModelsGenerator } from "./sequelize.model-generator"
 
-const isolationMapper: Record<TransactionIsolationLevel, ISOLATION_LEVELS> = {
+const isolationMapper: Record<TransactionIsolationLevel, Transaction.ISOLATION_LEVELS> = {
 	SERIALIZABLE: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
 	READ_COMMITTED: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
 	READ_UNCOMMITTED: Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED,

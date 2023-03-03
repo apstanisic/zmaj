@@ -1,4 +1,3 @@
-import { BootstrapRepoManager } from "@api/sequelize/sequelize.module"
 import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException } from "@nestjs/common"
@@ -10,6 +9,7 @@ import { MigrationsService } from "./migrations.service"
 import { MigrationsUmzugStorage } from "./migrations.umzug-storage"
 import { systemMigrations } from "./system-migrations/mod"
 import { CreateMigrationsTable } from "./system-migrations/000_migrations"
+import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
 
 describe("MigrationsService", () => {
 	let service: MigrationsService

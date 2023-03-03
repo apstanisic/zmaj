@@ -1,30 +1,25 @@
 import { throw500 } from "@api/common/throw-http"
-import { Injectable } from "@nestjs/common"
-import {
-	DataType,
-	DataTypes,
-	Model,
-	ModelAttributes,
-	ModelStatic,
-	Sequelize,
-} from "@sequelize/core"
+import { Injectable, Logger } from "@nestjs/common"
+import { DataType, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
 import { ColumnDataType, CollectionDef, getColumnType, Struct } from "@zmaj-js/common"
+import { alphabetical } from "radash"
 import { v4 } from "uuid"
 
 @Injectable()
 export class SequelizeModelsGenerator {
+	logger = new Logger(SequelizeModelsGenerator.name)
 	removeAllModels(orm: Sequelize): void {
 		// Models in best delete order
 		const toRemove =
-			// orm.modelManager
-			// 	.getModelsTopoSortedByForeignKey()
-			// 	?.concat() // reverse mutates array, so we clone it here
-			// 	.reverse() ?? //
-			// orm.modelManager.all
-			Object.values(orm.models)
+			orm.modelManager
+				.getModelsTopoSortedByForeignKey()
+				?.concat() // reverse mutates array, so we clone it here
+				.reverse() ?? //
+			orm.modelManager.all
+		// Object.values(orm.models)
 
 		for (const model of toRemove) {
-			orm.modelManager.removeModel(model)
+			orm.modelManager.removeModel(model as ModelStatic<any>)
 		}
 	}
 
@@ -41,8 +36,20 @@ export class SequelizeModelsGenerator {
 			this.generateModelWithFields(col, orm)
 		}
 
-		for (const col of collections) {
-			this.attachRelationsToModels(col, orm.models)
+		try {
+			for (const col of collections) {
+				this.attachRelationsToModels(col, orm.models)
+			}
+		} catch (error) {
+			// if there is problem generating relations, generate normal fields
+			this.logger.error("Problem generating relations!", error)
+
+			this.removeAllModels(orm)
+
+			for (const col of collections) {
+				if (col.disabled) continue
+				this.generateModelWithFields(col, orm)
+			}
 		}
 	}
 
@@ -107,51 +114,7 @@ export class SequelizeModelsGenerator {
 			const rightModel = models[rel.otherSide.tableName]
 			// if collection is disabled, it can infer with relations
 			if (!leftModel || !rightModel) continue
-			// if (rel.type === "many-to-one" && col.isJunctionTable) {
-			// 	leftModel.belongsTo(rightModel, {
-			// 		foreignKey: { name: rel.leftField, allowNull: true }, // allowNull: col.isJunctionTable ? false : undefined },
-			// 		as: rel.propertyName,
-			// 		targetKey: rel.rightField,
-			// 		// no inverse, since inverse is m2m
-			// 	})
-			// } else if (rel.type === "one-to-many") {
-			// 	leftModel.hasMany(rightModel, {
-			// 		foreignKey: { name: rel.rightField, allowNull: true },
-			// 		as: rel.propertyName,
-			// 		sourceKey: rel.leftField,
-			// 		...(col.isJunctionTable
-			// 			? {}
-			// 			: {
-			// 					inverse: { as: rel.rightPropertyName },
-			// 			  }),
-			// 	})
-			// } else if (rel.type === "ref-one-to-one") {
-			// 	leftModel.hasOne(rightModel, {
-			// 		foreignKey: rel.rightField,
-			// 		as: rel.propertyName,
-			// 		sourceKey: rel.leftField,
-			// 		inverse: { as: rel.rightPropertyName },
-			// 	})
-			// } else if (rel.type === "many-to-many") {
-			// 	//
-			// 	const first = alphabetical([rel.leftTable, rel.rightTable], (v) => v)[0] === rel.leftTable
 
-			// 	// const isFirst = [rel.leftTable, rel.rightTable].sort()[0] === rel.leftTable
-			// 	if (first) {
-			// 		leftModel.belongsToMany(rightModel, {
-			// 			as: rel.propertyName,
-			// 			through: models[rel.junctionTable] ?? rel.junctionTable,
-			// 			foreignKey: { name: rel.junctionLeftField, allowNull: true },
-			// 			otherKey: { name: rel.junctionRightField, allowNull: true },
-			// 			sourceKey: rel.leftField,
-			// 			targetKey: rel.rightField,
-
-			// 			inverse: { as: rel.rightPropertyName },
-			// 		})
-			// 	}
-			// } else if (rel.type === "many-to-one" || rel.type === "owner-one-to-one") {
-			// 	// do nothing
-			// }
 			if (rel.type === "many-to-one") {
 				leftModel.belongsTo(rightModel, {
 					foreignKey: rel.fieldName,
@@ -177,9 +140,9 @@ export class SequelizeModelsGenerator {
 			} else if (rel.type === "many-to-many") {
 				leftModel.belongsToMany(rightModel, {
 					as: rel.propertyName,
-					// junction model will be undefined if table is disabled
 					through: models[rel.junction.tableName] ?? rel.junction.tableName,
-					//   through: { model: this.models[rel.junctionTable]! }, // rel.junctionTable,
+					sourceKey: rel.fieldName,
+					targetKey: rel.otherSide.fieldName,
 					foreignKey: rel.junction.thisSide.fieldName,
 					otherKey: rel.junction.otherSide.fieldName,
 				})
@@ -201,7 +164,7 @@ export class SequelizeModelsGenerator {
 		} else if (type === "date") {
 			return DataTypes.DATEONLY
 		} else if (type === "datetime") {
-			return DataTypes.DATE({ length: 3 })
+			return DataTypes.DATE(3)
 		} else if (type === "float") {
 			return DataTypes.DOUBLE
 		} else if (type === "int") {

@@ -5,7 +5,7 @@ import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { Transaction } from "@api/database/orm-specs/Transaction"
 import { TransactionIsolationLevel } from "@api/database/orm-specs/TransactionIsolationLevel"
 import { Injectable } from "@nestjs/common"
-import { Sequelize } from "@sequelize/core"
+import { Sequelize, literal } from "sequelize"
 import { CollectionDef, Struct } from "@zmaj-js/common"
 import { camel, isString } from "radash"
 import { SequelizeRepository } from "./sequelize.repository"
@@ -69,9 +69,7 @@ export class SequelizeRepoManager extends RepoManager {
 		return result
 	}
 
-	// Can't find type
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-	unescaped(sql: string) {
-		return this.sq.orm.literal(sql)
+	unescaped(sql: string): ReturnType<typeof literal> {
+		return literal(sql)
 	}
 }

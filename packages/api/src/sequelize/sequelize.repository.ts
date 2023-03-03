@@ -22,7 +22,7 @@ import {
 	Op,
 	UniqueConstraintError,
 	WhereOptions,
-} from "@sequelize/core"
+} from "sequelize"
 import {
 	Comparison,
 	Fields,
@@ -189,9 +189,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 			// idk why sequelize sends it. On update, it should work normally
 			const data = this.getWritableData("create", params.data as Struct[]) //
 				.map((row) => filterStruct(row, (v) => notNil(v)))
-			const created = await this.model.bulkCreate(data as T[], {
+
+			const created = await this.model.bulkCreate(data as any[], {
 				transaction: params.trx as any, //
-				// fields: this.getNonReadonlyFields("create"),
 			})
 			return created.map((v) => v.get({ plain: true }))
 		} catch (error) {
@@ -327,8 +327,10 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	get pk(): string {
 		return this.model.primaryKeyAttribute
 		// const pks = this.model.modelDefinition.primaryKeysAttributeNames
-		// if (pks.size !== 1) throw500(79933)
-		// return this.model.modelDefinition.primaryKeysAttributeNames.toJSON()[0]!
+		// const [pk, ...rest] = pks
+		// if (pk === undefined) throw500(398991)
+		// if (rest.length > 0) throw500(97992)
+		// return pk
 	}
 
 	private filterAndFields(

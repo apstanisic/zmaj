@@ -106,7 +106,7 @@ export class ManyToManyRelationsService {
 			fn: async (trx) => {
 				if (rel1.otherSide.relationId) {
 					await this.repo.updateById({
-						trx: trx,
+						trx,
 						id: rel1.otherSide.relationId,
 						changes: { mtmFkName: rel2.relation.fkName },
 					})
@@ -114,7 +114,7 @@ export class ManyToManyRelationsService {
 
 				if (rel2.otherSide.relationId) {
 					await this.repo.updateById({
-						trx: trx,
+						trx,
 						id: rel2.otherSide.relationId,
 						changes: { mtmFkName: rel1.relation.fkName },
 					})

@@ -4,18 +4,17 @@ import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
-import { DataTypes } from "@sequelize/core"
+import { DataTypes } from "sequelize"
 import {
 	DbColumn,
 	DbMigration,
 	DbMigrationCollection,
 	ForeignKey,
+	RelationCreateDto,
 	RelationDef,
 	RelationMetadata,
 	RelationMetadataCollection,
-	RelationCreateDto,
 	RelationUpdateDto,
-	snakeCase,
 	throwErr,
 	User,
 	UUID,
@@ -548,8 +547,9 @@ describe("RelationController e2e", () => {
 		//
 	})
 
-	describe("PUT /system/infra/relations/split-mtm/:junctionCollection", () => {
-		const junctionName = "splitTest"
+	describe.only("PUT /system/infra/relations/split-mtm/:junctionCollection", () => {
+		const junctionTable = "junction_yyy"
+		const junctionCollection = camel(junctionTable)
 
 		beforeEach(async () => {
 			await relationsService.createRelation(
@@ -559,27 +559,27 @@ describe("RelationController e2e", () => {
 					rightColumn: "id",
 					leftTable: leftTableName,
 					rightTable: rightTableName,
-					leftPropertyName: "splitLeft",
-					rightPropertyName: "splitRight",
-					junctionTable: "split_test",
+					leftPropertyName: "leftProp",
+					rightPropertyName: "rightProp",
+					junctionTable,
 				}),
 			)
 		})
 
 		afterEach(async () => {
-			const col = infraStateService.collections[junctionName]
+			const col = infraStateService.collections[junctionCollection]
 			if (!col) throwErr()
 			await app.get(CollectionsService).removeCollection(col.id as UUID)
 		})
 
 		it("split many-to-many", async () => {
 			const relBefore = infraStateService.relations.filter(
-				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionName,
+				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionCollection,
 			)
 			expect(relBefore).toHaveLength(2)
 
 			const res = await supertest(app.getHttpServer())
-				.put(`/api/system/infra/relations/split-mtm/${camel(junctionName)}`)
+				.put(`/api/system/infra/relations/split-mtm/${camel(junctionCollection)}`)
 				.auth(user.email, "password")
 
 			// should return updated
@@ -588,7 +588,7 @@ describe("RelationController e2e", () => {
 
 			// should remove relation in state
 			const m2mRelationsWithThisJunctionTable = infraStateService.relations.filter(
-				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionName,
+				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionCollection,
 			)
 			expect(m2mRelationsWithThisJunctionTable).toHaveLength(0)
 
@@ -601,7 +601,8 @@ describe("RelationController e2e", () => {
 	})
 
 	describe("PUT /system/infra/relations/join-mtm/:junctionCollection", () => {
-		const junctionName = "joinTest"
+		const junctionTable = "junction_ttt"
+		const junctionCollection = camel(junctionTable)
 
 		beforeEach(async () => {
 			await relationsService.createRelation(
@@ -611,29 +612,29 @@ describe("RelationController e2e", () => {
 					rightColumn: "id",
 					leftTable: leftTableName,
 					rightTable: rightTableName,
-					leftPropertyName: "joinLeft",
-					rightPropertyName: "joinRight",
-					junctionTable: snakeCase(junctionName),
+					leftPropertyName: "leftProp",
+					rightPropertyName: "rightProp",
+					junctionTable: junctionTable,
 				}),
 			)
-			await relationsService.splitManyToMany(junctionName)
+			await relationsService.splitManyToMany(junctionCollection)
 		})
 
 		afterEach(async () => {
-			const col = infraStateService.collections[junctionName]
+			const col = infraStateService.collections[junctionCollection]
 			if (!col) throwErr()
 			await app.get(CollectionsService).removeCollection(col.id as UUID)
 		})
 
 		it("join many-to-many", async () => {
 			const relBefore = infraStateService.relations.filter(
-				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionName,
+				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionCollection,
 			)
 
 			expect(relBefore).toHaveLength(0)
 
 			const res = await supertest(app.getHttpServer())
-				.put(`/api/system/infra/relations/join-mtm/${junctionName}`)
+				.put(`/api/system/infra/relations/join-mtm/${junctionCollection}`)
 				.auth(user.email, "password")
 
 			// should return updated
@@ -642,7 +643,7 @@ describe("RelationController e2e", () => {
 
 			// should remove relation in state
 			const m2mRelationsWithThisJunctionTable = infraStateService.relations.filter(
-				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionName,
+				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionCollection,
 			)
 			expect(m2mRelationsWithThisJunctionTable).toHaveLength(2)
 

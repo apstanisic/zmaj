@@ -1,7 +1,8 @@
 import { throw500 } from "@api/common/throw-http"
+import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { InfraService } from "@api/infra/infra.service"
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import {
 	CollectionDef,
 	CompositeUniqueKey,
@@ -30,6 +31,7 @@ import { ExpandRelationsService } from "./expand-relations.service"
  */
 @Injectable()
 export class InfraStateService {
+	logger = new Logger(InfraStateService.name)
 	/** Track current version. Used for cache */
 	version = Date.now()
 
@@ -71,6 +73,7 @@ export class InfraStateService {
 	constructor(
 		private readonly schemaInfo: SchemaInfoService,
 		private readonly infra: InfraService,
+		private readonly bootRepo: BootstrapRepoManager,
 		private expandRelationsService: ExpandRelationsService = new ExpandRelationsService(),
 	) {}
 
@@ -115,15 +118,25 @@ export class InfraStateService {
 	}
 
 	async setStateFromDb(): Promise<void> {
-		// db schema
-		this._columns = await this.schemaInfo.getColumns()
-		this._fks = await this.schemaInfo.getForeignKeys()
-		this._compositeUniqueKeys = await this.schemaInfo.getCompositeUniqueKeys()
+		await this.bootRepo
+			.transaction({
+				fn: async (trx) => {
+					// db schema
+					this._columns = await this.schemaInfo.getColumns(undefined, undefined, { trx })
+					this._fks = await this.schemaInfo.getForeignKeys(undefined, undefined, { trx })
+					this._compositeUniqueKeys = await this.schemaInfo.getCompositeUniqueKeys(undefined, {
+						trx,
+					})
 
-		// Get simple db values
-		this._dbCollections = await this.infra.getCollectionMetadata()
-		this._dbFields = await this.infra.getFieldMetadata()
-		this._dbRelations = await this.infra.getRelationMetadata()
+					// Get simple db values
+					this._dbCollections = await this.infra.getCollectionMetadata(trx)
+					this._dbFields = await this.infra.getFieldMetadata(trx)
+					this._dbRelations = await this.infra.getRelationMetadata(trx)
+				},
+			})
+			.catch((e) => {
+				this.logger.error("DB Problem", e)
+			})
 	}
 
 	async initializeState(): Promise<void> {

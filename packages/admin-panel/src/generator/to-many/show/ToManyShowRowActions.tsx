@@ -31,7 +31,7 @@ export const ToManyShowRowActions = memo((props: ToManyShowRowActionsProps) => {
 			<IconButton
 				label="show"
 				// role="link"
-				onClick={() => redirect("show", `/${relation.otherSide.tableName}`, props.record.id)}
+				onClick={() => redirect("show", `/${relation.otherSide.collectionName}`, props.record.id)}
 			>
 				<MdOutlineVisibility />
 			</IconButton>
@@ -41,7 +41,7 @@ export const ToManyShowRowActions = memo((props: ToManyShowRowActionsProps) => {
 				label="edit"
 				disabled={!canEdit}
 				// role="link"
-				onClick={() => redirect("edit", `/${relation.otherSide.tableName}`, props.record.id)}
+				onClick={() => redirect("edit", `/${relation.otherSide.collectionName}`, props.record.id)}
 			>
 				<MdOutlineEdit />
 			</IconButton>

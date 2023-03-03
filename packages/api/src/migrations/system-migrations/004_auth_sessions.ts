@@ -1,5 +1,5 @@
 import { createSystemMigration } from "../create-system-migration"
-import { DataTypes } from "@sequelize/core"
+import { DataTypes } from "sequelize"
 import { DefaultNow, getRequiredColumns } from "../migrations.utils"
 
 const table = "zmaj_auth_sessions"

@@ -1,6 +1,6 @@
+import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
 import { Transaction } from "@api/database/orm-specs/Transaction"
-import { BootstrapRepoManager } from "@api/sequelize/sequelize.module"
-import { QueryInterface } from "@sequelize/core"
+import { QueryInterface } from "sequelize"
 import { DbMigrationName } from "@zmaj-js/common"
 
 export type MigrationRunnerContext = {

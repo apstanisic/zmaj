@@ -1,4 +1,5 @@
 import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
+import { Transaction } from "@api/database/orm-specs/Transaction"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionMetadata,
@@ -13,15 +14,15 @@ import {
 export class InfraService {
 	constructor(private baseRepoManager: BootstrapRepoManager) {}
 
-	async getCollectionMetadata(): Promise<CollectionMetadata[]> {
-		return this.baseRepoManager.getRepo(CollectionMetadataCollection).findWhere({})
+	async getCollectionMetadata(trx?: Transaction): Promise<CollectionMetadata[]> {
+		return this.baseRepoManager.getRepo(CollectionMetadataCollection).findWhere({ trx })
 	}
 
-	async getFieldMetadata(): Promise<FieldMetadata[]> {
-		return this.baseRepoManager.getRepo(FieldMetadataCollection).findWhere({})
+	async getFieldMetadata(trx?: Transaction): Promise<FieldMetadata[]> {
+		return this.baseRepoManager.getRepo(FieldMetadataCollection).findWhere({ trx })
 	}
 
-	async getRelationMetadata(): Promise<RelationMetadata[]> {
-		return this.baseRepoManager.getRepo(RelationMetadataCollection).findWhere({})
+	async getRelationMetadata(trx?: Transaction): Promise<RelationMetadata[]> {
+		return this.baseRepoManager.getRepo(RelationMetadataCollection).findWhere({ trx })
 	}
 }

@@ -4,7 +4,7 @@ import { vi } from "vitest"
 import { InfraStateService } from "./infra-state.service"
 
 export function mockInfraStateService(): InfraStateService {
-	const state = new InfraStateService({} as any, {} as any)
+	const state = new InfraStateService({} as any, {} as any, {} as any)
 	state["_nonSystemCollections"] = structuredClone(allMockCollectionDefs)
 	state["_fields"] = structuredClone(allMockFieldDefs)
 	state["_relations"] = structuredClone(allMockRelationDefs)

@@ -1,5 +1,5 @@
 import { NestExpressApplication } from "@nestjs/platform-express"
-import { DataTypes, ModelAttributeColumnOptions, Sequelize } from "@sequelize/core"
+import { DataTypes, ModelAttributeColumnOptions, Sequelize } from "sequelize"
 import { MigrationsConfig } from "./migrations.config"
 import { MigrationsService } from "./migrations.service"
 

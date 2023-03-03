@@ -5,7 +5,7 @@ import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { INestApplication, InternalServerErrorException } from "@nestjs/common"
-import { DataTypes } from "@sequelize/core"
+import { DataTypes } from "sequelize"
 import {
 	DbMigration,
 	DbMigrationCollection,

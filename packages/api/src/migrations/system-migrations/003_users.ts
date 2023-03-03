@@ -1,5 +1,5 @@
 import { createSystemMigration } from "../create-system-migration"
-import { DataTypes } from "@sequelize/core"
+import { DataTypes } from "sequelize"
 import { PUBLIC_ROLE_ID } from "@zmaj-js/common"
 import { getRequiredColumns } from "../migrations.utils"
 

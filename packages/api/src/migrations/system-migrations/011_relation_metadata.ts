@@ -1,5 +1,5 @@
 import { createSystemMigration } from "../create-system-migration"
-import { DataTypes } from "@sequelize/core"
+import { DataTypes } from "sequelize"
 import { getRequiredColumns } from "../migrations.utils"
 
 const table = "zmaj_relation_metadata"
@@ -28,6 +28,9 @@ export const CreateRelationMetadataTable = createSystemMigration({
 				transaction: trx,
 				uniqueKeys: {
 					zmaj_relation_metadata_table_name_fk_name_unique: { fields: ["table_name", "fk_name"] },
+					zmaj_relation_metadata_table_name_property_name: {
+						fields: ["table_name", "property_name"],
+					},
 				},
 			},
 		)

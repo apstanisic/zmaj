@@ -1,4 +1,4 @@
-import { DataTypes } from "@sequelize/core"
+import { DataTypes } from "sequelize"
 import { createSystemMigration } from "../create-system-migration"
 import { getRequiredColumns } from "../migrations.utils"
 

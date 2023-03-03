@@ -9,7 +9,7 @@ import { emsg } from "@api/errors"
 import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { StorageService } from "@api/storage/storage.service"
 import { HttpException, Injectable, Logger } from "@nestjs/common"
-import { Model } from "@sequelize/core"
+import { Model } from "sequelize"
 import {
 	AuthUser,
 	FileCollection,
