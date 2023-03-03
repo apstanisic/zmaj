@@ -2,6 +2,7 @@ import { BadRequestException, ExecutionContext, UnauthorizedException } from "@n
 import { createBasicToken } from "@zmaj-js/common"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { JwtGuard } from "./jwt.guard"
+import { JwtService } from "@nestjs/jwt"
 
 const superCanActivate = vi.fn().mockResolvedValue(true)
 
@@ -18,10 +19,13 @@ vi.mock("@nestjs/passport", () => ({
 describe("JwtGuard", () => {
 	let guard: JwtGuard
 	let mockContext: ExecutionContext
+	let bearerToken: string
 
 	const getRequest = vi.fn().mockImplementation(() => ({ headers: {}, query: {} }))
+	const jwtService = new JwtService({ secret: "qwerty" })
 
 	beforeEach(() => {
+		bearerToken = "Bearer " + jwtService.sign({ hello: "world" })
 		guard = new JwtGuard()
 		mockContext = {
 			switchToHttp: () => ({ getRequest }),
@@ -52,7 +56,7 @@ describe("JwtGuard", () => {
 		})
 
 		it("should check if Bearer header is provided", async () => {
-			getRequest.mockReturnValue({ query: {}, headers: { authorization: "Bearer HELLO_WORLD" } })
+			getRequest.mockReturnValue({ query: {}, headers: { authorization: bearerToken } })
 			await guard.canActivate(mockContext)
 			expect(superCanActivate).toBeCalledWith(mockContext)
 		})
@@ -64,7 +68,7 @@ describe("JwtGuard", () => {
 		})
 
 		it("should throw our error if can activate throws", async () => {
-			getRequest.mockReturnValue({ headers: { authorization: "Bearer HELLO_WORLD" }, query: {} })
+			getRequest.mockReturnValue({ headers: { authorization: bearerToken }, query: {} })
 			superCanActivate.mockRejectedValue(new BadRequestException())
 			await expect(guard.canActivate(mockContext)).rejects.toThrow(UnauthorizedException)
 		})

@@ -1,4 +1,5 @@
 import { BadRequestException, ExecutionContext } from "@nestjs/common"
+import { JwtService } from "@nestjs/jwt"
 import { createBasicToken } from "@zmaj-js/common"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { BasicAuthGuard } from "./basic-auth.guard"
@@ -43,7 +44,10 @@ describe("BasicAuthGuard", () => {
 			const res1 = await guard.canActivate(mockContext)
 			expect(res1).toEqual(true)
 
-			getRequest.mockReturnValue({ headers: { authorization: "Bearer HELLO" } })
+			const jwtService = new JwtService({ secret: "qwerty" })
+			const bearer = "Bearer " + jwtService.sign({ hello: "world" })
+
+			getRequest.mockReturnValue({ headers: { authorization: bearer } })
 			const res2 = await guard.canActivate(mockContext)
 			expect(res2).toEqual(true)
 
