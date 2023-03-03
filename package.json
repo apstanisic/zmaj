@@ -20,7 +20,8 @@
 		"dev": "npx mprocs",
 		"bump-version": "lerna version --sync-workspace-lock",
 		"publish-packages": "pnpm publish --r --access=public",
-		"start-docker-project": "pnpm --filter=@zmaj-js/dockerfile run start"
+		"start-docker-project": "pnpm --filter=@zmaj-js/dockerfile run start",
+		"prepare": "husky install"
 	},
 	"packageManager": "pnpm@7.13.0",
 	"engines": {
@@ -50,6 +51,7 @@
 		"execa": "^7.0.0",
 		"fs-extra": "^11.1.0",
 		"get-port": "5.1.1",
+		"husky": "^8.0.3",
 		"mprocs": "^0.6.4",
 		"prettier": "^2.8.4",
 		"prettier-plugin-tailwindcss": "^0.2.4",
