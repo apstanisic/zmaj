@@ -547,7 +547,7 @@ describe("RelationController e2e", () => {
 		//
 	})
 
-	describe.only("PUT /system/infra/relations/split-mtm/:junctionCollection", () => {
+	describe("PUT /system/infra/relations/split-mtm/:junctionCollection", () => {
 		const junctionTable = "junction_yyy"
 		const junctionCollection = camel(junctionTable)
 
