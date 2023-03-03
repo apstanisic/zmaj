@@ -1,6 +1,8 @@
 import { CrudRequest } from "@api/common/decorators/crud-request.decorator"
+import { throw403 } from "@api/common/throw-http"
 import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { EncryptionService } from "@api/encryption/encryption.service"
+import { emsg } from "@api/errors"
 import { ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common"
 import { Cron, CronExpression } from "@nestjs/schedule"
 import {
@@ -63,7 +65,7 @@ export class AuthSessionsService {
 	async findByRefreshToken(refreshToken: string): Promise<AuthSession> {
 		const decryptedRt = await this.encryption.decrypt(refreshToken)
 		const session = await this.repo.findOne({ where: { refreshToken: decryptedRt } })
-		if (!session) throw new ForbiddenException(7793)
+		if (!session) throw403(7793, emsg.notSignedIn)
 		return session
 	}
 

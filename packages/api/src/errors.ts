@@ -50,6 +50,7 @@ export const emsg = {
 	cantDeleteLastAdmin: "You can't delete last admin",
 	oauthSignUpDisabled: "You are not allowed to register with external provider",
 	alreadySignedIn: "You are already signed in",
+	notSignedIn: "You are not signed in",
 	// config
 	settingsReadonly: "You can't change this setting",
 

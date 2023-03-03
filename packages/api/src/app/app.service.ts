@@ -21,9 +21,12 @@ export class AppService {
 			session({
 				secret: this.config.secretKey,
 				resave: false,
-
 				saveUninitialized: false,
-				cookie: { secure: true, httpOnly: true },
+				cookie: {
+					// use secure when https
+					secure: "auto",
+					httpOnly: true, //
+				},
 			}),
 		)
 
@@ -35,9 +38,9 @@ export class AppService {
 
 		const corsOrigins = isArray(this.securityConfig.corsOrigin)
 			? unique([
-					...this.securityConfig.corsOrigin,
-					this.config.urls.adminPanel,
-					this.config.urls.api,
+					...this.securityConfig.corsOrigin.map((url) => new URL(url).origin),
+					new URL(this.config.urls.adminPanel).origin,
+					new URL(this.config.urls.api).origin,
 			  ])
 			: this.securityConfig.corsOrigin
 

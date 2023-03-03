@@ -25,11 +25,10 @@ export function OAuthCallbackPage(): JSX.Element {
 			await sdk.auth.oidcSignIn()
 			await refetch()
 			redirect("/")
-			await sleep(100)
 			notify(message, { type: "success" })
 		} catch (error) {
 			redirect("/login")
-			await sleep(100)
+			console.error(error)
 			notify("Problem signing in", { type: "error" })
 		}
 	}, [notify, params, redirect, refetch, sdk.auth])
