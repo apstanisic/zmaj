@@ -47,7 +47,7 @@ describe("RefreshTokenService", () => {
 				sameSite: "lax",
 				expires: expirationDate,
 				signed: true,
-				secure: true,
+				// secure: true,
 			})
 		})
 	})

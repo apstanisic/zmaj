@@ -1,5 +1,4 @@
 import { useRefetchQueries } from "@admin-panel/hooks/use-refetch-queries"
-import { sleep } from "@zmaj-js/common"
 import { useNotify, useRedirect } from "ra-core"
 import { useCallback } from "react"
 import { useSearchParams } from "react-router-dom"
