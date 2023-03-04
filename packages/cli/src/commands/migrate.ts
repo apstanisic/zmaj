@@ -1,6 +1,6 @@
-import { runSystemMigrations } from "@zmaj-js/api"
-import pc from "picocolors"
-import { withApp } from "../cli-app.js"
+import { outro, spinner } from "@clack/prompts"
+import { _cliUtils } from "@zmaj-js/api"
+import { processExit } from "../prompt-utils.js"
 import { BaseYargs, envFilePrompt } from "../utils.js"
 
 export function runMigrationsCommand(yr: BaseYargs): void {
@@ -15,8 +15,15 @@ export function runMigrationsCommand(yr: BaseYargs): void {
 async function runMigrations(envFile?: string): Promise<void> {
 	const path = await envFilePrompt(envFile)
 
-	await withApp({ config: { envPath: path.full } }, async (app) => {
-		await runSystemMigrations(app)
-		console.log(pc.green("Migration finished"))
+	const sp = spinner()
+
+	sp.start("Starting migrations")
+	await _cliUtils.runMigrations(path.full).catch((e) => {
+		sp.stop("Problem with migrations")
+		console.error(e)
+
+		processExit(1, "Problem executing migrations")
 	})
+	sp.stop("Migrations executed")
+	outro("All done!")
 }

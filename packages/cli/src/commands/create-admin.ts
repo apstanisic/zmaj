@@ -1,8 +1,7 @@
 import { isCancel, log, note, outro, password, text } from "@clack/prompts"
-import { InitializeAdminService } from "@zmaj-js/api"
-import { isEmail, SignUpDto } from "@zmaj-js/common"
+import { _cliUtils } from "@zmaj-js/api"
+import { ADMIN_ROLE_ID, isEmail } from "@zmaj-js/common"
 import pc from "picocolors"
-import { withApp } from "../cli-app.js"
 import { processExit } from "../prompt-utils.js"
 import { BaseYargs, envFilePrompt } from "../utils.js"
 
@@ -59,24 +58,27 @@ async function createAdmin(cliParams: {
 	log.info("We need to have location of your .env file, so we can connect to the database")
 	const { full: envPath } = await envFilePrompt(cliParams.envFile)
 
-	await withApp({ config: { envPath } }, async (app) => {
-		try {
-			await app
-				.get(InitializeAdminService)
-				.createAdmin(new SignUpDto({ email, password: pass, firstName: "Admin" }))
-		} catch (error) {
-			console.log(pc.red(JSON.stringify(error, null, 4)))
-			processExit(1, "Problem creating admin")
-			return
-		}
+	try {
+		await _cliUtils.createAdmin(envPath, {
+			confirmedEmail: true,
+			email,
+			password: pass,
+			firstName: "Admin",
+			lastName: "User",
+			roleId: ADMIN_ROLE_ID,
+			status: "active",
+		})
 
 		note(
 			"Email:".padEnd(12) + pc.bold(email) + "\n" + "Password:".padEnd(12) + pc.bold(pass),
 			"User successfully created.",
 		)
-	}).catch((e) => {
-		console.log(pc.red(JSON.stringify(e, null, 4)))
-		processExit(1, "Problem starting app.")
-	})
+	} catch (error) {
+		//
+		console.log(pc.red(JSON.stringify(error, null, 4)))
+		processExit(1, "Problem creating admin")
+		return
+	}
+
 	outro("Success!")
 }

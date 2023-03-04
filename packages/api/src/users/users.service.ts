@@ -1,6 +1,6 @@
 import { throw400, throw401, throw403, throw500 } from "@api/common/throw-http"
+import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
 import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { Transaction } from "@api/database/orm-specs/Transaction"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
@@ -23,7 +23,7 @@ type IdOrEmailObject = { id: string } | { email: string }
 @Injectable()
 export class UsersService {
 	constructor(
-		private readonly repoManager: RepoManager,
+		private readonly repoManager: BootstrapRepoManager,
 		private readonly encryptionService: EncryptionService,
 	) {
 		this.repo = this.repoManager.getRepo(UserCollection)
@@ -95,13 +95,11 @@ export class UsersService {
 	 */
 	async createUser({
 		data,
-		// password,
 		id,
 		trx,
 	}: {
 		data: UserCreateDto
 		id?: string
-		// password?: string
 		trx?: Transaction
 	}): Promise<User> {
 		const validUser = await this.createUserFactory(data)
