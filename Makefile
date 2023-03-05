@@ -36,7 +36,7 @@ test_unit:
 test_e2e_api:
 	@npx vitest run --config vitest-e2e.config.ts
 test_e2e_gui:
-	@npx playwright test -c packages/e2e-tests/playwright.config.ts
+	@pnpm --filter=@zmaj-js/e2e-tests run test-gui
 generate_videos:
 	@npx playwright test -c packages/e2e-tests/playwright-record-examples.config.ts
 test: test_unit test_api_e2e test_gui_e2e

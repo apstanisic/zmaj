@@ -26,7 +26,7 @@ test("Show Webhook", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Webhooks" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_webhooks")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajWebhooks")
 
 	await page.getByRole("button", { name: `Show Record ${webhook.id}` }).click()
 

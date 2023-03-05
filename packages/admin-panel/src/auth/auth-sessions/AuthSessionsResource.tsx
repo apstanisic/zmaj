@@ -1,4 +1,4 @@
-import { systemPermissions } from "@zmaj-js/common"
+import { AuthSessionCollection, systemPermissions } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 import { GeneratedListPage } from "../../generator/pages/GeneratedListPage"
 import { AuthSessionsShow } from "./AuthSessionsShow"
@@ -9,12 +9,12 @@ import { AuthSessionsShow } from "./AuthSessionsShow"
 export function authSessionsResource(): JSX.Element {
 	return (
 		<Resource
-			name="zmaj_auth_sessions"
+			name={AuthSessionCollection.collectionName}
 			list={GeneratedListPage}
 			show={AuthSessionsShow} //
 			options={{
 				authzResource: systemPermissions.account.resource,
-				label: "Sessions",
+				label: AuthSessionCollection.label ?? "Sessions",
 				authzActions: {
 					list: systemPermissions.account.actions.readSessions.key,
 					show: systemPermissions.account.actions.readSessions.key,

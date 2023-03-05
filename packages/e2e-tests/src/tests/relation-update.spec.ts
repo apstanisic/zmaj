@@ -39,24 +39,22 @@ test("Update relation", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	await page.getByRole("link", { name: "test_rel_update_left" }).click()
 	// await expect(page).toHaveURL(
-	// 	`http://localhost:7100/admin/#/zmaj_collection_metadata/${relation.collectionId}/show`,
+	// 	`http://localhost:7100/admin/#/zmajCollectionMetadata/${relation.collectionId}/show`,
 	// )
 
 	await page.getByRole("tab", { name: "Relations" }).click()
 
 	await page.getByRole("link", { name: /test_rel_update_left\.prop1/ }).click()
 	await expect(page).toHaveURL(
-		`http://localhost:7100/admin/#/zmaj_relation_metadata/${relation.id}/show`,
+		`http://localhost:7100/admin/#/zmajRelationMetadata/${relation.id}/show`,
 	)
 
 	await page.getByRole("button", { name: /Edit/ }).click()
-	await expect(page).toHaveURL(
-		`http://localhost:7100/admin/#/zmaj_relation_metadata/${relation.id}`,
-	)
+	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajRelationMetadata/${relation.id}`)
 
 	await page.getByLabel("Property Name").fill("updatedProp")
 	await page.getByLabel("Label").fill("Updated Label")
@@ -64,7 +62,7 @@ test("Update relation", async ({ page }) => {
 
 	await page.getByRole("button", { name: "Save" }).click()
 	await expect(page).toHaveURL(
-		`http://localhost:7100/admin/#/zmaj_relation_metadata/${relation.id}/show`,
+		`http://localhost:7100/admin/#/zmajRelationMetadata/${relation.id}/show`,
 	)
 
 	// await expect(page.getByRole("alert", { name: /Element updated/ })).toBeVisible()

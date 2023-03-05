@@ -1,4 +1,6 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
+import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
+import { CollectionMetadataCollection } from "@zmaj-js/common"
 import { plural, singular } from "pluralize"
 import { useNotify, useRedirect } from "ra-core"
 import { memo, useEffect, useMemo } from "react"
@@ -37,7 +39,7 @@ function Content(): JSX.Element {
 		if (tables.includes(leftTable)) return
 
 		notify("Invalid table", { type: "error" })
-		redirect("/zmaj_collection_metadata")
+		redirect(getCrudUrl(CollectionMetadataCollection, "list"))
 	}, [leftTable, notify, redirect, tables])
 
 	return (

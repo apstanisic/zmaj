@@ -2,6 +2,8 @@ import { useIsAllowedSystem, useRedirectForbidden } from "@admin-panel/hooks/use
 import { CircularProgress } from "@admin-panel/ui/CircularProgress"
 import { IconButton } from "@admin-panel/ui/IconButton"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
+import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
+import { AuthSessionCollection } from "@zmaj-js/common"
 import { MdDevices, MdEdit, MdLock, MdLockOpen } from "react-icons/md"
 import { useHref } from "react-router"
 import { LayoutSection } from "../../crud-layouts/ui/LayoutSection"
@@ -11,7 +13,7 @@ import { useHasMfa, useUserProfile } from "./useUserProfile"
 
 export function UserProfilePage(): JSX.Element {
 	const user = useUserProfile().data
-	const seeSessionsHref = useHref({ pathname: "/zmaj_auth_sessions" })
+	const seeSessionsHref = useHref({ pathname: getCrudUrl(AuthSessionCollection, "list") })
 	const editProfileHref = useHref({ pathname: "/profile/edit" })
 	const enable2faHref = useHref({ pathname: "/profile/2fa" })
 	const canReadSessions = useIsAllowedSystem("account", "readSessions")

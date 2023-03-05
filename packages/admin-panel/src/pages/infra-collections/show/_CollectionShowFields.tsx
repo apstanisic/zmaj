@@ -1,7 +1,8 @@
 import { SimpleListLayout } from "@admin-panel/crud-layouts/list/SimpleListLayout"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { Button } from "@admin-panel/ui/Button"
-import { CollectionDef, FieldDef } from "@zmaj-js/common"
+import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
+import { CollectionDef, FieldDef, FieldMetadataCollection } from "@zmaj-js/common"
 import { ResourceContextProvider } from "ra-core"
 import { memo } from "react"
 import { MdOutlineAddCircle } from "react-icons/md"
@@ -14,7 +15,7 @@ export const CollectionShowFields = memo(() => {
 	const collection = useRecord<CollectionDef>()
 
 	const newFieldHref = useHref({
-		pathname: "/zmaj_field_metadata/create",
+		pathname: getCrudUrl(FieldMetadataCollection, "create"),
 		search: `source=${JSON.stringify({ tableName: collection?.tableName })}`,
 	})
 
@@ -23,7 +24,7 @@ export const CollectionShowFields = memo(() => {
 	return (
 		<TabsSection>
 			<MyArrayField source="fields">
-				<ResourceContextProvider value="zmaj_field_metadata">
+				<ResourceContextProvider value={FieldMetadataCollection.collectionName}>
 					<SimpleListLayout<FieldDef>
 						// linkType="show"
 						primaryText={(field) => field.fieldName}

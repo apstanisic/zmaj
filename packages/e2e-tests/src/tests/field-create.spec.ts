@@ -19,18 +19,18 @@ test("Create Field", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	await page.getByRole("link", { name: tableName }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	// click on fields
 	await page.getByRole("tab", { name: "Fields" }).click()
 	await page.getByRole("button", { name: "Add field" }).click()
 	await expect(page).toHaveURL(
-		`http://localhost:7100/admin/#/zmaj_field_metadata/create?source={%22tableName%22:%22${tableName}%22}`,
+		`http://localhost:7100/admin/#/zmajFieldMetadata/create?source={%22tableName%22:%22${tableName}%22}`,
 	)
 
 	await page.getByLabel("Column Name").fill("test_field")
@@ -41,7 +41,7 @@ test("Create Field", async ({ page }) => {
 	await page.getByRole("button", { name: "Save" }).click()
 
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_field_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajFieldMetadata/$ID/show"),
 	)
 
 	await expect(page.locator(".crud-content")).toContainText(tableName)

@@ -1,3 +1,4 @@
+import { MyReferenceField } from "@admin-panel/generator/many-to-one/MyReferenceField"
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { FieldDef } from "@zmaj-js/common"
@@ -40,6 +41,7 @@ const Content = memo(() => {
 		<TabsLayout sections={FieldConfig ? sections : sections.slice(0, 2)}>
 			<TabsSection>
 				<ManualShowField source="columnName" />
+				{/* <MyReferenceField source="tableName" reference=""></MyReferenceField> */}
 				<ManualShowField source="tableName" />
 				<ManualShowField
 					source="dataType"

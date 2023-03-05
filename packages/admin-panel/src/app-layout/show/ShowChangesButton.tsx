@@ -2,7 +2,14 @@ import { useActionContext } from "@admin-panel/context/action-context"
 import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
-import { ActivityLog, forbiddenKey, getAuthzKey, isNil } from "@zmaj-js/common"
+import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
+import {
+	ActivityLog,
+	ActivityLogCollection,
+	forbiddenKey,
+	getAuthzKey,
+	isNil,
+} from "@zmaj-js/common"
 import { useResourceContext } from "ra-core"
 import { useMemo } from "react"
 import { MdReplay } from "react-icons/md"
@@ -19,7 +26,7 @@ export function ShowChangesButton(): JSX.Element {
 	const id = useRecord()?.id
 
 	const link = useHref({
-		pathname: "/zmaj_activity_log",
+		pathname: getCrudUrl(ActivityLogCollection, "list"),
 		search: `filter=${JSON.stringify({
 			resource: resource.startsWith("zmaj") ? forbiddenKey : getAuthzKey(resource),
 			itemId: id,

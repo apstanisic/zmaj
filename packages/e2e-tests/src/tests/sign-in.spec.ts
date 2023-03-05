@@ -32,7 +32,7 @@ test("Sign in / sign out", async ({ page }) => {
 	 */
 	await page.getByRole("link", { name: "Collections" }).click()
 	// await page.locator("text=Collections").click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	/**
 	 * Logout

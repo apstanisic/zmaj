@@ -28,17 +28,17 @@ test("Create many-to-one relation", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	await page.getByRole("link", { name: leftTableName }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	await page.getByRole("tab", { name: "Relations" }).click()
 	await page.getByRole("button", { name: "Add relation" }).click()
 	await expect(page).toHaveURL(
-		`http://localhost:7100/admin/#/zmaj_relation_metadata/create?disable_leftTable=true&source={%22leftTable%22:%22${leftTableName}%22}`,
+		`http://localhost:7100/admin/#/zmajRelationMetadata/create?disable_leftTable=true&source={%22leftTable%22:%22${leftTableName}%22}`,
 	)
 
 	await page.getByRole("button", { name: /Type/ }).click()
@@ -67,7 +67,7 @@ test("Create many-to-one relation", async ({ page }) => {
 	await page.getByRole("button", { name: "Save" }).click()
 
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_relation_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajRelationMetadata/$ID/show"),
 	)
 	await expect(page.locator(".crud-content")).toContainText(leftTableName)
 	await expect(page.locator(".crud-content")).toContainText(rightTableName)

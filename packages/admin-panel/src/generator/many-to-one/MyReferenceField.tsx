@@ -6,7 +6,7 @@ import {
 	RecordContextProvider,
 	ResourceContextProvider,
 	useReference,
-	useResourceDefinition,
+	useResourceDefinitions,
 } from "ra-core"
 import { ReactNode } from "react"
 import { MdError } from "react-icons/md"
@@ -26,7 +26,8 @@ export function MyReferenceField(props: {
 	const record = useRecord()
 	const val = record?.[props.source]
 	const href = useHref({ pathname: `/${props.reference}/${val}/show` })
-	const definition = useResourceDefinition({ resource: props.reference })
+	const definition = useResourceDefinitions()[props.reference]
+
 	const ref = useReference({
 		id: val,
 		reference: props.reference,
@@ -56,7 +57,7 @@ export function MyReferenceField(props: {
 	return (
 		<ResourceContextProvider value={props.reference}>
 			<RecordContextProvider value={ref.referenceRecord}>
-				{definition.hasShow ? (
+				{definition?.hasShow ? (
 					<a href={href} className={clsx("w-full font-bold text-accent", props.className)}>
 						{props.children}
 					</a>

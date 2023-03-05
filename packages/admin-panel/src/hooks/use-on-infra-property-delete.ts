@@ -1,5 +1,5 @@
 import { useInfraState } from "@admin-panel/state/useInfraState"
-import { FieldMetadata, RelationMetadata } from "@zmaj-js/common"
+import { CollectionMetadataCollection, FieldMetadata, RelationMetadata } from "@zmaj-js/common"
 import { RaRecord, useNotify, useRedirect } from "ra-core"
 
 export function useOnInfraPropertyDelete(): (data: RaRecord) => Promise<void> {
@@ -16,6 +16,6 @@ export function useOnInfraPropertyDelete(): (data: RaRecord) => Promise<void> {
 			type: "success",
 			messageArgs: { smart_count: 1 },
 		})
-		redirect("show", "zmaj_collection_metadata", col?.id)
+		redirect("show", CollectionMetadataCollection.collectionName, col?.id)
 	}
 }

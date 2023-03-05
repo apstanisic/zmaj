@@ -17,10 +17,10 @@ test("Create Webhook", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Webhooks" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_webhooks")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajWebhooks")
 
 	await page.getByRole("button", { name: /Create record/ }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_webhooks/create")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajWebhooks/create")
 
 	await page.getByLabel("Name").fill(hookName)
 
@@ -65,7 +65,7 @@ test("Create Webhook", async ({ page }) => {
 	const created = await testSdk.webhooks.getOne({ filter: { name: hookName } })
 	if (!created?.id) throwErr("432786")
 
-	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmaj_webhooks/${created.id}/show`)
+	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajWebhooks/${created.id}/show`)
 
 	await expect(page.locator(".crud-content")).toContainText("Playwright Created")
 	await page.getByRole("tab", { name: "Events" }).click()

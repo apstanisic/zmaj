@@ -89,7 +89,7 @@ services:
   app:
     image: astanisic/zmaj:0
     volumes:
-      - .env:/app/.env
+      - ./.env:/app/.env
 ```
 
 ### JSON
@@ -104,7 +104,7 @@ services:
     image: astanisic/zmaj:0
     ## Path to your zmaj config
     volumes:
-      - my-zmaj-config.json:/app/zmaj-config.json
+      - ./zmaj-config.json:/app/zmaj-config.json
 ```
 
 And your json config would look something like this:

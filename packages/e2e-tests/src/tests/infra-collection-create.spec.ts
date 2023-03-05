@@ -18,10 +18,10 @@ test("Create Collection", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	await page.getByRole("button", { name: /Create/ }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata/create")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata/create")
 
 	await page.getByLabel("Table Name").fill("playwright_test_posts")
 
@@ -31,7 +31,7 @@ test("Create Collection", async ({ page }) => {
 
 	await page.getByRole("button", { name: "Save" }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	await expect(page.locator(".app-sidebar")).toContainText("E2E Posts")

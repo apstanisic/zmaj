@@ -1,7 +1,8 @@
 import { SimpleListLayout } from "@admin-panel/crud-layouts/list/SimpleListLayout"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { Button } from "@admin-panel/ui/Button"
-import { CollectionDef, RelationDef } from "@zmaj-js/common"
+import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
+import { CollectionDef, RelationDef, RelationMetadataCollection } from "@zmaj-js/common"
 import { ResourceContextProvider } from "ra-core"
 import { isEmpty } from "radash"
 import { memo } from "react"
@@ -14,7 +15,7 @@ export const CollectionShowRelations = memo(() => {
 	const collection = useRecord<CollectionDef>()
 
 	const newRelationHref = useHref({
-		pathname: "/zmaj_relation_metadata/create",
+		pathname: getCrudUrl(RelationMetadataCollection, "create"),
 		search: `disable_leftTable=true&source=${JSON.stringify({ leftTable: collection?.tableName })}`,
 	})
 
@@ -24,7 +25,7 @@ export const CollectionShowRelations = memo(() => {
 				<div className="my-6 text-center text-lg">No existing relations</div>
 			)}
 			<MyArrayField source="relations">
-				<ResourceContextProvider value="zmaj_relation_metadata">
+				<ResourceContextProvider value={RelationMetadataCollection.collectionName}>
 					<SimpleListLayout<RelationDef>
 						// linkType="show"
 						primaryText={(relation) =>

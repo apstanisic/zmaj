@@ -27,7 +27,7 @@ export const ToOneShowField = memo((props: ToOneInternalProps) => {
 			// we need to provide this to react-admin, not relation property
 			// we are not using our API for getting nested data, but react-admin's data provider
 			source={field.fieldName}
-			reference={relation.otherSide.tableName}
+			reference={relation.otherSide.collectionName}
 			// label={props.label}
 			className={clsx("w-full font-bold", props.className)}
 			// link="show"

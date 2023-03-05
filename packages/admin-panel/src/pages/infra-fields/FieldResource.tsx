@@ -1,6 +1,6 @@
 import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Authz } from "@admin-panel/state/authz-state"
-import { systemPermissions } from "@zmaj-js/common"
+import { FieldMetadataCollection, systemPermissions } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 import { FieldCreate } from "./FieldCreate"
 import { FieldEdit } from "./FieldEdit"
@@ -11,12 +11,12 @@ export function fieldResource(props: { authz: Authz }): JSX.Element {
 	const modify = checkSystem(props.authz, "infra", "modify")
 	return (
 		<Resource
-			name="zmaj_field_metadata"
+			name={FieldMetadataCollection.collectionName}
 			show={read ? FieldShow : undefined}
 			create={modify ? FieldCreate : undefined}
 			edit={modify ? FieldEdit : undefined}
 			options={{
-				label: "Fields", //
+				label: FieldMetadataCollection.label ?? "Fields", //
 				authzResource: systemPermissions.infra.resource,
 			}}
 		/>

@@ -13,11 +13,11 @@ test("Create Collection and record", async ({ page }) => {
 
 	// click collections in sidebar
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	// click create new collection in toolbar
 	await page.getByRole("button", { name: /Create/ }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata/create")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata/create")
 
 	// set table name
 	await page.getByLabel("Table Name").fill(tableName)
@@ -28,7 +28,7 @@ test("Create Collection and record", async ({ page }) => {
 	// create
 	await page.getByRole("button", { name: /Save/ }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	// click on fields
@@ -37,7 +37,7 @@ test("Create Collection and record", async ({ page }) => {
 	// click to add new field
 	await page.getByRole("button", { name: "Add field" }).click()
 	await expect(page).toHaveURL(
-		"http://localhost:7100/admin/#/zmaj_field_metadata/create?source={%22tableName%22:%22all_test%22}",
+		"http://localhost:7100/admin/#/zmajFieldMetadata/create?source={%22tableName%22:%22all_test%22}",
 	)
 
 	// set column name to be name
@@ -52,17 +52,17 @@ test("Create Collection and record", async ({ page }) => {
 	// create field
 	await page.getByRole("button", { name: /Save/ }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_field_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajFieldMetadata/$ID/show"),
 	)
 
 	// go to all collections
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	// go to our collection
 	await page.getByRole("link", { name: tableName }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	// click on relations tab
@@ -71,7 +71,7 @@ test("Create Collection and record", async ({ page }) => {
 	// add new relation
 	await page.getByRole("button", { name: "Add relation" }).click()
 	await expect(page).toHaveURL(
-		"http://localhost:7100/admin/#/zmaj_relation_metadata/create?disable_leftTable=true&source={%22leftTable%22:%22all_test%22}",
+		"http://localhost:7100/admin/#/zmajRelationMetadata/create?disable_leftTable=true&source={%22leftTable%22:%22all_test%22}",
 	)
 
 	// set relation type
@@ -91,7 +91,7 @@ test("Create Collection and record", async ({ page }) => {
 	// create relation
 	await page.getByRole("button", { name: /Save/ }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_relation_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajRelationMetadata/$ID/show"),
 	)
 
 	// go to table list page
@@ -118,15 +118,15 @@ test("Create Collection and record", async ({ page }) => {
 	await expect(page).toHaveURL(createIdRegex("http://localhost:7100/admin/#/allTest/$ID/show"))
 
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	await page.getByRole("link", { name: tableName }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	await page.getByRole("button", { name: /Delete/ }).click()
 
 	await page.getByRole("button", { name: "Confirm" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 })

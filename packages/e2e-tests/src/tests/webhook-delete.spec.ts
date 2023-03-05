@@ -25,7 +25,7 @@ test("Delete Webhook", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Webhooks" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_webhooks")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajWebhooks")
 
 	// await page.getByText(hookName).click()
 
@@ -35,7 +35,7 @@ test("Delete Webhook", async ({ page }) => {
 	await page.getByRole("button", { name: "Confirm" }).click()
 
 	await expect(page.locator("body")).toContainText("Element deleted")
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_webhooks")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajWebhooks")
 
 	const withCurrentName = await testSdk.webhooks.getMany({ filter: { name: hookName } })
 	expect(withCurrentName.data).toHaveLength(0)

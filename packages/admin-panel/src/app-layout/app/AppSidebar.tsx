@@ -1,7 +1,14 @@
 import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Dialog } from "@admin-panel/ui/Dialog"
 import { List } from "@admin-panel/ui/List"
-import { CollectionDef } from "@zmaj-js/common"
+import {
+	CollectionDef,
+	CollectionMetadataCollection,
+	FileCollection,
+	RoleCollection,
+	UserCollection,
+	WebhookCollection,
+} from "@zmaj-js/common"
 import { clsx } from "clsx"
 import { useResourceDefinitions } from "ra-core"
 import { memo, ReactNode, useMemo } from "react"
@@ -33,7 +40,7 @@ export const Sidebar = memo(() => {
 	return (
 		<>
 			<nav className="app-sidebar fixed h-[100vh] w-[240px] shrink-0 overflow-y-auto  border-r max-md:hidden">
-				<SidebarContent close={setOpen} />
+				<SidebarContent />
 			</nav>
 			{/* Reserve space since it's sibling is fixed */}
 			<div className="w-[240px] max-md:hidden" aria-hidden="true"></div>
@@ -63,14 +70,14 @@ export const Sidebar = memo(() => {
 						"overflow-y-auto",
 					)}
 				>
-					<SidebarContent close={setOpen} />
+					<SidebarContent />
 				</Dialog>
 			)}
 		</>
 	)
 })
 
-const SidebarContent = (props: { close: (val: false) => void }): JSX.Element => {
+const SidebarContent = (): JSX.Element => {
 	const globalConfig = useGlobalConfigContext()
 	const authz = useAuthz()
 	const resources = useResourceDefinitions()
@@ -132,27 +139,31 @@ const SidebarContent = (props: { close: (val: false) => void }): JSX.Element => 
 			<DrawerItem path="/" icon={<MdHome />} label="Home" />
 			{/*  */}
 			{allowedSections.files && (
-				<DrawerItem path="zmajFiles" icon={<MdPermMedia />} label="Files" />
+				<DrawerItem path={FileCollection.collectionName} icon={<MdPermMedia />} label="Files" />
 			)}
 			{/*  */}
 			{allowedSections.users && ( //
-				<DrawerItem path="zmajUsers" icon={<MdPerson />} label="Users" />
+				<DrawerItem path={UserCollection.collectionName} icon={<MdPerson />} label="Users" />
 			)}
 			{/*  */}
 			{allowedSections.authz && (
 				<DrawerItem
-					path="zmajRoles"
+					path={RoleCollection.collectionName}
 					icon={<MdSupervisedUserCircle />}
 					label="Roles & Permissions"
 				/>
 			)}
 			{/*  */}
 			{allowedSections.infra && (
-				<DrawerItem path="zmaj_collection_metadata" icon={<MdSchema />} label="Collections" />
+				<DrawerItem
+					path={CollectionMetadataCollection.collectionName}
+					icon={<MdSchema />}
+					label="Collections"
+				/>
 			)}
 			{/*  */}
 			{allowedSections.webhooks && (
-				<DrawerItem path="zmaj_webhooks" icon={<TbWebhook />} label="Webhooks" />
+				<DrawerItem path={WebhookCollection.collectionName} icon={<TbWebhook />} label="Webhooks" />
 			)}
 			{/*  */}
 			{allowedSections.settings && (

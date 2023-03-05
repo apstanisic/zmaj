@@ -29,11 +29,11 @@ test("Delete Field", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	await page.getByRole("link", { name: tableName }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	await page.getByRole("tab", { name: "Fields" }).click()
@@ -42,7 +42,7 @@ test("Delete Field", async ({ page }) => {
 	await page.getByRole("button", { name: /Delete/ }).click()
 	await page.getByRole("button", { name: "Confirm" }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	await expect(page.locator(".crud-content")).toContainText(tableName)

@@ -51,18 +51,18 @@ test("Split many to many relation", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	await page.getByRole("link", { name: leftTableName }).click()
 	// await expect(page).toHaveURL(
-	// 	`http://localhost:7100/admin/#/zmaj_collection_metadata/${relation1.collectionId}/show`,
+	// 	`http://localhost:7100/admin/#/zmajCollectionMetadata/${relation1.collectionId}/show`,
 	// )
 
 	await page.getByRole("tab", { name: "Relations" }).click()
 
 	await page.getByRole("link", { name: /mtm_left_table_split.leftProp/ }).click()
 	await expect(page).toHaveURL(
-		`http://localhost:7100/admin/#/zmaj_relation_metadata/${relation1.id}/show`,
+		`http://localhost:7100/admin/#/zmajRelationMetadata/${relation1.id}/show`,
 	)
 
 	await page.getByRole("button", { name: "Split M2M" }).click()

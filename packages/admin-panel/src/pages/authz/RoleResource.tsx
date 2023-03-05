@@ -1,6 +1,6 @@
 import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Authz } from "@admin-panel/state/authz-state"
-import { systemPermissions } from "@zmaj-js/common"
+import { RoleCollection, systemPermissions } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 import { GeneratedListPage } from "../../generator/pages/GeneratedListPage"
 import { RoleCreate } from "./RoleCreate"
@@ -16,13 +16,13 @@ export function roleResource(props: { authz: Authz }): JSX.Element {
 
 	return (
 		<Resource
-			name="zmajRoles"
+			name={RoleCollection.collectionName}
 			list={read ? GeneratedListPage : undefined}
 			show={read ? RoleShow : undefined}
 			create={modify ? RoleCreate : undefined}
 			edit={modify ? RoleEdit : undefined}
 			options={{
-				label: "Roles",
+				label: RoleCollection.label ?? undefined,
 				authzResource: systemPermissions.authorization.resource,
 				authzActions: {
 					create: systemPermissions.authorization.actions.modify.key,

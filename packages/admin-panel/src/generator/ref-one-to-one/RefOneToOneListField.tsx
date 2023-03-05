@@ -17,7 +17,7 @@ export const RefOneToOneListField = memo((props: Omit<RefOneToOneInternalProps, 
 	return (
 		<div className="w-full font-bold">
 			<MyReferenceOneField
-				reference={relation.otherSide.tableName}
+				reference={relation.otherSide.collectionName}
 				target={relation.otherSide.fieldName}
 				// label={props.label}
 				// className="w-full font-bold"

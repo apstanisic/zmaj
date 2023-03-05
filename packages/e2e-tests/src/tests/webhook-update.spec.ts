@@ -35,7 +35,7 @@ test("Update Webhook", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Webhooks" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_webhooks")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajWebhooks")
 
 	await page.getByRole("button", { name: `Show Record ${webhook.id}` }).click()
 
@@ -75,9 +75,7 @@ test("Update Webhook", async ({ page }) => {
 	await page.getByRole("button", { name: "Save" }).click()
 
 	await expect(page.locator("body")).toContainText("Element updated")
-	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_webhooks/$ID/show"),
-	)
+	await expect(page).toHaveURL(createIdRegex("http://localhost:7100/admin/#/zmajWebhooks/$ID/show"))
 
 	const id = getIdFromShow(page.url())
 	const res = await testSdk.webhooks.getById({ id })

@@ -41,25 +41,25 @@ test("Delete Relation", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmaj_collection_metadata")
+	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	await page.getByRole("link", { name: leftTableName }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	await page.getByRole("tab", { name: "Relations" }).click()
 
 	await page.getByText(`${leftTableName}.prop1 <-> ${rightTableName}`).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_relation_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajRelationMetadata/$ID/show"),
 	)
 
 	await page.getByRole("button", { name: /Delete/ }).click()
 	await page.getByText("Confirm").click()
 
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmaj_collection_metadata/$ID/show"),
+		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
 	await expect(page.locator(".crud-content")).toContainText(leftTableName)
