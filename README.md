@@ -12,29 +12,20 @@ Check out full documentation at [zmaj.vercel.app](https://zmaj.vercel.app)
 - Email provider (optional, needed for password reset, email confirmation)
 - Redis (optional)
 
-## Quick start
-
-To generate basic project, run command:
+## Quick Start Example
 
 ```bash
-# `zmaj-example` is folder name where to create project
+# Creates basic project
 npx zmaj create-project zmaj-example
+cd zmaj-example
+npm install
+# Starts docker with empty database and development email server in background
+docker-compose --env-file .env up -d
+npm run dev
 ```
 
-This will create simple project, generate valid `.env` file with generated secret key, and docker-compose file.
-After creating project, you should configure database connection (if not using built in docker compose), either in `index.ts` or in `.env` file. Every generated project comes with configured `docker-compose` file and `.env`
-
-You can then run `npx zmaj create-admin` to create admin user.
+Then go to [`http://localhost:5000/admin/#/auth/init`](http://localhost:5000/admin/#/auth/init), to create first admin.
 
 ## Docker
 
-You can run Zmaj without NodeJS with docker-compose, [read more](https://zmaj.vercel.app/docs/getting-started/using-docker).
-
-## Creating first user
-
-You can create admin user using Zmaj CLI.
-This command requires file `.env` file, with configured database params and secret key, so we can connect to DB to create user.
-
-```bash
-npx zmaj create-admin
-```
+If you do not have NodeJS, you can run Zmaj with docker, [read more here](https://zmaj.vercel.app/docs/getting-started/using-docker).
