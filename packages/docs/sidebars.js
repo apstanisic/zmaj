@@ -19,18 +19,18 @@ const sidebars = {
 
 	docs: [
 		// "docs/intro",
+		"getting-started",
 		{
 			type: "category",
 			items: [
-				"getting-started/installation",
-				"getting-started/new-project",
-				"getting-started/manual-installation",
-				"getting-started/docker",
+				"installation/new-project",
+				"installation/manual-installation",
+				"installation/docker",
 				//
 			],
 			collapsed: false,
-			link: { type: "doc", id: "getting-started/installation" },
-			label: "Getting Started",
+			link: { type: "generated-index" },
+			label: "Installation",
 		},
 		{
 			type: "category",

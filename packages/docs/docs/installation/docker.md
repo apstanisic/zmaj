@@ -63,3 +63,59 @@ volumes:
 
 This file will run Zmaj in Docker, with Postgres database, and test email server.
 You can then go to `http://localhost:5000/admin/#/auth/init` to create admin user.
+
+## Configuring Zmaj in Docker
+
+### Passing env values directly
+
+You can pass values directly as environment variable in Docker
+For example:
+
+```yaml
+services:
+  app:
+    image: astanisic/zmaj:0
+    environment:
+      APP_NAME: Zmaj Example
+```
+
+### .env file
+
+You can provide env file to your docker as file at `/app/.env`.
+In your `docker-compose.yml` write:
+
+```yaml
+services:
+  app:
+    image: astanisic/zmaj:0
+    volumes:
+      - .env:/app/.env
+```
+
+### JSON
+
+You can provide your Zmaj config as a `/app/zmaj-config.json` file. You can mount config file as a volume that Zmaj can read.
+It accepts all the options that `runServer` accepts. Internally, Zmaj reads provided file if it exists,
+and passes it to `runServer`.
+
+```yaml
+services:
+  app:
+    image: astanisic/zmaj:0
+    ## Path to your zmaj config
+    volumes:
+      - my-zmaj-config.json:/app/zmaj-config.json
+```
+
+And your json config would look something like this:
+
+```json
+{
+	"files": { "maxUploadSize": 10000 },
+	"authentication": { "allowBasicAuth": true },
+	"database": {
+		"username": "john",
+		"database": "zmaj_database"
+	}
+}
+```

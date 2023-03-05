@@ -11,17 +11,10 @@ export default function Home(): JSX.Element {
 	const { siteConfig } = useDocusaurusContext()
 	return (
 		<Layout title={`${siteConfig.title}`} description="Zmaj is simple to use CMS">
-			<header className={clsx("hero hero--primary", styles.heroBanner)}>
+			<header className={clsx(styles.heroBanner)}>
 				<div className="container">
 					<h1 className={clsx("hero__title")}>{siteConfig.title}</h1>
-					<img
-						src="/logo.svg"
-						style={{
-							height: 180,
-							width: 180,
-							filter: "grayscale(1)",
-						}}
-					/>
+					<img src="/logo.svg" style={{ height: 180, width: 180 }} />
 					<p
 						style={{
 							maxWidth: 600,
@@ -53,24 +46,32 @@ export default function Home(): JSX.Element {
 						display: "flex",
 						justifyContent: "center",
 						width: "100%",
+						background: "var(--ifm-color-primary-lighter)",
 					}}
 				>
-					<div style={{ maxWidth: 900, width: "100%" }}>
-						<div style={{ padding: "47.47% 0 0 0", position: "relative" }}>
-							<iframe
-								src="https://player.vimeo.com/video/802065159?h=b00d10489f&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-								frameBorder={0}
-								allow="autoplay; fullscreen; picture-in-picture"
-								allowFullScreen
-								style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-								title="Zmaj add record"
-							></iframe>
-						</div>
-						<script src="https://player.vimeo.com/api/player.js"></script>
-					</div>
+					<VimeoVideo />
 				</div>
 				<HomepageFeatures />
 			</main>
 		</Layout>
+	)
+}
+
+function VimeoVideo() {
+	return (
+		<div style={{ maxWidth: 900, width: "100%" }}>
+			{/* Vimeo video */}
+			<div style={{ padding: "47.47% 0 0 0", position: "relative" }}>
+				<iframe
+					src="https://player.vimeo.com/video/802065159?h=b00d10489f&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+					frameBorder={0}
+					allow="autoplay; fullscreen; picture-in-picture"
+					allowFullScreen
+					style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+					title="Zmaj add record"
+				></iframe>
+			</div>
+			<script src="https://player.vimeo.com/api/player.js"></script>
+		</div>
 	)
 }

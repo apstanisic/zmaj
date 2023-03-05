@@ -10,7 +10,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/oceanicNext")
 const config = {
 	title: "Zmaj CMS",
 	tagline:
-		"Zmaj is a CMS that provides RESTful API for your database and admin panel to easily manage your data.",
+		"Zmaj is a headless CMS with RESTful API for your database and admin panel to easily manage your data.",
 	url: "https://zmaj.vercel.app",
 	baseUrl: "/",
 	onBrokenLinks: "throw",
@@ -59,7 +59,7 @@ const config = {
 				items: [
 					{
 						type: "doc",
-						docId: "getting-started/installation",
+						docId: "getting-started",
 						position: "left",
 						label: "Documentation",
 					},

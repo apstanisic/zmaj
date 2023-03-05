@@ -8,7 +8,7 @@ Zmaj will use env values to configure app.
 By default, Zmaj will look for `.env` file at the root of the project for config file.
 Zmaj uses [dotenv](https://www.npmjs.com/package/dotenv) package under the hood.
 Values passed to `runServer` directly will have precedence over values in `.env` file.
-For all available options in `.env` file, look at project's Github repo, at file `.env.dev`.
+For all available options in `.env` file, look at project's Github repo, at file `.env`.
 
 ### Configuring discovery of environment variables
 
