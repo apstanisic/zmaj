@@ -7,6 +7,7 @@ import type {
 } from "@api/crud/crud-event.types"
 import { CrudService } from "@api/crud/crud.service"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
+import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { Injectable } from "@nestjs/common"
 import {
@@ -24,13 +25,14 @@ import { ActivityLogConfig } from "./activity-log.config"
  */
 @Injectable()
 export class ActivityLogService {
+	repo: OrmRepository<ActivityLog>
 	constructor(
 		public readonly crud: CrudService<ActivityLog>,
 		private readonly repoManager: RepoManager, // private readonly config: AppConfigService,
 		private readonly config: ActivityLogConfig,
-	) {}
-
-	repo = this.repoManager.getRepo(ActivityLogCollection)
+	) {
+		this.repo = this.repoManager.getRepo(ActivityLogCollection)
+	}
 
 	/**
 	 * Listen to after crud event, and create activity logs

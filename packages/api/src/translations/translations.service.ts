@@ -1,5 +1,6 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
 import { throw400, throw500 } from "@api/common/throw-http"
+import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
@@ -36,13 +37,14 @@ type OneItemParams = CommonParams & {
  */
 @Injectable()
 export class TranslationsService {
+	repo: OrmRepository<Translation>
 	constructor(
 		private readonly repoManager: RepoManager,
 		private readonly infraState: InfraStateService,
 		private readonly authz: AuthorizationService,
-	) {}
-
-	repo = this.repoManager.getRepo(TranslationCollection)
+	) {
+		this.repo = this.repoManager.getRepo(TranslationCollection)
+	}
 
 	/**
 	 * Create translation

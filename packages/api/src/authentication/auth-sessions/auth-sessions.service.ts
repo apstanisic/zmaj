@@ -1,5 +1,6 @@
 import { CrudRequest } from "@api/common/decorators/crud-request.decorator"
 import { throw403 } from "@api/common/throw-http"
+import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { emsg } from "@api/errors"
@@ -18,13 +19,14 @@ import { AuthenticationConfig } from "../authentication.config"
 
 @Injectable()
 export class AuthSessionsService {
+	repo: OrmRepository<AuthSession>
 	constructor(
 		private readonly encryption: EncryptionService,
 		private readonly repoManager: RepoManager,
 		private readonly config: AuthenticationConfig,
-	) {}
-
-	repo = this.repoManager.getRepo(AuthSessionCollection)
+	) {
+		this.repo = this.repoManager.getRepo(AuthSessionCollection)
+	}
 
 	/**
 	 * Create auth session and refresh token

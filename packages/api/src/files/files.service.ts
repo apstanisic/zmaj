@@ -26,10 +26,12 @@ import path from "path"
 import { Readable } from "stream"
 import { v4 } from "uuid"
 import { ImagesService } from "./images.service"
+import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 
 @Injectable()
 export class FilesService {
 	logger = new Logger(FilesService.name)
+	repo: OrmRepository<FileInfo>
 	constructor(
 		public readonly crudCreate: CrudCreateService<FileInfo>,
 		private readonly storageService: StorageService,
@@ -37,9 +39,9 @@ export class FilesService {
 		private readonly repoManager: RepoManager,
 		private readonly imagesService: ImagesService,
 		private readonly sqService: SequelizeService,
-	) {}
-
-	repo = this.repoManager.getRepo(FileCollection)
+	) {
+		this.repo = this.repoManager.getRepo(FileCollection)
+	}
 
 	/**
 	 * Get file from storage

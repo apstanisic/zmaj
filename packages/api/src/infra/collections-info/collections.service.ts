@@ -1,14 +1,16 @@
 import { throw403, throw404 } from "@api/common/throw-http"
+import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
+	CollectionCreateDto,
 	CollectionMetadata,
 	CollectionMetadataCollection,
-	CollectionCreateDto,
 	CollectionMetadataSchema,
 	CollectionUpdateDto,
+	FieldMetadata,
 	FieldMetadataCollection,
 	FieldMetadataSchema,
 	UUID,
@@ -19,15 +21,17 @@ import { OnInfraChangeService } from "../on-infra-change.service"
 
 @Injectable()
 export class CollectionsService {
+	repo: OrmRepository<CollectionMetadata>
+	fieldsRepo: OrmRepository<FieldMetadata>
 	constructor(
 		private readonly repoManager: RepoManager,
 		private readonly appInfraSync: OnInfraChangeService,
 		private readonly alterSchema: AlterSchemaService,
 		private readonly infraState: InfraStateService,
-	) {}
-
-	repo = this.repoManager.getRepo(CollectionMetadataCollection)
-	fieldsRepo = this.repoManager.getRepo(FieldMetadataCollection)
+	) {
+		this.repo = this.repoManager.getRepo(CollectionMetadataCollection)
+		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataCollection)
+	}
 
 	async createCollection(dto: CollectionCreateDto): Promise<CollectionMetadata> {
 		return this.appInfraSync.executeChange(async () => {
