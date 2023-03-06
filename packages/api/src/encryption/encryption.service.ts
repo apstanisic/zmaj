@@ -4,7 +4,7 @@ import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import { PasswordSchema } from "@zmaj-js/common"
 import argon2 from "argon2"
-import crypto from "crypto"
+import Cryptr from "cryptr"
 
 /**
  * EncryptionService
@@ -14,76 +14,36 @@ import crypto from "crypto"
  */
 @Injectable()
 export class EncryptionService {
-	readonly prefix = "E$N$C$"
+	readonly prefix = "$ZM$%"
 
-	constructor(private config: GlobalConfig) {}
+	crypt: Cryptr
 
-	/**
-	 * 32 char string
-	 */
-	get #encryptionKey(): Buffer {
-		const secretKey = this.config.secretKey
-		if (secretKey.length < 20) throw500(792343)
-		// ensure that key is 32 chars long, since that is needed length. We will trim chars above
-		// that, but append 1s for missing chars. Min secret key length in app is 20 characters
-		const encryptionKey = secretKey.substring(0, 32).padEnd(32, "1")
-		return Buffer.from(encryptionKey)
+	constructor(private config: GlobalConfig) {
+		this.crypt = new Cryptr(this.config.secretKey)
 	}
 
 	/**
 	 * Encrypt string
-	 *
-	 * Based on:
-	 * @see https://gist.github.com/vlucas/2bd40f62d20c1d49237a109d491974eb
-	 * Updated version
-	 * @see https://gist.github.com/vlucas/2bd40f62d20c1d49237a109d491974eb?permalink_comment_id=3771967#gistcomment-3771967
 	 */
 	async encrypt(text: string): Promise<string> {
 		if (typeof text !== "string") throw400(18051, emsg.badEncryptionValue)
-		// iv is always 16 bytes
-		const iv = Buffer.from(crypto.randomBytes(16)).toString("hex").slice(0, 16)
-
-		// we are providing secret key buffer with length of 32 chars (required), and iv from above
-		const cipher = crypto.createCipheriv("aes-256-cbc", this.#encryptionKey, iv)
-		// encrypt text
-		let encrypted = cipher.update(text)
-		// mark as done
-		encrypted = Buffer.concat([encrypted, cipher.final()])
-
-		// return iv that is in hex format, colon, and encrypted string in hex format
-		return this.prefix + iv + ":" + encrypted.toString("hex")
+		try {
+			const result = this.crypt.encrypt(text)
+			return this.prefix + result
+		} catch (error) {
+			throw500(943200)
+		}
 	}
 
 	/**
 	 * Decrypt string
-	 *
-	 * Based on:
-	 * @see https://gist.github.com/vlucas/2bd40f62d20c1d49237a109d491974eb
-	 * Updated version
-	 * @see https://gist.github.com/vlucas/2bd40f62d20c1d49237a109d491974eb?permalink_comment_id=3771967#gistcomment-3771967
 	 */
 	async decrypt(encrypted: string): Promise<string> {
 		if (typeof encrypted !== "string") throw500(18051)
 		if (!encrypted.startsWith(this.prefix)) throw400(7993788, emsg.badEncryptionValue)
 
-		// we need to get iv from encrypted text
-		const [ivString, ...textParts] = encrypted.replace(this.prefix, "").split(":")
-
 		try {
-			// convert hex iv to binary buffer
-			const iv = Buffer.from(ivString!, "binary")
-			// we have to join encrypted parts, because we separated them earlier with colon ":"
-			const encryptedText = Buffer.from(textParts.join(":"), "hex")
-
-			// we use same secret key, and iv taken from encrypted value
-			const decipher = crypto.createDecipheriv("aes-256-cbc", this.#encryptionKey, iv)
-
-			// decipher text
-			let decrypted = decipher.update(encryptedText)
-			decrypted = Buffer.concat([decrypted, decipher.final()])
-
-			// convert buffer to string
-			return decrypted.toString()
+			return this.crypt.decrypt(encrypted.replace(this.prefix, ""))
 		} catch (error) {
 			throw500(99932)
 		}

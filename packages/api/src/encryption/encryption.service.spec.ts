@@ -1,4 +1,4 @@
-import { buildTestModule } from "@api/testing/build-test-module"
+import { GlobalConfig, GlobalConfigParams } from "@api/app/global-app.config"
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common"
 import argon2 from "argon2"
 import { beforeEach, describe, expect, it } from "vitest"
@@ -7,7 +7,8 @@ import { EncryptionService } from "./encryption.service"
 /* cSpell:disable */
 const rawValue = "string 123!!"
 
-const encryptedValue = "E$N$C$71cee0269333dfa3:b474ac3c6c9e5ca5a7a9eab3bf1bccbc"
+const encryptedValue =
+	"$ZM$%2d55b5f89ad07799132c0798310708025cf6165871b799136b0637c69043a0a8ffc951e722bafde9cf8397260ca6e14bf90737a89593fa9cbe5f1c8b575f8178fe515900d217246689736e61e18372ed6abc4904bcac6da5e3f3067e57966fd70d4e7836394ec0ceb9cde339"
 
 const rawValue2 = [
 	"Lorem ipsum dolor sit, amet consectetur adipisicing elit.",
@@ -17,18 +18,16 @@ const rawValue2 = [
 ].join(" ")
 
 const encryptedValue2 =
-	"E$N$C$a8e1eba4e2b542f8:e024776b7cb92d3a98307af17570353ad40f67ecf28cf970e35ffd0f563f5a147d265530ecf48dd062f2a56fb424a8f0b2b197c1953555e7b0ba0acccc5fcd2d707f1688d977735676055f027648df4567cddb0f682bd4f6c2b7dc261ec52571cef7ee6294022b4ae32f21a2e8e6af925028cb10642b46a44728f3fe90902af3c02b0117ad9cd570ac5cc501eeab152a7c1676de96c1df92a75a2dfc87d3b8a259a927cc98b9d294022196dabc8be58d6f13dbc4aac0eefd73d97faefa6a40dc40fb697ea9bd193ede9ef1cb8889c81a"
+	"$ZM$%80adf661bf973e0ebee9f687ab55e3529b52e15dc53334357320168c01aa0387f9cca14e665a9c6dc1ef8172985599570b7d134512886ebd741ee10752b8061b596310e085d8cda573d9ad7fc5444dcb8baeb8ee5397681f3ff25a94dad8e1edace4775c11bfefe959c7dfe6a552d93b4d3c1501c0169c9f2906586c120dd544d942bbbe37b31bbd81ab26d453daff83a1b9bbaf1b7a208a543a470c84a62bef11dc1b4be64d9f44b8f7f41be1c91f9c2fee35ebfe8d72082bcd297f5d77cb6210b9badc352259b33fef7c51d315f582686403f1cceb5d90a3427d9c4d5b5a2175de7656559a21ac56d35409deae0daa429b1652aac1f9517a7b047088df16c33822eb7f2ad8e12b4614d8b396a61322db798acac3b277a9d3a6d6087df77c9a134594004a"
 /* cSpell:enable */
 
 describe("EncryptionService", () => {
 	let service: EncryptionService
 
 	beforeEach(async () => {
-		const module = await buildTestModule(EncryptionService).compile()
-
-		service = module.get(EncryptionService)
-
-		service["config"].secretKey = "super-secret-key-of-20+-length"
+		service = new EncryptionService({
+			secretKey: "my-testing-secret-key-value",
+		} as GlobalConfigParams as GlobalConfig)
 	})
 
 	it("should be defined", () => {
@@ -74,7 +73,6 @@ describe("EncryptionService", () => {
 	describe("decrypt", () => {
 		it("should decryptNative value", async () => {
 			const enc = await service.decrypt(encryptedValue)
-
 			expect(enc).toEqual(rawValue)
 		})
 
@@ -140,7 +138,7 @@ describe("EncryptionService", () => {
 	describe("verify", () => {
 		/* cSpell:disable */
 		const hashWithPepper =
-			"E$N$C$8ce57d822ee574f3:72e013d323b827adac42e7b27ce33dbb58662ec277fc849223739639dcde802bef5748b7614f932d60346e27c946ce50f5d98242061b78bc01651d62ad88da30c72a161cebea0ed5da14b5225a201d331a1d6eab3aa65a29c6425d7b39c4f0d5616a6d1ede511027bdcc5d7da2b8caa9"
+			"$ZM$%34a2f1d03d6bfbff12bb4de1c3079477793c1708fd0604cf32030a888748723870c32634e1fc012ba411f3b08873bd9b6d025adeeecaf502f2008c0a20caf51c83825ee9552d1e02ff0b260d375ed553f9be6705cc81801eed90bc2b9a3f0923dd32fda28408a1ca410e64b6cf0a1999efc5b55910cad7b1d762e754edddc38dd1f7120e8aaab5b41ce35ef83864fb822395687350103033c5db9c7f1730b5f7a957cb513fb52a2979f7ad4188b54844462a1e7643a6124ec459b6e3cdf66b0e"
 
 		const onlyHash =
 			"$argon2id$v=19$m=4096,t=3,p=1$ewb7BX95IU8hkM4vPbGUlA$uSwzFmxyUs3ULYbY0SGppjqVRC/TvlZffolPsthELLc"

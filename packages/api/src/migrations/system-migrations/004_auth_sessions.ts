@@ -17,7 +17,7 @@ export const CreateAuthSessionsTable = createSystemMigration({
 					references: { key: "id", model: "zmaj_users" },
 					onDelete: "CASCADE",
 				},
-				refresh_token: { type: DataTypes.STRING(400), allowNull: false },
+				refresh_token: { type: DataTypes.STRING(200), allowNull: false },
 				last_used: { type: DataTypes.DATE(3), allowNull: false, defaultValue: DefaultNow },
 				valid_until: { type: DataTypes.DATE(3), allowNull: false },
 				ip: { type: DataTypes.STRING(200), allowNull: false },

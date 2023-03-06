@@ -14,7 +14,8 @@ export const CreateUsersTable = createSystemMigration(
 				{
 					...getRequiredColumns(),
 					email: { type: DataTypes.STRING(200), allowNull: false, unique: true },
-					password: { type: DataTypes.STRING(1000), allowNull: false },
+					// password is encrypted, so make sure that there is enough space
+					password: { type: DataTypes.STRING(2000), allowNull: false },
 					confirmed_email: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 					role_id: {
 						type: DataTypes.UUID,

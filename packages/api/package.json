@@ -55,6 +55,7 @@
 		"axios": "^1.3.4",
 		"cache-manager": "^5.1.7",
 		"cookie-parser": "^1.4.6",
+		"cryptr": "^6.2.0",
 		"date-fns": "^2.29.3",
 		"dotenv": "^16.0.3",
 		"express": "^4.18.2",
