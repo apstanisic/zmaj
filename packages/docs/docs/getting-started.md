@@ -7,7 +7,7 @@ Zmaj is a headless CMS that provides RESTful API for your database and admin pan
 
 Zmaj uses database tables directly without creating proprietary abstraction. That means that your
 collection in Zmaj looks the same as table in your database. When you create field in Zmaj, that same field
-will exists as a column, and vice versa. Every relation is backed by foreign key, so you can be sure that
+will exist as a column, and vice versa. Every relation is backed by foreign key, so you can be sure that
 there won't be any invalid values.
 This allows you to use Zmaj as much or as little as you want.
 You can have custom API to serve your frontend, and use Zmaj as an internal admin panel replacement.
@@ -28,6 +28,8 @@ cd zmaj-example
 npm install
 # Starts docker with empty database and development email server in background
 docker-compose --env-file .env up -d
+# If you want to create example project with random data
+npx zmaj create-example-schema -d
 npm run dev
 ```
 

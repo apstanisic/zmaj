@@ -21,6 +21,8 @@ cd zmaj-example
 npm install
 # Starts docker with empty database and development email server in background
 docker-compose --env-file .env up -d
+# If you want to create example project with random data
+npx zmaj create-example-schema -d
 npm run dev
 ```
 
