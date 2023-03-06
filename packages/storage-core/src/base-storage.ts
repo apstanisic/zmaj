@@ -2,7 +2,7 @@ import type { Struct } from "@zmaj-js/common"
 import path from "path"
 import type { Readable } from "stream"
 import { z } from "zod"
-import type { BaseStorageParams } from "./base-storage-config.schema"
+import type { GenericStorageParams } from "./base-storage-config.schema"
 import { InvalidFilePathError, StorageError } from "./storage-errors"
 
 export type StorageResult<Defined = Struct, Native = unknown | undefined> = Defined &
@@ -48,7 +48,7 @@ export abstract class BaseStorage {
 	/**
 	 * @param config
 	 */
-	constructor(config: BaseStorageParams) {
+	constructor(config: GenericStorageParams) {
 		this.uploadDisabled = config.uploadDisabled
 		this.basePath = config.basePath ?? ""
 	}

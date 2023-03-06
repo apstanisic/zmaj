@@ -10,7 +10,7 @@ export const GenericStorageConfigSchema = z.object({
 	basePath: z.string().optional(),
 })
 
-export type BaseStorageParams = z.infer<typeof BaseStorageConfigSchema>
+export type GenericStorageParams = z.infer<typeof GenericStorageConfigSchema>
 
 /**
  * This should be used when user passes unknown types, since this keeps unknown keys

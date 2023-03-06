@@ -1,4 +1,3 @@
-/* eslint-disable import/no-named-as-default-member */
 import { throwErr, zodCreate } from "@zmaj-js/common"
 import fse, { ReadStream } from "fs-extra"
 import { pipeline } from "node:stream/promises"
