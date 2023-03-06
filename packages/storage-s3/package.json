@@ -43,6 +43,6 @@
 		"@aws-sdk/lib-storage": "^3.282.0",
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/storage-core": "workspace:*",
-		"zod": "^3.20.6"
+		"zod": "^3.21.2"
 	}
 }

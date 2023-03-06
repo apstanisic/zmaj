@@ -46,7 +46,7 @@
 		"js-base64": "^3.7.5",
 		"radash": "^10.7.0",
 		"type-fest": "^3.6.1",
-		"zod": "^3.20.6"
+		"zod": "^3.21.2"
 	},
 	"devDependencies": {
 		"@types/flat": "^5.0.2",
