@@ -14,7 +14,7 @@ import Cryptr from "cryptr"
  */
 @Injectable()
 export class EncryptionService {
-	readonly prefix = "$ZM$%"
+	readonly prefix = "$ZM$"
 
 	crypt: Cryptr
 
