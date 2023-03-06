@@ -9,7 +9,7 @@ const StorageConfigSchema = z.object({
 	/**
 	 * Providers where images are stored
 	 */
-	providers: z.array(BaseStorageConfigSchema.catchall(z.unknown())).default([]),
+	providers: z.array(BaseStorageConfigSchema).default([]),
 	/**
 	 * Additional adapters. Currently there is local filesystem and s3 adapters installed by default
 	 */

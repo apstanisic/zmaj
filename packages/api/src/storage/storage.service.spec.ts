@@ -15,6 +15,7 @@ vi.mock("@zmaj-js/storage-core", async () => {
 	return {
 		BaseStorage: actual.BaseStorage,
 		BaseStorageConfigSchema: actual.BaseStorageConfigSchema,
+		GenericStorageConfigSchema: actual.GenericStorageConfigSchema,
 		FileStorageManager: vi.fn().mockImplementation(() => ({ fsm: true, enabledProviders: ["p1"] })),
 	}
 })

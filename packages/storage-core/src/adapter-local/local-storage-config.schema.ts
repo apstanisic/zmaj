@@ -1,8 +1,8 @@
-import { BaseStorageConfigSchema } from "@storage-core/base-storage-config.schema"
+import { GenericStorageConfigSchema } from "@storage-core/base-storage-config.schema"
 import { ZodDto } from "@zmaj-js/common"
 import path from "node:path"
 import { z } from "zod"
-export const LocalStorageConfigSchema = BaseStorageConfigSchema.extend({
+export const LocalStorageConfigSchema = GenericStorageConfigSchema.extend({
 	type: z.literal("local").default("local"),
 	/**
 	 * Make sure that it's always absolute path. Even though node will also use process.cwd,
@@ -16,6 +16,6 @@ export const LocalStorageConfigSchema = BaseStorageConfigSchema.extend({
 		.transform((basePath) =>
 			basePath.startsWith("/") ? basePath : path.join(process.cwd(), basePath),
 		),
-}).strip()
+})
 
 export class LocalStorageConfig extends ZodDto(LocalStorageConfigSchema) {}
