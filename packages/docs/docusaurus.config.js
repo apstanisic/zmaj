@@ -50,6 +50,18 @@ const config = {
 	themeConfig:
 		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
 		({
+			algolia: {
+				// The application ID provided by Algolia
+				appId: "NND90H1BQ8",
+
+				// Public API key: it is safe to commit it
+				apiKey: "939a5db0137e45779f6228eb5061d8aa",
+
+				indexName: "zmaj",
+
+				// Optional: see doc section below
+				contextualSearch: true,
+			},
 			navbar: {
 				title: "Zmaj CMS",
 				logo: {
