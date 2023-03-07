@@ -12,15 +12,18 @@ export const FileCollection = DefineCollection<FileInfo>({
 		label: "Files",
 		layoutConfig: zodCreate(LayoutConfigSchema, {
 			list: {
+				layout: {
+					gallery: {
+						secondaryTemplate: "{extension}",
+						tertiaryTemplate: "{fileSize|toKb} kb",
+					},
+				},
 				layoutType: "gallery",
 				quickFilter: true,
 				defaultSort: { field: "createdAt", order: "DESC" },
 				perPage: { default: 20, options: [10, 20, 50] },
 				sortableFields: ["createdAt", "name", "id", "mimeType", "extension", "fileSize"],
-				secondaryTemplate: "{extension}",
-				tertiaryTemplate: "{fileSize|toKb} kb",
 				size: "medium",
-				// fieldsOrder: "",
 			},
 		}),
 	},

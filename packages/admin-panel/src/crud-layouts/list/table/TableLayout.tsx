@@ -45,7 +45,7 @@ export const TableLayout = memo(() => {
 	)
 
 	const columns = useMemo((): ColumnDef<Struct>[] => {
-		const order = config.fieldsOrder
+		const order = config.layout?.table?.fields
 
 		const checkbox = helper.display({
 			id: "$select",
@@ -110,7 +110,13 @@ export const TableLayout = memo(() => {
 		})
 		// limit to 6 columns
 		return [checkbox, ...fromData.slice(0, 6), actions]
-	}, [config.fieldsOrder, config.hideDelete, properties, resource.hasEdit, resource.hasShow])
+	}, [
+		config.hideDelete,
+		config.layout?.table?.fields,
+		properties,
+		resource.hasEdit,
+		resource.hasShow,
+	])
 
 	const rowSelection = useMemo(
 		() => Object.fromEntries(selectedIds.map((idVal) => [idVal, true])),

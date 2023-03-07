@@ -20,5 +20,4 @@ export const CollectionMetadataStub = Stub(CollectionMetadataSchema, () => ({
 	// createdAtFieldId: null,
 	// updatedAtFieldId: null,
 	// icon: randWord(),
-	// fieldsOrder: [],
 }))

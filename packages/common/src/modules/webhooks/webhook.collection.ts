@@ -12,9 +12,10 @@ export const WebhookCollection = DefineCollection<Webhook>({
 		label: "Webhooks",
 		layoutConfig: zodCreate(LayoutConfigSchema, {
 			list: {
-				fieldsOrder: ["name", "enabled", "url", "httpMethod"],
+				layout: {
+					table: { fields: ["email", "roleId", "status", "firstName", "lastName"] },
+				},
 				defaultSort: { field: "createdAt", order: "DESC" },
-				secondaryTemplate: "{url}",
 			},
 		}),
 	},

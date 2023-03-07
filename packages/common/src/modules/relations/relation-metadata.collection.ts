@@ -6,6 +6,7 @@ export const RelationMetadataCollection = DefineCollection<RelationMetadata>({
 	tableName: "zmaj_relation_metadata",
 	options: {
 		displayTemplate: 'Relation "{leftTable}.{propertyName}"',
+		label: "Relations",
 		authzKey: systemPermissions.infra.resource,
 	},
 	fields: {

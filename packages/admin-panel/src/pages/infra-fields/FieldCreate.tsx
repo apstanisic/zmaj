@@ -1,13 +1,12 @@
-import { FieldConfigSchema, FieldDef } from "@zmaj-js/common"
+import { FieldConfigSchema, FieldDef, zodCreate } from "@zmaj-js/common"
 import { memo } from "react"
-import { WritableDeep } from "type-fest"
 import { ManualInputLayout } from "../../crud-layouts/input/ManualInputLayout"
 import { GeneratedCreatePage } from "../../generator/pages/GeneratedCreatePage"
 import { useInfraState } from "../../state/useInfraState"
 import { FieldForm } from "./input/_FieldForm"
 
-const transform = (values: Partial<WritableDeep<FieldDef>>): Partial<FieldDef> => {
-	values.fieldConfig = FieldConfigSchema.parse(values.fieldConfig)
+const transform = (values: Partial<FieldDef>): Partial<FieldDef> => {
+	values.fieldConfig = zodCreate(FieldConfigSchema, values.fieldConfig ?? {})
 	return values
 }
 
@@ -16,11 +15,23 @@ export const FieldCreate = memo(() => {
 	return (
 		<GeneratedCreatePage transform={transform} onCreate={async () => infra.refetch()}>
 			<ManualInputLayout
-				defaultValues={{ dataType: "short-text", componentName: "short-text" }}
+				defaultValues={{
+					dataType: "short-text",
+					componentName: "short-text",
+					fieldConfig: zodCreate(FieldConfigSchema, { component: {} }),
+				}}
 				actions={<></>}
 			>
+				{/* <Tool /> */}
 				<FieldForm />
 			</ManualInputLayout>
 		</GeneratedCreatePage>
 	)
 })
+
+// import { DevTool } from "@hookform/devtools"
+// import { useFormContext } from "react-hook-form"
+// function Tool() {
+// 	const cont = useFormContext().control
+// 	return <DevTool control={cont} />
+// }

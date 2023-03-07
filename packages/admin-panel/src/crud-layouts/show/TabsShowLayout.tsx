@@ -1,3 +1,4 @@
+import { useCollectionContext } from "@admin-panel/context/collection-context"
 import { memo } from "react"
 import { useGeneratePropertiesAndSections } from "../../generator/layouts/use-generate-sections"
 
@@ -10,9 +11,8 @@ import { TabsSection } from "../ui/tabs/TabsSection"
  * Every section is one tab
  */
 const GeneratedTabsShowLayout = memo(() => {
-	// const { sections } = props
-	const sections = useGeneratePropertiesAndSections()
-	//requires string
+	const config = useCollectionContext().layoutConfig.show.layouts?.tabs
+	const sections = useGeneratePropertiesAndSections(config)
 	return (
 		<TabsLayout sections={sections.map((s) => s.label)}>
 			{sections.map((section, i) => (

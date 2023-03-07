@@ -200,6 +200,8 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 				throw400(738294, emsg.uniqueExists(field, value))
 			}
 
+			console.log({ error })
+
 			throw500({ errorCode: 891200, message: emsg.dbProblem, cause: error })
 		}
 	}

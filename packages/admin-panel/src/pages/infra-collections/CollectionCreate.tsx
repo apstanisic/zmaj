@@ -1,5 +1,6 @@
 import { SaveButton } from "@admin-panel/app-layout/buttons/SaveButton"
 import { JsonInputField } from "@admin-panel/field-components/json/JsonInputField"
+import { LayoutConfigSchema } from "@zmaj-js/common"
 import { RaRecord } from "ra-core"
 import { memo } from "react"
 import { ManualInputLayout } from "../../crud-layouts/input"
@@ -17,7 +18,10 @@ export const CollectionCreate = memo(() => {
 
 	return (
 		<GeneratedCreatePage onCreate={async (col: RaRecord) => infra.refetch()}>
-			<ManualInputLayout actions={<></>}>
+			<ManualInputLayout
+				actions={<></>}
+				defaultValues={{ layoutConfig: LayoutConfigSchema.parse({}) }}
+			>
 				<StepLayout sections={["Database", "Additional"]} endButton={<SaveButton />}>
 					<StepSection index={0}>
 						<ManualInputField

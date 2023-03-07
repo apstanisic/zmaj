@@ -29,7 +29,7 @@ export const UuidInputField = (props: InputFieldProps): JSX.Element => {
 		() => [
 			...(props.validate ?? []),
 			regex(uuidRegex, "Invalid UUID"),
-			isRightVersion(requiredVersion),
+			isRightVersion(requiredVersion ?? undefined),
 		],
 		[props.validate, requiredVersion],
 	)

@@ -20,7 +20,7 @@ class CrudLayouts {
 	 */
 	#list: Struct<ListLayoutDefinition> = {
 		[ListGalleryLayout.name]: ListGalleryLayout,
-		[CalendarLayout.name]: CalendarLayout,
+		// [CalendarLayout.name]: CalendarLayout,
 		[ListTableLayout.name]: ListTableLayout,
 	}
 

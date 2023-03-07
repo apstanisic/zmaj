@@ -68,8 +68,10 @@ class FieldCrudComponents {
 	 * It allows this weird params with null, cause it accepts data from db
 	 */
 	get(name?: string | null, dbType?: ColumnDataType | null): CrudComponentDefinition {
-		const comp = this.#components[name ?? "_"] ?? this.#components[dbType ?? "_"]
-
+		const comp =
+			this.#components[name ?? "_"] ??
+			this.#components[dbType ?? "_"] ??
+			this.#components["short-text"]
 		if (!comp) throw new AdminPanelError(`#7203 ${name} ${dbType}`)
 		return comp
 	}

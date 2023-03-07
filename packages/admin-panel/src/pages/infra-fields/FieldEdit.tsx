@@ -1,14 +1,13 @@
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
-import { FieldConfigSchema, FieldDef } from "@zmaj-js/common"
+import { FieldConfigSchema, FieldDef, zodCreate } from "@zmaj-js/common"
 import { memo } from "react"
-import { WritableDeep } from "type-fest"
 import { ManualInputLayout } from "../../crud-layouts/input/ManualInputLayout"
 import { GeneratedEditPage } from "../../generator/pages/GeneratedEditPage"
 import { useInfraState } from "../../state/useInfraState"
 import { FieldForm } from "./input/_FieldForm"
 
-const transform = (values: Partial<WritableDeep<FieldDef>>): Partial<FieldDef> => {
-	values.fieldConfig = FieldConfigSchema.parse(values.fieldConfig)
+const transform = (values: Partial<FieldDef>): Partial<FieldDef> => {
+	values.fieldConfig = zodCreate(FieldConfigSchema, values.fieldConfig ?? {})
 	return values
 }
 

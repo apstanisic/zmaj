@@ -5,17 +5,19 @@ import { runApi } from "./run-app"
 // https://dev.to/ehlo_250/the-trick-to-making-consolelog-play-nice-with-complex-objects-gma
 import { Controller, Get, Module } from "@nestjs/common"
 import { inspect } from "node:util"
-import { InfraStateService } from "./infra/infra-state/infra-state.service"
+import { BuildTestDbService } from "./testing/build-test-db.service"
+import { TestingUtilsModule } from "./testing/testing-utils.module"
 inspect.defaultOptions.depth = 4
 
 @Controller()
 class Playground {
-	constructor(private state: InfraStateService) {
+	constructor(private service: BuildTestDbService) {
 		//
 	}
 
 	@Get("dev")
 	async playground(): Promise<any> {
+		await this.service.buildBlogDemo()
 		return true
 	}
 }
@@ -32,6 +34,6 @@ class DevModule {}
 
 runApi(predefinedApiConfigs.dev, {
 	config: { envPath: "../../.env.dev" }, //
-	customModules: [DevModule],
-	database: { logging: true },
+	customModules: [DevModule, TestingUtilsModule],
+	database: { logging: false },
 }).then((_server) => console.log("main.ts: Started"))

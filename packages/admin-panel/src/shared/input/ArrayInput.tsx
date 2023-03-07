@@ -34,6 +34,7 @@ export function ArrayInput(props: ArrayInputProps): JSX.Element {
 		<div>
 			{controller.fields.map((f, i) => {
 				const name = `${props.source}.${i}`
+
 				return (
 					<div key={f.id}>
 						<div className="flex items-center justify-between">

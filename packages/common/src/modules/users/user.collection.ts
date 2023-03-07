@@ -16,23 +16,26 @@ export const UserCollection = DefineCollection<User>({
 		label: "Users",
 		layoutConfig: zodCreate(LayoutConfigSchema, {
 			input: {
-				fieldsLayout: {
-					type: "direct",
-					fields: [
-						"email",
-						"firstName",
-						"lastName",
-						"status",
-						"role",
-						"password",
-						"confirmedEmail",
-					],
+				create: {
+					simple: {
+						fields: [
+							"email",
+							"firstName",
+							"lastName",
+							"status",
+							"role",
+							"password",
+							"confirmedEmail",
+						],
+					},
 				},
+				edit: { reuseCreate: true },
 			},
 			list: {
-				fieldsOrder: ["email", "roleId", "status", "firstName", "lastName"],
+				layout: {
+					table: { fields: ["email", "roleId", "status", "firstName", "lastName"] },
+				},
 				defaultSort: { field: "createdAt", order: "DESC" },
-				secondaryTemplate: "{firstName|orUnknown} {lastName|orUnknown}",
 			},
 		}),
 	},

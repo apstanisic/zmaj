@@ -51,10 +51,12 @@ export const AuthSessionCollection = DefineCollection<AuthSession>({
 				quickFilter: false,
 				disableMultiSelect: true,
 				perPage: { default: 10, options: [10] },
-				fieldsOrder: ["lastUsed", "ip", "createdAt"],
 				defaultSort: { field: "lastUsed", order: "DESC" },
 				sortableFields: ["createdAt", "lastUsed", "ip"],
 				filterableFields: ["createdAt", "lastUsed", "ip"],
+				layout: {
+					table: { fields: ["lastUsed", "ip", "createdAt"] },
+				},
 			},
 		}),
 	},

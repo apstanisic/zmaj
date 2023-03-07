@@ -1,5 +1,6 @@
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { useInfraState } from "@admin-panel/state/useInfraState"
+import { RelationDef, RelationUpdateDto } from "@zmaj-js/common"
 import { memo } from "react"
 import { ManualInputLayout } from "../../crud-layouts/input"
 import { GeneratedEditPage } from "../../generator/pages/GeneratedEditPage"
@@ -15,22 +16,26 @@ export const RelationEdit = memo(() => {
 			disableDeleteRedirect
 			onDelete={onDelete}
 			onEdit={async () => infra.refetch()}
+			transform={(r: RelationDef) => new RelationUpdateDto(r.relation)}
 		>
 			<ManualInputLayout>
 				<ManualInputField source="type" disabled />
 				<Columns>
-					<ManualInputField source="leftTable" disabled />
-					<ManualInputField source="leftColumn" disabled />
+					<ManualInputField source="tableName" disabled />
+					<ManualInputField source="columnName" disabled />
 				</Columns>
 				<Columns>
-					<ManualInputField source="rightTable" disabled />
-					<ManualInputField source="rightColumn" disabled />
+					<ManualInputField source="otherSide.tableName" disabled />
+					<ManualInputField source="otherSide.columnName" disabled />
 				</Columns>
 				{/* don't make this full width, to signal it to the user that this is for the left side */}
 				<div className="w-4/5 md:w-2/3">
-					<ManualInputField source="propertyName" fieldConfig={shortTextDbColumnValidation} />
-					<ManualInputField source="label" />
-					<ManualInputField source="template" />
+					<ManualInputField
+						source="relation.propertyName"
+						fieldConfig={shortTextDbColumnValidation}
+					/>
+					<ManualInputField source="relation.label" />
+					<ManualInputField source="relation.template" />
 				</div>
 			</ManualInputLayout>
 		</GeneratedEditPage>

@@ -15,7 +15,7 @@ import {
 	UUID,
 	zodCreate,
 } from "@zmaj-js/common"
-import { camel, title } from "radash"
+import { camel, isString, title } from "radash"
 import { z } from "zod"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { OnInfraChangeService } from "../on-infra-change.service"
@@ -102,9 +102,11 @@ export class FieldsService {
 	 * I'm allowing raw values because only admin can change database, so unsafe input is ok
 	 */
 	private getDefaultValue(
-		value?: string | null,
+		value?: string | null | unknown,
 	): z.infer<typeof CreateColumnSchema>["defaultValue"] {
 		if (isNil(value)) return null
+		// do nothing for numbers...
+		if (!isString(value)) return { type: "normal", value: JSON.stringify(value) }
 		const parsed = special(value)
 		if (parsed.special) return { type: "raw", value: parsed.value }
 		return { type: "normal", value: parsed.value }

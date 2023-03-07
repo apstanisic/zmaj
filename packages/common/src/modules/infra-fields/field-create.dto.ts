@@ -10,7 +10,7 @@ export const FieldCreateSchema = FieldUpdateSchema.extend({
 	dataType: z.enum(allColumnDataTypes),
 	isUnique: z.boolean().default(false),
 	isNullable: z.boolean().default(true),
-	dbDefaultValue: z.string().nullish().default(null),
+	dbDefaultValue: z.unknown().nullish().default(null),
 })
 
 export class FieldCreateDto extends ZodDto(FieldCreateSchema) {}

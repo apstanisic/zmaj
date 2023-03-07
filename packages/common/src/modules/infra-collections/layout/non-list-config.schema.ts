@@ -1,48 +1,64 @@
-import { merge } from "@common/utils/temp-merge"
-import { omit } from "radash"
 import { z } from "zod"
 
-const UnsortedFieldsSection = z.union([z.string(), z.literal(false)]).default("Other")
+// export const ShowConfigSchema = NonListConfigSchema
 
-const FieldLayoutConfig = z
-	.discriminatedUnion("type", [
-		z.object({
-			type: z.literal("sections"),
-			unsortedFieldsSection: UnsortedFieldsSection,
-			sections: z.array(
-				z.object({
-					name: z.string(),
-					fields: z.array(z.string()),
-					label: z.string().optional(),
-				}),
-			),
-		}),
-		z.object({
-			type: z.literal("direct"),
-			unsortedFieldsSection: UnsortedFieldsSection,
-			fields: z.array(z.string()),
-		}),
-		z.object({ type: z.literal("default") }),
-	])
-	.default({ type: "default" })
+const sections = z
+	.object({
+		// If null, do not show
+		unsortedFieldsSection: z.string().nullish().default("Other"),
+		sections: z.array(
+			z.object({
+				name: z.string(),
+				label: z.string().optional(),
+				fields: z.array(z.string()),
+			}),
+		),
+	})
+	.optional()
 
-/**
- * Shared between create, update, show
- */
-const NonListConfigSchema = z.object({
-	layoutType: z.string().min(1).max(100).default("simple"),
-	fieldsLayout: FieldLayoutConfig.default({ type: "default" }),
+export type LayoutConfigSections = z.infer<typeof sections>
+
+export const ShowConfigSchema = z.object({
+	type: z.enum(["simple", "tabs"]).default("simple"),
+	layouts: z
+		.object({
+			simple: z.object({ fields: z.array(z.string()).optional() }).optional(),
+			tabs: sections,
+		})
+		.optional(),
 })
 
-export const ShowConfigSchema = NonListConfigSchema
+const edit = z
+	.object({
+		type: z.enum(["simple", "tabs", "steps"]).default("simple"),
+		reuseCreate: z.boolean().default(false).catch(false),
+		simple: z.object({ fields: z.array(z.string()).optional() }).optional(),
+		tabs: sections,
+		steps: sections,
+	})
+	.optional()
 
-export const InputConfigSchema = NonListConfigSchema.extend({
-	edit: NonListConfigSchema.optional(),
-	create: NonListConfigSchema.optional(),
-}).transform((v): Record<"edit" | "create", z.infer<typeof NonListConfigSchema>> => {
-	const shared = omit(v, ["edit", "create"])
-	return {
-		edit: v.edit ? merge(v.edit, shared) : { ...shared },
-		create: v.edit ? merge(v.edit, shared) : { ...shared },
-	}
-})
+const create = z
+	.object({
+		type: z.enum(["simple", "tabs", "steps"]).default("simple"),
+		simple: z.object({ fields: z.array(z.string()).optional() }).optional(),
+		tabs: sections,
+		steps: sections,
+	})
+	.optional()
+
+export const InputConfigSchema = z
+	.object({
+		edit,
+		create,
+	})
+	.transform((val) => {
+		if (val.edit?.reuseCreate) {
+			val.edit = structuredClone({
+				...val.create,
+				reuseCreate: true,
+				type: val.create?.type ?? "simple",
+			})
+		}
+		return val
+	})

@@ -95,32 +95,38 @@ export const ListConfigSchema = z.object({
 	 * Is multi select disabled
 	 */
 	disableMultiSelect: z.boolean().default(false),
-	/**
-	 * Template to be used for title.
-	 * If not provided, it will fallback to collection's `displayTemplate`
-	 * Not all layout use this config
-	 */
-	primaryTemplate: z.string().min(1).max(300).optional(),
-	/**
-	 * Secondary info
-	 * Not all layout use this config
-	 */
-	secondaryTemplate: z.string().min(1).max(300).optional(),
-	/**
-	 * Third info
-	 * Not all layout use this config
-	 */
-	tertiaryTemplate: z.string().min(1).max(300).optional(),
-	/**
-	 * What fields to show and in which order
-	 */
-	fieldsOrder: z
-		.array(z.string())
-		.transform((v) => unique(v))
-		.optional(),
 
 	/**
 	 *
 	 */
 	size: z.enum(["small", "medium", "large"]).default("medium"),
+	/**
+	 * Layout for collection
+	 */
+	layout: z
+		.object({
+			table: z.object({ fields: z.array(z.string()).optional().catch(undefined) }).optional(),
+			gallery: z
+				.object({
+					/**
+					 * Template to be used for title.
+					 * If not provided, it will fallback to collection's `displayTemplate`
+					 * Not all layout use this config
+					 */
+					primaryTemplate: z.string().min(1).max(300).optional().catch(undefined),
+					/**
+					 * Secondary info
+					 * Not all layout use this config
+					 */
+					secondaryTemplate: z.string().min(1).max(300).optional().catch(undefined),
+					/**
+					 * Third info
+					 * Not all layout use this config
+					 */
+					tertiaryTemplate: z.string().min(1).max(300).optional().catch(undefined),
+				})
+				.optional(),
+		})
+		.optional()
+		.default({}),
 })

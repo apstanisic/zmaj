@@ -6,6 +6,7 @@ export const FieldMetadataCollection = DefineCollection<FieldMetadata>({
 	tableName: "zmaj_field_metadata",
 	options: {
 		displayTemplate: 'Field "{columnName|camelCase}"',
+		label: "Fields",
 		authzKey: systemPermissions.infra.resource,
 	},
 	fields: {

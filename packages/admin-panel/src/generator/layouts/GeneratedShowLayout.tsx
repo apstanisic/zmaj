@@ -8,7 +8,7 @@ import { crudLayouts } from "../../crud-layouts/layouts"
  *
  */
 export const GeneratedShowLayout = memo((): JSX.Element => {
-	const { layoutType } = useLayoutConfigContext().show
+	const layoutType = useLayoutConfigContext().show.type
 	const { Layout } = crudLayouts.getShow(layoutType)
 
 	return <Layout />

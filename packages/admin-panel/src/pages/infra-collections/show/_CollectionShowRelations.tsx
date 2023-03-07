@@ -21,22 +21,23 @@ export const CollectionShowRelations = memo(() => {
 
 	return (
 		<TabsSection>
-			{isEmpty(collection?.relations) && (
+			{isEmpty(collection?.relations) ? (
 				<div className="my-6 text-center text-lg">No existing relations</div>
+			) : (
+				<MyArrayField source="relations">
+					<ResourceContextProvider value={RelationMetadataCollection.collectionName}>
+						<SimpleListLayout<RelationDef>
+							// linkType="show"
+							primaryText={(relation) =>
+								`${relation.tableName}.${relation.propertyName} <-> ${relation.otherSide.tableName}`
+							}
+							secondaryText={(relation) => relation.type}
+							rowClassName="border-b"
+							// rowStyle={(r) => ({ borderBottom: "1px solid #eee" })}
+						/>
+					</ResourceContextProvider>
+				</MyArrayField>
 			)}
-			<MyArrayField source="relations">
-				<ResourceContextProvider value={RelationMetadataCollection.collectionName}>
-					<SimpleListLayout<RelationDef>
-						// linkType="show"
-						primaryText={(relation) =>
-							`${relation.tableName}.${relation.propertyName} <-> ${relation.otherSide.tableName}`
-						}
-						secondaryText={(relation) => relation.type}
-						rowClassName="border-b"
-						// rowStyle={(r) => ({ borderBottom: "1px solid #eee" })}
-					/>
-				</ResourceContextProvider>
-			</MyArrayField>
 			{/* <Button endIcon={<AddCircleOutline />} className="mx-auto w-72" href={newRelationHref}> */}
 			<Button
 				className="mx-auto w-72"

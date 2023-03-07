@@ -3,7 +3,7 @@ import { useStringValidation } from "@admin-panel/shared/input/useCommonValidato
 import { InputFieldProps } from "../types/InputFieldProps"
 
 export function TextareaInputField(props: InputFieldProps): JSX.Element {
-	const rows = props.fieldConfig?.component?.textarea?.rows
+	const rows = props.fieldConfig?.component?.textarea?.rows ?? 8
 
 	const validate = useStringValidation(props.fieldConfig?.component?.textarea, props.validate)
 	return (

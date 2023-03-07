@@ -41,9 +41,10 @@ export const RoleCollection = DefineCollection<Role>({
 		displayTemplate: "{name}",
 		layoutConfig: zodCreate(LayoutConfigSchema, {
 			list: {
-				fieldsOrder: ["name", "description"],
+				layout: {
+					table: { fields: ["name", "description"] },
+				},
 				defaultSort: { field: "createdAt", order: "ASC" },
-				secondaryTemplate: "{createdAt}",
 			},
 			hideChangesButton: true,
 		}),

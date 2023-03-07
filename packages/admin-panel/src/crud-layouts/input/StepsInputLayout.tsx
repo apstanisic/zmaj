@@ -1,4 +1,6 @@
 import { SaveButton } from "@admin-panel/app-layout/buttons/SaveButton"
+import { useActionContext } from "@admin-panel/context/action-context"
+import { useCollectionContext } from "@admin-panel/context/collection-context"
 import { Button } from "@admin-panel/ui/Button"
 import { Form } from "ra-core"
 import { memo } from "react"
@@ -16,7 +18,10 @@ import { StepLayout } from "../ui/steps/StepsLayout"
  * @todo See if `Toolbar` is still valid
  */
 export const StepsForm = memo(() => {
-	const sections = useGeneratePropertiesAndSections()
+	const action = useActionContext()
+	const config =
+		useCollectionContext().layoutConfig.input[action === "edit" ? "edit" : "create"]?.steps
+	const sections = useGeneratePropertiesAndSections(config)
 
 	return (
 		<Form shouldUnregister={false}>

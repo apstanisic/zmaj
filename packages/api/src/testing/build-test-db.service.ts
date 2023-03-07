@@ -9,10 +9,19 @@ import { SequelizeRepoManager } from "@api/sequelize/sequelize.repo-manager"
 import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { Injectable } from "@nestjs/common"
 import { rand } from "@ngneat/falso"
-import { DataTypes, QueryInterface } from "sequelize"
-import { ADMIN_ROLE_ID, systemCollections, times, User, UserCollection } from "@zmaj-js/common"
+import {
+	ADMIN_ROLE_ID,
+	FileCollection,
+	RoleCollection,
+	systemCollections,
+	times,
+	User,
+	UserCollection,
+} from "@zmaj-js/common"
 import {
 	allMockCollectionDefs,
+	createBlogDemo,
+	eCommerceDemo,
 	mockCompositeUniqueKeyId,
 	TComment,
 	TCommentStub,
@@ -25,7 +34,8 @@ import {
 	TTag,
 	TTagStub,
 } from "@zmaj-js/test-utils"
-import { pick, random, shuffle, unique } from "radash"
+import { draw, pick, random, shuffle, unique } from "radash"
+import { DataTypes, QueryInterface } from "sequelize"
 import { MigrationsService } from ".."
 import mockData from "./const-mocks.json"
 
@@ -270,6 +280,87 @@ export class BuildTestDbService {
 				roleId: ADMIN_ROLE_ID,
 				status: "active",
 				confirmedEmail: true,
+			},
+		})
+	}
+
+	async buildECommerceDemo(): Promise<void> {
+		const roleRepo = this.repoManager.getRepo(RoleCollection)
+		const userRepo = this.repoManager.getRepo(UserCollection)
+		const tagRepo = this.repoManager.getRepo("tags")
+		const productRepo = this.repoManager.getRepo("products")
+		const reviewRepo = this.repoManager.getRepo("reviews")
+		const orderRepo = this.repoManager.getRepo("orders")
+		const orderProductRepo = this.repoManager.getRepo("order_products")
+		const categoryRepo = this.repoManager.getRepo("categories")
+		const productTagRepo = this.repoManager.getRepo("products_tags")
+
+		await this.repoManager.transaction({
+			fn: async (trx) => {
+				await orderProductRepo.deleteWhere({ where: {} })
+				await productTagRepo.deleteWhere({ where: {} })
+				await orderRepo.deleteWhere({ where: {} })
+				await reviewRepo.deleteWhere({ where: {} })
+				await productRepo.deleteWhere({ where: {} })
+				await tagRepo.deleteWhere({ where: {} })
+				await categoryRepo.deleteWhere({ where: {} })
+				await userRepo.deleteWhere({ where: { email: { $ne: "admin@example.com" } } })
+				await roleRepo.deleteWhere({ where: { name: { $eq: "Shopper" } } })
+
+				const images = await this.repoManager
+					.getRepo(FileCollection)
+					.findWhere({ where: { mimeType: { $like: "image%" } } })
+
+				await roleRepo.createMany({ data: eCommerceDemo.roles, trx })
+				await userRepo.createMany({ data: eCommerceDemo.users, trx })
+				await categoryRepo.createMany({ data: eCommerceDemo.categories, trx })
+				await tagRepo.createMany({ data: eCommerceDemo.tags, trx })
+				await productRepo.createMany({
+					data: eCommerceDemo.products.map((p) => ({ ...p, fileId: draw(images)?.id })),
+					trx,
+				})
+				await reviewRepo.createMany({ data: eCommerceDemo.reviews, trx })
+
+				await orderRepo.createMany({ data: eCommerceDemo.orders, trx })
+				await orderProductRepo.createMany({ data: eCommerceDemo.orderProducts, trx })
+				await productTagRepo.createMany({ data: eCommerceDemo.productTags, trx })
+			},
+		})
+	}
+
+	async buildBlogDemo(): Promise<void> {
+		const roleRepo = this.repoManager.getRepo(RoleCollection)
+		const userRepo = this.repoManager.getRepo(UserCollection)
+		const tagRepo = this.repoManager.getRepo("tags")
+		const postsRepo = this.repoManager.getRepo("posts")
+		const commentsRepo = this.repoManager.getRepo("comments")
+		const postsTagsRepo = this.repoManager.getRepo("posts_tags")
+
+		const data = createBlogDemo()
+
+		await this.repoManager.transaction({
+			fn: async (trx) => {
+				await postsTagsRepo.deleteWhere({ where: {} })
+				await tagRepo.deleteWhere({ where: {} })
+				await commentsRepo.deleteWhere({ where: {} })
+				await postsRepo.deleteWhere({ where: {} })
+				await userRepo.deleteWhere({ where: { email: { $ne: "admin@example.com" } } })
+				await roleRepo.deleteWhere({ where: { name: { $nin: ["Admin", "Public"] } } })
+
+				const images = await this.repoManager
+					.getRepo(FileCollection)
+					.findWhere({ where: { mimeType: { $like: "image%" } } })
+
+				await roleRepo.createMany({ data: data.roles, trx })
+				await userRepo.createMany({ data: data.users, trx })
+				await tagRepo.createMany({ data: data.tags, trx })
+				await postsRepo.createMany({
+					data: data.posts.map((p) => ({ ...p, coverFileId: draw(images)?.id })),
+					trx,
+				})
+
+				await commentsRepo.createMany({ data: data.comments, trx })
+				await postsTagsRepo.createMany({ data: data.postsTags, trx })
 			},
 		})
 	}

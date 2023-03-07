@@ -1,4 +1,6 @@
 import { SaveButton } from "@admin-panel/app-layout/buttons/SaveButton"
+import { useActionContext } from "@admin-panel/context/action-context"
+import { useCollectionContext } from "@admin-panel/context/collection-context"
 import { Form } from "ra-core"
 import { memo } from "react"
 import { useGeneratePropertiesAndSections } from "../../generator/layouts/use-generate-sections"
@@ -10,7 +12,10 @@ import { TabsSection } from "../ui/tabs/TabsSection"
  * Tab Input Layout
  */
 const TabsForm = memo(() => {
-	const sections = useGeneratePropertiesAndSections()
+	const action = useActionContext()
+	const config =
+		useCollectionContext().layoutConfig.input[action === "edit" ? "edit" : "create"]?.tabs
+	const sections = useGeneratePropertiesAndSections(config)
 
 	return (
 		<Form shouldUnregister={false}>

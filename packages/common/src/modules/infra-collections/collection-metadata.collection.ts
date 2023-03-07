@@ -39,7 +39,6 @@ export const CollectionMetadataCollection = DefineCollection<CollectionMetadata>
 		// validation: { dataType: "json", columnName: "validation" },
 		// icon: { dataType: "short-text", columnName: "icon" },
 		label: { dataType: "short-text", columnName: "label" },
-		// fieldsOrder: { dataType: "json", columnName: "fields_order" }, //array
 		displayTemplate: { dataType: "short-text", columnName: "display_template" },
 		layoutConfig: { dataType: "json", columnName: "layout_config" },
 	},

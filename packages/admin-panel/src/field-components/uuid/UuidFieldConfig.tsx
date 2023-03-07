@@ -10,7 +10,7 @@ export const UuidFieldConfigInput = (): JSX.Element => {
 			label="UUID Version"
 			fieldConfig={{
 				component: {
-					dropdown: { choices: [1, 2, 3, 4, 5].map((v) => ({ value: v, label: `${v}` })) },
+					dropdown: { choices: [1, 2, 3, 4, 5].map((value) => ({ value })) },
 				},
 			}}
 			isRequired={false}

@@ -3,7 +3,7 @@ import { maxLength, minLength, regex, Validator } from "ra-core"
 import { useMemo } from "react"
 import { z } from "zod"
 
-type Config = z.input<typeof CommonTextConfigSchema>
+type Config = z.input<typeof CommonTextConfigSchema> | null
 
 function getStringValidation(config?: Config, validate?: Validator[]): Validator[] {
 	const validators = validate ? [...validate] : []

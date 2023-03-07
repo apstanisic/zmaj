@@ -22,6 +22,7 @@ export const ManualInputLayout = memo((props: ManualInputLayoutProps) => {
 			className={clsx("crud-content", props.className)}
 			defaultValues={props.defaultValues ?? record}
 			shouldUnregister={false}
+			sanitizeEmptyValues={false}
 		>
 			{props.children}
 			{props.actions ?? (

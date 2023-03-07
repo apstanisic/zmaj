@@ -2,7 +2,8 @@ import { zodCreate } from "@common/zod"
 import { z } from "zod"
 import { ListConfigSchema } from "./list-config.schema"
 import { InputConfigSchema, ShowConfigSchema } from "./non-list-config.schema"
-
+// improve this
+export { type LayoutConfigSections } from "./non-list-config.schema"
 export const LayoutConfigSchema = z
 	.object({
 		/**

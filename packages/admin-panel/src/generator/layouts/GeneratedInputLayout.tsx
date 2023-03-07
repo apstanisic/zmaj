@@ -7,7 +7,7 @@ export const GeneratedInputLayout = memo((): JSX.Element => {
 	const action = useActionContext()
 	const config = useLayoutConfigContext()
 
-	const layout = config.input[action === "edit" ? "edit" : "create"].layoutType
+	const layout = config.input[action === "edit" ? "edit" : "create"]?.type
 
 	const { Layout } = crudLayouts.getInput(layout)
 

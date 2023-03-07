@@ -14,8 +14,8 @@ export function FieldInfoInputDefaultValue(): JSX.Element {
 		setValue("dbDefaultValue", "")
 	}, [dataType, componentName, setValue])
 
-	const Component = useMemo(() => {
-		return fieldComponents.get(componentName, dataType).Input
+	const component = useMemo(() => {
+		return fieldComponents.get(componentName, dataType)
 	}, [dataType, componentName])
 
 	return (
@@ -25,7 +25,7 @@ export function FieldInfoInputDefaultValue(): JSX.Element {
 			description="Leave empty for null"
 			disabled={action === "edit"}
 			defaultValue=""
-			Component={Component}
+			Component={component.name === "dropdown" ? fieldComponents.get().Input : component.Input}
 		/>
 	)
 }
