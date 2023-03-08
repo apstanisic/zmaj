@@ -1,5 +1,4 @@
-import { defineConfig, type PlaywrightTestConfig } from "@playwright/test"
-import { devices } from "@playwright/test"
+import { devices, type PlaywrightTestConfig } from "@playwright/test"
 import path, { dirname } from "path"
 import { fileURLToPath } from "url"
 
@@ -34,14 +33,15 @@ const config: PlaywrightTestConfig = {
 	reporter: "html",
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
-		video: process.env["CI"] ? "retain-on-failure" : "on-first-retry",
+		// video: process.env["CI"] ? "retain-on-failure" : "on-first-retry",
+		video: "retain-on-failure",
 		/* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
 		actionTimeout: 0,
 		/* Base URL to use in actions like `await page.goto('/')`. */
 		baseURL: "http://localhost:7100",
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-		trace: "on-first-retry",
+		trace: "retain-on-failure", // "on-first-retry",
 		// storageState: `${e2ePackage}/state/storage-state.json`,
 		storageState: path.join(dir, "src/state/storage-state.json"), // `${e2ePackage}/state/storage-state.json`,
 	},
