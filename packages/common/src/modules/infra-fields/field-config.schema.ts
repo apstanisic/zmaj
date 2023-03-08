@@ -14,9 +14,9 @@ const refineMinMax = (config: { min?: number | null; max?: number | null }): str
 }
 export const CommonTextConfigSchema = z.object({
 	/** Min string length */
-	minLength: z.number().int().min(0).max(10_000_000).nullish().default(0),
+	minLength: z.number().int().min(0).max(10_000_000).nullish(),
 	/** Max string length */
-	maxLength: z.number().int().min(0).max(10_000_000).nullish().default(10_000_000),
+	maxLength: z.number().int().min(0).max(10_000_000).nullish(),
 	/** Regular expression */
 	regex: z.union([z.string().transform((v) => new RegExp(v)), z.instanceof(RegExp)]).nullish(),
 	/** Regex Error message */

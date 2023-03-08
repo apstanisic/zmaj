@@ -24,7 +24,7 @@ export const ToOneField = memo((props: { readonly?: boolean }) => {
 	const record = useRecord()
 
 	const widthClasses = useMemo(
-		() => getFieldWidthCss(field.fieldConfig.width),
+		() => getFieldWidthCss(field.fieldConfig.width ?? 12),
 		[field.fieldConfig.width],
 	)
 

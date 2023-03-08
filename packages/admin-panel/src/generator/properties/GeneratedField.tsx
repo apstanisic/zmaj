@@ -43,7 +43,7 @@ export const GeneratedField = memo(() => {
 		// throw new AdminPanelError("#9621")
 	}
 
-	const className = getFieldWidthCss(field.fieldConfig.width)
+	const className = getFieldWidthCss(field.fieldConfig.width ?? 12)
 
 	const source = field.fieldName
 
