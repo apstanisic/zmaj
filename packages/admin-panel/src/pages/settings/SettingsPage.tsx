@@ -1,12 +1,13 @@
 import { MyReferenceInput } from "@admin-panel/generator/many-to-one/MyReferenceInput"
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { ChoicesDialogAndButton } from "@admin-panel/shared/choices/ChoicesDialogAndButton"
 import { useInputField } from "@admin-panel/shared/input/useInputField"
 import { Button } from "@admin-panel/ui/Button"
 import { Card } from "@admin-panel/ui/Card"
 import { CircularProgress } from "@admin-panel/ui/CircularProgress"
 import { useQuery } from "@tanstack/react-query"
-import { ADMIN_ROLE_ID, AuthUserType, ChangeSettingsDto } from "@zmaj-js/common"
-import { CustomRoutes, Form, useGetIdentity, useNotify } from "ra-core"
+import { ADMIN_ROLE_ID, ChangeSettingsDto } from "@zmaj-js/common"
+import { CustomRoutes, Form, useNotify } from "ra-core"
 import { memo, useCallback } from "react"
 import { Route } from "react-router"
 import { usePublicInfo } from "../../auth/hooks/use-public-info"
@@ -25,7 +26,7 @@ export function settingsPage(): JSX.Element {
 }
 
 const Settings = memo(() => {
-	const user = useGetIdentity()?.identity?.["user"] as AuthUserType | undefined
+	useHtmlTitle("Settings")
 	const info = usePublicInfo()
 	const sdk = useSdk()
 	const notify = useNotify()
