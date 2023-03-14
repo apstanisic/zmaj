@@ -1,3 +1,4 @@
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { memo } from "react"
 import { Link } from "react-router-dom"
 import { AuthPageLayout } from "../components/AuthPageLayout"
@@ -8,6 +9,7 @@ import { usePublicInfo } from "../hooks/use-public-info"
 import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
 
 export function SignInPage(): JSX.Element {
+	useHtmlTitle("Sign In")
 	const signedIn = useRedirectAuthenticated()
 	if (signedIn) return <></>
 

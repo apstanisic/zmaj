@@ -1,10 +1,10 @@
+import { GeneratedCreatePage } from "@admin-panel/generator/pages/GeneratedCreatePage"
+import { GeneratedEditPage } from "@admin-panel/generator/pages/GeneratedEditPage"
 import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Authz } from "@admin-panel/state/authz-state"
 import { RoleCollection, systemPermissions } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 import { GeneratedListPage } from "../../generator/pages/GeneratedListPage"
-import { RoleCreate } from "./RoleCreate"
-import { RoleEdit } from "./RoleEdit"
 // import { roleCreate } from "./roleCreate"
 // import { roleList } from "./roleList"
 import { RoleShow } from "./RoleShow"
@@ -19,8 +19,8 @@ export function roleResource(props: { authz: Authz }): JSX.Element {
 			name={RoleCollection.collectionName}
 			list={read ? GeneratedListPage : undefined}
 			show={read ? RoleShow : undefined}
-			create={modify ? RoleCreate : undefined}
-			edit={modify ? RoleEdit : undefined}
+			create={modify ? GeneratedCreatePage : undefined}
+			edit={modify ? GeneratedEditPage : undefined}
 			options={{
 				label: RoleCollection.label ?? undefined,
 				authzResource: systemPermissions.authorization.resource,

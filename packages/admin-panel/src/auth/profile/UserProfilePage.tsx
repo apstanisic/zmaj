@@ -1,3 +1,4 @@
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useIsAllowedSystem, useRedirectForbidden } from "@admin-panel/hooks/use-is-allowed"
 import { CircularProgress } from "@admin-panel/ui/CircularProgress"
 import { IconButton } from "@admin-panel/ui/IconButton"
@@ -12,6 +13,7 @@ import { DefaultShowField } from "../../shared/show/DefaultShowField"
 import { useHasMfa, useUserProfile } from "./useUserProfile"
 
 export function UserProfilePage(): JSX.Element {
+	useHtmlTitle("Profile")
 	const user = useUserProfile().data
 	const seeSessionsHref = useHref({ pathname: getCrudUrl(AuthSessionCollection, "list") })
 	const editProfileHref = useHref({ pathname: "/profile/edit" })

@@ -1,3 +1,4 @@
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useNotify, useRedirect } from "ra-core"
 import { useEffect } from "react"
 import { Link } from "react-router-dom"
@@ -10,6 +11,7 @@ import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
  * We can use same form for create admin and create normal account since it's same data
  */
 export function SignUpPage(): JSX.Element {
+	useHtmlTitle("Sign Up")
 	const authInfo = usePublicInfo().data
 	const signUpAllowed = authInfo?.signUpAllowed ?? true
 	const notify = useNotify()

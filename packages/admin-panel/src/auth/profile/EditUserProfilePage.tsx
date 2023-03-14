@@ -1,3 +1,4 @@
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useIsAllowedSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Card } from "@admin-panel/ui/Card"
 import { ChangeEmail } from "./ChangeEmail"
@@ -6,6 +7,7 @@ import { ChangeUserInfo } from "./ChangeUserInfo"
 import { useUserProfile } from "./useUserProfile"
 
 export function UserProfileEdit(): JSX.Element {
+	useHtmlTitle("Edit profile")
 	const query = useUserProfile()
 
 	const changePassword = useIsAllowedSystem("account", "updatePassword")

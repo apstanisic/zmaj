@@ -46,6 +46,16 @@ export const RoleCollection = DefineCollection<Role>({
 				},
 				defaultSort: { field: "createdAt", order: "ASC" },
 			},
+			input: {
+				create: {
+					type: "simple",
+					simple: { fields: ["name", "description"] },
+				},
+				edit: {
+					type: "simple",
+					simple: { fields: ["name", "description"] },
+				},
+			},
 			hideChangesButton: true,
 		}),
 	},

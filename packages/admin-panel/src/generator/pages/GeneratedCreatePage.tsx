@@ -1,4 +1,5 @@
-import { CreateBase, RaRecord, TransformData } from "ra-core"
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
+import { CreateBase, RaRecord, TransformData, useResourceDefinition } from "ra-core"
 import { memo, ReactNode, useCallback } from "react"
 import { NonListToolbar, NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
 import { useSuccessRedirect } from "../../hooks/use-success-redirect"
@@ -14,6 +15,9 @@ type GeneratedCreatePageProps = NonListToolbarProps & {
 export const GeneratedCreatePage = memo((props: GeneratedCreatePageProps) => {
 	const { children, onCreate, ...rest } = props
 	const successRedirect = useSuccessRedirect()
+
+	const resource = useResourceDefinition()
+	useHtmlTitle(resource, "Create")
 
 	const onSuccess = useCallback(
 		async (data: RaRecord) => {

@@ -1,3 +1,4 @@
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { AuthPageLayout } from "../components/AuthPageLayout"
 import { SignUpForm } from "../forms/SignUpForm"
 import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
@@ -7,6 +8,7 @@ import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
  */
 export function AdminInitPage(): JSX.Element {
 	// const inited = usePublicInfo().data?.adminInitialized ?? false //useIsAdminInited().data
+	useHtmlTitle("Create Admin User")
 
 	useRedirectAuthenticated()
 	// const redirect = useRedirect()

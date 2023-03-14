@@ -1,3 +1,4 @@
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useSearchParams } from "react-router-dom"
 import { AuthPageLayout } from "../components/AuthPageLayout"
 import { SignUpForm } from "../forms/SignUpForm"
@@ -7,6 +8,7 @@ import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
  * We don't check if admin is inited since it exposes confidential information
  */
 export function AcceptUserInvitation(): JSX.Element {
+	useHtmlTitle("Accept Invitation")
 	useRedirectAuthenticated()
 	const [query] = useSearchParams()
 

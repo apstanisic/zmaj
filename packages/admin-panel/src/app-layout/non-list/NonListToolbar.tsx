@@ -14,7 +14,7 @@ import { CrudBreadcrumbs } from "../CrudBreadcrumbs"
 import { ShowChangesButton } from "../show/ShowChangesButton"
 // import { ShowChangesButton } from "../show/ShowChangesButton"
 import { ShowRecordAsJsonDialog } from "../show/ShowRecordAsJsonDialog"
-import { useTitle } from "./useNonListTItle"
+import { useTitle } from "./useNonListTitle"
 
 export type NonListToolbarProps = {
 	title?: string

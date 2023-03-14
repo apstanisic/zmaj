@@ -29,7 +29,7 @@ serve_api:
 serve_admin_panel:
 	@pnpm --filter=@zmaj-js/admin-panel run serve
 dev_build:
-	@pnpm --recursive --filter="./packages/**" --parallel run dev
+	@pnpm --recursive --filter="./packages/**" --filter="!./packages/admin-panel" --parallel run dev
 
 test_unit:
 	@npx vitest run --config vitest-unit.config.ts

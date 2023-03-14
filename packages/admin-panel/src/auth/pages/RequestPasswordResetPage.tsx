@@ -1,5 +1,6 @@
 import { useSdk } from "@admin-panel/context/sdk-context"
 import { EmailInputField } from "@admin-panel/field-components/email/EmailInputField"
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { ManualInputField } from "@admin-panel/shared/input/ManualInputField"
 import { Button } from "@admin-panel/ui/Button"
 import { isEmail, Struct } from "@zmaj-js/common"
@@ -10,6 +11,7 @@ import { AuthPageLayout } from "../components/AuthPageLayout"
 import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
 
 export function RequestPasswordResetPage(): JSX.Element {
+	useHtmlTitle("Forgotten password")
 	const notify = useNotify()
 	const signedIn = useRedirectAuthenticated()
 	const sdk = useSdk()

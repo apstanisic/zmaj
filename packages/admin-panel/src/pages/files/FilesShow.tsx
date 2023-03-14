@@ -1,9 +1,10 @@
 import { MyReferenceField } from "@admin-panel/generator/many-to-one/MyReferenceField"
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { BlankShowField } from "@admin-panel/shared/show/BlankShowField"
 import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
 import { FileInfo, IdRecord, isNil, templateParser, User } from "@zmaj-js/common"
-import { ReactNode } from "react"
+import { ReactNode, useMemo } from "react"
 import { MdDownload } from "react-icons/md"
 import { GeneratedShowPage } from "../../generator/pages/GeneratedShowPage"
 import { DisplayZmajFile } from "../../ui/display-file"
@@ -29,6 +30,9 @@ function CustomActions(): JSX.Element {
  */
 function FileShowContent(): JSX.Element {
 	const file = useRecord<IdRecord<FileInfo>>()
+	const fileName = useMemo(() => template(file, "{name}"), [file])
+
+	useHtmlTitle("File " + fileName)
 	if (!file) return <></>
 	return (
 		<div className="my-3 mx-auto grid max-w-7xl grid-cols-1 rounded border p-3 shadow-2xl dark:border-zinc-800 lg:grid-cols-2">
@@ -64,7 +68,7 @@ function FileShowContent(): JSX.Element {
 /**
  * Wrapper to reduce boilerplate
  */
-function template(file: Partial<FileInfo>, field: string): string {
+function template(file: Partial<FileInfo> | undefined, field: string): string {
 	return templateParser.parse(field, file)
 }
 

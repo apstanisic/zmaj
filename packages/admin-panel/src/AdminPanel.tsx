@@ -1,4 +1,4 @@
-import { CoreAdmin, useStoreContext } from "ra-core"
+import { CoreAdmin, useResourceContext, useStoreContext } from "ra-core"
 import polyglotI18nProvider from "ra-i18n-polyglot"
 import englishMessages from "ra-language-english"
 import { Fragment, memo, useMemo } from "react"
@@ -124,7 +124,8 @@ export function AdminPanel(props: { customPages?: CustomPage[] }): JSX.Element {
 			authProvider={authProvider}
 			disableTelemetry
 			store={store}
-			title="Zmaj"
+			title="Zmaj Hello"
+			// title={<Title />}
 			layout={AppLayout}
 			dashboard={Dashboard}
 			loginPage={SignInPage}
@@ -137,6 +138,12 @@ export function AdminPanel(props: { customPages?: CustomPage[] }): JSX.Element {
 			{resources}
 		</CoreAdmin>
 	)
+}
+const Title = () => {
+	console.log("Called")
+
+	// const r = useResourceContext()
+	return <>Zmaj | {"hello"}</>
 }
 
 const Loading = memo(() => {

@@ -1,5 +1,6 @@
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { EditBase, RaRecord, TransformData } from "ra-core"
+import { EditBase, RaRecord, TransformData, useResourceDefinition } from "ra-core"
 import { memo, ReactNode, useCallback } from "react"
 import { NonListToolbar, NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
 import { useSuccessRedirect } from "../../hooks/use-success-redirect"
@@ -14,6 +15,9 @@ type GeneratedEditPageProps = NonListToolbarProps & {
 
 export const GeneratedEditPage = memo((props: GeneratedEditPageProps) => {
 	const { children, transform, onEdit, ...rest } = props
+
+	const resource = useResourceDefinition()
+	useHtmlTitle(resource, "Edit")
 
 	const successRedirect = useSuccessRedirect()
 

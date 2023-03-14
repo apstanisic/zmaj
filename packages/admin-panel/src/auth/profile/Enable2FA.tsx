@@ -1,5 +1,6 @@
 import { useSdk } from "@admin-panel/context/sdk-context"
 import { PasswordInputField } from "@admin-panel/field-components/password/PasswordInputField"
+import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { ManualInputField } from "@admin-panel/shared/input/ManualInputField"
 import { Button } from "@admin-panel/ui/Button"
 import { Card } from "@admin-panel/ui/Card"
@@ -13,6 +14,7 @@ import { useHasMfa } from "./useUserProfile"
 
 export function Enable2FA(): JSX.Element {
 	const sdk = useSdk()
+	useHtmlTitle("Enable 2FA")
 	const [otp, setOtp] = useState<{
 		secret: string
 		image: string
