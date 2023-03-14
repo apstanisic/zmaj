@@ -505,11 +505,21 @@ importers:
 
   packages/email-templates:
     specifiers:
+      '@faire/mjml-react': ^3.1.2
       '@types/mjml': ^4.7.0
+      '@types/react': ^18.0.28
+      '@types/react-dom': ^18.0.11
       mjml: ^4.13.0
+      react: ^18.2.0
+      react-dom: ^18.2.0
     devDependencies:
+      '@faire/mjml-react': 3.1.2_7tbcn2mecc3yvuxakflodiks3m
       '@types/mjml': 4.7.0
+      '@types/react': 18.0.28
+      '@types/react-dom': 18.0.11
       mjml: 4.13.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
 
   packages/full:
     specifiers:
@@ -4705,6 +4715,19 @@ packages:
   /@eslint/js/8.35.0:
     resolution: {integrity: sha512-JXdzbRiWclLVoD8sNUjR443VVlYqiYmDVT6rGUEIEHU5YJW0gaVZwV2xgM7D4arkvASqD0IlLUVjHiFuxaftRw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    dev: true
+
+  /@faire/mjml-react/3.1.2_7tbcn2mecc3yvuxakflodiks3m:
+    resolution: {integrity: sha512-VNSZ1B/Qd4t2jtDxOHggdbJwBk4gISCa8xUdiguYNgzhWvg0ltMOVJih/7qVwbNfOB77X4jQamjTMMokCtKYfw==}
+    peerDependencies:
+      mjml: ^4.13.0
+      react: ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      lodash.kebabcase: 4.1.1
+      mjml: 4.13.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: true
 
   /@floating-ui/core/1.2.1:
@@ -13915,6 +13938,10 @@ packages:
 
   /lodash.isplainobject/4.0.6:
     resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
+    dev: true
+
+  /lodash.kebabcase/4.1.1:
+    resolution: {integrity: sha512-N8XRTIMMqqDgSy4VLKPnJ/+hpGZN+PHQiJnSenYqPaVV/NCqEogTnAdZLQiGKhxX+JCs8waWq2t1XHWKOmlY8g==}
     dev: true
 
   /lodash.memoize/4.1.2:

@@ -1,8 +1,7 @@
-import { mkdir, readdir, readFile, rm, writeFile } from "fs/promises"
-import mjml2html from "mjml"
-import path from "path"
+import { mkdir, rm, writeFile } from "fs/promises"
 import { defineConfig } from "tsup"
 import { defaultTsupConfig } from "../../tsup.config"
+import { allTemplates } from "./src/jsx-templates/all"
 
 /**
  *
@@ -13,35 +12,16 @@ import { defaultTsupConfig } from "../../tsup.config"
  *
  */
 async function compileEmails(): Promise<void> {
-	const folderPath = "./src/templates"
-	const files = await readdir(folderPath)
+	// const folderPath = "./src/jsx-templates"
+	// const files = await readdir(folderPath)
 
 	// sometimes this folder does not exist (on first run), so we ignore error
-	await rm("./dist/templates", { recursive: true }).catch(() => {})
-	await mkdir("./dist/templates")
+	// await rm("./dist/templates", { recursive: true }).catch(() => {})
+	// await mkdir("./dist/templates")
 
 	console.log("Generating email templates")
 
-	for (const fileName of files) {
-		const filePath = path.join(folderPath, fileName)
-		const file = await readFile(filePath, { encoding: "utf-8" })
-		const mjmlResult = mjml2html(file, {
-			validationLevel: "strict",
-			filePath: folderPath,
-			// do not get default fonts
-			fonts: {},
-		})
-		if (mjmlResult.errors.length > 0) {
-			console.error("Problem compiling template:", filePath)
-			continue
-		}
-		// ignore file exist error
-		const { name } = path.parse(fileName)
-
-		const htmlPath = path.join("./dist/templates", name + ".html")
-
-		await writeFile(htmlPath, mjmlResult.html)
-	}
+	await writeFile("./dist/templates.json", JSON.stringify(allTemplates, null, "\t"))
 
 	console.log(`Generated email templates`)
 }
