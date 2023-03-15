@@ -28,7 +28,10 @@ export const RelationCreateSchema = z.object({
 	rightTable: DbFieldSchema,
 	rightColumn: DbFieldSchema,
 	//
-	onDelete: z.enum(onColumnDeleteActions).nullable().default(null),
+	onDelete: z
+		.enum(onColumnDeleteActions)
+		.nullish()
+		.transform((v) => v ?? "SET NULL"),
 	leftFkName: DbFieldSchema.nullish(),
 	// junction part
 	junctionTable: DbFieldSchema.nullish().refine((v) => {
