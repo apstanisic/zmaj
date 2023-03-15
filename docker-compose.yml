@@ -2,13 +2,13 @@ version: "3.9"
 
 services:
   redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     restart: unless-stopped
     ports:
       - ${DCU_REDIS_PORT:?err}:6379
 
   database:
-    image: postgres:15-alpine
+    image: docker.io/postgres:15-alpine
     restart: unless-stopped
     ports:
       - ${DB_PORT:?err}:5432
@@ -20,7 +20,7 @@ services:
       - db_volume:/var/lib/postgresql/data
 
   storage:
-    image: minio/minio
+    image: docker.io/minio/minio
     restart: unless-stopped
     # command: server /data --console-address ":36505"
     command: server /data --console-address ":${DCU_MINIO_GUI_PORT:?err}"
@@ -36,7 +36,7 @@ services:
 
   # enables email testing without external testing service
   email:
-    image: mailhog/mailhog
+    image: docker.io/mailhog/mailhog
     restart: unless-stopped
     ports:
       - ${EMAIL_PORT:?err}:1025
