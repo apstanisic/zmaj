@@ -72,7 +72,7 @@ function VisitResourceButton(): JSX.Element {
 	const redirect = useRedirect()
 	const allResources = useResourceDefinitions()
 
-	const res = allResources[show.record?.tableName ?? "_"]
+	const res = allResources[show.record?.collectionName ?? "_"]
 
 	if (res?.hasList !== true) return <></>
 
