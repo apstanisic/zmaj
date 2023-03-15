@@ -12,7 +12,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { DirectRelationService } from "./direct-relations.service"
 import { DirectRelationCreateDto } from "./expanded-relation-dto.types"
 
-describe("DirectRelationsService,", () => {
+describe("DirectRelationsService", () => {
 	let service: DirectRelationService
 	let schemaInfoService: SchemaInfoService
 	let alterSchemaService: AlterSchemaService
@@ -234,6 +234,7 @@ describe("DirectRelationsService,", () => {
 				{
 					fkColumn: "comment_id",
 					fkTable: "posts",
+					onDelete: "CASCADE",
 					referencedColumn: "id",
 					referencedTable: "comments",
 					indexName: "posts_comment_id_foreign",
