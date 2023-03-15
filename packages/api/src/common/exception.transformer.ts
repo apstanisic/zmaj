@@ -21,14 +21,14 @@ export class ExceptionTransformer {
 	handle(statusCode: number, response: unknown, ogError?: Error): ErrorResponse {
 		const parsed = errorSchema.parse(response)
 
-		const all = { ...parsed, statusCode }
+		const wholeError = { ...parsed, statusCode }
 
 		const error: ErrorResponse["error"] = this.securityConfig.exposeErrorDetails
-			? all
-			: { ...pick(all, ["timestamp", "statusCode"]), message: "Error" }
+			? wholeError
+			: { ...pick(wholeError, ["timestamp", "statusCode"]), message: "Error" }
 
 		if (statusCode >= 500) {
-			this.logger.error(error, ogError)
+			this.logger.error(wholeError, ogError)
 		}
 
 		return { error }
