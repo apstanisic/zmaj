@@ -44,6 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup
+
       - name: Public semver docker image
         uses: elgohr/Publish-Docker-Github-Action@v5
         with:
@@ -52,3 +53,13 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           default_branch: main
           tag_semver: true
+
+      - name: Public semver docker image to GitHub
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: apstanisic/zmaj/zmaj
+          username: ${{ github.actor }}
+          password: ${{ secrets.PUBLISH_PACKAGE_TO_GH_TOKEN }}
+          default_branch: main
+          tag_semver: true
+          registry: ghcr.io
