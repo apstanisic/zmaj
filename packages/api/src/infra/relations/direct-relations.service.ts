@@ -135,6 +135,7 @@ export class DirectRelationService {
 						referencedTable: dto.rightTable,
 						referencedColumn: dto.rightColumn,
 						indexName: fkName,
+						onDelete: dto.onDelete,
 					},
 					{ trx },
 				)
