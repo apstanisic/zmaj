@@ -1,6 +1,9 @@
 import { readFile } from "fs/promises"
 import { runServer } from "zmaj"
 
+/**
+ * @type Parameters<typeof runServer>[0] | undefined
+ */
 const config = await readFile("/app/zmaj-config.json", { encoding: "utf-8" })
 	.then((file) => {
 		try {
@@ -16,5 +19,9 @@ const config = await readFile("/app/zmaj-config.json", { encoding: "utf-8" })
 await runServer({
 	migrations: { autoRunMigrations: true },
 	config: { envPath: "/app/.env" },
-	...(config ?? {}),
+	storage: {
+		providers: [{ name: "default", type: "local", basePath: "/app/files", uploadDisabled: false }],
+		...config?.storage,
+	},
+	...config,
 })
