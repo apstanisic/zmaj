@@ -105,6 +105,10 @@ nohup.out
 *.jsx
 *.ts
 *.tsx
+*.mjs
+*.mts
+*.cjs
+*.cts
 
 # Do not format generated files
 pnpm-lock.yaml
