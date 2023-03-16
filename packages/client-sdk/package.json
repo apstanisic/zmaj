@@ -44,9 +44,9 @@
 		"eventemitter3": "^5.0.0",
 		"flat": "^5.0.2",
 		"js-base64": "^3.7.5",
-		"radash": "^10.7.0",
+		"radash": "^10.7.1",
 		"type-fest": "^3.6.1",
-		"zod": "^3.21.2"
+		"zod": "^3.21.4"
 	},
 	"devDependencies": {
 		"@types/flat": "^5.0.2",

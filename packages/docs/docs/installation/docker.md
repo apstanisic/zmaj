@@ -104,7 +104,7 @@ services:
     image: astanisic/zmaj:0
     ## Path to your zmaj config
     volumes:
-      - ./zmaj-config.json:/app/zmaj-config.json
+      - $PWD/zmaj-config.json:/app/zmaj-config.json
 ```
 
 And your json config would look something like this:

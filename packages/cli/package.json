@@ -41,7 +41,7 @@
 		"zmaj": "dist/bin.js"
 	},
 	"dependencies": {
-		"@clack/prompts": "^0.6.2",
+		"@clack/prompts": "^0.6.3",
 		"@zmaj-js/api": "workspace:*",
 		"@zmaj-js/common": "workspace:*",
 		"fs-extra": "^11.1.0",
