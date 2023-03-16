@@ -14,7 +14,7 @@
 		"node": ">=18.0.0"
 	},
 	"name": "@zmaj-js/dockerfile",
-	"version": "0.1.7",
+	"version": "0.1.8",
 	"eslintConfig": {
 		"extends": "../../.eslintrc.cjs"
 	},
