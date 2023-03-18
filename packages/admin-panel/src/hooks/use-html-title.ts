@@ -8,7 +8,7 @@ export function useHtmlTitle(
 ): void {
 	const title = isString(titleOrResource)
 		? titleOrResource
-		: titleOrResource.options.label ?? titleOrResource.name
+		: titleOrResource?.options?.label ?? titleOrResource.name
 
 	useTitle(`${action} ${title} | Admin Panel`.trim(), { restoreOnUnmount: true })
 }

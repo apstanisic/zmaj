@@ -4,7 +4,7 @@ import { IconButton } from "@admin-panel/ui/IconButton"
 import { Menu } from "@admin-panel/ui/Menu"
 import { useIsFetching } from "@tanstack/react-query"
 import { clsx } from "clsx"
-import { useLoading, useLogout } from "ra-core"
+import { useLoading, useLogout, useRedirect } from "ra-core"
 import { memo, useMemo } from "react"
 import { MdOutlinePerson, MdPerson, MdPowerSettingsNew } from "react-icons/md"
 // import { useIsFetching as useIsFetchingRa } from "react-query"
@@ -21,6 +21,7 @@ export const AppBar = memo((props: { widthCss: string; heightCss: string }) => {
 	const fetchingRa = useLoading()
 	const logout = useLogout()
 	const [theme] = useTheme()
+	const redirect = useRedirect()
 
 	const fetching = useMemo(() => fetchingZmaj > 0 || fetchingRa, [fetchingZmaj, fetchingRa])
 	const canAccessProfile = useIsAllowedSystem("account", "readProfile")
@@ -72,7 +73,10 @@ export const AppBar = memo((props: { widthCss: string; heightCss: string }) => {
 							button: true,
 							title: "Logout",
 							startIcon: <MdPowerSettingsNew />,
-							onClick: async () => logout(),
+							onClick: async () => {
+								redirect("/")
+								return logout()
+							},
 						},
 					]}
 				/>
