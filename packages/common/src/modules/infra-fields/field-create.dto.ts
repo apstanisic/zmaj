@@ -4,7 +4,11 @@ import { ZodDto } from "../../zod/zod-dto"
 import { allColumnDataTypes } from "./all-column-data-types.consts"
 import { FieldUpdateSchema } from "./field-update.dto"
 
-export const FieldCreateSchema = FieldUpdateSchema.extend({
+export const FieldCreateSchema = FieldUpdateSchema.omit({
+	dbDefaultValue: true,
+	isNullable: true,
+	isUnique: true,
+}).extend({
 	columnName: DbFieldSchema,
 	tableName: DbFieldSchema,
 	dataType: z.enum(allColumnDataTypes),

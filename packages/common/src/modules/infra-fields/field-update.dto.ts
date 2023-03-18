@@ -1,3 +1,4 @@
+import { z } from "zod"
 import { ZodDto } from "../../zod/zod-dto"
 import { FieldMetadataSchema } from "./field-metadata.schema"
 
@@ -12,6 +13,12 @@ export const FieldUpdateSchema = FieldMetadataSchema.pick({
 	displayTemplate: true,
 	isUpdatedAt: true,
 	isCreatedAt: true,
-}).partial()
+})
+	.extend({
+		isUnique: z.boolean().nullish(),
+		isNullable: z.boolean().nullable(),
+		dbDefaultValue: z.unknown().nullable().nullish(),
+	})
+	.partial()
 
 export class FieldUpdateDto extends ZodDto(FieldUpdateSchema) {}

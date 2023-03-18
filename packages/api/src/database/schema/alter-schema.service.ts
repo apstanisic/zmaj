@@ -8,6 +8,7 @@ import {
 	DropForeignKeySchema,
 	CreateUniqueKeySchema,
 	DropUniqueKeySchema,
+	UpdateColumnSchema,
 } from "./alter-schema.schemas"
 
 type Shared = { trx?: any }
@@ -18,6 +19,7 @@ export abstract class AlterSchemaService {
 	abstract dropTable(params: z.input<typeof DropTableSchema>, shared?: Shared): Promise<void>
 
 	abstract createColumn(params: z.input<typeof CreateColumnSchema>, shared?: Shared): Promise<void>
+	abstract updateColumn(params: z.input<typeof UpdateColumnSchema>): Promise<void>
 
 	abstract dropColumn(params: z.input<typeof DropColumnSchema>, shared?: Shared): Promise<void>
 

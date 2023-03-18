@@ -63,7 +63,7 @@ const Step1 = memo(() => {
 				label="Value Optional"
 				source="isNullable"
 				Component={BooleanInputField}
-				disabled={isEdit}
+				// disabled={isEdit}
 				defaultValue={true}
 			/>
 
@@ -86,7 +86,7 @@ const Step2 = memo(() => {
 				label="Unique"
 				Component={BooleanInputField}
 				defaultValue={false}
-				disabled={isEdit}
+				// disabled={isEdit}
 				isRequired
 			/>
 

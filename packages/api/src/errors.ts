@@ -67,6 +67,8 @@ export const emsg = {
 	noDeleteFk: "Delete foreign key before deleting this field",
 	noDefaultValue:
 		"Must provide default value to a non nullable column, since records already exist",
+	cantSetUnique: "Column can't be unique, cause there are multiple rows with same value",
+	cantSetNull: "Column can't be required, since there are null values in some rows",
 	//
 	collectionExists: (col: string) => `Collection '${col}' already exists` as const,
 	fieldExists: (field: string) => `Field '${field}' already exists` as const,

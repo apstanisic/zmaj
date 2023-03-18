@@ -23,7 +23,7 @@ export function FieldInfoInputDefaultValue(): JSX.Element {
 			source="dbDefaultValue"
 			label="Default Value"
 			description="Leave empty for null"
-			disabled={action === "edit"}
+			// disabled={action === "edit"}
 			defaultValue=""
 			Component={component.name === "dropdown" ? fieldComponents.get().Input : component.Input}
 		/>

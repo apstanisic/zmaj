@@ -1,4 +1,4 @@
-import { throw404, throw500 } from "@api/common/throw-http"
+import { throw400, throw404, throw500 } from "@api/common/throw-http"
 import {
 	CreateColumnSchema,
 	CreateForeignKeySchema,
@@ -8,14 +8,24 @@ import {
 	DropForeignKeySchema,
 	DropTableSchema,
 	DropUniqueKeySchema,
+	UpdateColumnSchema,
 } from "@api/database/schema/alter-schema.schemas"
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
-import { DataType, DataTypes, QueryInterface, Sequelize } from "sequelize"
+import {
+	DatabaseError,
+	DataType,
+	DataTypes,
+	QueryInterface,
+	Sequelize,
+	SequelizeScopeError,
+	UniqueConstraintError,
+} from "sequelize"
 import { alphabetical, isEqual } from "radash"
 import { z } from "zod"
 import { SequelizeService } from "./sequelize.service"
+import { filterStruct } from "@zmaj-js/common"
 
 type Shared = { trx?: any }
 
@@ -60,6 +70,31 @@ export class SequelizeAlterSchemaService {
 			},
 			{ transaction: shared?.trx },
 		)
+	}
+
+	async updateColumn(params: z.input<typeof UpdateColumnSchema>, shared?: Shared): Promise<void> {
+		const data = UpdateColumnSchema.parse(params)
+
+		const col = await this.schemaInfo.getColumn(params.tableName, params.columnName)
+		if (!col) throw500(889931)
+
+		// type must be provided, so we use existing type, and only pass changes that are not undefined
+		await this.qi
+			.changeColumn(data.tableName, data.columnName, {
+				type: col.dataType,
+				allowNull: data.nullable ?? undefined,
+				unique: data.unique ?? undefined,
+				defaultValue: this.parseDefaultValue(data.defaultValue),
+			})
+			.catch((e) => {
+				if (e instanceof UniqueConstraintError) {
+					throw400(49832423, emsg.cantSetUnique)
+				} else if (e instanceof DatabaseError && e.message.includes("contains null values")) {
+					throw400(8521992, emsg.cantSetNull)
+				}
+
+				throw500(934872)
+			})
 	}
 
 	async dropColumn(params: z.input<typeof DropColumnSchema>, shared?: Shared): Promise<void> {
@@ -139,7 +174,8 @@ export class SequelizeAlterSchemaService {
 	 * Not sure about literal value
 	 */
 	private parseDefaultValue(value: z.infer<typeof CreateColumnSchema>["defaultValue"]): unknown {
-		if (!value) return null
+		if (value === undefined) return undefined
+		if (value === null) return null
 		return value.type === "raw" ? Sequelize.literal(value.value) : value.value
 	}
 	/**

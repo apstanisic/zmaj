@@ -14,8 +14,9 @@ import {
 	isNil,
 	UUID,
 	zodCreate,
+	isBoolean,
 } from "@zmaj-js/common"
-import { camel, isString, title } from "radash"
+import { camel, isObject, isString, title } from "radash"
 import { z } from "zod"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { OnInfraChangeService } from "../on-infra-change.service"
@@ -76,8 +77,39 @@ export class FieldsService {
 		)
 	}
 
+	// async checkIfColumnCanBeNotNull(tableName: string, isNullable: boolean) {
+	// 	const hasRows = await this.repoManager.getRepo(tableName).count({})
+	// 	if (hasRows && !isNullable) {
+	// 		throw403(4324234, emsg.noDefaultValue)
+	// 	}
+	// }
+
 	async updateField(id: string, changes: FieldUpdateDto): Promise<FieldMetadata> {
-		return this.appInfraSync.executeChange(async () => this.repo.updateById({ id, changes }))
+		const currentField =
+			this.infraState.fields.find((f) => f.id === id) ?? throw400(42399, emsg.noField)
+
+		const changedNullable =
+			isBoolean(changes.isNullable) && changes.isNullable !== currentField.isNullable
+		const changedUnique = isBoolean(changes.isUnique) && changes.isUnique !== currentField.isUnique
+		const changedDefaultValue =
+			changes.dbDefaultValue !== undefined && changes.dbDefaultValue !== currentField.dbDefaultValue
+
+		return this.appInfraSync.executeChange(async () => {
+			if (changedNullable || changedUnique || changedDefaultValue) {
+				await this.alterSchema.updateColumn({
+					columnName: currentField.columnName,
+					tableName: currentField.tableName,
+					defaultValue: changedDefaultValue
+						? this.getDefaultValue(changes.dbDefaultValue)
+						: undefined,
+					nullable: changedNullable ? changes.isNullable : undefined,
+					unique: changedUnique ? changes.isUnique : undefined,
+				})
+			}
+			const field = await this.repo.updateById({ id, changes })
+
+			return field
+		})
 	}
 
 	async deleteField(id: UUID): Promise<FieldMetadata> {

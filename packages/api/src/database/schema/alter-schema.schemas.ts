@@ -86,3 +86,12 @@ export const CreateColumnSchema = z.object({
  *
  */
 export const DropColumnSchema = CreateColumnSchema.pick({ tableName: true, columnName: true })
+
+export const UpdateColumnSchema = CreateColumnSchema.pick({
+	tableName: true,
+	columnName: true,
+	defaultValue: true,
+}).extend({
+	nullable: z.boolean().nullish(),
+	unique: z.boolean().nullish(),
+})
