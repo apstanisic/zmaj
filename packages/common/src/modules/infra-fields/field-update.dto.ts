@@ -9,6 +9,7 @@ export const FieldUpdateSchema = FieldMetadataSchema.pick({
 	description: true,
 	fieldConfig: true,
 	label: true,
+	displayTemplate: true,
 	isUpdatedAt: true,
 	isCreatedAt: true,
 }).partial()

@@ -28,6 +28,7 @@ export const CreateFieldMetadataTable = createSystemMigration({
 				// used for gui
 				label: { type: DataTypes.STRING(200) },
 				component_name: { type: DataTypes.STRING(200) },
+				display_template: { type: DataTypes.STRING(1000) },
 				description: { type: DataTypes.STRING(500) },
 				field_config: { type: DataTypes.JSONB, allowNull: false, defaultValue: {} },
 				//

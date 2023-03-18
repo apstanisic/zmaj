@@ -50,6 +50,11 @@ export type FieldMetadata = {
 	label: string | null
 
 	/**
+	 * Can be used by component to transform data
+	 */
+	displayTemplate: string | null
+
+	/**
 	 * Description for admin panel users to explain what to type
 	 * Defaults to empty string
 	 * It's used as helper text on inputs, or as a tooltip

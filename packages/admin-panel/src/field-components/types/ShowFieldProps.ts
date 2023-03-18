@@ -13,4 +13,10 @@ export type ShowFieldProps = CommonFieldProps<void> & {
 	 * For example, in profile page, we don't want to render NULL
 	 */
 	customNilText?: string
+
+	/**
+	 * For example
+	 * "Hello {name}"
+	 */
+	displayTemplate?: string
 }

@@ -61,12 +61,26 @@ export const GeneratedField = memo(() => {
 	// ---------------------------
 	// List
 	// ---------------------------
-	if (action === "list") return <Components.List {...sharedProps} action={action} />
+	if (action === "list")
+		return (
+			<Components.List
+				{...sharedProps}
+				action={action}
+				displayTemplate={field.displayTemplate ?? undefined}
+			/>
+		)
 
 	// ---------------------------
 	// Show
 	// ---------------------------
-	if (action === "show") return <Components.Show action="show" {...sharedProps} />
+	if (action === "show")
+		return (
+			<Components.Show
+				action="show"
+				{...sharedProps}
+				displayTemplate={field.displayTemplate ?? undefined}
+			/>
+		)
 
 	// ---------------------------
 	// Input (Create/Edit/Filter)

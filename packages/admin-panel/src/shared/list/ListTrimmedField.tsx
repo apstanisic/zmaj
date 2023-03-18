@@ -17,10 +17,10 @@ export function ListTrimmedField(props: ListFieldProps): JSX.Element {
 	return (
 		<RenderListField
 			{...props}
-			render={({ value, source }) => {
+			render={({ value, displayTemplate }) => {
 				// if value is displayed as string, limit to 100 chars, since only around 60 are shown.
 				// this improves performance, since we can have huge json, md or right text
-				const toShow = ensureValidChild(value)
+				const toShow = ensureValidChild(value, displayTemplate)
 				return (
 					<p className="max-w-[12rem] truncate">
 						{isString(toShow) ? toShow.substring(0, 100) : toShow}

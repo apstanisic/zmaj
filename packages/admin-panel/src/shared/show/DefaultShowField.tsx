@@ -10,5 +10,10 @@ import { RenderShowField } from "./RenderShowField"
  */
 
 export const DefaultShowField = memo((props: ShowFieldProps) => {
-	return <RenderShowField {...props} render={({ value }) => <>{ensureValidChild(value)}</>} />
+	return (
+		<RenderShowField
+			{...props}
+			render={({ value, displayTemplate }) => <>{ensureValidChild(value, displayTemplate)}</>}
+		/>
+	)
 })

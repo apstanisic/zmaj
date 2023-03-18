@@ -26,6 +26,7 @@ export const FieldMetadataCollection = DefineCollection<FieldMetadata>({
 		},
 		componentName: { dataType: "short-text", columnName: "component_name" },
 		label: { dataType: "short-text", columnName: "label" },
+		displayTemplate: { dataType: "short-text", columnName: "display_template" },
 		canUpdate: { dataType: "boolean", columnName: "can_update" },
 		canCreate: { dataType: "boolean", columnName: "can_create" },
 		canRead: { dataType: "boolean", columnName: "can_read" },

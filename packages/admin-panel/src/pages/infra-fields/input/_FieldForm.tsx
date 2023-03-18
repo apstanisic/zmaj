@@ -69,6 +69,10 @@ const Step1 = memo(() => {
 
 			<ManualInputField source="label" />
 			<ManualInputField source="description" Component={TextareaInputField} />
+			<ManualInputField
+				source="displayTemplate"
+				description="For example: 'Hello {value}'. {value} will be replaced by field. Key is always 'value'."
+			/>
 		</StepSection>
 	)
 })

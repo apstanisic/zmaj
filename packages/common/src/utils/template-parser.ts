@@ -109,6 +109,10 @@ const basicPipes: Record<string, TemplateParserPipe> = {
 	orUnknown: (value) => (isNil(value) ? "UNKNOWN" : value),
 	camelCase: (v) => camel(String(v)),
 	snakeCase: (v) => snakeCase(String(v)),
+	fromCents: (v) => {
+		const str = String(v).padStart(3, "0")
+		return str.substring(0, str.length - 2) + "." + str.substring(str.length - 2)
+	},
 	truncate: (value) => {
 		const asString = trim(JSON.stringify(value), '"')
 		return truncate(asString, { length: 50 })

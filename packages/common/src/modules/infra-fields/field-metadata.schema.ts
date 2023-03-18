@@ -16,6 +16,7 @@ export const FieldMetadataSchema = ModelSchema<FieldMetadata>()(
 		canUpdate: z.boolean().default(true),
 		canCreate: z.boolean().default(true),
 		canRead: z.boolean().default(true),
+		displayTemplate: z.string().max(1000).nullable().default(null),
 		componentName: z.string().min(1).max(60).nullable().default(null),
 		sortable: z.boolean().default(true),
 		fieldConfig: z.record(z.unknown()).default({}),

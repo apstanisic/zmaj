@@ -53,6 +53,7 @@ const Content = memo(() => {
 				<ManualShowField source="sortable" label="Is Sortable" Component={BooleanShowField} />
 				<ManualShowField source="label" />
 				<ManualShowField source="description" />
+				<ManualShowField source="displayTemplate" />
 				<FieldShowDefaultValue />
 				{/* is it safe to put default value here. Can React always render?
           It should convert to string on the api, but I'm not sure */}
