@@ -65,6 +65,8 @@ export const emsg = {
 	isSystemTable: "You can't modify system table",
 	noDeletePk: "You can't delete primary key",
 	noDeleteFk: "Delete foreign key before deleting this field",
+	noDefaultValue:
+		"Must provide default value to a non nullable column, since records already exist",
 	//
 	collectionExists: (col: string) => `Collection '${col}' already exists` as const,
 	fieldExists: (field: string) => `Field '${field}' already exists` as const,

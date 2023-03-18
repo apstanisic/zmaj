@@ -41,6 +41,11 @@ export class FieldsService {
 			throw400(32912, emsg.fieldExists(data.columnName))
 		}
 
+		const hasRows = await this.repoManager.getRepo(data.tableName).count({})
+		if (hasRows && !data.isNullable && isNil(data.dbDefaultValue)) {
+			throw403(4324234, emsg.noDefaultValue)
+		}
+
 		const toCreate = zodCreate(FieldMetadataSchema, {
 			...data,
 			label: data.label ?? title(data.columnName),
