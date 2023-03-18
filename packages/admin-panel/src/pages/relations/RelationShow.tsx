@@ -1,11 +1,39 @@
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
+import { useRecord } from "@admin-panel/hooks/use-record"
+import { useNonSystemCollections } from "@admin-panel/state/infra-state-v2"
 import { Divider } from "@admin-panel/ui/Divider"
-import { memo } from "react"
+import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { CollectionMetadataCollection, RelationDef } from "@zmaj-js/common"
+import { useRedirect } from "ra-core"
+import { memo, useMemo } from "react"
+import { MdViewList } from "react-icons/md"
 import { GeneratedShowPage } from "../../generator/pages/GeneratedShowPage"
 import { ManualShowField } from "../../shared/show/ManualShowField"
 import { JoinManyToManyButton } from "./show/JoinManyToManyButton"
 import { ShowOtherSideOfRelation } from "./show/ShowOtherSideOfRelation"
 import { SplitRelationButton } from "./show/SplitRelationButton"
+
+// Display button to show collection page
+function GoToCollection(): JSX.Element {
+	const relation = useRecord<RelationDef>()
+	const redirect = useRedirect()
+
+	const cols = useNonSystemCollections()
+	const col = useMemo(
+		() => cols.find((t) => t.tableName === relation?.tableName),
+		[cols, relation?.tableName],
+	)
+
+	if (!col) return <></>
+
+	return (
+		<ResponsiveButton
+			icon={<MdViewList />}
+			onClick={() => redirect("show", CollectionMetadataCollection.collectionName, col.id)}
+			label="Collection"
+		/>
+	)
+}
 
 export const RelationShow = memo(() => {
 	const onDelete = useOnInfraPropertyDelete()
@@ -19,6 +47,7 @@ export const RelationShow = memo(() => {
 					<ShowOtherSideOfRelation />
 					<SplitRelationButton />
 					<JoinManyToManyButton />
+					<GoToCollection />
 				</>
 			}
 		>

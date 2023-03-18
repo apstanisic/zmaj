@@ -1,8 +1,15 @@
+import { useCollectionContext } from "@admin-panel/context/collection-context"
 import { MyReferenceField } from "@admin-panel/generator/many-to-one/MyReferenceField"
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { FieldDef } from "@zmaj-js/common"
-import { memo } from "react"
+import { useNonSystemCollections } from "@admin-panel/state/infra-state-v2"
+import { useInfraState } from "@admin-panel/state/useInfraState"
+import { Button } from "@admin-panel/ui/Button"
+import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { CollectionMetadataCollection, FieldDef, FieldMetadata } from "@zmaj-js/common"
+import { useRedirect } from "ra-core"
+import { memo, useMemo } from "react"
+import { MdViewList } from "react-icons/md"
 import { TabsLayout } from "../../crud-layouts/ui/tabs/TabsLayout"
 import { TabsSection } from "../../crud-layouts/ui/tabs/TabsSection"
 import { BooleanShowField } from "../../field-components/boolean/BooleanShowField"
@@ -18,7 +25,7 @@ export const FieldShow = memo(() => {
 		<GeneratedShowPage
 			disableDeleteRedirect
 			onDelete={onDelete} //
-			startButtons={<div></div>}
+			startButtons={<StartButtons />}
 		>
 			<Content />
 		</GeneratedShowPage>
@@ -26,6 +33,28 @@ export const FieldShow = memo(() => {
 
 	//
 })
+
+// Display button to show collection page
+function StartButtons(): JSX.Element {
+	const field = useRecord<FieldDef>()
+	const redirect = useRedirect()
+
+	const cols = useNonSystemCollections()
+	const col = useMemo(
+		() => cols.find((t) => t.tableName === field?.tableName),
+		[cols, field?.tableName],
+	)
+
+	if (!col) return <></>
+
+	return (
+		<ResponsiveButton
+			icon={<MdViewList />}
+			onClick={() => redirect("show", CollectionMetadataCollection.collectionName, col.id)}
+			label="Collection"
+		/>
+	)
+}
 
 const Content = memo(() => {
 	const record = useRecord<FieldDef>()
