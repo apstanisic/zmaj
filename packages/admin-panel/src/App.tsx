@@ -5,9 +5,14 @@ import { memoryStore, StoreContextProvider } from "ra-core"
 import { useMemo } from "react"
 import { IconContext } from "react-icons"
 import { HashRouter } from "react-router-dom"
+import { SetOptional } from "type-fest"
 import { AdminPanel } from "./AdminPanel"
 import { ZmajQueryClientProvider } from "./app-query-client"
-import { GlobalConfigContextProvider, SidebarItem } from "./context/global-config-context"
+import {
+	GlobalConfig,
+	GlobalConfigContextProvider,
+	SidebarItem,
+} from "./context/global-config-context"
 import { SdkContextProvider } from "./context/sdk-context"
 import { AddFieldComponentParams } from "./field-components/field-components"
 import {
@@ -18,10 +23,10 @@ import { useRegisterFieldComponents } from "./hooks/use-register-field-component
 import { useRegisterTemplatePipes } from "./hooks/use-register-template-pipes"
 import { CustomPage } from "./types/CustomPage"
 
-export type AppProps = {
-	adminPanelUrl: string
-	apiUrl: string
-	appName?: string
+export type AppProps = SetOptional<
+	GlobalConfig,
+	"sidebarItems" | "appName" | "imageInAuthPages"
+> & {
 	fieldComponents?: AddFieldComponentParams[]
 	crudLayouts?: UseRegisterCrudLayoutParams
 	templatePipes?: { key: string; fn: TemplateParserPipe }[]
@@ -47,6 +52,7 @@ export function App(props: AppProps): JSX.Element {
 					apiUrl: props.apiUrl,
 					appName: props.appName ?? "Admin Panel",
 					sidebarItems: props.sidebarItems ?? [],
+					imageInAuthPages: props.imageInAuthPages ?? "https://source.unsplash.com/random",
 				}}
 			>
 				<SdkContextProvider value={sdk}>

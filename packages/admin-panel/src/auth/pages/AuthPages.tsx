@@ -1,3 +1,4 @@
+import { useGlobalConfigContext } from "@admin-panel/context/global-config-context"
 import { CustomRoutes } from "ra-core"
 import { Route } from "react-router"
 import { UserProfileEdit } from "../profile/EditUserProfilePage"
