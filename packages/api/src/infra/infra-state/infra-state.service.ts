@@ -122,11 +122,9 @@ export class InfraStateService {
 			.transaction({
 				fn: async (trx) => {
 					// db schema
-					this._columns = await this.schemaInfo.getColumns(undefined, undefined, { trx })
-					this._fks = await this.schemaInfo.getForeignKeys(undefined, undefined, { trx })
-					this._compositeUniqueKeys = await this.schemaInfo.getCompositeUniqueKeys(undefined, {
-						trx,
-					})
+					this._columns = await this.schemaInfo.getColumns({ trx })
+					this._fks = await this.schemaInfo.getForeignKeys({ trx })
+					this._compositeUniqueKeys = await this.schemaInfo.getCompositeUniqueKeys({ trx })
 
 					// Get simple db values
 					this._dbCollections = await this.infra.getCollectionMetadata(trx)

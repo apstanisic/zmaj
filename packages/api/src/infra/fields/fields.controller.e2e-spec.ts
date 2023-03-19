@@ -123,7 +123,7 @@ describe("RelationController e2e", () => {
 			expect(fieldInDb).toBeDefined()
 
 			// column should have been created
-			const column = await schemaInfoService.getColumn(tableName, newField)
+			const column = await schemaInfoService.getColumn({ table: tableName, column: newField })
 			expect(column).toBeDefined()
 			expect(column?.dataType).toEqual("text")
 			expect(column?.nullable).toEqual(true)

@@ -75,7 +75,10 @@ export class SequelizeAlterSchemaService {
 	async updateColumn(params: z.input<typeof UpdateColumnSchema>, shared?: Shared): Promise<void> {
 		const data = UpdateColumnSchema.parse(params)
 
-		const col = await this.schemaInfo.getColumn(params.tableName, params.columnName)
+		const col = await this.schemaInfo.getColumn({
+			table: params.tableName,
+			column: params.columnName,
+		})
 		if (!col) throw500(889931)
 
 		// type must be provided, so we use existing type, and only pass changes that are not undefined
@@ -126,7 +129,11 @@ export class SequelizeAlterSchemaService {
 		if (data.indexName) {
 			keyName = data.indexName
 		} else {
-			const fk = await this.schemaInfo.getForeignKey(data.fkTable, data.fkColumn, shared)
+			const fk = await this.schemaInfo.getForeignKey({
+				table: data.fkTable,
+				column: data.fkColumn,
+				...shared,
+			})
 			if (!fk) throw404(42000343, emsg.invalidPayload)
 			keyName = fk.fkName
 		}
@@ -154,7 +161,10 @@ export class SequelizeAlterSchemaService {
 		if (data.indexName) {
 			keyName = data.indexName
 		} else {
-			const uniqueKeys = await this.schemaInfo.getUniqueKeys(data.tableName, { trx: shared?.trx })
+			const uniqueKeys = await this.schemaInfo.getUniqueKeys({
+				table: data.tableName,
+				trx: shared?.trx,
+			})
 
 			const columns = alphabetical(data.columnNames, (v) => v)
 			const toDelete = uniqueKeys.find((key) =>

@@ -150,7 +150,10 @@ describe("RelationController e2e", () => {
 
 				// const fks = await schemaInfoService.getForeignKeys()
 
-				const createdFk = await schemaInfoService.getForeignKey(dto.leftTable, dto.leftColumn)
+				const createdFk = await schemaInfoService.getForeignKey({
+					table: dto.leftTable,
+					column: dto.leftColumn,
+				})
 				expect(createdFk).toMatchObject<Partial<ForeignKey>>({
 					fkColumn: dto.leftColumn,
 					fkTable: dto.leftTable,
@@ -209,7 +212,10 @@ describe("RelationController e2e", () => {
 				const createdCol = await schemaInfoService.hasColumn(dto.rightTable, dto.rightColumn)
 				expect(createdCol).toEqual(true)
 
-				const createdFk = await schemaInfoService.getForeignKey(dto.rightTable, dto.rightColumn)
+				const createdFk = await schemaInfoService.getForeignKey({
+					table: dto.rightTable,
+					column: dto.rightColumn,
+				})
 				expect(createdFk).toMatchObject({
 					fkColumn: dto.rightColumn,
 					fkTable: dto.rightTable,
@@ -264,11 +270,17 @@ describe("RelationController e2e", () => {
 
 				expect(res.statusCode).toEqual(201)
 
-				const createdCol = await schemaInfoService.getColumn(dto.leftTable, dto.leftColumn)
+				const createdCol = await schemaInfoService.getColumn({
+					table: dto.leftTable,
+					column: dto.leftColumn,
+				})
 				expect(createdCol).toBeDefined()
 				expect(createdCol?.unique).toEqual(true)
 
-				const createdFk = await schemaInfoService.getForeignKey(dto.leftTable, dto.leftColumn)
+				const createdFk = await schemaInfoService.getForeignKey({
+					table: dto.leftTable,
+					column: dto.leftColumn,
+				})
 				expect(createdFk).toMatchObject<Partial<ForeignKey>>({
 					fkColumn: dto.leftColumn,
 					fkTable: dto.leftTable,
@@ -324,11 +336,17 @@ describe("RelationController e2e", () => {
 
 				expect(res.statusCode).toEqual(201)
 
-				const createdCol = await schemaInfoService.getColumn(dto.rightTable, dto.rightColumn)
+				const createdCol = await schemaInfoService.getColumn({
+					table: dto.rightTable,
+					column: dto.rightColumn,
+				})
 				expect(createdCol).toBeDefined()
 				expect(createdCol?.unique).toEqual(true)
 
-				const createdFk = await schemaInfoService.getForeignKey(dto.rightTable, dto.rightColumn)
+				const createdFk = await schemaInfoService.getForeignKey({
+					table: dto.rightTable,
+					column: dto.rightColumn,
+				})
 				expect(createdFk).toMatchObject({
 					fkColumn: dto.rightColumn,
 					fkTable: dto.rightTable,
@@ -388,14 +406,16 @@ describe("RelationController e2e", () => {
 				const hasTable = await schemaInfoService.hasTable(dto.junctionTable!)
 				expect(hasTable).toEqual(true)
 
-				const pkCol = await schemaInfoService.getColumn(dto.junctionTable!, "id")
+				const pkCol = await schemaInfoService.getColumn({ table: dto.junctionTable!, column: "id" })
 				expect(pkCol).toMatchObject({ primaryKey: true } as DbColumn)
 
 				// const leftCol = await schemaInfoService.getColumn(
 				// 	dto.junctionTable!,
 				// 	dto.junctionLeftColumn!,
 				// )
-				const fks = await schemaInfoService.getForeignKeys(dto.junctionTable!)
+				const fks = await schemaInfoService.getForeignKeys({
+					table: dto.junctionTable ?? undefined,
+				})
 
 				expect(fks.length).toEqual(2)
 				const leftFk = fks.find((fk) => fk.referencedTable === dto.leftTable)!

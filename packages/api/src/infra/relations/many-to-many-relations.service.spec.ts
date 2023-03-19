@@ -95,7 +95,8 @@ describe("ManyToManyRelationsService", () => {
 
 			await service.joinManyToMany(junction)
 
-			expect(service["schemaInfo"].getCompositeUniqueKeys).toBeCalledWith("posts_tags", {
+			expect(service["schemaInfo"].getCompositeUniqueKeys).toBeCalledWith({
+				table: "posts_tags",
 				trx: "TEST_TRX",
 			})
 			expect(service["alterSchema"].createUniqueKey).not.toBeCalled()

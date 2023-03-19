@@ -120,7 +120,10 @@ export class ManyToManyRelationsService {
 					})
 				}
 
-				const compositeKeys = await this.schemaInfo.getCompositeUniqueKeys(rel1.tableName, { trx })
+				const compositeKeys = await this.schemaInfo.getCompositeUniqueKeys({
+					table: rel1.tableName,
+					trx,
+				})
 
 				const uniqueKeyExists = compositeKeys.some((key) =>
 					isEqual(

@@ -75,12 +75,12 @@ describe("SequelizeSchemaInfoService", () => {
 
 	describe("getColumns", () => {
 		it("should get single column", async () => {
-			const cols = await schemaInfo.getColumns("posts", "id")
+			const cols = await schemaInfo.getColumns({ table: "posts", column: "id" })
 			expect(cols[0]).toEqual(mockColumns.posts.id)
 		})
 
 		it("should get columns for single table", async () => {
-			const cols = await schemaInfo.getColumns("posts")
+			const cols = await schemaInfo.getColumns({ table: "posts" })
 			const data = objectify(cols, (c) => c.columnName)
 			expect(data).toEqual(mockColumns.posts)
 		})
@@ -94,7 +94,7 @@ describe("SequelizeSchemaInfoService", () => {
 	describe("getColumn", () => {
 		it("should use getColumns method", async () => {
 			schemaInfo.getColumns = vi.fn(async () => [mockColumns.posts.id])
-			const col = await schemaInfo.getColumn("posts", "id")
+			const col = await schemaInfo.getColumn({ table: "posts", column: "id" })
 			expect(schemaInfo.getColumns).toBeCalledWith("posts", "id", undefined)
 			expect(col).toEqual(mockColumns.posts.id)
 		})
@@ -104,14 +104,14 @@ describe("SequelizeSchemaInfoService", () => {
 		it("should get primary key column", async () => {
 			schemaInfo.getColumn = vi.fn(async () => mockColumns.posts.id)
 			const pk = await schemaInfo.getPrimaryKey("posts")
-			expect(schemaInfo.getColumn).toBeCalledWith("posts", "id", undefined)
+			expect(schemaInfo.getColumn).toBeCalledWith({ table: "posts", column: "id" })
 			expect(pk).toEqual(mockColumns.posts.id)
 		})
 	})
 
 	describe("getForeignKeys", () => {
 		it("should get foreign keys", async () => {
-			const fks = await schemaInfo.getForeignKeys("posts_tags")
+			const fks = await schemaInfo.getForeignKeys({ table: "posts_tags" })
 			const fkObjects = objectify(fks, (fk) => fk.fkColumn)
 			expect(fkObjects).toEqual({
 				post_id: mockForeignKeys.posts_tags_post_id_fkey,
@@ -123,7 +123,7 @@ describe("SequelizeSchemaInfoService", () => {
 	describe("getForeignKey", () => {
 		it("should use getForeignKeys method", async () => {
 			schemaInfo.getForeignKeys = vi.fn(async () => [mockForeignKeys.comments_post_id_fkey])
-			const fk = await schemaInfo.getForeignKey("comments", "post_id")
+			const fk = await schemaInfo.getForeignKey({ table: "comments", column: "post_id" })
 			expect(schemaInfo.getForeignKeys).toBeCalledWith("comments", "post_id", undefined)
 			expect(fk).toEqual(mockForeignKeys.comments_post_id_fkey)
 		})
@@ -131,7 +131,7 @@ describe("SequelizeSchemaInfoService", () => {
 
 	describe("getUniqueKeys", () => {
 		it("should get unique keys in table", async () => {
-			const uniques = await schemaInfo.getUniqueKeys("tags")
+			const uniques = await schemaInfo.getUniqueKeys({ table: "tags" })
 			expect(uniques).toEqual<UniqueKey[]>([
 				{
 					columnNames: ["name"],
@@ -143,18 +143,18 @@ describe("SequelizeSchemaInfoService", () => {
 		})
 
 		it("should get only composite keys", async () => {
-			const tagsUnique = await schemaInfo.getUniqueKeys("tags", { type: "composite" })
+			const tagsUnique = await schemaInfo.getUniqueKeys({ table: "tags", type: "composite" })
 			expect(tagsUnique).toHaveLength(0)
 
-			const postsTags = await schemaInfo.getUniqueKeys("posts_tags", { type: "composite" })
+			const postsTags = await schemaInfo.getUniqueKeys({ table: "posts_tags", type: "composite" })
 			expect(postsTags).toHaveLength(1)
 		})
 
 		it("should get only single keys", async () => {
-			const postsTags = await schemaInfo.getUniqueKeys("posts_tags", { type: "single" })
+			const postsTags = await schemaInfo.getUniqueKeys({ table: "posts_tags", type: "single" })
 			expect(postsTags).toHaveLength(0)
 
-			const tagsUnique = await schemaInfo.getUniqueKeys("tags", { type: "single" })
+			const tagsUnique = await schemaInfo.getUniqueKeys({ table: "tags", type: "single" })
 			expect(tagsUnique).toHaveLength(1)
 		})
 
@@ -174,7 +174,7 @@ describe("SequelizeSchemaInfoService", () => {
 				tableName: "tags",
 			}
 			schemaInfo.getUniqueKeys = vi.fn(async () => [fakeUniqueKey])
-			const uniques = await schemaInfo.getSingleUniqueKeys("tags")
+			const uniques = await schemaInfo.getSingleUniqueKeys({ table: "tags" })
 			expect(schemaInfo.getUniqueKeys).toBeCalledWith("tags", { type: "single" })
 			expect(uniques).toEqual<SingleUniqueKey[]>([
 				{
@@ -196,7 +196,7 @@ describe("SequelizeSchemaInfoService", () => {
 				tableName: "posts_tags",
 			}
 			schemaInfo.getUniqueKeys = vi.fn(async () => [fakeUniqueKey])
-			const uniques = await schemaInfo.getCompositeUniqueKeys("posts")
+			const uniques = await schemaInfo.getCompositeUniqueKeys({ table: "posts" })
 			expect(schemaInfo.getUniqueKeys).toBeCalledWith("posts", { type: "composite" })
 			expect(uniques).toEqual([fakeUniqueKey])
 		})

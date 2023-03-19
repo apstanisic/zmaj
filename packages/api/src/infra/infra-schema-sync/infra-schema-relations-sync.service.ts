@@ -176,7 +176,6 @@ export class InfraSchemaRelationsSyncService {
 
 		try {
 			await this.repo.createMany({ data: missingRelations })
-			// await this.db.start(RelationMetadataCollection).insert(snakeCased)
 		} catch (error) {
 			this.logger.error(
 				`Problem inserting missing relations: ${missingRelations

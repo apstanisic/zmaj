@@ -1,56 +1,38 @@
 import { CompositeUniqueKey, DbColumn, ForeignKey } from "@zmaj-js/common"
+import { SetRequired } from "type-fest"
 import { Transaction } from "../orm-specs/Transaction"
 
-type CommonOptions = { schema?: string; trx?: Transaction }
+export type SchemaInfoBasicParams = { schema?: string; trx?: Transaction }
+export type TableOnlyParams = { table?: string } & SchemaInfoBasicParams
+export type TableAndColumnParams = { table?: string; column?: string } & SchemaInfoBasicParams
+export type RequiredTableAndColumnParams = SetRequired<TableAndColumnParams, "column" | "table">
 
 export abstract class SchemaInfoService {
-	// https://stackoverflow.com/a/24089729
-	abstract hasTable(table: string, other?: CommonOptions): Promise<boolean>
+	abstract hasTable(table: string, other?: SchemaInfoBasicParams): Promise<boolean>
 
-	abstract hasColumn(table: string, column: string, other?: CommonOptions): Promise<boolean>
+	abstract hasColumn(table: string, column: string, other?: SchemaInfoBasicParams): Promise<boolean>
 
-	abstract getTableNames(shared?: CommonOptions): Promise<string[]>
+	abstract getPrimaryKey(tableName: string, shared?: SchemaInfoBasicParams): Promise<DbColumn>
 
-	abstract getColumns(
-		tableName?: string,
-		columnName?: string,
-		shared?: CommonOptions,
-	): Promise<DbColumn[]>
+	abstract getTableNames(shared?: SchemaInfoBasicParams): Promise<string[]>
 
-	abstract getPrimaryKey(tableName: string, shared?: CommonOptions): Promise<DbColumn>
+	abstract getColumns(options?: TableAndColumnParams): Promise<DbColumn[]>
 
 	abstract getColumn(
-		table: string,
-		column: string,
-		shared?: CommonOptions,
+		options?: RequiredTableAndColumnParams,
 	): Promise<Readonly<DbColumn> | undefined>
 
-	abstract getForeignKeys(
-		table?: string,
-		column?: string,
-		shared?: CommonOptions,
-	): Promise<ForeignKey[]>
+	abstract getForeignKeys(options?: TableAndColumnParams): Promise<ForeignKey[]>
 
-	abstract getForeignKey(
-		table: string,
-		column: string,
-		shared?: CommonOptions,
-	): Promise<ForeignKey | undefined>
+	abstract getForeignKey(options: RequiredTableAndColumnParams): Promise<ForeignKey | undefined>
 
-	abstract getSingleUniqueKeys(
-		tableName?: string,
-		shared?: CommonOptions,
-	): Promise<SingleUniqueKey[]>
+	abstract getSingleUniqueKeys(options?: TableOnlyParams): Promise<SingleUniqueKey[]>
 
-	abstract getCompositeUniqueKeys(
-		tableName?: string,
-		shared?: CommonOptions,
-	): Promise<CompositeUniqueKey[]>
+	abstract getCompositeUniqueKeys(options?: TableOnlyParams): Promise<CompositeUniqueKey[]>
 
 	abstract getUniqueKeys(
-		tableName?: string | undefined,
-		shared?: CommonOptions & { type?: "all" | "single" | "composite" },
-	): Promise<Readonly<UniqueKey>[]>
+		options?: TableOnlyParams & { type?: "all" | "single" | "composite" },
+	): Promise<UniqueKey[]>
 }
 
 export type UniqueKey = {
