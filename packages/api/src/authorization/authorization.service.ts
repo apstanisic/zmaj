@@ -95,6 +95,10 @@ export class AuthorizationService {
 		this.conditionTransformers = [...builtInTransformers, ...config.customConditionTransformers]
 	}
 
+	roleRequireMfa(roleId: string): boolean {
+		return this.authzState.roles.find((r) => r.id === roleId)?.requireMfa ?? false
+	}
+
 	/**
 	 * We allow to check for permission by either passing resource string
 	 * ("collections.posts_table", "zmaj.users"), or by passing collection (UserCollection).

@@ -181,10 +181,10 @@ describe("UsersService", () => {
 	describe("checkPassword", () => {
 		beforeEach(() => {
 			encService.verifyHash = vi.fn(async () => true)
-			service.getUserWithHiddenFields = vi.fn(async () => UserStub())
+			service.findUserWithHiddenFields = vi.fn(async () => UserStub())
 		})
 		it("should return false if user does not exist", async () => {
-			service.getUserWithHiddenFields = vi.fn(async () => undefined)
+			service.findUserWithHiddenFields = vi.fn(async () => undefined)
 			const res = await service.checkPassword({ userId: "id", password: "password" })
 			expect(res).toBe(false)
 		})

@@ -279,23 +279,23 @@ describe("AuthenticationService", () => {
 
 	describe("verifyOtp", () => {
 		beforeEach(() => {
-			mfa.checkAll = vi.fn(async () => true)
+			mfa.checkMfa = vi.fn(async () => true)
 		})
 
 		it("should do nothing if user does not have 2fa enabled", async () => {
 			const user = UserStub({ otpToken: null })
 			await service.verifyOtp(user, "123456")
-			expect(mfa.checkAll).not.toBeCalled()
+			expect(mfa.checkMfa).not.toBeCalled()
 		})
 
 		it("should check if user does have 2fa enabled", async () => {
 			const user = UserStub({ otpToken: "hello_world_123" })
 			await service.verifyOtp(user, "123456")
-			expect(mfa.checkAll).toBeCalledWith("hello_world_123", "123456")
+			expect(mfa.checkMfa).toBeCalledWith("hello_world_123", "123456")
 		})
 
 		it("should throw if 2fa token is invalid", async () => {
-			asMock(mfa.checkAll).mockResolvedValue(false)
+			asMock(mfa.checkMfa).mockResolvedValue(false)
 			const user = UserStub({ otpToken: "hello_world_123" })
 			await expect(service.verifyOtp(user, "123456")).rejects.toThrow(UnauthorizedException)
 		})

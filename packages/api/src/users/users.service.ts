@@ -6,6 +6,7 @@ import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
 	AuthUser,
+	Filter,
 	Struct,
 	User,
 	UserCollection,
@@ -38,7 +39,7 @@ export class UsersService {
 		return this.repo.findOne({ where, trx })
 	}
 
-	async getUserWithHiddenFields(
+	async findUserWithHiddenFields(
 		filter: IdOrEmailObject,
 		// userId: string,
 		trx?: Transaction,
@@ -157,7 +158,7 @@ export class UsersService {
 		password: string
 		trx?: Transaction
 	}): Promise<boolean> {
-		const user = await this.getUserWithHiddenFields({ id: userId }, trx)
+		const user = await this.findUserWithHiddenFields({ id: userId }, trx)
 
 		if (!user) return false
 

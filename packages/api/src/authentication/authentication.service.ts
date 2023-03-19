@@ -1,3 +1,5 @@
+import { AuthorizationService } from "@api/authorization/authorization.service"
+import { AuthorizationState } from "@api/authorization/authorization.state"
 import { CrudRequest } from "@api/common/decorators/crud-request.decorator"
 import { throw400, throw401, throw403 } from "@api/common/throw-http"
 import { Transaction } from "@api/database/orm-specs/Transaction"
@@ -5,7 +7,8 @@ import { emsg } from "@api/errors"
 import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
-import { AuthUser, isEmail, SignInDto, User, UserWithSecret } from "@zmaj-js/common"
+import { AuthUser, isEmail, SignInDto, SignInResponse, User, UserWithSecret } from "@zmaj-js/common"
+import { isString } from "radash"
 import { v4 } from "uuid"
 import { AuthSessionsService } from "./auth-sessions/auth-sessions.service"
 import { AuthenticationConfig } from "./authentication.config"
@@ -32,8 +35,33 @@ export class AuthenticationService {
 		private readonly signUpService: SignUpService,
 		private readonly authnConfig: AuthenticationConfig,
 		private readonly mfa: MfaService,
+		private readonly authzService: AuthorizationService,
 	) {}
 
+	async signIn2(
+		dto: SignInDto,
+		meta: Pick<CrudRequest, "ip" | "userAgent">,
+	): Promise<SignInResponse> {
+		const user = await this.users.findUserWithHiddenFields({ email: dto.email })
+		// user does not exist
+		if (!user) throw401(68833, emsg.userNotFound)
+		// not active
+		if (user.status !== "active") throw403(59391, emsg.accountDisabled)
+		// check password
+		const validPassword = await this.users.checkPasswordHash(user.password, dto.password)
+		if (!validPassword) throw400(69333, emsg.invalidEmailOrPassword)
+		// check if mfa token is missing
+		if (user.otpToken && !isString(dto.otpToken)) return { status: "has-mfa" }
+		// verify mfa if exists
+		await this.verifyOtp(user, dto.otpToken)
+		// check if role requires mfa
+		if (this.authzService.roleRequireMfa(user.roleId) && !user.otpToken) {
+			return { status: "must-create-mfa", data: await this.mfa.generateParamsToEnable(dto.email) }
+		}
+		// sign in user
+		const tokens = await this.signInWithoutPassword(AuthUser.fromUser(user), meta)
+		return { status: "success", ...tokens }
+	}
 	/**
 	 * Try to login with email and password.
 	 */
@@ -41,6 +69,7 @@ export class AuthenticationService {
 		dto: SignInDto,
 		meta: Pick<CrudRequest, "ip" | "userAgent">,
 	): Promise<AuthTokens> {
+		this.users.findActiveUser
 		const user = await this.getSignInUser(dto)
 		const authUser = AuthUser.fromUser(user)
 
@@ -140,12 +169,12 @@ export class AuthenticationService {
 	async verifyOtp(user: UserWithSecret, code?: string | null): Promise<void> {
 		if (user.otpToken === null) return
 
-		const validOtp = await this.mfa.checkAll(user.otpToken, code ?? "invalid")
+		const validOtp = await this.mfa.checkMfa(user.otpToken, code ?? "invalid")
 		if (!validOtp) throw401(388532, emsg.mfaInvalid)
 	}
 
 	async getSignInUser(data: SignInDto, trx?: Transaction): Promise<User> {
-		const user = await this.users.getUserWithHiddenFields({ email: data.email }, trx)
+		const user = await this.users.findUserWithHiddenFields({ email: data.email }, trx)
 		if (user?.status !== "active") throw403(7389999, emsg.accountDisabled)
 		// user = this.users.ensureUserIsActive(user)
 
@@ -153,6 +182,10 @@ export class AuthenticationService {
 		if (!valid) throw401(189251, emsg.invalidEmailOrPassword)
 
 		await this.verifyOtp(user, data.otpToken)
+
+		if (user.otpToken === null && this.authzService.roleRequireMfa(user.roleId)) {
+			throw403(499551, emsg.mfaDisabled)
+		}
 
 		const { password, otpToken, ...allowedData } = user
 		return allowedData

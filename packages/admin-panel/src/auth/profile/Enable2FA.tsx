@@ -3,18 +3,16 @@ import { PasswordInputField } from "@admin-panel/field-components/password/Passw
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { ManualInputField } from "@admin-panel/shared/input/ManualInputField"
 import { Button } from "@admin-panel/ui/Button"
-import { Card } from "@admin-panel/ui/Card"
-import { Divider } from "@admin-panel/ui/Divider"
-import { TextInput } from "@admin-panel/ui/TextInput"
-import { intRegex, OtpDisableDto, Struct } from "@zmaj-js/common"
+import { OtpDisableDto, Struct } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
 import { memo, useCallback, useState } from "react"
-import { useTimeoutFn } from "react-use"
+import { DisplayMfaQrCode } from "../components/DisplayMfaQrCode"
 import { useHasMfa } from "./useUserProfile"
 
 export function Enable2FA(): JSX.Element {
 	const sdk = useSdk()
 	useHtmlTitle("Enable 2FA")
+	const redirect = useRedirect()
 	const [otp, setOtp] = useState<{
 		secret: string
 		image: string
@@ -29,13 +27,13 @@ export function Enable2FA(): JSX.Element {
 	}, [sdk.auth.mfa])
 
 	if (hasOtp) {
-		return <DisableOtp />
+		return <Disable2FA />
 	}
 
 	return (
 		<div className="center mt-8">
 			{otp ? (
-				<DisplayQrCode refreshCode={enable} {...otp} />
+				<DisplayMfaQrCode refreshCode={enable} {...otp} onConfirm={() => redirect("/profile")} />
 			) : (
 				<Button onPress={enable}>Enable 2FA</Button>
 			)}
@@ -43,7 +41,7 @@ export function Enable2FA(): JSX.Element {
 	)
 }
 
-const DisableOtp = memo(() => {
+const Disable2FA = memo(() => {
 	const sdk = useSdk()
 	const notify = useNotify()
 	const redirect = useRedirect()
@@ -75,101 +73,3 @@ const DisableOtp = memo(() => {
 		</Form>
 	)
 })
-
-const DisplayQrCode = memo(
-	(props: {
-		image: string
-		secret: string
-		jwt: string
-		backupCodes: string[]
-		refreshCode: () => Promise<void>
-	}) => {
-		const sdk = useSdk()
-		const [verifyCode, setVerifyCode] = useState("")
-		const notify = useNotify()
-		const redirect = useRedirect()
-		const [expired, setExpired] = useState(false)
-
-		const onChange = useCallback((val: string) => {
-			if (val === "") {
-				setVerifyCode("")
-				return
-			}
-			if (val.length > 6) return
-			if (!intRegex.test(val)) return
-			setVerifyCode(val)
-		}, [])
-
-		// // every 5 minutes, disable current qr code
-		const [, , resetTimeout] = useTimeoutFn(() => setExpired(true), 290 * 1000)
-
-		const confirmOtp = useCallback(() => {
-			sdk.auth.mfa
-				.confirmOtp({ code: verifyCode, jwt: props.jwt })
-				.then(() => {
-					notify("2FA enabled", { type: "success" })
-					redirect("/profile")
-				})
-				.catch(() => {
-					notify("Problem enabling 2FA", { type: "error" })
-				})
-		}, [notify, props.jwt, redirect, sdk.auth.mfa, verifyCode])
-
-		if (expired) {
-			return (
-				<Card className="w-full p-4">
-					<h3 className="mb-5 text-xl">Setup 2 factor authentication</h3>
-					<Button
-						variant="warning"
-						onClick={() =>
-							void props.refreshCode().then(() => {
-								setExpired(false)
-								resetTimeout()
-							})
-						}
-					>
-						Time expired. Click here to get new qrcode
-					</Button>
-				</Card>
-			)
-		}
-
-		return (
-			<Card className="w-full p-4">
-				<h3 className="mb-5 text-xl">Setup 2 factor authentication</h3>
-				<p>
-					Use your 2FA app (like Google Authenticator) and scan QR code If you are not able to scan
-					QR code, enter this value in your app manually:
-				</p>
-				<pre className="mt-2 text-center text-lg font-bold" data-testid="mfaSecret">
-					{props.secret}
-				</pre>
-				<img src={props.image} alt="QR Code for 2FA" className="mx-auto my-8 h-60 w-60" />
-				<Divider />
-				<div className="my-3">
-					Please copy backup codes so that you can sign in case you lose access to your phone. We
-					will not show them to you again:
-					<pre className="mt-5 block ">
-						{props.backupCodes.map((code) => (
-							<p key={code}>{code}</p>
-						))}
-					</pre>
-				</div>
-				<Divider />
-				After you configured your app, enter a code bellow to ensure everything is working correctly
-				<div className="mt-2 flex items-center gap-x-4">
-					<TextInput
-						placeholder="123456"
-						aria-label="2FA code"
-						onChange={onChange}
-						value={verifyCode}
-						maxLength={6}
-					/>
-					<Button outline disabled={verifyCode.length !== 6} onClick={confirmOtp}>
-						Confirm
-					</Button>
-				</div>
-			</Card>
-		)
-	},
-)

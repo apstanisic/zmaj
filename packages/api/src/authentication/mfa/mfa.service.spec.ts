@@ -33,14 +33,14 @@ describe("MfaService", () => {
 	describe("check", () => {
 		it("should check encrypted", async () => {
 			//
-			const res = await service.check("ENC$someEnc", "123456")
+			const res = await service.checkCode("ENC$someEnc", "123456")
 			expect(encService.decrypt).toBeCalledWith("ENC$someEnc")
 
 			expect(res).toEqual(true)
 			expect(authenticator.verify).toBeCalledWith({ secret: "someEnc", token: "123456" })
 		})
 		it("should check non encrypted", async () => {
-			const res = await service.check("plain", "123456")
+			const res = await service.checkCode("plain", "123456")
 			expect(res).toEqual(true)
 			expect(authenticator.verify).toBeCalledWith({ secret: "plain", token: "123456" })
 		})
@@ -48,25 +48,25 @@ describe("MfaService", () => {
 
 	describe("checkAll", () => {
 		beforeEach(() => {
-			service.check = vi.fn(async () => true)
+			service.checkCode = vi.fn(async () => true)
 			service.checkBackupCode = vi.fn(async () => true)
 		})
 		it("should check 6 digit code", async () => {
-			const res = await service.checkAll("hello", "123456")
+			const res = await service.checkMfa("hello", "123456")
 			expect(res).toEqual(true)
-			expect(service.check).toBeCalledWith("hello", "123456")
+			expect(service.checkCode).toBeCalledWith("hello", "123456")
 			expect(service.checkBackupCode).not.toBeCalled()
 		})
 
 		it("should check backup code", async () => {
-			const res = await service.checkAll("hello", "12345678901234")
+			const res = await service.checkMfa("hello", "12345678901234")
 			expect(res).toEqual(true)
 			expect(service.checkBackupCode).toBeCalledWith("hello", "12345678901234")
-			expect(service.check).not.toBeCalled()
+			expect(service.checkCode).not.toBeCalled()
 		})
 
 		it("should throw if invalid length", async () => {
-			await expect(service.checkAll("hello", "12345678")).rejects.toThrow(BadRequestException)
+			await expect(service.checkMfa("hello", "12345678")).rejects.toThrow(BadRequestException)
 		})
 	})
 	describe("encryptSecret", () => {

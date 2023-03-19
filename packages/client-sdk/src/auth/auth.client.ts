@@ -9,6 +9,7 @@ import {
 	PasswordResetDto,
 	PublicAuthData,
 	SignInDto,
+	SignInResponse,
 	SignUpDto,
 } from "@zmaj-js/common"
 import { AxiosInstance } from "axios"
@@ -146,21 +147,25 @@ export class AuthClient {
 	}
 
 	/** Sign in */
-	async signIn(data: SignInDto): Promise<AuthUser> {
+	async signIn(data: SignInDto): Promise<SignInResponse> {
 		// if user already signed in, sign out
 		this.tokensService.setAccessToken(null)
 
-		const token = await this.#http
-			.post<{ accessToken: string }>(signInEp.signIn, data)
-			.then((r) => r.data.accessToken)
+		const response = await this.#http
+			.post<SignInResponse>(signInEp.signIn, data)
+			.then((r) => r.data)
 			.catch(sdkThrow)
 
-		if (!isString(token)) sdkThrow("Invalid Sign In Response")
+		if (response.status !== "success") return response
 
-		this.tokensService.setAccessToken(token)
+		if (!isString(response.accessToken)) sdkThrow("Invalid Sign In Response")
+
+		this.tokensService.setAccessToken(response.accessToken)
 		this.#emitter.emit("auth", "sign-in")
 
-		return this.currentUser ?? sdkThrow("9729533")
+		return response
+		// return res
+		// return { status: "success", user: this.currentUser ?? sdkThrow("9729533") }
 	}
 
 	/** Sign out */

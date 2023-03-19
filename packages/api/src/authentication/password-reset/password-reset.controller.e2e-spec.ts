@@ -158,7 +158,7 @@ describe("PasswordResetController e2e", () => {
 			expect(res.statusCode).toEqual(200)
 			expect(res.body).toEqual({ email: user.email })
 
-			const fullUser = await usersService.getUserWithHiddenFields({ email: user.email })
+			const fullUser = await usersService.findUserWithHiddenFields({ email: user.email })
 
 			const validHash = await encService.verifyHash(fullUser!.password, newPasswordRaw)
 			expect(validHash).toEqual(true)

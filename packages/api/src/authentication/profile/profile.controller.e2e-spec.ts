@@ -91,7 +91,7 @@ describe("ProfileController e2e", () => {
 			expect(res.statusCode).toEqual(200)
 			expect(res.body).toMatchObject({ email: user.email })
 
-			const updatedUser = await app.get(UsersService).getUserWithHiddenFields({ id: user.id })
+			const updatedUser = await app.get(UsersService).findUserWithHiddenFields({ id: user.id })
 
 			const newPasswordValid = await encService.verifyHash(updatedUser!.password, "secret123")
 			expect(newPasswordValid).toEqual(true)

@@ -9,6 +9,7 @@ import {
 	StructDto,
 } from "@zmaj-js/common"
 import { GetUser } from "../get-user.decorator"
+import { RequestMfaPrompt } from "./request-mfa-prompt.type"
 import { UsersMfaService } from "./users-mfa.service"
 
 const ep = endpoints.auth.mfa
@@ -21,15 +22,14 @@ export class MfaController {
 	async requestOtpEnable(
 		@GetUser({ required: true }) user: AuthUser,
 	): Promise<{ image: string; secret: string; jwt: string; backupCodes: string[] }> {
-		return this.enableMfa.requestToEnableOtp(user)
+		return this.enableMfa.requestToEnableOtp(user.userId)
 	}
 
 	@Put(ep.enableOtp)
 	async enableOtp(
-		@GetUser({ required: true }) user: AuthUser,
 		@DtoBody(OtpEnableDto) data: OtpEnableDto,
 	): Promise<{ success: true }> {
-		await this.enableMfa.enableOtp({ user, code: data.code, jwt: data.jwt })
+		await this.enableMfa.enableOtp(data)
 		return { success: true }
 	}
 
@@ -43,21 +43,21 @@ export class MfaController {
 	}
 
 	/**
-	 * Get new access token
 	 */
 	@Post(ep.hasMfa)
 	async checkMfa(
 		@DtoBody(StructDto) dto: StructDto,
 		@GetUser() user?: AuthUser,
-	): Promise<{ enabled: boolean }> {
+	): Promise<{ enabled: boolean; required: boolean }> {
 		if (user) {
 			return {
 				enabled: await this.enableMfa.authUserHasMfa(user),
+				required: await this.enableMfa.isMfaRequired(user.roleId),
 			}
 		} else {
-			return {
-				enabled: await this.enableMfa.hasMfa(SignInDto.fromUnknown(dto)),
-			}
+			return this.enableMfa.hasMfa(SignInDto.fromUnknown(dto))
 		}
 	}
 }
+
+type Status = { status: "no-mfa" | "has-mfa" } | { status: "mfa-required"; data: RequestMfaPrompt }

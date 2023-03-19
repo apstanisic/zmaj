@@ -1,8 +1,9 @@
 import { DtoBody } from "@api/common/decorators/dto-body.decorator"
 import { GetCookie } from "@api/common/decorators/get-cookie.decorator"
 import { UserAgent } from "@api/common/decorators/user-agent.decorator"
+import { throw500 } from "@api/common/throw-http"
 import { Controller, Delete, Ip, Post, Res } from "@nestjs/common"
-import { endpoints, REFRESH_COOKIE_NAME, SignInDto } from "@zmaj-js/common"
+import { endpoints, REFRESH_COOKIE_NAME, SignInDto, SignInResponse } from "@zmaj-js/common"
 import type { Response } from "express"
 import { AuthenticationService } from "./authentication.service"
 import { RefreshTokenService } from "./refresh-token.service"
@@ -25,10 +26,15 @@ export class AuthenticationController {
 		@Res({ passthrough: true }) response: Response,
 		@Ip() ip: string,
 		@UserAgent() userAgent?: string,
-	): Promise<{ accessToken: string }> {
-		const tokens = await this.service.signInWithPassword(dto, { userAgent, ip })
-		this.rtService.set(response, tokens.refreshToken)
-		return { accessToken: tokens.accessToken }
+	): Promise<SignInResponse> {
+		const result = await this.service.signIn2(dto, { userAgent, ip })
+
+		if (result.status !== "success") return result
+
+		if (!result.refreshToken) throw500(493234)
+		this.rtService.set(response, result.refreshToken)
+
+		return { accessToken: result.accessToken, status: "success" }
 	}
 
 	@Delete(ep.signOut)

@@ -1,6 +1,8 @@
 import { ZmajSdk } from "@zmaj-js/client-sdk"
-import { isNil, systemPermissions } from "@zmaj-js/common"
+import { isNil, SignInDto, systemPermissions } from "@zmaj-js/common"
 import { AuthProvider, UserIdentity } from "ra-core"
+import { isEmpty } from "radash"
+import { EmptyObject } from "type-fest"
 import { z } from "zod"
 import { throwInApp } from "../shared/throwInApp"
 
@@ -18,11 +20,18 @@ export function initAuthProvider(sdk: ZmajSdk, events: OnEvent = {}): AuthProvid
 		 * @returns `undefined` if login successful
 		 * @throws if login unsuccessful
 		 */
-		async login(params: { email?: string; password: string; otpToken?: string | null }) {
-			const { otpToken, password, email } = params
-			if (isNil(email)) throw new Error("No email")
+		async login(
+			params: { email: string; password: string; otpToken?: string | null } | EmptyObject,
+		) {
+			// if (params !== undefined) throw new Error("754182348")
+			// const { otpToken, password, email } = params
+			// if (isNil(email)) throw new Error("No email")
 
-			await sdk.auth.signIn({ email, password, otpToken })
+			if (!isEmpty(params)) {
+				const res = await sdk.auth.signIn(params as SignInDto)
+				if (res.status !== "success") throw new Error("MFA misconfigured")
+			}
+
 			const { actions, resource } = systemPermissions.adminPanel
 			const allowed = await sdk.auth.isAllowed(actions.access.key, resource)
 			if (!allowed) {

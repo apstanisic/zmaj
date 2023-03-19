@@ -25,10 +25,10 @@ export function OAuthCallbackPage(): JSX.Element {
 			await refetch()
 			redirect("/")
 			notify(message, { type: "success" })
-		} catch (error) {
+		} catch (error: any) {
 			redirect("/login")
 			console.error(error)
-			notify("Problem signing in", { type: "error" })
+			notify(error.message ?? "Problem signing in", { type: "error" })
 		}
 	}, [notify, params, redirect, refetch, sdk.auth])
 

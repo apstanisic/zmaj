@@ -29,7 +29,8 @@ export const emsg = {
 	noId: "ID is not provided",
 	// mfa
 	mfaInvalid: "Invalid 2FA token",
-	mfaDisabled: "You do not have 2FA enabled",
+	mfaDisabled: "You must enable 2FA",
+	mfaMustBeEnabled: "You must enable multi factor authentication",
 	mfaEnabled: "You already have 2FA enabled",
 	mfaEmailExpired: "Email to enable 2FA has expired",
 	// oauth

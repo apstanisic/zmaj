@@ -53,6 +53,13 @@ export const endpoints = {
 			signOut: "sign-out",
 			newAccessToken: "access-token",
 		},
+		signIn2: {
+			$base: "/auth/sign-in",
+			signIn: "",
+			checkIfHasMfa: "mfa-status",
+			requestToEnableOtp: "setup-otp",
+			enableOtp: "enable-otp",
+		},
 		invitation: {
 			$base: "/auth/invite",
 			redirectToForm: "callback",

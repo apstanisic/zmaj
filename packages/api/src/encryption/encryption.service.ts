@@ -35,6 +35,11 @@ export class EncryptionService {
 		}
 	}
 
+	async decryptIfEncrypted(val: string): Promise<string> {
+		if (val.startsWith(this.prefix)) return this.decrypt(val)
+		return val
+	}
+
 	/**
 	 * Decrypt string
 	 */

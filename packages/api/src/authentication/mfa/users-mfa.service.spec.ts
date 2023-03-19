@@ -49,7 +49,7 @@ describe("UsersMfaService", () => {
 			usersService = module.get(UsersService)
 			makeWritable(usersService).repo ??= {} as any
 			usersService.findActiveUser = vi.fn(async () => dbUser)
-			usersService.getUserWithHiddenFields = vi.fn(async () => dbUser)
+			usersService.findUserWithHiddenFields = vi.fn(async () => dbUser)
 			usersService.ensureUserIsActive = vi.fn()
 			mfaService = module.get(MfaService)
 			mfaService.generateSecret = vi.fn(() => "secret_123")
@@ -123,7 +123,7 @@ describe("UsersMfaService", () => {
 			jwtService.verifyAsync = vi.fn(async () => ({ secret: "1234512345" }) as any)
 
 			mfa = module.get(MfaService)
-			mfa.check = vi.fn(async () => true)
+			mfa.checkCode = vi.fn(async () => true)
 			mfa.encryptSecret = vi.fn(async (val) => `mfa_${val}`)
 
 			usersService.findActiveUser = vi.fn(async () => UserStub({ otpToken: null }))
@@ -145,7 +145,7 @@ describe("UsersMfaService", () => {
 		})
 
 		it("should check that jwt contains valid secret", async () => {
-			mfa.check = vi.fn(async () => false)
+			mfa.checkCode = vi.fn(async () => false)
 			await expect(service.enableOtp({ code: "123456", jwt: "jwt", user: aUser })).rejects.toThrow(
 				BadRequestException,
 			)
@@ -167,14 +167,14 @@ describe("UsersMfaService", () => {
 			dto = new SignInDto({ email: "hello@example.com", password: "password" })
 			user = UserStub({ otpToken: null, status: "active" })
 			//
-			usersService.getUserWithHiddenFields = vi.fn(async () => user as any)
+			usersService.findUserWithHiddenFields = vi.fn(async () => user as any)
 			usersService.checkPasswordHash = vi.fn(async () => true)
 		})
 
 		it("should throw if user does not exist", async () => {
-			asMock(usersService.getUserWithHiddenFields).mockRejectedValue(new ForbiddenException())
+			asMock(usersService.findUserWithHiddenFields).mockRejectedValue(new ForbiddenException())
 			await expect(service.hasMfa(dto)).rejects.toThrow(ForbiddenException)
-			expect(usersService.getUserWithHiddenFields).toBeCalledWith({ email: dto.email }, undefined)
+			expect(usersService.findUserWithHiddenFields).toBeCalledWith({ email: dto.email }, undefined)
 		})
 
 		it("should throw on invalid password", async () => {
@@ -195,7 +195,7 @@ describe("UsersMfaService", () => {
 			expect(res1).toEqual(true)
 
 			user.otpToken = null
-			asMock(usersService.getUserWithHiddenFields).mockResolvedValue(user)
+			asMock(usersService.findUserWithHiddenFields).mockResolvedValue(user)
 			const res2 = await service.hasMfa(dto)
 			expect(res2).toEqual(false)
 		})
