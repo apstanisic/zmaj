@@ -7,6 +7,7 @@ export type Role = {
 	name: string
 	description: string | null
 	createdAt: Date
+	requireMfa: boolean
 
 	users?: EntityRef<User>[]
 	permissions?: EntityRef<Permission>[]

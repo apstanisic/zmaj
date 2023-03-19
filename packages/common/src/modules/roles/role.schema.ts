@@ -10,5 +10,6 @@ export const RoleSchema = ModelSchema<Role>()(
 		description: z.string().min(0).max(200).nullable().default(null),
 		id: z.string().uuid().default(v4),
 		createdAt: z.date().default(now),
+		requireMfa: z.boolean().default(false),
 	}),
 )

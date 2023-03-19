@@ -4,6 +4,7 @@ import { ZodDto } from "../../zod/zod-dto"
 export const RoleCreateSchema = z.object({
 	name: z.string().min(1).max(100),
 	description: z.string().nullish(),
+	requireMfa: z.boolean().nullish(),
 })
 
 export class RoleCreateDto extends ZodDto(RoleCreateSchema) {}

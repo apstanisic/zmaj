@@ -45,7 +45,13 @@ function Content(): JSX.Element {
 	return (
 		<>
 			<PermissionDialog permissions={permissions.data ?? []} refetch={permissions.refetch} />
-			{role?.description && <p className="text-lg">{role.description}</p>}
+			<div className="flex justify-between">
+				<p className="text-lg">{role?.description}</p>
+				<p className="text-lg text-warning-content">
+					MFA {role?.requireMfa ? "required" : "not required"}
+				</p>
+			</div>
+			{/* {role?.requireMfa ? <></> : <></>} */}
 			<TabsLayout sections={sections}>
 				<TabsSection>
 					<PermissionsTable allowedPermissions={permissions.data ?? []} />

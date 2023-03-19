@@ -10,6 +10,7 @@ export const RoleCollection = DefineCollection<Role>({
 		id: { dataType: "uuid", columnName: "id", isPrimaryKey: true },
 		name: { dataType: "short-text", columnName: "name", isNullable: false },
 		description: { dataType: "long-text", columnName: "description" },
+		requireMfa: { dataType: "boolean", isNullable: false },
 		createdAt: {
 			dataType: "datetime",
 			columnName: "created_at",
@@ -42,18 +43,18 @@ export const RoleCollection = DefineCollection<Role>({
 		layoutConfig: zodCreate(LayoutConfigSchema, {
 			list: {
 				layout: {
-					table: { fields: ["name", "description"] },
+					table: { fields: ["name", "description", "requireMfa"] },
 				},
 				defaultSort: { field: "createdAt", order: "ASC" },
 			},
 			input: {
 				create: {
 					type: "simple",
-					simple: { fields: ["name", "description"] },
+					simple: { fields: ["name", "description", "requireMfa"] },
 				},
 				edit: {
 					type: "simple",
-					simple: { fields: ["name", "description"] },
+					simple: { fields: ["name", "description", "requireMfa"] },
 				},
 			},
 			hideChangesButton: true,
