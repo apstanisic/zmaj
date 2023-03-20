@@ -91,7 +91,11 @@ describe("AuthenticationController e2e", () => {
 			// expect(refreshTokenService.set).toBeCalledWith(expect.anything(), sessions[0]!.refreshToken)
 
 			// should return jwt token as string
-			expect(res.body).toEqual({ accessToken: expect.any(String), status: "signed-in" })
+			expect(res.body).toEqual({
+				accessToken: expect.any(String),
+				status: "signed-in",
+				user: expect.any(Object),
+			})
 			const jwtToken = jwtService.decode(res.body.accessToken)
 			expect(jwtToken).toMatchObject(user)
 		})
