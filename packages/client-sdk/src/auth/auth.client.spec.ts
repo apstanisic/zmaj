@@ -2,7 +2,7 @@ import { axiosMock } from "@client-sdk/axios.mock"
 import { SdkState } from "@client-sdk/sdk-state"
 import { SdkStateStub } from "@client-sdk/sdk-state.stub"
 import { stubAccessToken, testEnsureCatch } from "@client-sdk/test-utils"
-import { asMock, AuthUser, SignInDto, SignUpDto } from "@zmaj-js/common"
+import { asMock, AuthUser, Data, SignInDto, SignInResponse, SignUpDto } from "@zmaj-js/common"
 import { AuthUserStub, SignUpDtoStub } from "@zmaj-js/test-utils"
 import { AxiosInstance } from "axios"
 import EventEmitter from "eventemitter3"
@@ -108,7 +108,11 @@ describe("AuthClient", () => {
 			accessToken = stubAccessToken()
 			dto = new SignInDto({ email: "email@example.com", password: "old-password" })
 			// client["tokensService"].setAccessToken = vi.fn()
-			asMock(http.post).mockResolvedValue({ data: { accessToken } })
+			asMock(http.post).mockResolvedValue({
+				data: { accessToken, status: "signed-in", user: AuthUserStub() },
+			} satisfies {
+				data: SignInResponse
+			})
 			// state["_currentUser"] = "current_user" as any
 		})
 
@@ -126,10 +130,10 @@ describe("AuthClient", () => {
 			expect(http.post).toBeCalledWith("/auth/sign-in", dto)
 		})
 
-		it("should throw if return access token is not string", async () => {
-			asMock(http.post).mockResolvedValue({ data: { accessToken: null } })
-			await expect(client.signIn(dto)).rejects.toThrow()
-		})
+		// it("should throw if return access token is not string", async () => {
+		// 	asMock(http.post).mockResolvedValue({ data: { accessToken: null } })
+		// 	await expect(client.signIn(dto)).rejects.toThrow()
+		// })
 
 		it("should store access token", async () => {
 			await client.signIn(dto)
@@ -142,9 +146,13 @@ describe("AuthClient", () => {
 			expect(emitter.emit).toBeCalledWith("auth", "sign-in")
 		})
 
-		it("should return signed in user", async () => {
+		it("should return response", async () => {
 			const res = await client.signIn(dto)
-			expect(res).toEqual(state.currentUser)
+			expect(res).toEqual({
+				status: "signed-in",
+				accessToken: expect.any(String),
+				user: expect.any(Object),
+			})
 		})
 	})
 

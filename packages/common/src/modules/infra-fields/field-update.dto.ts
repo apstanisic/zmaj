@@ -16,8 +16,8 @@ export const FieldUpdateSchema = FieldMetadataSchema.pick({
 })
 	.extend({
 		isUnique: z.boolean().nullish(),
-		isNullable: z.boolean().nullable(),
-		dbDefaultValue: z.unknown().nullable().nullish(),
+		isNullable: z.boolean().nullish(),
+		dbDefaultValue: z.unknown().nullish(),
 	})
 	.partial()
 

@@ -1,6 +1,7 @@
 import { buildTestModule } from "@api/testing/build-test-module"
 import { randEmail, randIp, randPassword, randUserAgent } from "@ngneat/falso"
-import { SignInDto } from "@zmaj-js/common"
+import { AuthUser, SignInDto } from "@zmaj-js/common"
+import { AuthUserStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { AuthenticationController } from "./authentication.controller"
 import { AuthenticationService } from "./authentication.service"
@@ -40,14 +41,17 @@ describe("AuthenticationController", () => {
 			ip = randIp()
 			userAgent = randUserAgent()
 
-			service.signInWithPassword = vi
-				.fn()
-				.mockResolvedValue({ refreshToken: "rt", accessToken: "at" })
+			service.emailAndPasswordSignIn = vi.fn().mockResolvedValue({
+				status: "signed-in",
+				refreshToken: "rt",
+				accessToken: "at",
+				user: AuthUserStub(),
+			})
 		})
 
 		it("should sign in user", async () => {
 			await controller.signIn(dto, response, ip, userAgent)
-			expect(service.signInWithPassword).toBeCalledWith(dto, { ip, userAgent })
+			expect(service.emailAndPasswordSignIn).toBeCalledWith(dto, { ip, userAgent })
 		})
 
 		it("should set cookie", async () => {
@@ -55,9 +59,23 @@ describe("AuthenticationController", () => {
 			expect(refreshTokenService.set).toBeCalledWith(response, "rt")
 		})
 
+		it("should not set cookie if user need to provide mfa", async () => {
+			service.emailAndPasswordSignIn = vi.fn(() => Promise.resolve({ status: "has-mfa" }))
+			await controller.signIn(dto, response, ip, userAgent)
+			expect(refreshTokenService.set).not.toBeCalled()
+		})
+
+		it("should not set cookie if user must have mfa", async () => {
+			service.emailAndPasswordSignIn = vi.fn(() =>
+				Promise.resolve({ status: "must-create-mfa", data: {} as any }),
+			)
+			await controller.signIn(dto, response, ip, userAgent)
+			expect(refreshTokenService.set).not.toBeCalled()
+		})
+
 		it("should return access token", async () => {
 			const res = await controller.signIn(dto, response, ip, userAgent)
-			expect(res).toEqual({ accessToken: "at" })
+			expect(res).toEqual({ accessToken: "at", status: "signed-in", user: expect.any(AuthUser) })
 		})
 	})
 

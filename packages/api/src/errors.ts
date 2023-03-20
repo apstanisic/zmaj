@@ -46,6 +46,7 @@ export const emsg = {
 	emailTokenExpired: "Email sent to you is expired",
 	authRequired: "You must be authenticated",
 	accountDisabled: "Your account is not active",
+	accountNotFound: "Your account does not exist",
 	jwtInvalid: "Invalid authentication",
 	noAuthz: "You do not have permission for this action",
 	cantDeleteLastAdmin: "You can't delete last admin",

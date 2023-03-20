@@ -2,10 +2,12 @@ import { buildTestModule } from "@api/testing/build-test-module"
 import { UsersService } from "@api/users/users.service"
 import { BadRequestException, ForbiddenException, UnauthorizedException } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
-import { asMock, AuthUser, SignInDto, User, uuidRegex } from "@zmaj-js/common"
+import { TestingModule } from "@nestjs/testing"
+import { asMock, AuthUser, SignInDto, User, UserWithSecret, uuidRegex } from "@zmaj-js/common"
 import { AuthUserStub, UserStub } from "@zmaj-js/test-utils"
 import { pick } from "radash"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { AuthorizationService } from ".."
 import { AuthSessionStub } from "./auth-sessions/auth-session.stub"
 import { AuthSessionsService } from "./auth-sessions/auth-sessions.service"
 import { AuthenticationConfig } from "./authentication.config"
@@ -14,6 +16,7 @@ import { MfaService } from "./mfa/mfa.service"
 import { SignUpService } from "./sign-up/sign-up.service"
 
 describe("AuthenticationService", () => {
+	let module: TestingModule
 	let service: AuthenticationService
 	//
 	let usersService: UsersService
@@ -24,7 +27,7 @@ describe("AuthenticationService", () => {
 	let mfa: MfaService
 
 	beforeEach(async () => {
-		const module = await buildTestModule(AuthenticationService).compile()
+		module = await buildTestModule(AuthenticationService).compile()
 
 		service = module.get(AuthenticationService)
 		//
@@ -39,60 +42,106 @@ describe("AuthenticationService", () => {
 	it("should compile", () => {
 		expect(service).toBeDefined()
 	})
-	/**
-	 *
-	 */
-	describe("signInWithPassword", () => {
+
+	describe("emailAndPasswordSignIn", () => {
+		let authzService: AuthorizationService
 		let dto: SignInDto
-		let fullUser: User
+		let fullUser: UserWithSecret
 		let user: AuthUser
 		const ip = "127.0.0.1"
 		const userAgent = "SOME_USER_AGENT"
 
 		beforeEach(() => {
-			fullUser = UserStub()
+			authzService = module.get(AuthorizationService)
+			mfa.generateParamsToEnable = vi.fn(() =>
+				Promise.resolve({
+					image: "base64:123",
+					secret: "MY_SECRET",
+					jwt: "JWT_FOR_USER",
+					backupCodes: ["hello"],
+				}),
+			)
+			fullUser = UserStub({ otpToken: null, status: "active" })
 			user = AuthUser.fromUser(fullUser)
 			dto = new SignInDto({ email: fullUser.email, password: "hello_world" })
 
-			service.getUserByEmailAndPassword = vi.fn().mockImplementation(async () => fullUser)
+			usersService.findUserWithHiddenFields = vi.fn(async () => fullUser)
+			usersService.checkPasswordHash = vi.fn(async () => true)
+			service.verifyOtp = vi.fn(async () => undefined)
+			service.createAuthSession = vi.fn(async () => ({
+				user,
+				accessToken: "my_at",
+				refreshToken: "my_rt",
+			}))
+			authzService.roleRequireMfa = vi.fn(() => false)
+
 			// service.verifyOtp = vi.fn(async () => {})
 			jwtService.signAsync = vi.fn().mockResolvedValue("jwt-token")
 			sessionsService.createSession = vi.fn().mockResolvedValue("refresh-token")
-			service.getSignInUser = vi.fn(async () => fullUser as any)
 		})
 
-		it("should get user with provided email, password and otp", async () => {
-			await service.signInWithPassword(dto, { ip })
-			expect(service.getSignInUser).toBeCalledWith(dto)
+		it("should throw if user does not exist", async () => {
+			vi.mocked(usersService.findUserWithHiddenFields).mockResolvedValue(undefined)
+
+			await expect(service.emailAndPasswordSignIn(dto, { ip, userAgent })).rejects.toThrow(
+				UnauthorizedException,
+			)
 		})
 
-		it("should throw on invalid data", async () => {
-			asMock(service.getSignInUser).mockRejectedValue(new BadRequestException(123))
-			await expect(service.signInWithPassword(dto, { ip })).rejects.toThrow(BadRequestException)
+		it("should throw if user is not active", async () => {
+			fullUser.status = "disabled"
+
+			await expect(service.emailAndPasswordSignIn(dto, { ip, userAgent })).rejects.toThrow(
+				ForbiddenException,
+			)
 		})
 
-		// get sign in user does that
-		// it("should check 2fa", async () => {
-		// 	dto.otpToken = "123456"
-		// 	await service.signInWithPassword(dto, { ip })
-		// 	expect(service.verifyOtp).toBeCalledWith(fullUser, "123456")
-		// })
-
-		it("should create access token for user", async () => {
-			await service.signInWithPassword(dto, { ip })
-			expect(jwtService.signAsync).toBeCalledWith(pick(user, ["userId", "roleId", "email"]))
+		it("should throw if password is invalid", async () => {
+			vi.mocked(usersService.checkPasswordHash).mockResolvedValue(false)
+			await expect(service.emailAndPasswordSignIn(dto, { ip, userAgent })).rejects.toThrow(
+				BadRequestException,
+			)
 		})
 
-		it("should store new session in db", async () => {
-			await service.signInWithPassword(dto, { ip, userAgent })
-			expect(sessionsService.createSession).toBeCalledWith(user, { ip, userAgent })
+		it("should return info that mfa is missing (GUI will first try without otp)", async () => {
+			fullUser.otpToken = "HELLO_WORLD"
+
+			const res = await service.emailAndPasswordSignIn(dto, { ip, userAgent })
+			expect(res).toEqual({ status: "has-mfa" })
 		})
 
-		it("should return access and refresh tokens", async () => {
-			const res = await service.signInWithPassword(dto, { ip })
-			expect(res).toEqual({ refreshToken: "refresh-token", accessToken: "jwt-token" })
+		it("should throw if otp token is invalid", async () => {
+			fullUser.otpToken = "hello"
+			dto.otpToken = "123456"
+			vi.mocked(service.verifyOtp).mockRejectedValue(new BadRequestException())
+
+			await expect(service.emailAndPasswordSignIn(dto, { ip, userAgent })).rejects.toThrow(
+				BadRequestException,
+			)
+		})
+
+		it("should return info that role requires mfa enabled with data to enable it", async () => {
+			vi.mocked(authzService.roleRequireMfa).mockReturnValue(true)
+			const res = await service.emailAndPasswordSignIn(dto, { ip, userAgent })
+			expect(res).toEqual({ status: "must-create-mfa", data: expect.any(Object) })
+		})
+
+		it("should create auth session", async () => {
+			await service.emailAndPasswordSignIn(dto, { ip, userAgent })
+			expect(service.createAuthSession).toBeCalledWith(user, { ip, userAgent })
+		})
+
+		it("should return access and refresh token", async () => {
+			const res = await service.emailAndPasswordSignIn(dto, { ip, userAgent })
+			expect(res).toEqual({
+				status: "signed-in",
+				user,
+				refreshToken: "my_rt",
+				accessToken: "my_at",
+			})
 		})
 	})
+
 	/**
 	 *
 	 */
@@ -104,48 +153,6 @@ describe("AuthenticationService", () => {
 		it("should remove session for provided refresh token", async () => {
 			await service.signOut("hello_world")
 			expect(sessionsService.removeByRefreshToken).toBeCalledWith("hello_world")
-		})
-	})
-
-	describe("getUserByEmailAndPassword", () => {
-		let userStub: User
-
-		beforeEach(() => {
-			userStub = UserStub({
-				status: "active",
-				confirmedEmail: true,
-				email: "test_234@example.com",
-				// passwordExpiresAt: null,
-			})
-			usersService.findActiveUser = vi.fn(async () => userStub)
-			usersService.checkPassword = vi.fn().mockResolvedValue(true)
-		})
-
-		it("should throw if there is no relevant active user", async () => {
-			asMock(usersService.findActiveUser).mockRejectedValue(new ForbiddenException())
-			await expect(service.getUserByEmailAndPassword("email", "password")).rejects.toThrow(
-				ForbiddenException,
-			)
-		})
-
-		it("should throw if password is invalid", async () => {
-			asMock(usersService.checkPassword).mockResolvedValue(false)
-			await expect(service.getUserByEmailAndPassword("email", "password")).rejects.toThrow(
-				UnauthorizedException,
-			)
-		})
-
-		// it("should throw if password expired", async () => {
-		//   userStub.passwordExpiresAt = randPastDate()
-
-		//   await expect(service.getUserByEmailAndPassword("email", "password")).rejects.toThrow(
-		//     ForbiddenException,
-		//   )
-		// })
-
-		it("should return user", async () => {
-			const res = await service.getUserByEmailAndPassword("email", "password")
-			expect(res).toEqual(userStub)
 		})
 	})
 
@@ -198,15 +205,15 @@ describe("AuthenticationService", () => {
 		})
 
 		it("should create auth session", async () => {
-			await service.signInWithoutPassword(user, params)
+			await service.createAuthSession(user, params)
 			expect(sessionsService.createSession).toBeCalledWith(user, params)
 		})
 		it("should get access token with created session", async () => {
-			await service.signInWithoutPassword(user, params)
+			await service.createAuthSession(user, params)
 			expect(service.getNewAccessToken).toBeCalledWith("r-token")
 		})
 		it("should return access and refresh tokens", async () => {
-			const res = await service.signInWithoutPassword(user, params)
+			const res = await service.createAuthSession(user, params)
 			expect(res).toEqual({ refreshToken: "r-token", accessToken: "a-token" })
 		})
 	})

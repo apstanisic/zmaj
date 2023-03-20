@@ -1,6 +1,8 @@
+import { AuthUserType } from "./modules"
+
 export type SignInResponse =
+	| { status: "signed-in"; accessToken: string; refreshToken?: string; user: AuthUserType }
 	| { status: "has-mfa" }
-	| { status: "success"; accessToken: string; refreshToken?: string }
 	| { status: "must-create-mfa"; data: EnableMfaParams }
 
 export type EnableMfaParams = {

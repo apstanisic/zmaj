@@ -12,7 +12,7 @@ import {
 } from "@api/database/schema/alter-schema.schemas"
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { emsg } from "@api/errors"
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import {
 	DatabaseError,
 	DataType,
@@ -31,6 +31,7 @@ type Shared = { trx?: any }
 
 @Injectable()
 export class SequelizeAlterSchemaService {
+	private logger = new Logger(SequelizeAlterSchemaService.name)
 	private qi: QueryInterface
 	constructor(private sq: SequelizeService, private schemaInfo: SchemaInfoService) {
 		this.qi = this.sq.orm.getQueryInterface()
@@ -58,18 +59,20 @@ export class SequelizeAlterSchemaService {
 	}
 	async createColumn(params: z.input<typeof CreateColumnSchema>, shared?: Shared): Promise<void> {
 		const data = CreateColumnSchema.parse(params)
-		await this.qi.addColumn(
-			data.tableName,
-			data.columnName,
-			{
-				allowNull: data.nullable,
-				autoIncrement: data.autoIncrement,
-				unique: data.unique,
-				defaultValue: this.parseDefaultValue(data.defaultValue),
-				type: this.getType(data.dataType),
-			},
-			{ transaction: shared?.trx },
-		)
+		await this.qi
+			.addColumn(
+				data.tableName,
+				data.columnName,
+				{
+					allowNull: data.nullable,
+					autoIncrement: data.autoIncrement,
+					unique: data.unique,
+					defaultValue: this.parseDefaultValue(data.defaultValue),
+					type: this.getType(data.dataType),
+				},
+				{ transaction: shared?.trx },
+			)
+			.catch((e) => this.handleColumnError(e))
 	}
 
 	async updateColumn(params: z.input<typeof UpdateColumnSchema>, shared?: Shared): Promise<void> {
@@ -89,15 +92,23 @@ export class SequelizeAlterSchemaService {
 				unique: data.unique ?? undefined,
 				defaultValue: this.parseDefaultValue(data.defaultValue),
 			})
-			.catch((e) => {
-				if (e instanceof UniqueConstraintError) {
-					throw400(49832423, emsg.cantSetUnique)
-				} else if (e instanceof DatabaseError && e.message.includes("contains null values")) {
-					throw400(8521992, emsg.cantSetNull)
-				}
+			.catch((e) => this.handleColumnError(e))
+	}
 
-				throw500(934872)
-			})
+	/**
+	 * Handle error when creating or updating column.
+	 * It adds custom message when column can't be not null, or can't be unique
+	 */
+	private handleColumnError(error: any): never {
+		if (error instanceof UniqueConstraintError) {
+			throw400(49832423, emsg.cantSetUnique)
+		} else if (error instanceof DatabaseError && error.message.includes("contains null values")) {
+			throw400(8521992, emsg.cantSetNull)
+		}
+
+		this.logger.error(error)
+
+		throw500({ cause: error, errorCode: 5238999 })
 	}
 
 	async dropColumn(params: z.input<typeof DropColumnSchema>, shared?: Shared): Promise<void> {

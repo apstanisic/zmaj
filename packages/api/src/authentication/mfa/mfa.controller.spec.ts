@@ -27,7 +27,7 @@ describe("ProfileController", () => {
 		})
 		it("should request data needed to enable otp", async () => {
 			await controller.requestOtpEnable(user)
-			expect(service.requestToEnableOtp).toBeCalledWith(user)
+			expect(service.requestToEnableOtp).toBeCalledWith(user.userId)
 		})
 
 		it("should return response from service", async () => {
@@ -43,12 +43,12 @@ describe("ProfileController", () => {
 			service.enableOtp = vi.fn()
 		})
 		it("should enable otp", async () => {
-			await controller.enableOtp(user, dto)
-			expect(service.enableOtp).toBeCalledWith({ user, code: dto.code, jwt: dto.jwt })
+			await controller.enableOtp(dto)
+			expect(service.enableOtp).toBeCalledWith(dto)
 		})
 
 		it("should return success response", async () => {
-			const res = await controller.enableOtp(user, dto)
+			const res = await controller.enableOtp(dto)
 			expect(res).toEqual({ success: true })
 		})
 	})

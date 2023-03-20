@@ -67,14 +67,15 @@ describe("AuthSessionsController e2e", () => {
 			)
 			await sessionRepo.createMany({ data: sessions })
 
-			const query = qsStringify({ limit: 5, count: true })
+			const query = qsStringify({ limit: 5, count: true, sort: { createdAt: "ASC" } })
 			const res = await supertest(app.getHttpServer())
 				.get(`/api/auth/sessions?${query}`)
 				.auth(user.email, "password")
 
 			expect(res.statusCode).toEqual(200)
 			expect(res.body.data).toHaveLength(5)
-			expect(res.body.count).toEqual(12)
+			// basic auth creates short lived auth session
+			expect(res.body.count).toEqual(12 + 1)
 
 			const data: AuthSession[] = res.body.data
 			const sessionIds = sessions.map((s) => s.id)

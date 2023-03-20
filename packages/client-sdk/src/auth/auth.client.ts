@@ -156,7 +156,7 @@ export class AuthClient {
 			.then((r) => r.data)
 			.catch(sdkThrow)
 
-		if (response.status !== "success") return response
+		if (response.status !== "signed-in") return response
 
 		if (!isString(response.accessToken)) sdkThrow("Invalid Sign In Response")
 

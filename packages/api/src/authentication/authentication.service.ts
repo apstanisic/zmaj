@@ -38,9 +38,17 @@ export class AuthenticationService {
 		private readonly authzService: AuthorizationService,
 	) {}
 
-	async signIn2(
+	/**
+	 * Logout user
+	 * @param refreshToken Refresh token
+	 */
+	async signOut(refreshToken: string): Promise<void> {
+		await this.sessionsService.removeByRefreshToken(refreshToken)
+	}
+
+	async emailAndPasswordSignIn(
 		dto: SignInDto,
-		meta: Pick<CrudRequest, "ip" | "userAgent">,
+		params: Pick<CrudRequest, "ip" | "userAgent"> & { expiresAt?: Date },
 	): Promise<SignInResponse> {
 		const user = await this.users.findUserWithHiddenFields({ email: dto.email })
 		// user does not exist
@@ -59,33 +67,9 @@ export class AuthenticationService {
 			return { status: "must-create-mfa", data: await this.mfa.generateParamsToEnable(dto.email) }
 		}
 		// sign in user
-		const tokens = await this.signInWithoutPassword(AuthUser.fromUser(user), meta)
-		return { status: "success", ...tokens }
-	}
-	/**
-	 * Try to login with email and password.
-	 */
-	async signInWithPassword(
-		dto: SignInDto,
-		meta: Pick<CrudRequest, "ip" | "userAgent">,
-	): Promise<AuthTokens> {
-		this.users.findActiveUser
-		const user = await this.getSignInUser(dto)
 		const authUser = AuthUser.fromUser(user)
-
-		// it uses config from JwtModule
-		const accessToken = await this.jwtService.signAsync(authUser.stripJwtData())
-		const refreshToken = await this.sessionsService.createSession(authUser, meta)
-
-		return { accessToken, refreshToken }
-	}
-
-	/**
-	 * Logout user
-	 * @param refreshToken Refresh token
-	 */
-	async signOut(refreshToken: string): Promise<void> {
-		await this.sessionsService.removeByRefreshToken(refreshToken)
+		const tokens = await this.createAuthSession(authUser, params)
+		return { status: "signed-in", ...tokens, user: authUser }
 	}
 
 	/**
@@ -105,31 +89,11 @@ export class AuthenticationService {
 	}
 
 	/**
-	 * Check if email and password are valid
-	 * Used for standard login and for basic auth
-	 * @returns User that is has valid credentials, otherwise throw
-	 * @throws If there is any problem (bad email, bad password, expired password, account not active...)
-	 */
-	async getUserByEmailAndPassword(email: string, password: string): Promise<User> {
-		const user = await this.users.findActiveUser({ email })
-
-		// password must be valid
-		const valid = await this.users.checkPassword({ userId: user.id, password })
-		if (!valid) throw401(18921, emsg.invalidEmailOrPassword)
-
-		// password must not be expired
-		// if (user.passwordExpiresAt && isPast(user.passwordExpiresAt)) throw403(982772)
-
-		return user
-	}
-
-	/**
 	 * This is used for magic link login, and SSO (oauth and oidc)
 	 */
-	// params: CreateAuthSessionParams
-	async signInWithoutPassword(
+	async createAuthSession(
 		user: AuthUser,
-		params: Pick<CrudRequest, "ip" | "userAgent">,
+		params: Pick<CrudRequest, "ip" | "userAgent"> & { expiresAt?: Date },
 	): Promise<AuthTokens> {
 		const refreshToken = await this.sessionsService.createSession(user, params)
 		const accessToken = await this.getNewAccessToken(refreshToken)
@@ -171,23 +135,5 @@ export class AuthenticationService {
 
 		const validOtp = await this.mfa.checkMfa(user.otpToken, code ?? "invalid")
 		if (!validOtp) throw401(388532, emsg.mfaInvalid)
-	}
-
-	async getSignInUser(data: SignInDto, trx?: Transaction): Promise<User> {
-		const user = await this.users.findUserWithHiddenFields({ email: data.email }, trx)
-		if (user?.status !== "active") throw403(7389999, emsg.accountDisabled)
-		// user = this.users.ensureUserIsActive(user)
-
-		const valid = await this.users.checkPasswordHash(user.password, data.password.trim())
-		if (!valid) throw401(189251, emsg.invalidEmailOrPassword)
-
-		await this.verifyOtp(user, data.otpToken)
-
-		if (user.otpToken === null && this.authzService.roleRequireMfa(user.roleId)) {
-			throw403(499551, emsg.mfaDisabled)
-		}
-
-		const { password, otpToken, ...allowedData } = user
-		return allowedData
 	}
 }

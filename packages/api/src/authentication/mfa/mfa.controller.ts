@@ -46,18 +46,10 @@ export class MfaController {
 	 */
 	@Post(ep.hasMfa)
 	async checkMfa(
-		@DtoBody(StructDto) dto: StructDto,
-		@GetUser() user?: AuthUser,
-	): Promise<{ enabled: boolean; required: boolean }> {
-		if (user) {
-			return {
-				enabled: await this.enableMfa.authUserHasMfa(user),
-				required: await this.enableMfa.isMfaRequired(user.roleId),
-			}
-		} else {
-			return this.enableMfa.hasMfa(SignInDto.fromUnknown(dto))
+		@GetUser({required: true}) user: AuthUser,
+	): Promise<{ enabled: boolean }> {
+		return {
+			enabled: await this.enableMfa.hasMfa(user),
 		}
 	}
 }
-
-type Status = { status: "no-mfa" | "has-mfa" } | { status: "mfa-required"; data: RequestMfaPrompt }

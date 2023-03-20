@@ -34,7 +34,7 @@ export class UsersMfaService {
 		const user = await this.usersService.findUserWithHiddenFields({ id: userId })
 		if (user?.status !== "active") throw403(764832, emsg.accountDisabled)
 		// this.usersService.ensureUserIsActive(dbUser)
-		if (isString(user!.otpToken)) throw403(738993, emsg.mfaDisabled)
+		if (isString(user!.otpToken)) throw403(738993, emsg.mfaEnabled)
 		return this.mfa.generateParamsToEnable(user.email)
 	}
 
@@ -43,7 +43,9 @@ export class UsersMfaService {
 			if (e.message.includes("expired")) throw401(43973, emsg.mfaEmailExpired)
 			throw500(35823)
 		})
-		const { email, secret } = OtpJwtSchema.parse(jwtData)
+		const parseResult = OtpJwtSchema.safeParse(jwtData)
+		if (!parseResult.success) throw400(547899, emsg.invalidPayload)
+		const { email, secret } = parseResult.data
 
 		const dbUser = await this.usersService.findActiveUser({ email })
 		if (dbUser.otpToken) throw403(90324, emsg.mfaEnabled)
@@ -64,34 +66,8 @@ export class UsersMfaService {
 		await this.usersService.repo.updateById({ id: authUser.userId, changes: { otpToken: null } })
 	}
 
-	async hasMfa(
-		data: SignInDto,
-		trx?: Transaction,
-	): Promise<{ enabled: boolean; required: boolean }> {
-		const user = await this.usersService.findUserWithHiddenFields({ email: data.email }, trx)
-		if (!user) throw400(379997, emsg.invalidEmailOrPassword)
-
-		const valid = await this.usersService.checkPasswordHash(user.password, data.password.trim())
-		if (!valid) throw400(97783, emsg.invalidEmailOrPassword)
-		if (user.status !== "active") throw403(738429, emsg.accountDisabled)
-		// this.usersService.ensureUserIsActive(user)
-		const requireMfa = await this.isMfaRequired(user.roleId)
-
-		return {
-			enabled: isString(user.otpToken),
-			required: requireMfa,
-		}
-	}
-
-	async authUserHasMfa(authUser: AuthUser): Promise<boolean> {
-		const user = await this.usersService.findUserWithHiddenFields({ email: authUser.email })
-		if (!user) throw400(379997, emsg.authRequired)
-
-		return isString(user.otpToken)
-	}
-
-	async isMfaRequired(roleId: string): Promise<boolean> {
-		const role = await this.roleRepo.findById({ id: roleId })
-		return role.requireMfa ?? false
+	async hasMfa(user: AuthUser, trx?: Transaction): Promise<boolean> {
+		const fullUser = await this.usersService.findUserWithHiddenFields({ email: user.email }, trx)
+		return isString(fullUser?.otpToken)
 	}
 }

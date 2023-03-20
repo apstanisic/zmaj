@@ -40,7 +40,7 @@ describe("FacebookOAuthController", () => {
 
 		beforeEach(() => {
 			user = AuthUserStub()
-			authService.signInWithoutPassword = vi.fn(async () => ({
+			authService.createAuthSession = vi.fn(async () => ({
 				refreshToken: "rt",
 				accessToken: "at",
 			}))
@@ -49,13 +49,13 @@ describe("FacebookOAuthController", () => {
 
 		it("should sign in without password", async () => {
 			await controller.facebookAuthRedirect(res, user, "10.0.0.0", "my-ua")
-			expect(authService.signInWithoutPassword).toBeCalledWith(user, {
+			expect(authService.createAuthSession).toBeCalledWith(user, {
 				ip: "10.0.0.0",
 				userAgent: "my-ua",
 			})
 		})
 		it("should set refresh token", async () => {
-			asMock(authService.signInWithoutPassword).mockResolvedValue({ refreshToken: "hello" })
+			asMock(authService.createAuthSession).mockResolvedValue({ refreshToken: "hello" })
 			await controller.facebookAuthRedirect(res, user, "10.0.0.0", "my-ua")
 			expect(rtService.set).toBeCalledWith(res, "hello")
 		})

@@ -39,14 +39,15 @@ export class AuthSessionsService {
 	 */
 	async createSession(
 		user: AuthUser,
-		params: Pick<CrudRequest, "ip" | "userAgent">,
+		params: Pick<CrudRequest, "ip" | "userAgent"> & { expiresAt?: Date },
 	): Promise<string> {
 		const rt = await this.generateRefreshToken()
 
 		const session = zodCreate(AuthSessionSchema, {
-			...params,
+			userAgent: params.userAgent,
+			ip: params.ip,
 			userId: user.userId,
-			validUntil: addMilliseconds(new Date(), this.config.refreshTokenTtlMs),
+			validUntil: params.expiresAt ?? addMilliseconds(new Date(), this.config.refreshTokenTtlMs),
 			refreshToken: rt.raw,
 		})
 

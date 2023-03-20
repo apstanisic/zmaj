@@ -40,7 +40,7 @@ export class UsersService {
 	}
 
 	async findUserWithHiddenFields(
-		filter: IdOrEmailObject,
+		filter: Filter<User>,
 		// userId: string,
 		trx?: Transaction,
 	): Promise<UserWithSecret | undefined> {

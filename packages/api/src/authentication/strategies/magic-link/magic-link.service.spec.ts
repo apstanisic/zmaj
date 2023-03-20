@@ -131,13 +131,13 @@ describe("MagicLinkService", () => {
 		beforeEach(() => {
 			res = { res: "res" } as any
 			user = AuthUserStub()
-			authnService.signInWithoutPassword = vi.fn().mockResolvedValue({ refreshToken: "rt" })
+			authnService.createAuthSession = vi.fn().mockResolvedValue({ refreshToken: "rt" })
 			refreshTokenService.set = vi.fn()
 		})
 
 		it("should create session and tokens", async () => {
 			await service.signIn(res, user, { ip: "10.0.0.0", userAgent: "ua" })
-			expect(authnService.signInWithoutPassword).toBeCalledWith(user, {
+			expect(authnService.createAuthSession).toBeCalledWith(user, {
 				ip: "10.0.0.0",
 				userAgent: "ua",
 			})

@@ -75,7 +75,8 @@ describe("AuthenticationController e2e", () => {
 				.post("/api/auth/sign-in") //
 				.send(new SignInDto({ email: "sign_in_test@example.com", password: "password" }))
 
-			expect(res.statusCode).toEqual(201)
+			// not always created, so it should not be 201
+			expect(res.statusCode).toEqual(200)
 
 			// should have created session (not returning refresh token)
 			const sessions = await sessionsService.repo.findWhere({ where: { userId: fullUser.id } })
@@ -90,7 +91,7 @@ describe("AuthenticationController e2e", () => {
 			// expect(refreshTokenService.set).toBeCalledWith(expect.anything(), sessions[0]!.refreshToken)
 
 			// should return jwt token as string
-			expect(res.body).toEqual({ accessToken: expect.any(String) })
+			expect(res.body).toEqual({ accessToken: expect.any(String), status: "signed-in" })
 			const jwtToken = jwtService.decode(res.body.accessToken)
 			expect(jwtToken).toMatchObject(user)
 		})

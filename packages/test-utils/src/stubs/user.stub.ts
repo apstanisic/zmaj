@@ -19,5 +19,5 @@ export const UserStub = Stub(UserSchema, () => ({
 	roleId: rand([PUBLIC_ROLE_ID, ADMIN_ROLE_ID]),
 	confirmedEmail: randBoolean(),
 	createdAt: randPastDate({ years: 4 }),
-	password: "password",
+	password: "plain_password",
 }))

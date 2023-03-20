@@ -1,4 +1,5 @@
 import { AuthenticationService, AuthTokens } from "@api/authentication/authentication.service"
+import { throw500 } from "@api/common/throw-http"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { UsersService } from "@api/users/users.service"
 import { INestApplication } from "@nestjs/common"
@@ -54,10 +55,12 @@ describe("JwtGuard e2e", () => {
 		let tokens: AuthTokens
 
 		beforeEach(async () => {
-			tokens = await authnService.signInWithPassword(
+			const res = await authnService.emailAndPasswordSignIn(
 				{ email: user.email, password: "password" },
 				{ ip: randIp() },
 			)
+			if (res.status !== "signed-in") throw500(37482398)
+			tokens = { accessToken: res.accessToken, refreshToken: res.refreshToken! }
 		})
 
 		it("should properly provide user", async () => {

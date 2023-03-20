@@ -104,7 +104,7 @@ export class MagicLinkService {
 		ipAndUa: { ip: string; userAgent?: string },
 	): Promise<void> {
 		// this.authz.checkSystem("account", "linkLogin", { user }) || throw403(342856432)
-		const { refreshToken } = await this.authService.signInWithoutPassword(user, ipAndUa)
+		const { refreshToken } = await this.authService.createAuthSession(user, ipAndUa)
 		this.rtService.set(res, refreshToken)
 	}
 }

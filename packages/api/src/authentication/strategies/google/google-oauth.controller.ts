@@ -45,7 +45,7 @@ export class GoogleOAuthController {
 		@Ip() ip: string,
 		@UserAgent() userAgent?: string,
 	): Promise<RedirectResponse> {
-		const { refreshToken } = await this.auth.signInWithoutPassword(user, {
+		const { refreshToken } = await this.auth.createAuthSession(user, {
 			ip,
 			userAgent,
 		})

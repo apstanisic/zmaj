@@ -58,7 +58,31 @@ describe("BasicAuthGuard e2e", () => {
 				.get("/api/test-auth/current-user")
 				.auth(user.email, "password_bad")
 
-			expect(res.statusCode).toEqual(401)
+			expect(res.statusCode).toEqual(400)
+			expect(res.body).toEqual({
+				error: expect.objectContaining({ message: "Invalid email or password" }),
+			})
+		})
+
+		it("should throw if user have mfa", async () => {
+			usersService.repo.updateWhere({
+				where: { id: user.id },
+				changes: { otpToken: "SOME_OTP_STRING" },
+				overrideCanUpdate: true,
+			})
+			const res = await supertest(app.getHttpServer())
+				.get("/api/test-auth/current-user")
+				.auth(user.email, "password")
+
+			expect(res.statusCode).toEqual(403)
+		})
+
+		it("should throw if invalid", async () => {
+			const res = await supertest(app.getHttpServer())
+				.get("/api/test-auth/current-user")
+				.auth(user.email, "password_bad")
+
+			expect(res.statusCode).toEqual(400)
 			expect(res.body).toEqual({
 				error: expect.objectContaining({ message: "Invalid email or password" }),
 			})

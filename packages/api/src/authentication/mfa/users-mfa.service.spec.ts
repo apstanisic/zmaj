@@ -3,7 +3,7 @@ import { UsersService } from "@api/users/users.service"
 import { BadRequestException, ForbiddenException } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import { TestingModule } from "@nestjs/testing"
-import { asMock, AuthUser, makeWritable, SignInDto, User } from "@zmaj-js/common"
+import { asMock, AuthUser, makeWritable, SignInDto, User, UserWithSecret } from "@zmaj-js/common"
 import { AuthUserStub, UserStub } from "@zmaj-js/test-utils"
 import { SetRequired } from "type-fest"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -52,28 +52,39 @@ describe("UsersMfaService", () => {
 			usersService.findUserWithHiddenFields = vi.fn(async () => dbUser)
 			usersService.ensureUserIsActive = vi.fn()
 			mfaService = module.get(MfaService)
-			mfaService.generateSecret = vi.fn(() => "secret_123")
-			mfaService.generateQrCode = vi.fn(async (name, secret) => `qrcode_${name}_${secret}`)
+			mfaService["generateSecret"] = vi.fn(() => "secret_123")
+			mfaService["generateQrCode"] = vi.fn(async (name, secret) => `qrcode_${name}_${secret}`)
 			mfaService.calculateBackupCodes = vi.fn(async (secret) => secret.split("_"))
 			jwtService = module.get(JwtService)
 			jwtService.signAsync = vi.fn(async (v) => JSON.stringify(v))
+
+			mfaService.generateParamsToEnable = vi.fn(async (email) => ({
+				image: "img",
+				jwt: `jwt_${email}`,
+				backupCodes: ["1"],
+				secret: "secret",
+			}))
 		})
+
+		it("should throw if user is not active", async () => {
+			dbUser.status = "banned"
+			await expect(service.requestToEnableOtp(user.userId)).rejects.toThrow(ForbiddenException)
+		})
+
 		it("should throw if user already has 2fa enabled", async () => {
 			dbUser.otpToken = "1234512345"
-			await expect(service.requestToEnableOtp(user)).rejects.toThrow(ForbiddenException)
+			await expect(service.requestToEnableOtp(user.userId)).rejects.toThrow(ForbiddenException)
 		})
 
-		it("should create jwt that is valid only 5 minutes", async () => {
-			await service.requestToEnableOtp(user)
-			expect(jwtService.signAsync).toBeCalledWith(expect.anything(), { expiresIn: 300 })
-		})
-
-		it("should send secret, secret as a jwt, backup codes and qr code", async () => {
-			const res = await service.requestToEnableOtp(user)
-			expect(res.backupCodes).toEqual(["secret", "123"])
-			expect(res.jwt).toEqual('{"secret":"secret_123"}')
-			expect(res.image).toEqual("qrcode_hello@example.com_secret_123")
-			expect(res.secret).toEqual("secret_123")
+		it("should return data needed to enable mfa", async () => {
+			const result = await service.requestToEnableOtp(user.email)
+			expect(result).toEqual({
+				image: "img",
+				jwt: `jwt_${user.email}`,
+				backupCodes: ["1"],
+				secret: "secret",
+				//
+			})
 		})
 	})
 
@@ -110,94 +121,81 @@ describe("UsersMfaService", () => {
 
 	describe("enableOtp", () => {
 		let user: User
-		let aUser: AuthUser
 
 		let jwtService: JwtService
 		let mfa: MfaService
 
 		beforeEach(() => {
-			aUser = AuthUserStub()
 			user = UserStub({ otpToken: null })
 
 			jwtService = module.get(JwtService)
-			jwtService.verifyAsync = vi.fn(async () => ({ secret: "1234512345" }) as any)
+			jwtService.verifyAsync = vi.fn(
+				async () =>
+					({
+						secret: "1234512345",
+						email: "test@example.com",
+						purpose: "enable-mfa",
+					}) as any,
+			)
 
 			mfa = module.get(MfaService)
-			mfa.checkCode = vi.fn(async () => true)
+			mfa.checkMfa = vi.fn(async () => true)
 			mfa.encryptSecret = vi.fn(async (val) => `mfa_${val}`)
 
-			usersService.findActiveUser = vi.fn(async () => UserStub({ otpToken: null }))
+			usersService.findActiveUser = vi.fn(async () => user)
 			usersService.repo.updateById = vi.fn(async () => user as any)
 		})
-		it("should prevent action if user has 2fa already enabled", async () => {
-			user.otpToken = "1234512345"
-			usersService.findActiveUser = vi.fn(async () => user)
-			await expect(service.enableOtp({ code: "123456", jwt: "jwt", user: aUser })).rejects.toThrow(
-				ForbiddenException,
-			)
-		})
 
-		it("should validate jwt and it's contents", async () => {
-			asMock(jwtService.verifyAsync).mockResolvedValue({})
-			await expect(service.enableOtp({ code: "123456", jwt: "jwt", user: aUser })).rejects.toThrow(
+		it("should throw if provide data is invalid", async () => {
+			asMock(jwtService.verifyAsync).mockResolvedValue({ hello: "world" })
+			await expect(service.enableOtp({ code: "123456", jwt: "jwt" })).rejects.toThrow(
 				BadRequestException,
 			)
 		})
 
+		it("should prevent action if user has 2fa already enabled", async () => {
+			user.otpToken = "1234512345"
+			usersService.findActiveUser = vi.fn(async () => user)
+			await expect(service.enableOtp({ code: "123456", jwt: "jwt" })).rejects.toThrow(
+				ForbiddenException,
+			)
+		})
+
 		it("should check that jwt contains valid secret", async () => {
-			mfa.checkCode = vi.fn(async () => false)
-			await expect(service.enableOtp({ code: "123456", jwt: "jwt", user: aUser })).rejects.toThrow(
+			vi.mocked(mfa.checkMfa).mockResolvedValue(false)
+			await expect(service.enableOtp({ code: "123456", jwt: "jwt" })).rejects.toThrow(
 				BadRequestException,
 			)
 		})
 
 		it("should save encrypted token in db", async () => {
-			await service.enableOtp({ code: "123456", jwt: "jwt", user: aUser })
+			await service.enableOtp({ code: "123456", jwt: "jwt" })
 			expect(usersService.repo.updateById).toBeCalledWith({
-				id: aUser.userId,
+				id: user.id,
 				changes: { otpToken: "mfa_1234512345" },
 			})
 		})
 	})
 
 	describe("hasMfa", () => {
-		let user: User
+		let user: UserWithSecret
+		let authUser: AuthUser
 		let dto: SignInDto
 		beforeEach(() => {
 			dto = new SignInDto({ email: "hello@example.com", password: "password" })
 			user = UserStub({ otpToken: null, status: "active" })
-			//
-			usersService.findUserWithHiddenFields = vi.fn(async () => user as any)
-			usersService.checkPasswordHash = vi.fn(async () => true)
+			authUser = AuthUser.fromUser(user)
+
+			usersService.findUserWithHiddenFields = vi.fn(async () => user)
 		})
 
-		it("should throw if user does not exist", async () => {
-			asMock(usersService.findUserWithHiddenFields).mockRejectedValue(new ForbiddenException())
-			await expect(service.hasMfa(dto)).rejects.toThrow(ForbiddenException)
-			expect(usersService.findUserWithHiddenFields).toBeCalledWith({ email: dto.email }, undefined)
-		})
+		it("should return true if user has mfa", async () => {
+			const res = await service.hasMfa(authUser)
+			expect(res).toEqual(false)
 
-		it("should throw on invalid password", async () => {
-			user.password = "some-hash"
-			asMock(usersService.checkPasswordHash).mockResolvedValue(false)
-			await expect(service.hasMfa(dto)).rejects.toThrow(BadRequestException)
-			expect(usersService.checkPasswordHash).toBeCalledWith("some-hash", "password")
-		})
-
-		it("should throw if user is not active", async () => {
-			user.status = "banned"
-			await expect(service.hasMfa(dto)).rejects.toThrow(ForbiddenException)
-		})
-
-		it("should return true if users's otp token exists", async () => {
 			user.otpToken = "qwerty"
-			const res1 = await service.hasMfa(dto)
-			expect(res1).toEqual(true)
-
-			user.otpToken = null
-			asMock(usersService.findUserWithHiddenFields).mockResolvedValue(user)
-			const res2 = await service.hasMfa(dto)
-			expect(res2).toEqual(false)
+			const res2 = await service.hasMfa(authUser)
+			expect(res2).toEqual(true)
 		})
 	})
 })

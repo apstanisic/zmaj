@@ -41,7 +41,7 @@ export class OidcController {
 		@Ip() ip: string,
 		@UserAgent() userAgent?: string,
 	): Promise<RedirectResponse> {
-		const { refreshToken } = await this.auth.signInWithoutPassword(user, { ip, userAgent })
+		const { refreshToken } = await this.auth.createAuthSession(user, { ip, userAgent })
 
 		this.rtService.set(res, refreshToken)
 

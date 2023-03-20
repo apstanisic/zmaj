@@ -35,19 +35,21 @@ describe("FieldsService", () => {
 	})
 
 	describe("updateField", () => {
+		let fieldId: string
 		beforeEach(() => {
 			service.repo.updateById = vi.fn()
+			fieldId = infraState.fields.find((f) => !f.tableName.startsWith("zmaj"))?.id ?? throw500(444)
 		})
 		it("should update field", async () => {
-			await service.updateField("some-id" as UUID, { description: "new desc" })
+			await service.updateField(fieldId, { description: "new desc" })
 			expect(service.repo.updateById).toBeCalledWith({
-				id: "some-id",
+				id: fieldId,
 				changes: { description: "new desc" },
 			})
 		})
 
 		it("should sync infra after change", async () => {
-			await service.updateField("some-id" as UUID, { description: "new desc" })
+			await service.updateField(fieldId, { description: "new desc" })
 			expect(appInfraSync.executeChange).toBeCalled()
 		})
 	})

@@ -42,11 +42,6 @@ export class FieldsService {
 			throw400(32912, emsg.fieldExists(data.columnName))
 		}
 
-		const hasRows = await this.repoManager.getRepo(data.tableName).count({})
-		if (hasRows && !data.isNullable && isNil(data.dbDefaultValue)) {
-			throw403(4324234, emsg.noDefaultValue)
-		}
-
 		const toCreate = zodCreate(FieldMetadataSchema, {
 			...data,
 			label: data.label ?? title(data.columnName),
@@ -88,22 +83,21 @@ export class FieldsService {
 		const currentField =
 			this.infraState.fields.find((f) => f.id === id) ?? throw400(42399, emsg.noField)
 
-		const changedNullable =
-			isBoolean(changes.isNullable) && changes.isNullable !== currentField.isNullable
-		const changedUnique = isBoolean(changes.isUnique) && changes.isUnique !== currentField.isUnique
-		const changedDefaultValue =
-			changes.dbDefaultValue !== undefined && changes.dbDefaultValue !== currentField.dbDefaultValue
-
 		return this.appInfraSync.executeChange(async () => {
-			if (changedNullable || changedUnique || changedDefaultValue) {
+			if (
+				isBoolean(changes.isUnique) ||
+				isBoolean(changes.isUnique) ||
+				changes.dbDefaultValue !== undefined
+			) {
 				await this.alterSchema.updateColumn({
 					columnName: currentField.columnName,
 					tableName: currentField.tableName,
-					defaultValue: changedDefaultValue
-						? this.getDefaultValue(changes.dbDefaultValue)
-						: undefined,
-					nullable: changedNullable ? changes.isNullable : undefined,
-					unique: changedUnique ? changes.isUnique : undefined,
+					defaultValue:
+						changes.dbDefaultValue !== undefined
+							? this.getDefaultValue(changes.dbDefaultValue)
+							: undefined,
+					nullable: changes.isNullable ?? undefined,
+					unique: changes.isUnique ?? undefined,
 				})
 			}
 			const field = await this.repo.updateById({ id, changes })

@@ -35,10 +35,10 @@ export class MfaClient {
 			.catch(sdkThrow)
 	}
 
-	async hasMfa(data?: SignInDto): Promise<{ enabled: boolean; required: boolean }> {
+	async hasMfa(data?: SignInDto): Promise<boolean> {
 		return this.http
-			.post<{ enabled: boolean; required: boolean }>(ep.hasMfa, data ?? {})
-			.then((r) => r.data)
+			.post<{ enabled: boolean }>(ep.hasMfa, data ?? {})
+			.then((r) => r.data.enabled)
 			.catch(sdkThrow)
 	}
 }

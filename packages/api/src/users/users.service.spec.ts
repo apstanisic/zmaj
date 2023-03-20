@@ -4,11 +4,10 @@ import { BadRequestException, ForbiddenException, UnauthorizedException } from "
 import { TestingModule } from "@nestjs/testing"
 import { randEmail } from "@ngneat/falso"
 import { asMock, AuthUser, User, UserCreateDto, UserUpdatePasswordDto } from "@zmaj-js/common"
-import { AuthUserStub } from "@zmaj-js/test-utils"
+import { AuthUserStub, UserStub } from "@zmaj-js/test-utils"
 import { v4 } from "uuid"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ZodError } from "zod"
-import { UserStub } from "./user.stub"
 import { UsersService } from "./users.service"
 
 describe("UsersService", () => {

@@ -30,20 +30,11 @@ export function SignInForm(): JSX.Element {
 				setPrompt("must-create-mfa")
 				setEmailAndPass(dto)
 				setCreateMfaParams(result.data)
-			} else if (result.status === "success") {
+			} else if (result.status === "signed-in") {
 				await login(undefined).catch((e) =>
 					notify(e.message ?? "Problem signing in", { type: "error" }),
 				)
 			}
-			// const mfa = await sdk.auth.mfa.hasMfa(dto)
-			// if (!mfa.enabled && mfa.required) {
-			// 	//
-			// 	console.log("Must have mfa")
-			// } else if (!mfa.enabled) {
-			// 	await login(data).catch((e) => notify(e.message ?? "Problem signing in", { type: "error" }))
-			// } else {
-			// 	setEmailAndPass(dto)
-			// }
 		},
 		[login, notify, sdk.auth],
 	)
