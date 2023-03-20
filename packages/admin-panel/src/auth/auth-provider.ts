@@ -1,5 +1,5 @@
 import { ZmajSdk } from "@zmaj-js/client-sdk"
-import { isNil, SignInDto, systemPermissions } from "@zmaj-js/common"
+import { SignInDto, systemPermissions } from "@zmaj-js/common"
 import { AuthProvider, UserIdentity } from "ra-core"
 import { isEmpty } from "radash"
 import { EmptyObject } from "type-fest"
@@ -29,7 +29,7 @@ export function initAuthProvider(sdk: ZmajSdk, events: OnEvent = {}): AuthProvid
 
 			if (!isEmpty(params)) {
 				const res = await sdk.auth.signIn(params as SignInDto)
-				if (res.status !== "success") throw new Error("MFA misconfigured")
+				if (res.status !== "signed-in") throw new Error("MFA misconfigured")
 			}
 
 			const { actions, resource } = systemPermissions.adminPanel
@@ -50,7 +50,7 @@ export function initAuthProvider(sdk: ZmajSdk, events: OnEvent = {}): AuthProvid
 		 */
 		async logout(): Promise<string | false | void> {
 			if (sdk.state.currentUser) {
-				await sdk.auth.signOut().catch((e) => {})
+				await sdk.auth.signOut().catch(() => {})
 			}
 			await events.logout?.()
 			return "/login"
