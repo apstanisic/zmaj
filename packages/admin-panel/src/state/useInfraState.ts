@@ -6,11 +6,11 @@ import { unique } from "radash"
 import { useSdk } from "../context/sdk-context"
 
 async function getInfra(sdk: ZmajSdk): Promise<CollectionDef[]> {
-	if (!sdk.auth.isSignedIn) return systemCollections.concat()
+	if (!sdk.auth.isSignedIn) return [...systemCollections]
 
 	return sdk.infra
 		.getAdminPanelInfra()
-		.then((cols) => unique(systemCollections.concat(cols), (c) => c.tableName))
+		.then((cols) => unique([...systemCollections, ...cols], (c) => c.tableName))
 		.catch(() => [])
 }
 
