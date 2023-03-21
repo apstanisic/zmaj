@@ -4,8 +4,8 @@ import { RuntimeSettingsService } from "./runtime-settings.service"
 
 @Global()
 @Module({
-    controllers: [DynamicSettingsController],
-    providers: [RuntimeSettingsService],
-    exports: [RuntimeSettingsService]
+	controllers: [DynamicSettingsController],
+	providers: [RuntimeSettingsService],
+	exports: [RuntimeSettingsService],
 })
 export class RuntimeSettingsModule {}

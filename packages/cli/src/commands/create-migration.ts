@@ -36,7 +36,11 @@ async function createMigration({
 	migrationName,
 	folder,
 	type,
-}: { migrationName?: string; folder?: string; type?: "cjs" | "esm" }): Promise<void> {
+}: {
+	migrationName?: string
+	folder?: string
+	type?: "cjs" | "esm"
+}): Promise<void> {
 	console.log(pc.blue("Creating migration..."))
 
 	let dateAndName: string

@@ -51,6 +51,7 @@
 		"execa": "^7.1.1",
 		"fs-extra": "^11.1.0",
 		"get-port": "5.1.1",
+		"lint-staged": "^13.2.0",
 		"mprocs": "^0.6.4",
 		"prettier": "^2.8.4",
 		"prettier-plugin-tailwindcss": "^0.2.4",
@@ -79,5 +80,9 @@
 	"dependencies": {
 		"husky": "^8.0.3",
 		"only-allow": "^1.1.1"
+	},
+	"lint-staged": {
+		"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx}": "rome format --write .",
+		"**/*.{md,json,html}": "prettier -wl ."
 	}
 }

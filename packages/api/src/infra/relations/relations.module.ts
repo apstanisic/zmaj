@@ -15,6 +15,6 @@ import { ManyToManyRelationsService } from "./many-to-many-relations.service"
 		DirectRelationService,
 		// RelationMigrationCommandsService,
 	],
-	exports: [RelationsService,],
+	exports: [RelationsService],
 })
 export class RelationsModule {}

@@ -25,9 +25,7 @@ export class FieldsController {
 	 * There is event hook that will create column in database
 	 */
 	@Post(ep.create)
-	async createOne(
-		@DtoBody(FieldCreateDto) dto: FieldCreateDto,
-	): Promise<Data<FieldMetadata>> {
+	async createOne(@DtoBody(FieldCreateDto) dto: FieldCreateDto): Promise<Data<FieldMetadata>> {
 		return wrap(this.service.createField(dto))
 	}
 

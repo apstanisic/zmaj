@@ -26,9 +26,7 @@ export class MfaController {
 	}
 
 	@Put(ep.enableOtp)
-	async enableOtp(
-		@DtoBody(OtpEnableDto) data: OtpEnableDto,
-	): Promise<{ success: true }> {
+	async enableOtp(@DtoBody(OtpEnableDto) data: OtpEnableDto): Promise<{ success: true }> {
 		await this.enableMfa.enableOtp(data)
 		return { success: true }
 	}
@@ -45,9 +43,7 @@ export class MfaController {
 	/**
 	 */
 	@Post(ep.hasMfa)
-	async checkMfa(
-		@GetUser({required: true}) user: AuthUser,
-	): Promise<{ enabled: boolean }> {
+	async checkMfa(@GetUser({ required: true }) user: AuthUser): Promise<{ enabled: boolean }> {
 		return {
 			enabled: await this.enableMfa.hasMfa(user),
 		}

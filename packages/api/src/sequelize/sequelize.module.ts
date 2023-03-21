@@ -27,7 +27,7 @@ import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 		{ provide: AlterSchemaService, useClass: SequelizeAlterSchemaService },
 		{ provide: SchemaInfoService, useClass: SequelizeSchemaInfoService },
 		SequelizeSchemaInfoService,
-		SequelizeAlterSchemaService
+		SequelizeAlterSchemaService,
 	],
 	exports: [
 		SequelizeService,
@@ -37,6 +37,6 @@ import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 		SequelizeAlterSchemaService,
 		AlterSchemaService,
 		SchemaInfoService,
-	]
+	],
 })
 export class SequelizeModule {}

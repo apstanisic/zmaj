@@ -4,7 +4,7 @@ import { TestingUtilsService } from "./test-utils.service"
 
 @Global()
 @Module({
-    providers: [TestingUtilsService, BuildTestDbService],
-    exports: [TestingUtilsService, BuildTestDbService],
+	providers: [TestingUtilsService, BuildTestDbService],
+	exports: [TestingUtilsService, BuildTestDbService],
 })
 export class TestingUtilsModule {}
