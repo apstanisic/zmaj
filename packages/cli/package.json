@@ -44,12 +44,12 @@
 		"@clack/prompts": "^0.6.3",
 		"@zmaj-js/api": "workspace:*",
 		"@zmaj-js/common": "workspace:*",
-		"fs-extra": "^11.1.0",
+		"fs-extra": "^11.1.1",
 		"picocolors": "^1.0.0",
 		"yargs": "^17.7.1"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "^11.0.1",
-		"@types/yargs": "^17.0.22"
+		"@types/yargs": "^17.0.23"
 	}
 }

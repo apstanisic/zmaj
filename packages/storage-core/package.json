@@ -40,7 +40,7 @@
 	"dependencies": {
 		"@zmaj-js/common": "workspace:*",
 		"file-type": "^18.2.1",
-		"fs-extra": "^11.1.0",
+		"fs-extra": "^11.1.1",
 		"mime": "^3.0.0",
 		"zod": "^3.21.4"
 	},

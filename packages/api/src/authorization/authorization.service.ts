@@ -36,7 +36,7 @@ import { builtInTransformers } from "./condition-transformers"
 const { flatten, unflatten } = flat
 
 type Action = "create" | "read" | "update" | "delete" | string
-type Resource = string | CollectionDef<never>
+type Resource = string | CollectionDef<any>
 
 type CanParams<T extends Struct = Struct> = {
 	user?: AuthUser
@@ -56,7 +56,7 @@ type PickFieldsParams<T extends Struct = Struct> = Pick<
 	// "resource" | "user" | "record"
 	"user" | "record"
 > & {
-	resource: CollectionDef<never>
+	resource: CollectionDef<any>
 	fields?: Fields<T>
 }
 

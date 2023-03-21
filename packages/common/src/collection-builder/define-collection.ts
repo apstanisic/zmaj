@@ -11,7 +11,7 @@ import { OnlyFields } from "@common/modules/crud-types/only-fields.type"
 type FieldParams = Pick<FieldDef, "dataType"> & Partial<FieldDef>
 type DefineCollectionParams<T extends Struct> = {
 	tableName: string
-	options?: BuildCollectionOptions
+	options?: BuildCollectionOptions<T>
 	fields: Record<keyof OnlyFields<T>, FieldParams>
 	relations: Record<
 		keyof OnlyRelations<T>,
