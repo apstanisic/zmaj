@@ -11,14 +11,15 @@ const postsCrud = testSdk.collection<TPost>("posts")
 const suffix = "9k8fk3"
 
 const deletePrevious = async (): Promise<void> => {
-	await commentsCrud.temp__deleteWhere({ filter: { body: { $like: "%" + suffix } } })
-	await tagsCrud.temp__deleteWhere({ filter: { name: { $like: "%" + suffix } } })
-	await postsCrud.temp__deleteWhere({ filter: { title: { $like: "%" + suffix } } })
+	await Promise.all([
+		commentsCrud.temp__deleteWhere({ filter: { body: { $like: "%" + suffix } } }),
+		tagsCrud.temp__deleteWhere({ filter: { name: { $like: "%" + suffix } } }),
+		postsCrud.temp__deleteWhere({ filter: { title: { $like: "%" + suffix } } }),
+	])
 }
 
 test.beforeEach(async () => {
 	await deletePrevious()
-	range
 	await Promise.all(
 		range(0, 5, async (i) => tagsCrud.createOne({ data: { name: `Tag ${i} ${suffix}` } })),
 	)
