@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"preinstall": "npx -y only-allow pnpm",
-		"format": "rome format --write . && prettier -wl .",
+		"format": "rome format --write . && prettier -wl --ignore-unknown .",
 		"lint": "turbo run lint --cache-dir=turbo-cache --filter=./packages/*",
 		"tsc": "turbo run tsc --cache-dir=turbo-cache --filter=./packages/*",
 		"build": "turbo run build --cache-dir=turbo-cache --filter=./packages/*",
@@ -83,6 +83,6 @@
 	},
 	"lint-staged": {
 		"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx}": "rome format --write",
-		"**/*.{md,json,html}": "prettier -wl"
+		"**/*.{md,json,html}": "prettier -wl --ignore-unknown"
 	}
 }
