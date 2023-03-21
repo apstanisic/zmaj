@@ -101,14 +101,14 @@ nohup.out
 *.svg
 
 # Using Rome for formating JS since it's a lot faster, so I ignore all js/ts files
-*.js
-*.jsx
-*.ts
-*.tsx
-*.mjs
-*.mts
-*.cjs
-*.cts
+# *.js
+# *.jsx
+# *.ts
+# *.tsx
+# *.mjs
+# *.mts
+# *.cjs
+# *.cts
 
 # Do not format generated files
 pnpm-lock.yaml

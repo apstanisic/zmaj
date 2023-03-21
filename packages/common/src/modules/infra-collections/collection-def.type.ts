@@ -100,6 +100,8 @@ export type CollectionDef<T extends Struct = Struct> = Except<
 	relations: Struct<RelationDef>
 
 	layoutConfig: LayoutConfig
+
+	__type?: T | any
 }
 
 // export type CollectionDef<T extends Struct = Struct> = CollectionDef<T>

@@ -36,7 +36,7 @@ import { builtInTransformers } from "./condition-transformers"
 const { flatten, unflatten } = flat
 
 type Action = "create" | "read" | "update" | "delete" | string
-type Resource = string | CollectionDef<never>
+type Resource = string | CollectionDef<any>
 
 type CanParams<T extends Struct = Struct> = {
 	user?: AuthUser
@@ -166,7 +166,7 @@ export class AuthorizationService {
 	 */
 	checkSystem<T extends keyof typeof systemPermissions>(
 		resourceKey: T,
-		actionKey: keyof typeof systemPermissions[T]["actions"],
+		actionKey: keyof (typeof systemPermissions)[T]["actions"],
 		params: {
 			user?: AuthUser
 			record?: Struct<any>

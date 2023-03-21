@@ -2,8 +2,12 @@ import { DefineCollection } from "@common/collection-builder/define-collection"
 import { zodCreate } from "@common/zod"
 import { LayoutConfigSchema } from "../infra-collections/layout/layout-config.schema"
 import { systemPermissions } from "../permissions"
-import { PUBLIC_ROLE_ID } from "../roles"
-import { User } from "./user.model"
+import { User, userFields } from "./user.model"
+import { BuildType, Fields } from "../crud-types/model-def.type"
+import { FieldDef } from "../infra-fields"
+import { Struct } from "@common/types"
+import { Writable } from "type-fest"
+import { PUBLIC_ROLE_ID } from "../roles/role.consts"
 
 export const UserCollection = DefineCollection<User>({
 	tableName: "zmaj_users",
@@ -39,99 +43,67 @@ export const UserCollection = DefineCollection<User>({
 			},
 		}),
 	},
-	fields: {
-		id: { dataType: "uuid", columnName: "id", isPrimaryKey: true },
-		confirmedEmail: { dataType: "boolean", columnName: "confirmed_email", isNullable: false },
-		email: {
-			dataType: "short-text",
-			columnName: "email",
-			isNullable: false,
-			componentName: "email",
-		},
-		firstName: { dataType: "short-text", columnName: "first_name" },
-		lastName: { dataType: "short-text", columnName: "last_name" },
-		otpToken: {
-			canRead: false,
-			dataType: "short-text",
-			columnName: "otp_token",
-			fieldConfig: { createHidden: true, editHidden: true },
-		},
-		status: {
-			dataType: "short-text",
-			columnName: "status",
-			componentName: "dropdown",
-			isNullable: false,
-			dbDefaultValue: "disabled",
-			fieldConfig: {
-				component: {
-					dropdown: {
-						choices: [
-							{ value: "active", label: "Active" },
-							{ value: "banned", label: "Banned" },
-							{ value: "hacked", label: "Hacked" },
-							{ value: "disabled", label: "Disabled" },
-							{ value: "invited", label: "Invited" },
-							{ value: "emailUnconfirmed", label: "Email Unconfirmed" },
-						],
-					},
-				},
-			},
-		},
-		roleId: {
-			dataType: "uuid",
-			columnName: "role_id",
-			isNullable: false,
-			isForeignKey: true,
-			dbDefaultValue: PUBLIC_ROLE_ID,
-			hasDefaultValue: true,
-		},
-		// photoUrl: {
-		//   dataType: "long-text",
-		//   columnName: "photo_url",
-		//   fieldConfig: { showHidden: true, editHidden: true, createHidden: true },
-		// },
-		// passwordExpiresAt: { dataType: "datetime", columnName: "password_expires_at" },
-		createdAt: {
-			dataType: "datetime",
-			columnName: "created_at",
-			canUpdate: false,
-			canCreate: false,
-			// beforeCreate: ["CURRENT_DATE"],
-		},
-		password: {
-			dataType: "short-text",
-			columnName: "password",
-			canCreate: true,
-			canUpdate: false,
-			canRead: false,
-			// fieldConfig: {}
-			componentName: "password",
-		},
-	},
+	fields: userFields,
 	relations: {
 		authSessions: {
 			hidden: true,
-			thisColumnName: "id",
-			otherColumnName: "user_id",
-			otherTableName: "zmaj_auth_sessions",
+			field: "id",
+			otherField: "userId",
+			otherCollection: "zmajAuthSessions",
 			type: "one-to-many",
-			otherPropertyName: "user",
+			reverse: "user",
 		},
 		files: {
 			hidden: true,
-			thisColumnName: "id",
-			otherColumnName: "user_id",
-			otherTableName: "zmaj_files",
+			field: "id",
+			otherField: "userId",
+			otherCollection: "zmajFiles",
 			type: "one-to-many",
-			otherPropertyName: "user",
+			reverse: "user",
 		},
 		role: {
-			thisColumnName: "role_id",
+			field: "roleId",
 			label: "Role",
-			otherColumnName: "id",
-			otherTableName: "zmaj_roles",
+			otherField: "id",
+			otherCollection: "zmajRoles",
 			type: "many-to-one",
-			otherPropertyName: "user",
+			reverse: "users",
+		},
+	},
+})
+
+function customizeFields<F extends Record<string, BuildType<any, any>>>(
+	fields: F,
+	customized: Partial<Record<keyof F, Partial<FieldDef>>>,
+): Struct<Partial<FieldDef>> {
+	const shallow = { ...fields }
+	for (const [field, custom] of Object.entries(customized)) {
+		shallow[field as keyof typeof shallow] = { ...custom, ...shallow[field] } as any
+	}
+	return shallow as Struct<Partial<FieldDef>>
+}
+
+customizeFields(userFields, {
+	password: { componentName: "password" },
+	email: { componentName: "email" },
+	roleId: { isForeignKey: true, dbDefaultValue: PUBLIC_ROLE_ID },
+	otpToken: { fieldConfig: { createHidden: true, editHidden: true } },
+	status: {
+		componentName: "dropdown",
+		dbDefaultValue: "disabled",
+		fieldConfig: {
+			component: {
+				dropdown: {
+					choices: [
+						{ value: "active", label: "Active" },
+						{ value: "banned", label: "Banned" },
+						{ value: "hacked", label: "Hacked" },
+						{ value: "disabled", label: "Disabled" },
+						{ value: "invited", label: "Invited" },
+						{ value: "emailUnconfirmed", label: "Email Unconfirmed" },
+					],
+				},
+			},
 		},
 	},
 })

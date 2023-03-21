@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { EmptyObject } from "type-fest"
-import { describe, it, assertType } from "vitest"
-import { EntityRef } from "./entity-ref.type"
+import { assertType, describe, it } from "vitest"
 import { Fields } from "./fields.type"
+import { ManyToMany, ManyToOne, OneToMany } from "./relation.types"
 
 type Comment = {
 	id: number
 	meta: {
 		device: string
 	}
-	post?: EntityRef<Post>
+	post?: ManyToOne<Post>
 }
 
 type Tag = {
@@ -20,15 +20,15 @@ type Tag = {
 type Owner = {
 	id: string
 	name: string
-	posts?: EntityRef<Post>[]
+	posts?: OneToMany<Post>
 }
 
 type Post = {
 	id: string
 	title: string
-	owner?: EntityRef<Owner>
-	comments?: EntityRef<Comment>[]
-	tags?: readonly EntityRef<Tag>[]
+	owner?: ManyToOne<Owner>
+	comments?: OneToMany<Comment>
+	tags?: ManyToMany<Tag>
 }
 
 function getType<T>() {

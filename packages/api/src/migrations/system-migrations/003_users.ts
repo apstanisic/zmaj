@@ -32,6 +32,15 @@ export const CreateUsersTable = createSystemMigration(
 				},
 				{ transaction: trx },
 			)
+			await qi.addConstraint(table, {
+				transaction: trx,
+				type: "check",
+				fields: ["status"],
+				name: "zmaj_users_status_check",
+				where: {
+					status: ["active", "banned", "hacked", "disabled", "emailUnconfirmed", "invited"],
+				},
+			})
 		},
 		down: async (_, { trx, qi }) => {
 			await qi.dropTable(table, { transaction: trx, cascade: true })

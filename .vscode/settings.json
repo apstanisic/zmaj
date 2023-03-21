@@ -125,5 +125,8 @@
 		"vitest",
 		"Zmaj",
 		"zustand"
-	]
+	],
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }

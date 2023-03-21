@@ -1,79 +1,101 @@
-import { EntityRef } from "../crud-types/entity-ref.type"
 import { SetRequired } from "type-fest"
 import { AuthSession } from "../auth-sessions/auth-session.model"
+import { ExtractType, Fields } from "../crud-types/model-def.type"
+import { ManyToOne, OneToMany } from "../crud-types/relation.types"
 import { FileInfo } from "../files"
 import { Role } from "../roles/role.model"
+import { PUBLIC_ROLE_ID } from "../roles/role.consts"
 
-export type User = {
+export const userFields = Fields((f) => ({
 	/**
 	 * ID
 	 */
-	id: string
+	id: f.uuid({ isPk: true }),
 	/**
 	 * Email
 	 */
-	email: string
+	email: f.shortText({}, { componentName: "email" }),
 	// /**
 	//  * Password
 	//  */
-	// password: string
+	password: f.longText({ canRead: false, canUpdate: false }, { componentName: "password" }),
 	/**
 	 * First name
 	 */
-	firstName: string | null
+	firstName: f.shortText({ nullable: true }),
 	/**
 	 * Last name
 	 */
-	lastName: string | null
+	lastName: f.shortText({ nullable: true }),
 	/**
 	 * Role ID
 	 */
-	roleId: string
+	roleId: f.uuid(
+		{ hasDefault: true },
+		{
+			isForeignKey: true,
+			dbDefaultValue: PUBLIC_ROLE_ID,
+		},
+	),
 	/**
 	 * OTP token. It's undefined when we can't access it, and null when it's not available
 	 */
-	otpToken?: string | null
+	otpToken: f.shortText(
+		{ nullable: true, canRead: false },
+		{ fieldConfig: { createHidden: true, editHidden: true } },
+	),
 	/**
 	 * Is email confirmed
 	 */
-	confirmedEmail: boolean
+	confirmedEmail: f.boolean({ hasDefault: true }),
 	/**
 	 * When was user account created
 	 */
-	createdAt: Date
-	/**
-	 * @TODO
-	 */
-	// photoUrl: string | null
-	/**
-	 * When does password expires
-	 * @todo This, or account expires, or both?
-	 */
-	// passwordExpiresAt: Date | null
-
+	createdAt: f.createdAt({}),
 	/**
 	 * Status of current user's account
 	 */
-	status: "active" | "banned" | "hacked" | "disabled" | "emailUnconfirmed" | "invited"
+	status: f.enumString(
+		{
+			enum: ["active", "banned", "hacked", "disabled", "emailUnconfirmed", "invited"],
+			hasDefault: true,
+		},
+		{
+			componentName: "dropdown",
+			dbDefaultValue: "disabled",
+			fieldConfig: {
+				component: {
+					dropdown: {
+						choices: [
+							{ value: "active", label: "Active" },
+							{ value: "banned", label: "Banned" },
+							{ value: "hacked", label: "Hacked" },
+							{ value: "disabled", label: "Disabled" },
+							{ value: "invited", label: "Invited" },
+							{ value: "emailUnconfirmed", label: "Email Unconfirmed" },
+						],
+					},
+				},
+			},
+		},
+	),
+}))
 
+export type User = ExtractType<typeof userFields> & {
 	/**
 	 * All user login sessions
 	 */
-	authSessions?: EntityRef<AuthSession>[]
+	authSessions?: OneToMany<AuthSession>
 
 	/**
 	 * User's role
 	 */
-	role?: EntityRef<Role>
+	role?: ManyToOne<Role>
 
 	/**
 	 * File's that belong to user
 	 */
-	files?: EntityRef<FileInfo>[]
-	/**
-	 * Password is never null, it's string if it's returned, or undefined if we can't access it
-	 */
-	password?: string | undefined
+	files?: OneToMany<FileInfo>
 }
 
 export type UserWithSecret = SetRequired<User, "password" | "otpToken">
