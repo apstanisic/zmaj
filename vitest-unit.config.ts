@@ -27,7 +27,7 @@ export default defineConfig({
 		passWithNoTests: true,
 		clearMocks: true,
 		exclude: [...configDefaults.exclude, "./packages/e2e-tests", "./scripts"],
-		browser: false,
+		browser: { enabled: false },
 		dangerouslyIgnoreUnhandledErrors: false,
 		globals: false,
 		logHeapUsage: false,
