@@ -42,6 +42,7 @@ export const emsg = {
 	emailUnconfirmed: "Email unconfirmed. Please check your emails to verify email",
 	rtNotProvided: "Refresh token not provided",
 	invalidEmailOrPassword: "Invalid email or password",
+	sessionExpired: "Your session is expired. Please sign in again",
 	invalidPassword: "Invalid password",
 	emailTokenExpired: "Email sent to you is expired",
 	authRequired: "You must be authenticated",

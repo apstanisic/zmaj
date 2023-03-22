@@ -1,5 +1,5 @@
 import { CrudRequest } from "@api/common/decorators/crud-request.decorator"
-import { throw403 } from "@api/common/throw-http"
+import { throw401, throw403 } from "@api/common/throw-http"
 import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { EncryptionService } from "@api/encryption/encryption.service"
@@ -123,7 +123,7 @@ export class AuthSessionsService {
 	async extendSessionValidity(encryptedRefreshToken: string): Promise<AuthSession> {
 		const session = await this.findByRefreshToken(encryptedRefreshToken)
 
-		if (isPast(session.validUntil)) throw new UnauthorizedException(18321)
+		if (isPast(session.validUntil)) throw401(18321, emsg.emailTokenExpired)
 
 		return this.repo.updateById({
 			id: session.id,
@@ -137,7 +137,7 @@ export class AuthSessionsService {
 	/**
 	 * Delete sessions that are expired more than a year before
 	 */
-	@Cron(CronExpression.EVERY_DAY_AT_3AM)
+	@Cron(CronExpression.EVERY_3_HOURS)
 	async __deleteOldSessions(): Promise<void> {
 		await this.repo.deleteWhere({
 			where: {

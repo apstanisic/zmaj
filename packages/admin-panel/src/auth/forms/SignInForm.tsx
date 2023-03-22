@@ -9,6 +9,7 @@ import { EmailInputField } from "../../field-components/email/EmailInputField"
 import { PasswordInputField } from "../../field-components/password/PasswordInputField"
 import { ManualInputField } from "../../shared/input/ManualInputField"
 import { DisplayMfaQrCode } from "../components/DisplayMfaQrCode"
+import { SdkError } from "@zmaj-js/client-sdk"
 
 export function SignInForm(): JSX.Element {
 	const login = useLogin()
@@ -22,7 +23,10 @@ export function SignInForm(): JSX.Element {
 	const onSubmit = useCallback(
 		async (data: Struct) => {
 			const dto = SignInDto.fromUnknown(data)
-			const result = await sdk.auth.signIn(dto)
+			const result = await sdk.auth.signIn(dto).catch((e: SdkError) => {
+				notify(e.message, { type: "error" })
+			})
+			if (!result) return
 			if (result.status === "has-mfa") {
 				setPrompt("has-mfa")
 				setEmailAndPass(dto)

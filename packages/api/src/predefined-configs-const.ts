@@ -1,5 +1,6 @@
 import { merge } from "@zmaj-js/common"
 import { ConfigureAppParams } from "./app/configure-app-params.type"
+import { hoursToMilliseconds } from "date-fns"
 
 const defaultUserConfig: ConfigureAppParams = {
 	authentication: {
@@ -47,7 +48,11 @@ const testConfig: ConfigureAppParams = merge(devConfig, {
 	database: { logging: false },
 	migrations: { autoRunMigrations: false },
 	security: { exposeErrorDetails: true },
-	authentication: { allowBasicAuth: true },
+	authentication: {
+		allowBasicAuth: true,
+		accessTokenTtlMs: hoursToMilliseconds(3),
+		refreshTokenTtlMs: hoursToMilliseconds(12),
+	},
 } as ConfigureAppParams)
 
 export const predefinedApiConfigs = {

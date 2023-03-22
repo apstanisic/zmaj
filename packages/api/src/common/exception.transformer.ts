@@ -19,7 +19,13 @@ export class ExceptionTransformer {
 	}
 
 	handle(statusCode: number, response: unknown, ogError?: Error): ErrorResponse {
-		const parsed = errorSchema.parse(response)
+		const parsed = errorSchema
+			.catch(({ error, input }) => {
+				this.logger.error("Invalid error thrown")
+				this.logger.error({ error, input })
+				return { errorCode: 39994, message: "Problem", timestamp: getUnixTime(new Date()) }
+			})
+			.parse(response)
 
 		const wholeError = { ...parsed, statusCode }
 
@@ -53,4 +59,4 @@ const errorSchema = z
 			timestamp: z.unknown().transform(() => getUnixTime(new Date())),
 		}),
 	)
-	.catch(() => ({ errorCode: 39994, message: "Problem", timestamp: getUnixTime(new Date()) }))
+// .catch(() => ({ errorCode: 39994, message: "Problem", timestamp: getUnixTime(new Date()) }))
