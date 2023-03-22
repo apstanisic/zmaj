@@ -1,12 +1,9 @@
 import { expect, test } from "@playwright/test"
 import { ChangeSettingsDto } from "@zmaj-js/common"
-import { emptyState } from "../state/empty-state.js"
 import { testSdk } from "../utils/test-sdk.js"
+import { emptyState } from "../state/empty-state.js"
 
-// import emptyState from "../state/empty-state.json"
 test.use({ storageState: emptyState })
-// do not use auth state
-// test.use({ storageState: path.join(__dirname, "../state/empty-state.json") })
 
 async function deleteCurrentUser(): Promise<void> {
 	const users = await testSdk.users.getMany({ filter: { email: "test123@example.com" } })

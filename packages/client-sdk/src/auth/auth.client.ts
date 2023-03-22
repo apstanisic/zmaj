@@ -168,6 +168,10 @@ export class AuthClient {
 		// return { status: "success", user: this.currentUser ?? sdkThrow("9729533") }
 	}
 
+	setAccessToken(token: string): void {
+		this.tokensService.setAccessToken(token)
+	}
+
 	/** Sign out */
 	async signOut(): Promise<void> {
 		await this.#http

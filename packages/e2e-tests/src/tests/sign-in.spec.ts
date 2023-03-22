@@ -1,11 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { emptyState } from "../state/empty-state.js"
 
-// import emptyState from "../state/empty-state.json"
 test.use({ storageState: emptyState })
-
-// do not use auth state
-// test.use({ storageState: path.join(__dirname, "../state/empty-state.json") })
 
 test("Sign in / sign out", async ({ page }) => {
 	// expect redirect to login page

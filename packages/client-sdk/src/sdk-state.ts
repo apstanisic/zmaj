@@ -4,9 +4,6 @@ import { AuthEventFn } from "./auth/auth.client"
 import { BaseStorage } from "./storage/base-storage.type"
 import { storage } from "./storage/storage"
 
-/** Key that is used for storage */
-const AUTH_KEY = "ZMAJ-AUTH"
-
 type SdkStateParams = {
 	sdkName?: string
 	accessToken?: string
@@ -23,7 +20,7 @@ export class SdkState {
 
 	constructor(params: SdkStateParams) {
 		this.emitter = params.emitter
-		this.storageKey = `${AUTH_KEY}-${params.sdkName ?? "DEFAULT"}`
+		this.storageKey = `ZMAJ_STORAGE_${params.sdkName ?? "DEFAULT"}`
 		this.storage = params.storage ?? storage
 		this.setAccessToken(params.accessToken ?? this.storage.getItem(this.storageKey))
 

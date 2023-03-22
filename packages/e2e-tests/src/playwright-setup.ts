@@ -1,12 +1,12 @@
 import { FullConfig, request } from "@playwright/test"
-import { merge, sleep } from "@zmaj-js/common"
+import { merge, sleep, throwErr } from "@zmaj-js/common"
 import { execa } from "execa"
 import { unlink } from "node:fs/promises"
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import path from "path"
-import { predefinedApiConfigs, runServer, __testUtils } from "zmaj"
-import { testSdk } from "./utils/test-sdk.js"
+import { __testUtils, predefinedApiConfigs, runServer } from "zmaj"
+import { testSdk, testSdkSignIn } from "./utils/test-sdk.js"
 // had to move here, since vitest (swc plugin for decorators) not working when root package.json has type: module.
 // and playwright requires it if it's to use esm
 
@@ -45,32 +45,32 @@ async function globalSetup(config: FullConfig): Promise<() => Promise<void>> {
 	await utils.configureExampleProjectForAdminPanel()
 	console.log("Test tables created")
 
-	console.log("Signing in...")
-	await testSdk.auth.signIn({ email: "admin@example.com", password: "password" })
-	console.log("Sign-in success")
+	await testSdkSignIn()
+	// console.log("Signing in...")
+	// await testSdk.auth.signIn({ email: "admin@example.com", password: "password" })
+	// console.log("Sign-in success")
+	// console.log(testSdk.auth.accessToken)
 
-	const requestContext = await request.newContext({
-		storageState: {
-			cookies: [],
-			origins: [
-				{
-					origin: "http://localhost:7100",
-					localStorage: testSdk.auth.accessToken
-						? [
-								{
-									name: "ZMAJ-AUTH-ADMIN_PANEL",
-									value: testSdk.auth.accessToken,
-								},
-						  ]
-						: [],
-				},
-			],
-		},
-	})
+	// const requestContext = await request.newContext({
+	// 	storageState: {
+	// 		cookies: [],
+	// 		origins: [
+	// 			{
+	// 				origin: "http://localhost:7100",
+	// 				localStorage: [
+	// 					{
+	// 						name: "ZMAJ_STORAGE_ADMIN_PANEL",
+	// 						value: testSdk.auth.accessToken ?? throwErr("539991"),
+	// 					},
+	// 				],
+	// 			},
+	// 		],
+	// 	},
+	// })
 
-	const storagePath = path.join(dir, "./state/storage-state.json")
-	await requestContext.storageState({ path: storagePath })
-	await requestContext.dispose()
+	// const storagePath = path.join(dir, "./state/storage-state.json")
+	// await requestContext.storageState({ path: storagePath })
+	// await requestContext.dispose()
 
 	console.log("Setup Finished\n")
 
@@ -85,7 +85,7 @@ async function globalSetup(config: FullConfig): Promise<() => Promise<void>> {
 		console.log("API stopped")
 		await make("docker_test_down")
 
-		await unlink(storagePath)
+		// await unlink(storagePath)
 		console.log("Teardown Finished\n")
 	}
 }

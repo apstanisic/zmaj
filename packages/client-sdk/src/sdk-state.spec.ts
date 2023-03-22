@@ -22,11 +22,11 @@ describe("SdkState", () => {
 	describe("storageKey", () => {
 		it("should generate storage key", () => {
 			const state = new SdkState({ emitter, sdkName: "hello" })
-			expect(state["storageKey"]).toEqual("ZMAJ-AUTH-hello")
+			expect(state["storageKey"]).toEqual("ZMAJ_STORAGE_hello")
 		})
 
 		it("should have default storage key", () => {
-			expect(state["storageKey"]).toEqual("ZMAJ-AUTH-DEFAULT")
+			expect(state["storageKey"]).toEqual("ZMAJ_STORAGE_DEFAULT")
 		})
 	})
 
