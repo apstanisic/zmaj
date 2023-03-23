@@ -39,16 +39,16 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 			params.collection,
 		)
 		return this.repoManager.transaction({
-			fn: async (em) => {
+			fn: async (trx) => {
 				// if (params.filter.type !== "id") throw500(38923)
-				const created = await this.create.createOne(fields, params)
+				const created = await this.create.createOne(fields, { ...params, trx })
 				const id = created[collection.pkField] ?? throw500(38903)
 
 				for (const [property, change] of Object.entries(relations)) {
 					const relation = collection.relations[property]!
 					await this.handleToManyChange({
 						mainRecordId: id as IdType,
-						trx: em,
+						trx,
 						change,
 						relation,
 						params,
@@ -107,16 +107,18 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 		)
 
 		return this.repoManager.transaction({
-			fn: async (em) => {
+			trx: params.trx,
+			fn: async (trx) => {
 				/// TODO Handle when we change only relations, and no normal field.
 				const updated = await this.update.updateById(id, {
 					...params,
 					changes: fields,
+					trx,
 				})
 
 				for (const [property, change] of Object.entries(relations)) {
 					const relation = collection.relations[property]!
-					await this.handleToManyChange({ mainRecordId: id, trx: em, change, relation, params })
+					await this.handleToManyChange({ mainRecordId: id, trx, change, relation, params })
 				}
 				return updated as Item
 			},
@@ -139,7 +141,7 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 		if (relation.type === "one-to-many") {
 			if (change.added.length > 0) {
 				await this.update.updateWhere({
-					trx: trx,
+					trx,
 					req: params.req,
 					user: params.user,
 					collection: relation.otherSide.collectionName,
@@ -150,7 +152,7 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 
 			if (change.removed.length > 0) {
 				await this.update.updateWhere({
-					trx: trx,
+					trx,
 					req: params.req,
 					user: params.user,
 					collection: relation.otherSide.collectionName,
@@ -163,7 +165,7 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 		if (relation.type === "many-to-many") {
 			if (change.removed.length > 0) {
 				const removed = await this.del.deleteWhere({
-					trx: trx,
+					trx,
 					user: params.user,
 					req: params.req,
 					collection: relation.junction.collectionName,
@@ -183,7 +185,7 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 
 			if (change.added.length > 0) {
 				await this.create.createMany({
-					trx: trx,
+					trx,
 					user: params.user,
 					req: params.req,
 					collection: relation.junction.collectionName,

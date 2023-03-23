@@ -1,18 +1,22 @@
 import { expect, test } from "@playwright/test"
-import { qsStringify, Struct } from "@zmaj-js/common"
+import { qsStringify } from "@zmaj-js/common"
+import { TPost } from "@zmaj-js/test-utils"
 import { createPost, deletePostsByTitle } from "../utils/test-post-helpers.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const originalPostTitle = "e2e-record-update-gui-test"
-const updatedPostTitle = "e2e-record-update-gui-test-updated"
+const updatedPostTitle = originalPostTitle + "-updated"
 
-let record: Struct
+let record: TPost
 
-test.beforeEach(
-	async () => (record = await createPost(originalPostTitle, { body: "<b>some bold value</b>" })),
-)
+test.beforeEach(async () => {
+	record = await createPost(originalPostTitle, { body: "<b>some bold value</b>" })
+})
+
 test.afterEach(async () => {
-	await deletePostsByTitle(originalPostTitle)
-	await deletePostsByTitle(updatedPostTitle)
+	const sdk = getSdk()
+	await deletePostsByTitle(originalPostTitle, sdk)
+	await deletePostsByTitle(updatedPostTitle, sdk)
 })
 
 test("Update Record", async ({ page }) => {
@@ -32,7 +36,7 @@ test("Update Record", async ({ page }) => {
 
 	// Click text=Edit
 	// await page.locator("text=Edit").click()
-	await page.getByRole("button", { name: /Edit/ }).click()
+	await page.getByRole("button", { name: /^Edit record/ }).click()
 	await expect(page).toHaveURL(`http://localhost:7100/admin/#/posts/${record["id"]}`)
 
 	await page.getByLabel("Title").fill(updatedPostTitle)

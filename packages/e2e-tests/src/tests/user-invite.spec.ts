@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const email = "invitation@example.com"
 
 test.beforeEach(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email } })
+	await getSdk().users.temp__deleteWhere({ filter: { email } })
 })
 test.afterEach(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email } })
+	await getSdk().users.temp__deleteWhere({ filter: { email } })
 })
 
 test("Invite user", async ({ page, context }) => {

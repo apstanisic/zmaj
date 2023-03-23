@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { Permission, PermissionCreateDto, Role, throwErr } from "@zmaj-js/common"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const roleName = "PermissionsDeleteRole"
 
@@ -9,12 +9,13 @@ let permission: Permission
 let role: Role
 
 test.beforeEach(async () => {
+	const sdk = getSdk()
 	// this will cascade delete permissions
-	await testSdk.roles.temp__deleteWhere({
+	await sdk.roles.temp__deleteWhere({
 		filter: { name: roleName },
 	})
-	role = await testSdk.roles.createOne({ data: { name: roleName } })
-	permission = await testSdk.permissions.createOne({
+	role = await sdk.roles.createOne({ data: { name: roleName } })
+	permission = await sdk.permissions.createOne({
 		data: new PermissionCreateDto({
 			action: "create",
 			resource: "collections.posts",
@@ -23,7 +24,7 @@ test.beforeEach(async () => {
 	})
 })
 
-test.afterEach(async () => testSdk.roles.temp__deleteWhere({ filter: { name: roleName } }))
+test.afterEach(async () => getSdk().roles.temp__deleteWhere({ filter: { name: roleName } }))
 
 test("Delete Permission", async ({ page }) => {
 	if (!permission) throwErr("89741909")
@@ -51,6 +52,6 @@ test("Delete Permission", async ({ page }) => {
 	await expect(page.getByTestId("CheckIcon")).toHaveCount(0)
 	await expect(page.locator("body")).toContainText("Successfully removed permission")
 
-	const withRole = await testSdk.permissions.getMany({ filter: { roleId: permission.roleId } })
+	const withRole = await getSdk().permissions.getMany({ filter: { roleId: permission.roleId } })
 	expect(withRole.data).toHaveLength(0)
 })

@@ -1,41 +1,37 @@
 import { expect, test } from "@playwright/test"
+import { ZmajSdk } from "@zmaj-js/client-sdk"
+import { times } from "@zmaj-js/common"
 import { TComment, TPost, TTag } from "@zmaj-js/test-utils"
-import { range } from "radash"
 import { namespaceTestCollections } from "../utils/namespace-collection.js"
-import { testSdk } from "../utils/test-sdk.js"
-
-const commentsCrud = testSdk.collection<TComment>("comments")
-const tagsCrud = testSdk.collection<TTag>("tags")
-const postsCrud = testSdk.collection<TPost>("posts")
+import { getSdk } from "../utils/test-sdk.js"
 
 const suffix = "9k8fk3"
 
-const deletePrevious = async (): Promise<void> => {
-	await Promise.all([
-		commentsCrud.temp__deleteWhere({ filter: { body: { $like: "%" + suffix } } }),
-		tagsCrud.temp__deleteWhere({ filter: { name: { $like: "%" + suffix } } }),
-		postsCrud.temp__deleteWhere({ filter: { title: { $like: "%" + suffix } } }),
-	])
+const deletePrevious = async (sdk: ZmajSdk): Promise<void> => {
+	await sdk
+		.collection<TComment>("comments")
+		.temp__deleteWhere({ filter: { body: { $like: "%" + suffix } } })
+	await sdk
+		.collection<TTag>("tags")
+		.temp__deleteWhere({ filter: { name: { $like: "%" + suffix } } })
+	await sdk
+		.collection<TPost>("posts")
+		.temp__deleteWhere({ filter: { title: { $like: "%" + suffix } } })
 }
 
 test.beforeEach(async () => {
-	await deletePrevious()
-	await Promise.all(
-		range(0, 5, async (i) => tagsCrud.createOne({ data: { name: `Tag ${i} ${suffix}` } })),
-	)
+	const sdk = getSdk()
 
-	await Promise.all(
-		range(0, 5, async (i) =>
-			commentsCrud.createOne({
-				data: {
-					body: `Com ${i} ${suffix}`,
-				},
-			}),
-		),
-	)
+	await deletePrevious(sdk)
+	// create
+	for (const i of times(6)) {
+		await sdk.collection<TTag>("tags").createOne({ data: { name: `Tag ${i} ${suffix}` } })
+		await sdk.collection<TComment>("comments").createOne({ data: { body: `Com ${i} ${suffix}` } })
+	}
 })
 test.afterEach(async () => {
-	await deletePrevious()
+	const sdk = getSdk()
+	await deletePrevious(sdk)
 })
 
 test("Create record with relations", async ({ page }) => {

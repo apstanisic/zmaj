@@ -9,9 +9,13 @@ const title = "Hello World " + suffix
 
 let record: Struct
 
-test.beforeEach(async () => (record = await createPost(title, { body: "<b>some bold value</b>" })))
+test.beforeEach(async () => {
+	record = await createPost(title, { body: "<b>some bold value</b>" })
+})
 
-test.afterEach(async () => deletePostsByTitle(title))
+test.afterEach(async () => {
+	await deletePostsByTitle(title)
+})
 
 test("Show Record", async ({ page }) => {
 	await namespaceCollection({ page, collection: "posts", suffix })

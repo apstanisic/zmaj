@@ -1,18 +1,19 @@
 import { expect, test } from "@playwright/test"
 import { Role } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const roleName = "PlaywrightRoleAddSimple"
 let role: Role
 
 test.beforeEach(async () => {
-	await testSdk.roles.temp__deleteWhere({ filter: { name: roleName } })
-	role = await testSdk.roles.createOne({
+	const sdk = getSdk()
+	await sdk.roles.temp__deleteWhere({ filter: { name: roleName } })
+	role = await sdk.roles.createOne({
 		data: { name: roleName, description: "Role for e2e testing" },
 	})
 })
-test.afterEach(async () => testSdk.roles.temp__deleteWhere({ filter: { name: roleName } }))
+test.afterEach(async () => getSdk().roles.temp__deleteWhere({ filter: { name: roleName } }))
 
 test("Add permission", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")
@@ -35,7 +36,7 @@ test("Add permission", async ({ page }) => {
 
 	// check if it's saved properly
 	// const roleInDb = await testSdk.roles.getOne({ filter: { name: roleName } })
-	const permission = await testSdk.permissions.getOne({
+	const permission = await getSdk().permissions.getOne({
 		filter: { roleId: role.id },
 	})
 

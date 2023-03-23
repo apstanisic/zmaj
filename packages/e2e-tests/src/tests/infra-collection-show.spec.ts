@@ -1,13 +1,14 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
 import { deleteCollection } from "../utils/infra-test-helpers.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const tableName = "test_show_playwright"
 
 test.beforeEach(async () => {
-	await deleteCollection(tableName)
-	await testSdk.infra.collections.createOne({
+	const sdk = getSdk()
+	await deleteCollection(tableName, sdk)
+	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName, label: "Test345" },
 	})
 })

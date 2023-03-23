@@ -2,8 +2,8 @@ import { EncryptionModule } from "@api/encryption/encryption.module"
 import { DynamicModule, Module } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
 import { UserCreateDto } from "@zmaj-js/common"
-import { UsersService } from ".."
 import { CliDbModule } from "./bootstrap-cli-db"
+import { UsersService } from "@api/users/users.service"
 
 @Module({})
 class CliCreateAdminModule {

@@ -3,8 +3,8 @@ import { ConfigModuleConfig } from "@api/config/config.config"
 import { DatabaseConfig } from "@api/database/database.config"
 import { SequelizeModule } from "@api/sequelize/sequelize.module"
 import { DynamicModule, Module } from "@nestjs/common"
-import { ConfigService } from ".."
 import { MODULE_OPTIONS_TOKEN } from "../database/database.module-definition"
+import { ConfigService } from "@api/config/config.service"
 
 @Module({})
 export class CliDbModule {

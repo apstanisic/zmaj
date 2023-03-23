@@ -2,23 +2,24 @@ import { expect, test } from "@playwright/test"
 import { RelationCreateDto } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
 import { deleteCollection } from "../utils/infra-test-helpers.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const leftTableName = "test_rel_show_left"
 const rightTableName = "test_rel_show_right"
 
 test.beforeEach(async () => {
-	await deleteCollection(leftTableName)
-	await deleteCollection(rightTableName)
+	const sdk = getSdk()
+	await deleteCollection(leftTableName, sdk)
+	await deleteCollection(rightTableName, sdk)
 
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: leftTableName },
 	})
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: rightTableName },
 	})
 
-	await testSdk.infra.relations.createOne({
+	await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
 			leftColumn: "ref_id",
 			leftTable: leftTableName,
@@ -32,8 +33,9 @@ test.beforeEach(async () => {
 })
 
 test.afterEach(async () => {
-	await deleteCollection(leftTableName)
-	await deleteCollection(rightTableName)
+	const sdk = getSdk()
+	await deleteCollection(leftTableName, sdk)
+	await deleteCollection(rightTableName, sdk)
 })
 
 test("Show Relation", async ({ page }) => {

@@ -1,12 +1,11 @@
-import { FullConfig, request } from "@playwright/test"
-import { merge, sleep, throwErr } from "@zmaj-js/common"
+import { FullConfig } from "@playwright/test"
+import { merge, sleep } from "@zmaj-js/common"
 import { execa } from "execa"
-import { unlink } from "node:fs/promises"
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import path from "path"
 import { __testUtils, predefinedApiConfigs, runServer } from "zmaj"
-import { testSdk, testSdkSignIn } from "./utils/test-sdk.js"
+import { testSdkSignIn } from "./utils/test-sdk.js"
 // had to move here, since vitest (swc plugin for decorators) not working when root package.json has type: module.
 // and playwright requires it if it's to use esm
 

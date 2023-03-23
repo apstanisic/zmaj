@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
 import { deleteCollection } from "../utils/infra-test-helpers.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const tableName = "playwright_collection_update_test"
 
 test.beforeEach(async () => {
 	await deleteCollection(tableName)
-	await testSdk.infra.collections.createOne({
+	await getSdk().infra.collections.createOne({
 		data: {
 			tableName,
 			pkColumn: "id",

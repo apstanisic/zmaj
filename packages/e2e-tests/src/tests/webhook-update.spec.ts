@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { Webhook, WebhookCreateDto } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { getIdFromShow, testSdk } from "../utils/test-sdk.js"
+import { getIdFromShow, getSdk } from "../utils/test-sdk.js"
 
 const hookName = "Playwright Update Hook"
 const updatedName = "UpdatedTestName"
@@ -9,9 +9,10 @@ const updatedName = "UpdatedTestName"
 let webhook: Webhook
 
 test.beforeAll(async () => {
-	await testSdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
-	await testSdk.webhooks.temp__deleteWhere({ filter: { name: updatedName } })
-	webhook = await testSdk.webhooks.createOne({
+	const sdk = getSdk()
+	await sdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
+	await sdk.webhooks.temp__deleteWhere({ filter: { name: updatedName } })
+	webhook = await sdk.webhooks.createOne({
 		data: new WebhookCreateDto({
 			url: "http://localhost:5000",
 			name: hookName,
@@ -26,8 +27,9 @@ test.beforeAll(async () => {
 })
 
 test.afterEach(async () => {
-	await testSdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
-	await testSdk.webhooks.temp__deleteWhere({ filter: { name: updatedName } })
+	const sdk = getSdk()
+	await sdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
+	await sdk.webhooks.temp__deleteWhere({ filter: { name: updatedName } })
 })
 
 test("Update Webhook", async ({ page }) => {
@@ -78,7 +80,7 @@ test("Update Webhook", async ({ page }) => {
 	await expect(page).toHaveURL(createIdRegex("http://localhost:7100/admin/#/zmajWebhooks/$ID/show"))
 
 	const id = getIdFromShow(page.url())
-	const res = await testSdk.webhooks.getById({ id })
+	const res = await getSdk().webhooks.getById({ id })
 	expect(res).toMatchObject({
 		id,
 		name: updatedName,

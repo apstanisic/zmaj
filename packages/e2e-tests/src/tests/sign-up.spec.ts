@@ -1,22 +1,24 @@
 import { expect, test } from "@playwright/test"
+import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { ChangeSettingsDto } from "@zmaj-js/common"
-import { testSdk } from "../utils/test-sdk.js"
 import { emptyState } from "../state/empty-state.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 test.use({ storageState: emptyState })
 
-async function deleteCurrentUser(): Promise<void> {
-	const users = await testSdk.users.getMany({ filter: { email: "test123@example.com" } })
+async function deleteCurrentUser(sdk: ZmajSdk): Promise<void> {
+	const users = await sdk.users.getMany({ filter: { email: "test123@example.com" } })
 	const id = users.data.at(0)?.id
 	if (!id) return
-	await testSdk.users.deleteById({ id })
+	await sdk.users.deleteById({ id })
 }
 
 test.beforeEach(async () => {
-	await testSdk.system.settings.changeSettings(new ChangeSettingsDto({ signUpAllowed: true }))
-	await deleteCurrentUser()
+	const sdk = getSdk()
+	await sdk.system.settings.changeSettings(new ChangeSettingsDto({ signUpAllowed: true }))
+	await deleteCurrentUser(sdk)
 })
-test.afterEach(async () => deleteCurrentUser())
+test.afterEach(async () => deleteCurrentUser(getSdk()))
 
 test("Sign Up", async ({ page }) => {
 	// Go to http://localhost:7100/admin/#/sign-up

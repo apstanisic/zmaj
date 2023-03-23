@@ -1,12 +1,13 @@
 import { expect, test } from "@playwright/test"
-import { ADMIN_ROLE_ID, sleep, UserCreateDto } from "@zmaj-js/common"
-import { testSdk } from "../utils/test-sdk.js"
+import { ADMIN_ROLE_ID, UserCreateDto, sleep } from "@zmaj-js/common"
+import { getSdk } from "../utils/test-sdk.js"
 
 const email = "reset-password@example.com"
 
 test.beforeEach(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email } })
-	await testSdk.users.createOne({
+	const sdk = getSdk()
+	await sdk.users.temp__deleteWhere({ filter: { email } })
+	await sdk.users.createOne({
 		data: new UserCreateDto({
 			email,
 			status: "active",
@@ -16,7 +17,7 @@ test.beforeEach(async () => {
 	})
 })
 test.afterEach(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email } })
+	await getSdk().users.temp__deleteWhere({ filter: { email } })
 })
 
 test("Reset password", async ({ page, context }) => {

@@ -58,12 +58,6 @@ export class SequelizeRepoManager extends RepoManager {
 		})
 	}
 
-	// async transaction<T>(fn: (em: Transaction) => Promise<T>): Promise<T> {
-	//   return this.orm.transaction<T>(async (em) => {
-	//     const res = await fn(em as any as Transaction)
-	//     return res
-	//   })
-	// }
 	async rawQuery(query: string, options?: RawQueryOptions): Promise<unknown[]> {
 		const result = await this.sq.rawQuery(query, options)
 		return result

@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test"
 import { RelationDef, CollectionCreateDto, RelationCreateDto, throwErr } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
 import { deleteCollection } from "../utils/infra-test-helpers.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
+import { ZmajSdk } from "@zmaj-js/client-sdk"
 
 const leftTableName = "mtm_left_table_join"
 const rightTableName = "mtm_right_table_join"
@@ -11,26 +12,27 @@ const junctionTableName = "mtm_junction_table"
 let relation1: RelationDef
 let relation2: RelationDef
 
-async function deleteTables(): Promise<void> {
-	await deleteCollection(junctionTableName)
-	await deleteCollection(leftTableName)
-	await deleteCollection(rightTableName)
+async function deleteTables(sdk: ZmajSdk): Promise<void> {
+	await deleteCollection(junctionTableName, sdk)
+	await deleteCollection(leftTableName, sdk)
+	await deleteCollection(rightTableName, sdk)
 }
 
 test.beforeEach(async () => {
-	await deleteTables()
+	const sdk = getSdk()
+	await deleteTables(sdk)
 
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({ tableName: leftTableName }),
 	})
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({ tableName: rightTableName }),
 	})
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({ tableName: junctionTableName }),
 	})
 
-	relation1 = await testSdk.infra.relations.createOne({
+	relation1 = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
 			leftColumn: "left_id",
 			leftTable: junctionTableName,
@@ -42,7 +44,7 @@ test.beforeEach(async () => {
 		}),
 	})
 
-	relation2 = await testSdk.infra.relations.createOne({
+	relation2 = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
 			leftColumn: "right_id",
 			leftTable: junctionTableName,
@@ -55,7 +57,7 @@ test.beforeEach(async () => {
 	})
 })
 
-test.afterEach(async () => deleteTables())
+test.afterEach(async () => deleteTables(getSdk()))
 
 test("Join relations to many-to-many", async ({ page }) => {
 	if (!relation1 || !relation2) throwErr()
@@ -89,7 +91,7 @@ test("Join relations to many-to-many", async ({ page }) => {
 	// const cols = testSdk.infra.collections.getMany({
 	// 	f
 	// })
-	const allState = await testSdk.infra.getCollections()
+	const allState = await getSdk().infra.getCollections()
 
 	const leftCol = allState.find((c) => c.tableName === relation1.otherSide.tableName)
 	const leftMtmValid = Object.values(leftCol?.relations ?? {}).find(

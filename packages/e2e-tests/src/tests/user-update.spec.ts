@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { User, UserCreateDto } from "@zmaj-js/common"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const email = "playwright-update@example.com"
 const updatedEmail = "playwright-updated@example.com"
@@ -8,9 +8,10 @@ const updatedEmail = "playwright-updated@example.com"
 let user: User
 
 test.beforeAll(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email }, idField: "id" })
-	await testSdk.users.temp__deleteWhere({ filter: { email: updatedEmail }, idField: "id" })
-	user = await testSdk.users.createOne({
+	const sdk = getSdk()
+	await sdk.users.temp__deleteWhere({ filter: { email }, idField: "id" })
+	await sdk.users.temp__deleteWhere({ filter: { email: updatedEmail }, idField: "id" })
+	user = await sdk.users.createOne({
 		data: new UserCreateDto({
 			email,
 			confirmedEmail: true,
@@ -21,8 +22,9 @@ test.beforeAll(async () => {
 	})
 })
 test.afterAll(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email }, idField: "id" })
-	await testSdk.users.temp__deleteWhere({ filter: { email: updatedEmail }, idField: "id" })
+	const sdk = getSdk()
+	await sdk.users.temp__deleteWhere({ filter: { email }, idField: "id" })
+	await sdk.users.temp__deleteWhere({ filter: { email: updatedEmail }, idField: "id" })
 })
 
 test("Update User", async ({ page }) => {

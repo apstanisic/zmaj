@@ -1,14 +1,15 @@
 import { expect, test } from "@playwright/test"
 import { User, UserCreateDto } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const email = "playwright-show@example.com"
 let user: User
 
 test.beforeAll(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email } })
-	user = await testSdk.users.createOne({
+	const sdk = getSdk()
+	await sdk.users.temp__deleteWhere({ filter: { email } })
+	user = await sdk.users.createOne({
 		data: new UserCreateDto({
 			email,
 			confirmedEmail: true,
@@ -19,7 +20,7 @@ test.beforeAll(async () => {
 	})
 })
 test.afterAll(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email } })
+	await getSdk().users.temp__deleteWhere({ filter: { email } })
 })
 
 test("Show User", async ({ page }) => {

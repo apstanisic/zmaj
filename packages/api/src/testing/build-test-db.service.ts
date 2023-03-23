@@ -36,8 +36,8 @@ import {
 } from "@zmaj-js/test-utils"
 import { draw, pick, random, shuffle, unique } from "radash"
 import { DataTypes, QueryInterface } from "sequelize"
-import { MigrationsService } from ".."
 import mockData from "./const-mocks.json"
+import { MigrationsService } from "@api/migrations/migrations.service"
 
 type Trx = any // Transaction | SqTrx
 

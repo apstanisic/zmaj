@@ -36,13 +36,12 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 	 * do full update for direct, and then after 4th emit, with same trx, do other changes
 	 */
 	async updateWhere(params: CrudUpdateParams<Item>): Promise<Partial<Item>[]> {
-		const trx = params.trx
 		const collection = this.getCollection(params.collection)
 		const repo = this.repoManager.getRepo(collection)
 
 		// emit first hook
 		const afterEmit1 = await this.emit<UpdateBeforeEvent<Item>>(
-			{ ...params, trx, collection, action: "update", type: "before" }, //
+			{ ...params, collection, action: "update", type: "before" }, //
 		)
 
 		// PK can't be changed, so pk property is deleted just in case
@@ -66,7 +65,7 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 		}) || throw403(987632, emsg.noAuthz)
 
 		// TRANSACTION -----------------------------------------
-		const afterEmit3 = await this.executeTransaction(trx, async (trx) => {
+		const afterEmit3 = await this.executeTransaction(params.trx, async (trx) => {
 			// join filter from query, with filter from authorization
 			const where = this.joinFilterAndAuthz(afterEmit1)
 			// rows that fullfil that filter
@@ -93,25 +92,40 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 				{ ...afterEmit1, trx, type: "start", toUpdate }, //
 			)
 
+			const updated: Item[] = []
 			// since we need to pass changes, we have to update every record differently
 			// so we just pluck changes from them.
 			// we can't directly pass changes since we need to provide hook in afterEmit2
-			const updated = await Promise.all(
-				afterEmit2.toUpdate.map((item) => {
-					const changes = filterStruct(
-						item.changed,
-						// only values that are not same as before
-						(value, key) =>
-							key === collection.pkField ||
-							(!isEqual(value, item.original[key]) && value !== undefined),
-					)
+			for (const item of afterEmit2.toUpdate) {
+				const changes = filterStruct(
+					item.changed,
+					// only values that are not same as before
+					(value, key) =>
+						key === collection.pkField ||
+						(!isEqual(value, item.original[key]) && value !== undefined),
+				)
 
-					// simply return item if there are no changes
-					if (isEmpty(changes)) return repo.findById({ trx, id: item.id })
+				// simply return item if there are no changes
+				if (isEmpty(changes)) updated.push(await repo.findById({ trx, id: item.id }))
 
-					return repo.updateById({ trx, changes, id: item.id })
-				}),
-			)
+				updated.push(await repo.updateById({ trx, changes, id: item.id }))
+			}
+			// const updated2 = await Promise.all(
+			// 	afterEmit2.toUpdate.map((item) => {
+			// 		const changes = filterStruct(
+			// 			item.changed,
+			// 			// only values that are not same as before
+			// 			(value, key) =>
+			// 				key === collection.pkField ||
+			// 				(!isEqual(value, item.original[key]) && value !== undefined),
+			// 		)
+
+			// 		// simply return item if there are no changes
+			// 		if (isEmpty(changes)) return repo.findById({ trx, id: item.id })
+
+			// 		return repo.updateById({ trx, changes, id: item.id })
+			// 	}),
+			// )
 
 			// emit 3rd hook
 			const afterEmit3 = await this.emit<UpdateFinishEvent<Item>>(
@@ -124,7 +138,7 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 		const afterEmit4 = await this.emit<UpdateAfterEvent<Item>>({
 			...afterEmit3,
 			type: "after",
-			trx,
+			trx: params.trx,
 		})
 
 		// return data and meta

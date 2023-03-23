@@ -1,14 +1,15 @@
 import { expect, test } from "@playwright/test"
 import { Webhook, WebhookCreateDto } from "@zmaj-js/common"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const hookName = "Playwright Show Hook"
 
 let webhook: Webhook
 
 test.beforeAll(async () => {
-	await testSdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
-	webhook = await testSdk.webhooks.createOne({
+	const sdk = getSdk()
+	await sdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
+	webhook = await sdk.webhooks.createOne({
 		data: new WebhookCreateDto({
 			url: "http://example.com",
 			name: hookName,
@@ -18,7 +19,7 @@ test.beforeAll(async () => {
 })
 
 test.afterEach(async () => {
-	await testSdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
+	await getSdk().webhooks.temp__deleteWhere({ filter: { name: hookName } })
 })
 
 test("Show Webhook", async ({ page }) => {

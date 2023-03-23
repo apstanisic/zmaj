@@ -3,13 +3,13 @@ import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException } from "@nestjs/common"
 import { MigrationError } from "umzug"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { RepoManager } from ".."
 import { SystemMigration } from "./migrations.types"
 import { MigrationsService } from "./migrations.service"
 import { MigrationsUmzugStorage } from "./migrations.umzug-storage"
 import { systemMigrations } from "./system-migrations/mod"
 import { CreateMigrationsTable } from "./system-migrations/000_migrations"
 import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
+import { RepoManager } from "@api/database/orm-specs/RepoManager"
 
 describe("MigrationsService", () => {
 	let service: MigrationsService

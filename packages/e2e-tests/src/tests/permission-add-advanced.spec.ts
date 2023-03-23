@@ -1,17 +1,18 @@
 import { expect, test } from "@playwright/test"
 import { Role, sleep } from "@zmaj-js/common"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const roleName = "PlaywrightRoleAddAdvanced"
 let role: Role
 
 test.beforeEach(async () => {
-	await testSdk.roles.temp__deleteWhere({ filter: { name: roleName } })
-	role = await testSdk.roles.createOne({
+	const sdk = getSdk()
+	await sdk.roles.temp__deleteWhere({ filter: { name: roleName } })
+	role = await sdk.roles.createOne({
 		data: { name: roleName, description: "Role for e2e testing" },
 	})
 })
-test.afterEach(async () => testSdk.roles.temp__deleteWhere({ filter: { name: roleName } }))
+test.afterEach(async () => getSdk().roles.temp__deleteWhere({ filter: { name: roleName } }))
 
 test("Add permission with custom fields and conditions", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")
@@ -55,7 +56,7 @@ test("Add permission with custom fields and conditions", async ({ page }) => {
 
 	await sleep(200)
 	// check if it's saved properly
-	const res = await testSdk.permissions.getMany({
+	const res = await getSdk().permissions.getMany({
 		filter: { action: "read", resource: "zmaj.files" },
 	})
 	const item = res.data.at(0)

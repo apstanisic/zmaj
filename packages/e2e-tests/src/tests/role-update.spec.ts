@@ -1,20 +1,22 @@
 import { expect, test } from "@playwright/test"
 import { Role } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 let role: Role
 
 test.beforeAll(async () => {
-	await testSdk.roles.temp__deleteWhere({ filter: { name: "TestToUpdate" } })
-	await testSdk.roles.temp__deleteWhere({ filter: { name: "UpdatedRole" } })
-	role = await testSdk.roles.createOne({
+	const sdk = getSdk()
+	await sdk.roles.temp__deleteWhere({ filter: { name: "TestToUpdate" } })
+	await sdk.roles.temp__deleteWhere({ filter: { name: "UpdatedRole" } })
+	role = await sdk.roles.createOne({
 		data: { name: "TestToUpdate", description: "Hello World!!!" },
 	})
 })
 test.afterEach(async () => {
-	await testSdk.roles.temp__deleteWhere({ filter: { name: "TestToUpdate" } })
-	await testSdk.roles.temp__deleteWhere({ filter: { name: "UpdatedRole" } })
+	const sdk = getSdk()
+	await sdk.roles.temp__deleteWhere({ filter: { name: "TestToUpdate" } })
+	await sdk.roles.temp__deleteWhere({ filter: { name: "UpdatedRole" } })
 })
 
 test("Update Role", async ({ page }) => {

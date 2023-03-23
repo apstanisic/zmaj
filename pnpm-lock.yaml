@@ -489,7 +489,7 @@ importers:
 
   packages/e2e-tests:
     specifiers:
-      '@playwright/test': 1.31.2
+      '@playwright/test': 1.32.0
       '@zmaj-js/client-sdk': workspace:*
       '@zmaj-js/common': workspace:*
       '@zmaj-js/test-utils': workspace:*
@@ -497,7 +497,7 @@ importers:
       radash: ^10.7.1
       zmaj: workspace:*
     dependencies:
-      '@playwright/test': 1.31.2
+      '@playwright/test': 1.32.0
       '@zmaj-js/client-sdk': link:../client-sdk
       '@zmaj-js/common': link:../common
       '@zmaj-js/test-utils': link:../test-utils
@@ -5630,13 +5630,13 @@ packages:
       tslib: 2.5.0
     dev: true
 
-  /@playwright/test/1.31.2:
-    resolution: {integrity: sha512-BYVutxDI4JeZKV1+ups6dt5WiqKhjBtIYowyZIJ3kBDmJgsuPKsqqKNIMFbUePLSCmp2cZu+BDL427RcNKTRYw==}
+  /@playwright/test/1.32.0:
+    resolution: {integrity: sha512-zOdGloaF0jeec7hqoLqM5S3L2rR4WxMJs6lgiAeR70JlH7Ml54ZPoIIf3X7cvnKde3Q9jJ/gaxkFh8fYI9s1rg==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
       '@types/node': 18.15.5
-      playwright-core: 1.31.2
+      playwright-core: 1.32.0
     optionalDependencies:
       fsevents: 2.3.2
     dev: false
@@ -16107,8 +16107,8 @@ packages:
       find-up: 3.0.0
     dev: false
 
-  /playwright-core/1.31.2:
-    resolution: {integrity: sha512-a1dFgCNQw4vCsG7bnojZjDnPewZcw7tZUNFN0ZkcLYKj+mPmXvg4MpaaKZ5SgqPsOmqIf2YsVRkgqiRDxD+fDQ==}
+  /playwright-core/1.32.0:
+    resolution: {integrity: sha512-Z9Ij17X5Z3bjpp6XKujGBp9Gv4eViESac9aDmwgQFUEJBW0K80T21m/Z+XJQlu4cNsvPygw33b6V1Va6Bda5zQ==}
     engines: {node: '>=14'}
     hasBin: true
     dev: false

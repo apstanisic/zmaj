@@ -1,13 +1,14 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex, uuidInsideRegex } from "../utils/create-id-regex.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 async function deleteCollection(): Promise<void> {
-	const cols = await testSdk.infra.getCollections()
+	const sdk = getSdk()
+	const cols = await sdk.infra.getCollections()
 	const toDelete = cols.find((c) => c.tableName === "playwright_test_posts")
 	if (!toDelete) return
 
-	await testSdk.infra.collections.deleteById({ id: toDelete.id })
+	await sdk.infra.collections.deleteById({ id: toDelete.id })
 }
 
 test.beforeEach(async () => deleteCollection())

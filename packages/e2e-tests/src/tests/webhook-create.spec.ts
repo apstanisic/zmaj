@@ -1,15 +1,15 @@
 import { expect, test } from "@playwright/test"
-import { throwErr, UnknownValues, Webhook } from "@zmaj-js/common"
-import { getIdFromShow, testSdk } from "../utils/test-sdk.js"
+import { UnknownValues, Webhook, throwErr } from "@zmaj-js/common"
+import { getIdFromShow, getSdk } from "../utils/test-sdk.js"
 
 const hookName = "Playwright Created"
 
 test.beforeAll(async () => {
-	await testSdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
+	await getSdk().webhooks.temp__deleteWhere({ filter: { name: hookName } })
 })
 
 test.afterEach(async () => {
-	await testSdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
+	await getSdk().webhooks.temp__deleteWhere({ filter: { name: hookName } })
 })
 
 test("Create Webhook", async ({ page }) => {
@@ -62,7 +62,7 @@ test("Create Webhook", async ({ page }) => {
 
 	await page.getByRole("button", { name: "Save" }).click()
 
-	const created = await testSdk.webhooks.getOne({ filter: { name: hookName } })
+	const created = await getSdk().webhooks.getOne({ filter: { name: hookName } })
 	if (!created?.id) throwErr("432786")
 
 	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajWebhooks/${created.id}/show`)

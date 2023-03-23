@@ -1,5 +1,4 @@
 import { defineConfig, devices } from "@playwright/test"
-import { readFileSync } from "fs"
 import path, { dirname } from "path"
 import { fileURLToPath } from "url"
 
@@ -14,13 +13,13 @@ const dir = dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
 	testDir: `${e2ePackage}/tests`,
 	/* Maximum time one test can run for. */
-	timeout: 20 * 1000,
+	timeout: 15 * 1000,
 	expect: {
 		/**
 		 * Maximum time expect() should wait for the condition to be met.
 		 * For example in `await expect(locator).toHaveText();`
 		 */
-		timeout: 5000,
+		timeout: 3000,
 	},
 	/* Run tests in files in parallel */
 	fullyParallel: true,
@@ -37,7 +36,7 @@ export default defineConfig({
 		// video: process.env["CI"] ? "retain-on-failure" : "on-first-retry",
 		video: "retain-on-failure",
 		/* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-		actionTimeout: 5000,
+		actionTimeout: 3000,
 		/* Base URL to use in actions like `await page.goto('/')`. */
 		baseURL: "http://localhost:7100",
 

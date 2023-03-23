@@ -7,13 +7,13 @@ import { asMock, AuthUser, SignInDto, User, UserWithSecret, uuidRegex } from "@z
 import { AuthUserStub, UserStub } from "@zmaj-js/test-utils"
 import { pick } from "radash"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { AuthorizationService } from ".."
 import { AuthSessionStub } from "./auth-sessions/auth-session.stub"
 import { AuthSessionsService } from "./auth-sessions/auth-sessions.service"
 import { AuthenticationConfig } from "./authentication.config"
 import { AuthenticationService } from "./authentication.service"
 import { MfaService } from "./mfa/mfa.service"
 import { SignUpService } from "./sign-up/sign-up.service"
+import { AuthorizationService } from "@api/authorization/authorization.service"
 
 describe("AuthenticationService", () => {
 	let module: TestingModule

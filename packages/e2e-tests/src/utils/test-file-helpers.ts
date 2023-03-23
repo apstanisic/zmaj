@@ -1,12 +1,13 @@
 import { APIRequestContext } from "@playwright/test"
+import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { throwErr } from "@zmaj-js/common"
 import { readFile } from "fs/promises"
 import path, { dirname } from "path"
 import { fileURLToPath } from "url"
-import { playwrightAuthorizationHeader, testSdk } from "./test-sdk.js"
+import { getSdk, playwrightAuthorizationHeader } from "./test-sdk.js"
 
-export async function deleteTestFile(name: string): Promise<void> {
-	await testSdk.files.temp__deleteWhere({ filter: { name } })
+export async function deleteTestFile(name: string, sdk?: ZmajSdk): Promise<void> {
+	await (sdk ?? getSdk()).files.temp__deleteWhere({ filter: { name } })
 	// const toDelete = await testSdk.files.getMany({ filter: { name } })
 	// await Promise.all(toDelete.data.map(async (f) => testSdk.files.deleteById({ id: f.id })))
 }

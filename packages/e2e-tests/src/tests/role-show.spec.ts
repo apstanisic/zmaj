@@ -1,16 +1,17 @@
 import { expect, test } from "@playwright/test"
 import { Role } from "@zmaj-js/common"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 let role: Role
 
 test.beforeEach(async () => {
-	await testSdk.roles.temp__deleteWhere({ filter: { name: "TestToShow" } })
-	role = await testSdk.roles.createOne({
+	const sdk = getSdk()
+	await sdk.roles.temp__deleteWhere({ filter: { name: "TestToShow" } })
+	role = await sdk.roles.createOne({
 		data: { name: "TestToShow", description: "Testing show role" },
 	})
 })
-test.afterEach(async () => testSdk.roles.temp__deleteWhere({ filter: { name: "TestToShow" } }))
+test.afterEach(async () => getSdk().roles.temp__deleteWhere({ filter: { name: "TestToShow" } }))
 
 test("Show Role", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

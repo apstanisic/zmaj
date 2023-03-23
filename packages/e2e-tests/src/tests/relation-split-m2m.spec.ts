@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test"
-import { RelationDef, CollectionCreateDto, RelationCreateDto, throwErr } from "@zmaj-js/common"
+import { ZmajSdk } from "@zmaj-js/client-sdk"
+import { CollectionCreateDto, RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
 import { deleteCollection } from "../utils/infra-test-helpers.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const leftTableName = "mtm_left_table_split"
 const rightTableName = "mtm_right_table_split"
@@ -9,26 +10,24 @@ const junctionTableName = "mtm_junction_table_split"
 
 let relation1: RelationDef
 
-async function deleteTables(): Promise<void> {
-	await deleteCollection(junctionTableName)
-	await deleteCollection(leftTableName)
-	await deleteCollection(rightTableName)
+async function deleteTables(sdk: ZmajSdk): Promise<void> {
+	await deleteCollection(junctionTableName, sdk)
+	await deleteCollection(leftTableName, sdk)
+	await deleteCollection(rightTableName, sdk)
 }
 
 test.beforeEach(async () => {
-	await deleteTables()
+	const sdk = getSdk()
+	await deleteTables(sdk)
 
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({ tableName: leftTableName }),
 	})
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({ tableName: rightTableName }),
 	})
-	// await testSdk.infra.collections.createOne({
-	// 	data: new CollectionCreateDto({ tableName: junctionTableName }),
-	// })
 
-	relation1 = await testSdk.infra.relations.createOne({
+	relation1 = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
 			leftTable: leftTableName,
 			rightTable: rightTableName,
@@ -42,7 +41,7 @@ test.beforeEach(async () => {
 	})
 })
 
-test.afterEach(async () => deleteTables())
+test.afterEach(async () => deleteTables(getSdk()))
 
 test("Split many to many relation", async ({ page }) => {
 	if (!relation1) throwErr()
@@ -72,7 +71,7 @@ test("Split many to many relation", async ({ page }) => {
 	await expect(page.getByText("Successfully splitted relation")).toHaveCount(1)
 
 	//
-	const leftRelation = await testSdk.infra.relations.getById({
+	const leftRelation = await getSdk().infra.relations.getById({
 		id: relation1.id ?? throwErr(),
 	})
 	expect(leftRelation.type).toEqual("one-to-many")

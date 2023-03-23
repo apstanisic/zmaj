@@ -1,15 +1,16 @@
 import { expect, test } from "@playwright/test"
 import { ADMIN_ROLE_ID, UserCreateDto } from "@zmaj-js/common"
 import { emptyState } from "../state/empty-state.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 test.use({ storageState: emptyState })
 
 const email = "magic-link-disabled@example.com"
 
 test.beforeEach(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email } })
-	await testSdk.users.createOne({
+	const sdk = getSdk()
+	await sdk.users.temp__deleteWhere({ filter: { email } })
+	await sdk.users.createOne({
 		data: new UserCreateDto({
 			email,
 			confirmedEmail: true,
@@ -19,10 +20,10 @@ test.beforeEach(async () => {
 	})
 })
 test.afterEach(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email } })
+	await getSdk().users.temp__deleteWhere({ filter: { email } })
 })
 
-test("Attempt magic link sign in with non active account", async ({ page, context }) => {
+test("Attempt magic link sign in with non active account", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/#/login")
 	await expect(page).toHaveURL("http://localhost:7100/admin/#/login")
 

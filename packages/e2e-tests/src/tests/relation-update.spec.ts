@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { RelationMetadata, RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
 import { deleteCollection } from "../utils/infra-test-helpers.js"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const leftTableName = "test_rel_update_left"
 const rightTableName = "test_rel_update_right"
@@ -9,17 +9,18 @@ const rightTableName = "test_rel_update_right"
 let relation: RelationDef
 
 test.beforeEach(async () => {
-	await deleteCollection(leftTableName)
-	await deleteCollection(rightTableName)
+	const sdk = getSdk()
+	await deleteCollection(leftTableName, sdk)
+	await deleteCollection(rightTableName, sdk)
 
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: leftTableName },
 	})
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: rightTableName },
 	})
 
-	relation = await testSdk.infra.relations.createOne({
+	relation = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
 			leftColumn: "ref_id",
 			leftTable: leftTableName,
@@ -67,7 +68,7 @@ test("Update relation", async ({ page }) => {
 
 	// await expect(page.getByRole("alert", { name: /Element updated/ })).toBeVisible()
 
-	const updatedRelation = await testSdk.infra.relations.getById({ id: relation.id })
+	const updatedRelation = await getSdk().infra.relations.getById({ id: relation.id })
 	expect(updatedRelation.relation).toMatchObject({
 		id: relation.id,
 		propertyName: "updatedProp",

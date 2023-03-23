@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test"
 import { User, UserCreateDto } from "@zmaj-js/common"
-import { testSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/test-sdk.js"
 
 const email = "playwright-delete@example.com"
 let user: User
 
 test.beforeAll(async () => {
-	user = await testSdk.users.createOne({
+	user = await getSdk().users.createOne({
 		data: new UserCreateDto({
 			email,
 			confirmedEmail: true,
@@ -17,7 +17,7 @@ test.beforeAll(async () => {
 	})
 })
 test.afterAll(async () => {
-	await testSdk.users.temp__deleteWhere({ filter: { email }, idField: "id" })
+	await getSdk().users.temp__deleteWhere({ filter: { email }, idField: "id" })
 })
 
 test("Delete User", async ({ page }) => {
@@ -38,6 +38,6 @@ test("Delete User", async ({ page }) => {
 
 	await expect(page.getByText("Element deleted")).toHaveCount(1)
 
-	const remain = await testSdk.users.getMany({ filter: { email } })
+	const remain = await getSdk().users.getMany({ filter: { email } })
 	expect(remain.data).toHaveLength(0)
 })

@@ -1,23 +1,26 @@
 import { expect, test } from "@playwright/test"
+import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { Struct, times } from "@zmaj-js/common"
 import { TComment, TPost, TTag } from "@zmaj-js/test-utils"
 import { createIdRegex } from "../utils/create-id-regex.js"
 import { namespaceCollection } from "../utils/namespace-collection.js"
-import { testSdk } from "../utils/test-sdk.js"
-
-const commentsCrud = testSdk.collection<TComment>("comments")
-const tagsCrud = testSdk.collection<TTag>("tags")
-const postsCrud = testSdk.collection<TPost>("posts")
+import { getSdk } from "../utils/test-sdk.js"
 
 const suffix = "kdi22jk"
 
-const originalPostTitle = "Hello Title" + suffix
-const updatedPostTitle = "Updated Title" + suffix
+const originalPostTitle = `Hello Title${suffix}`
+const updatedPostTitle = `Updated Title${suffix}`
 
-const deletePrevious = async (): Promise<void> => {
-	await commentsCrud.temp__deleteWhere({ filter: { body: { $like: "%" + suffix } } })
-	await tagsCrud.temp__deleteWhere({ filter: { name: { $like: "%" + suffix } } })
-	await postsCrud.temp__deleteWhere({ filter: { title: { $like: "%" + suffix } } })
+const deletePrevious = async (sdk: ZmajSdk): Promise<void> => {
+	await sdk
+		.collection<TComment>("comments")
+		.temp__deleteWhere({ filter: { body: { $like: "%" + suffix } } })
+	await sdk
+		.collection<TTag>("tags")
+		.temp__deleteWhere({ filter: { name: { $like: "%" + suffix } } })
+	await sdk
+		.collection<TPost>("posts")
+		.temp__deleteWhere({ filter: { title: { $like: "%" + suffix } } })
 }
 
 let post: TPost
@@ -25,14 +28,17 @@ let tags: TTag[]
 let comments: TComment[]
 
 test.beforeEach(async () => {
-	await deletePrevious()
+	const sdk = getSdk()
+	await deletePrevious(sdk)
 
 	tags = await Promise.all(
-		times(5, (i) => tagsCrud.createOne({ data: { name: `Tag ${i} ${suffix}` } })),
+		times(5, (i) =>
+			sdk.collection<TTag>("tags").createOne({ data: { name: `Tag ${i} ${suffix}` } }),
+		),
 	)
 
 	const toId = (val: Struct): any => val["id"]
-	post = await postsCrud.createOne({
+	post = await sdk.collection<TPost>("posts").createOne({
 		data: {
 			title: originalPostTitle,
 			body: "Hello World",
@@ -43,7 +49,7 @@ test.beforeEach(async () => {
 
 	comments = await Promise.all(
 		times(5, (i) =>
-			commentsCrud.createOne({
+			sdk.collection<TComment>("comments").createOne({
 				data: {
 					postId: i < 3 ? post.id : undefined, //
 					body: `Com ${i} ${suffix}`,
@@ -53,7 +59,7 @@ test.beforeEach(async () => {
 	)
 })
 test.afterEach(async () => {
-	await deletePrevious()
+	await deletePrevious(getSdk())
 })
 
 test("Update record with relations", async ({ page }) => {

@@ -1,18 +1,23 @@
+import { ZmajSdk } from "@zmaj-js/client-sdk"
 import {
-	CollectionMetadata,
 	CollectionCreateDto,
+	CollectionMetadata,
 	FieldCreateDto,
 	RelationCreateDto,
 } from "@zmaj-js/common"
-import { testSdk } from "./test-sdk.js"
+import { getSdk } from "./test-sdk.js"
 
-export async function deleteCollection(tableName: string): Promise<CollectionMetadata | undefined> {
-	const allCollections = await testSdk.infra.getCollections()
+export async function deleteCollection(
+	tableName: string,
+	sdk?: ZmajSdk,
+): Promise<CollectionMetadata | undefined> {
+	const zmaj = sdk ?? getSdk()
+	const allCollections = await zmaj.infra.getCollections()
 
 	const collection = allCollections.find((c) => c.tableName === tableName)
 	if (!collection) return
 
-	return testSdk.infra.collections.deleteById({ id: collection.id }).catch((e) => {
+	return zmaj.infra.collections.deleteById({ id: collection.id }).catch((e) => {
 		console.log("Problem deleting collection: " + tableName, collection.id)
 		throw e
 	})
@@ -26,8 +31,9 @@ export async function deleteTestCollections(): Promise<void> {
 }
 
 export async function createTestCollections(): Promise<void> {
+	const sdk = getSdk()
 	// posts
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({
 			tableName: "posts_plw",
 			label: "TestPosts",
@@ -35,21 +41,21 @@ export async function createTestCollections(): Promise<void> {
 		}),
 	})
 
-	await testSdk.infra.fields.createOne({
+	await sdk.infra.fields.createOne({
 		data: new FieldCreateDto({
 			tableName: "posts_plw",
 			columnName: "title",
 			dataType: "short-text",
 		}),
 	})
-	await testSdk.infra.fields.createOne({
+	await sdk.infra.fields.createOne({
 		data: new FieldCreateDto({
 			tableName: "posts_plw",
 			columnName: "body",
 			dataType: "long-text",
 		}),
 	})
-	await testSdk.infra.fields.createOne({
+	await sdk.infra.fields.createOne({
 		data: new FieldCreateDto({
 			tableName: "posts_plw",
 			columnName: "likes",
@@ -58,14 +64,14 @@ export async function createTestCollections(): Promise<void> {
 	})
 
 	// comments
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({
 			tableName: "comments_plw",
 			label: "TestComments",
 		}),
 	})
 
-	await testSdk.infra.fields.createOne({
+	await sdk.infra.fields.createOne({
 		data: new FieldCreateDto({
 			tableName: "comments_plw",
 			columnName: "body",
@@ -74,14 +80,14 @@ export async function createTestCollections(): Promise<void> {
 	})
 
 	// tags
-	await testSdk.infra.collections.createOne({
+	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({
 			tableName: "tags_plw",
 			label: "TestTags",
 		}),
 	})
 
-	await testSdk.infra.fields.createOne({
+	await sdk.infra.fields.createOne({
 		data: new FieldCreateDto({
 			tableName: "tags_plw",
 			columnName: "name",
@@ -89,7 +95,7 @@ export async function createTestCollections(): Promise<void> {
 		}),
 	})
 
-	await testSdk.infra.relations.createOne({
+	await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
 			type: "many-to-one",
 			leftTable: "comments_plw",
@@ -101,7 +107,7 @@ export async function createTestCollections(): Promise<void> {
 		}),
 	})
 
-	await testSdk.infra.relations.createOne({
+	await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
 			type: "many-to-many",
 			leftTable: "posts_plw",

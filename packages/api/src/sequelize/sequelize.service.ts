@@ -2,8 +2,8 @@ import { DatabaseConfig } from "@api/database/database.config"
 import { RawQueryOptions } from "@api/database/orm-specs/RawQueryOptions"
 import { TransactionIsolationLevel } from "@api/database/orm-specs/TransactionIsolationLevel"
 import { Injectable, Logger, OnModuleDestroy } from "@nestjs/common"
-import { ModelStatic, QueryInterface, Sequelize, Transaction } from "sequelize"
 import { CollectionDef, Struct } from "@zmaj-js/common"
+import { ModelStatic, QueryInterface, Sequelize, Transaction } from "sequelize"
 import { WritableDeep } from "type-fest"
 import { SequelizeModelsGenerator } from "./sequelize.model-generator"
 
@@ -65,23 +65,10 @@ export class SequelizeService implements OnModuleDestroy {
 				isolationLevel: params.type ? isolationMapper[params.type] : undefined,
 			},
 			async (trx) => {
-				//
 				const result = await params.fn(trx)
 				return result
 			},
 		)
-		// const trx = await this.orm.startUnmanagedTransaction({
-		// 	isolationLevel: params.type ? isolationMapper[params.type] : undefined,
-		// })
-
-		// try {
-		// 	const result = await params.fn(trx)
-		// 	await trx.commit()
-		// 	return result
-		// } catch (error) {
-		// 	await trx.rollback()
-		// 	throw error
-		// }
 	}
 
 	async rawQuery(query: string, options?: RawQueryOptions): Promise<unknown[]> {
