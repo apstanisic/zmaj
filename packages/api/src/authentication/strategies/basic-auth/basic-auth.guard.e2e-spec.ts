@@ -65,7 +65,7 @@ describe("BasicAuthGuard e2e", () => {
 		})
 
 		it("should throw if user have mfa", async () => {
-			usersService.repo.updateWhere({
+			await usersService.repo.updateWhere({
 				where: { id: user.id },
 				changes: { otpToken: "SOME_OTP_STRING" },
 				overrideCanUpdate: true,

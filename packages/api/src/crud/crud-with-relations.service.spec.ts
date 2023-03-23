@@ -74,6 +74,7 @@ describe("CrudWithRelationsService", () => {
 				...params,
 				req: params.req,
 				changes: { body: "hello body" },
+				trx: "TEST_TRX",
 			})
 		})
 

@@ -4,12 +4,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { currentDateTransformer } from "./current-date.transformer"
 
 describe("currentDateTransformer", () => {
-	let now: Date
+	let mockNow: Date
 
 	beforeEach(() => {
-		now = new Date()
-		vi.useFakeTimers({ now })
-		// vi.setSystemTime(now)
+		// use fixed date, since tests throw when daylight saving time is changed
+		mockNow = new Date("2023-02-23T17:26:00.319Z")
+		vi.useFakeTimers({ now: mockNow })
 	})
 
 	afterEach(() => {
@@ -23,12 +23,12 @@ describe("currentDateTransformer", () => {
 	describe("transform", () => {
 		it("should return current date if modifier is not provided", () => {
 			const res = currentDateTransformer.transform({ modifier: undefined })
-			expect(res).toEqual(now)
+			expect(res).toEqual(mockNow)
 		})
 
 		it("should add duration if modifier is specified", () => {
 			const res = currentDateTransformer.transform({ modifier: "3d" })
-			expect(res).toEqual(addDays(now, 3))
+			expect(res).toEqual(addDays(mockNow, 3))
 		})
 
 		it("should throw if invalid modifier is specified", () => {

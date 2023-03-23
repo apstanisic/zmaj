@@ -160,7 +160,8 @@ describe("AuthenticationController e2e", () => {
 			const jwt = jwtService.decode(res.body.accessToken)
 			expect(jwt).toEqual({
 				...user,
-				exp: getUnixTime(addMinutes(now, 20)), //
+				// extended access token time to 3 hours in tests
+				exp: getUnixTime(addMinutes(now, 180)), //
 				iat: getUnixTime(now),
 			})
 
