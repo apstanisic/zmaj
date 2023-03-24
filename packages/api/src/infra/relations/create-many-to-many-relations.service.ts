@@ -131,62 +131,50 @@ export class CreateManyToManyRelationsService {
 	}
 
 	private async modifySchema(dto: JunctionRelationCreateDto, trx: Transaction): Promise<void> {
-		await this.alterSchema.createTable(
-			{
-				pkColumn: "id",
-				pkType: "auto-increment",
-				tableName: dto.junctionTable,
-			},
-			{ trx },
-		)
+		await this.alterSchema.createTable({
+			pkColumn: "id",
+			pkType: "auto-increment",
+			tableName: dto.junctionTable,
+			trx,
+		})
 
-		await this.alterSchema.createColumn(
-			{
-				columnName: dto.junctionLeftColumn,
-				tableName: dto.junctionTable,
-				dataType: { type: "specific", value: dto.leftPkType },
-			},
-			{ trx },
-		)
+		await this.alterSchema.createColumn({
+			columnName: dto.junctionLeftColumn,
+			tableName: dto.junctionTable,
+			dataType: { type: "specific", value: dto.leftPkType },
+			trx,
+		})
 
-		await this.alterSchema.createColumn(
-			{
-				columnName: dto.junctionRightColumn,
-				tableName: dto.junctionTable,
-				dataType: { type: "specific", value: dto.rightPkType },
-			},
-			{ trx },
-		)
+		await this.alterSchema.createColumn({
+			columnName: dto.junctionRightColumn,
+			tableName: dto.junctionTable,
+			dataType: { type: "specific", value: dto.rightPkType },
+			trx,
+		})
 
-		await this.alterSchema.createFk(
-			{
-				fkColumn: dto.junctionLeftColumn,
-				fkTable: dto.junctionTable,
-				referencedTable: dto.leftTable,
-				referencedColumn: dto.leftColumn,
-				indexName: dto.leftFkName,
-			},
-			{ trx },
-		)
+		await this.alterSchema.createFk({
+			fkColumn: dto.junctionLeftColumn,
+			fkTable: dto.junctionTable,
+			referencedTable: dto.leftTable,
+			referencedColumn: dto.leftColumn,
+			indexName: dto.leftFkName,
+			trx,
+		})
 
-		await this.alterSchema.createFk(
-			{
-				fkColumn: dto.junctionRightColumn,
-				fkTable: dto.junctionTable,
-				referencedTable: dto.rightTable,
-				referencedColumn: dto.rightColumn,
-				indexName: dto.rightFkName,
-			},
-			{ trx },
-		)
+		await this.alterSchema.createFk({
+			fkColumn: dto.junctionRightColumn,
+			fkTable: dto.junctionTable,
+			referencedTable: dto.rightTable,
+			referencedColumn: dto.rightColumn,
+			indexName: dto.rightFkName,
+			trx,
+		})
 
-		await this.alterSchema.createUniqueKey(
-			{
-				tableName: dto.junctionTable,
-				columnNames: [dto.junctionLeftColumn, dto.junctionRightColumn],
-			},
-			{ trx },
-		)
+		await this.alterSchema.createUniqueKey({
+			tableName: dto.junctionTable,
+			columnNames: [dto.junctionLeftColumn, dto.junctionRightColumn],
+			trx,
+		})
 	}
 
 	private async saveRelationsToDb({

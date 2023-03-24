@@ -116,29 +116,25 @@ export class DirectRelationService {
 
 		return this.repoManager.transaction({
 			fn: async (trx) => {
-				await this.alterSchema.createColumn(
-					{
-						columnName: dto.leftColumn,
-						tableName: dto.leftTable,
-						dataType: { type: "specific", value: dto.rightPkType },
-						unique: dto.type === "owner-one-to-one",
-					},
-					{ trx },
-				)
+				await this.alterSchema.createColumn({
+					columnName: dto.leftColumn,
+					tableName: dto.leftTable,
+					dataType: { type: "specific", value: dto.rightPkType },
+					unique: dto.type === "owner-one-to-one",
+					trx,
+				})
 
 				const fkName = `${dto.leftTable}_${dto.leftColumn}_foreign`
 
-				await this.alterSchema.createFk(
-					{
-						fkColumn: dto.leftColumn,
-						fkTable: dto.leftTable,
-						referencedTable: dto.rightTable,
-						referencedColumn: dto.rightColumn,
-						indexName: fkName,
-						onDelete: dto.onDelete,
-					},
-					{ trx },
-				)
+				await this.alterSchema.createFk({
+					fkColumn: dto.leftColumn,
+					fkTable: dto.leftTable,
+					referencedTable: dto.rightTable,
+					referencedColumn: dto.rightColumn,
+					indexName: fkName,
+					onDelete: dto.onDelete,
+					trx,
+				})
 
 				const fkField = await this.fieldsRepo.createOne({
 					trx,
@@ -203,14 +199,12 @@ export class DirectRelationService {
 
 		await this.repoManager.transaction({
 			fn: async (trx) => {
-				await this.alterSchema.dropFk(
-					{
-						fkColumn: fkCol,
-						fkTable: fkTable,
-						indexName: relation.relation.fkName,
-					},
-					{ trx },
-				)
+				await this.alterSchema.dropFk({
+					fkColumn: fkCol,
+					fkTable: fkTable,
+					indexName: relation.relation.fkName,
+					trx,
+				})
 
 				// delete all relations in db with this fk
 				await this.repo.deleteWhere({ trx, where: { fkName: relation.relation.fkName } })

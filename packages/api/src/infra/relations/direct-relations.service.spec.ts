@@ -211,36 +211,31 @@ describe("DirectRelationsService", () => {
 			await service.createRelation(dto)
 			expect(alterSchemaService.createColumn).toBeCalledWith(
 				expect.objectContaining({ unique: true }),
-				expect.anything(),
 			)
 		})
 
 		//
 		it("should create column and fk", async () => {
 			await service.createRelation(dto)
-			expect(alterSchemaService.createColumn).toBeCalledWith(
-				{
-					columnName: "comment_id",
-					dataType: {
-						type: "specific",
-						value: "uuid",
-					},
-					tableName: "posts",
-					unique: false,
+			expect(alterSchemaService.createColumn).toBeCalledWith({
+				columnName: "comment_id",
+				dataType: {
+					type: "specific",
+					value: "uuid",
 				},
-				{ trx: "TEST_TRX" },
-			)
-			expect(alterSchemaService.createFk).toBeCalledWith(
-				{
-					fkColumn: "comment_id",
-					fkTable: "posts",
-					onDelete: "CASCADE",
-					referencedColumn: "id",
-					referencedTable: "comments",
-					indexName: "posts_comment_id_foreign",
-				},
-				{ trx: "TEST_TRX" },
-			)
+				tableName: "posts",
+				unique: false,
+				trx: "TEST_TRX",
+			})
+			expect(alterSchemaService.createFk).toBeCalledWith({
+				fkColumn: "comment_id",
+				fkTable: "posts",
+				onDelete: "CASCADE",
+				referencedColumn: "id",
+				referencedTable: "comments",
+				indexName: "posts_comment_id_foreign",
+				trx: "TEST_TRX",
+			})
 		})
 
 		it("should create relation in db", async () => {
@@ -325,14 +320,12 @@ describe("DirectRelationsService", () => {
 
 		it("should remove fk from schema", async () => {
 			await service.deleteRelation(relation)
-			expect(alterSchemaService.dropFk).toBeCalledWith(
-				{
-					fkColumn: "fk_column",
-					fkTable: "fk_table",
-					indexName: "hello",
-				},
-				{ trx: "TEST_TRX" },
-			)
+			expect(alterSchemaService.dropFk).toBeCalledWith({
+				fkColumn: "fk_column",
+				fkTable: "fk_table",
+				indexName: "hello",
+				trx: "TEST_TRX",
+			})
 		})
 	})
 })

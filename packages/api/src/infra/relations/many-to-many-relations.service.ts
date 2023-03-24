@@ -38,35 +38,29 @@ export class ManyToManyRelationsService {
 			fn: async (trx) => {
 				if (!relation.junction) throw400(935423, emsg.notMtmRelation)
 
-				await this.alterSchema.dropUniqueKey(
-					{
-						tableName: relation.junction.tableName,
-						columnNames: [
-							relation.junction.thisSide?.columnName,
-							relation.junction.otherSide?.columnName,
-						],
-						indexName: relation.junction.uniqueKey,
-					},
-					{ trx },
-				)
+				await this.alterSchema.dropUniqueKey({
+					tableName: relation.junction.tableName,
+					columnNames: [
+						relation.junction.thisSide?.columnName,
+						relation.junction.otherSide?.columnName,
+					],
+					indexName: relation.junction.uniqueKey,
+					trx,
+				})
 
-				await this.alterSchema.dropFk(
-					{
-						fkColumn: relation.junction.thisSide?.columnName,
-						fkTable: relation.junction.tableName,
-						indexName: relation.relation.fkName,
-					},
-					{ trx },
-				)
+				await this.alterSchema.dropFk({
+					fkColumn: relation.junction.thisSide?.columnName,
+					fkTable: relation.junction.tableName,
+					indexName: relation.relation.fkName,
+					trx,
+				})
 
-				await this.alterSchema.dropFk(
-					{
-						fkColumn: relation.junction.otherSide?.columnName,
-						fkTable: relation.junction.tableName,
-						indexName: relation.relation.mtmFkName,
-					},
-					{ trx },
-				)
+				await this.alterSchema.dropFk({
+					fkColumn: relation.junction.otherSide?.columnName,
+					fkTable: relation.junction.tableName,
+					indexName: relation.relation.mtmFkName,
+					trx,
+				})
 
 				// delete all relations that belong to this 2 fks
 				await this.repo.deleteWhere({
@@ -134,13 +128,11 @@ export class ManyToManyRelationsService {
 
 				if (uniqueKeyExists) return
 
-				await this.alterSchema.createUniqueKey(
-					{
-						tableName: rel1.tableName,
-						columnNames: [rel1.columnName, rel2.columnName],
-					},
-					{ trx },
-				)
+				await this.alterSchema.createUniqueKey({
+					tableName: rel1.tableName,
+					columnNames: [rel1.columnName, rel2.columnName],
+					trx,
+				})
 			},
 		})
 		// return rel1
@@ -174,17 +166,15 @@ export class ManyToManyRelationsService {
 					changes: { mtmFkName: null },
 				})
 
-				await this.alterSchema.dropUniqueKey(
-					{
-						columnNames: relations.map((r) => r.junction!.thisSide!.columnName) as [
-							string,
-							...string[],
-						],
-						tableName: firstRel.junction.tableName,
-						indexName: firstRel.junction.uniqueKey,
-					},
-					{ trx },
-				)
+				await this.alterSchema.dropUniqueKey({
+					columnNames: relations.map((r) => r.junction!.thisSide!.columnName) as [
+						string,
+						...string[],
+					],
+					tableName: firstRel.junction.tableName,
+					indexName: firstRel.junction.uniqueKey,
+					trx,
+				})
 			},
 		})
 	}

@@ -6,6 +6,7 @@ import { createMigrationCommand } from "./commands/create-migration.js"
 import { createTemplateCommand } from "./commands/create-project.js"
 import { generateSecretKeyCommand } from "./commands/generate-key.js"
 import { runMigrationsCommand } from "./commands/migrate.js"
+import { runUninstallCommand } from "./commands/uninstall.js"
 
 export async function zmajCli(): Promise<void> {
 	const y = yargs(hideBin(process.argv))
@@ -27,5 +28,6 @@ export async function zmajCli(): Promise<void> {
 	runMigrationsCommand(y)
 	createTemplateCommand(y)
 	createExampleSchemaCommand(y)
+	runUninstallCommand(y)
 	await y.argv
 }

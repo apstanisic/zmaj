@@ -284,55 +284,50 @@ describe("CreateManyToManyRelationsService", () => {
 
 		it("should run proper commands", async () => {
 			await service["modifySchema"](dto, "TRX_1" as any)
-			const trxObj = { trx: "TRX_1" }
 
-			expect(alterSchema.createTable).toBeCalledWith(
-				{ pkColumn: "id", pkType: "auto-increment", tableName: "jt" },
-				trxObj,
-			)
+			expect(alterSchema.createTable).toBeCalledWith({
+				pkColumn: "id",
+				pkType: "auto-increment",
+				tableName: "jt",
+				trx: "TRX_1",
+			})
 
-			expect(alterSchema.createColumn).nthCalledWith(
-				1,
-				{ columnName: "jlc", tableName: "jt", dataType: { type: "specific", value: "uuid" } },
-				trxObj,
-			)
-			expect(alterSchema.createColumn).nthCalledWith(
-				2,
-				{ columnName: "jrc", tableName: "jt", dataType: { type: "specific", value: "int" } },
-				trxObj,
-			)
+			expect(alterSchema.createColumn).nthCalledWith(1, {
+				columnName: "jlc",
+				tableName: "jt",
+				dataType: { type: "specific", value: "uuid" },
+				trx: "TRX_1",
+			})
+			expect(alterSchema.createColumn).nthCalledWith(2, {
+				columnName: "jrc",
+				tableName: "jt",
+				dataType: { type: "specific", value: "int" },
+				trx: "TRX_1",
+			})
 
-			expect(alterSchema.createFk).nthCalledWith(
-				1,
-				{
-					fkColumn: "jlc",
-					fkTable: "jt",
-					referencedTable: "lt",
-					referencedColumn: "lc",
-					indexName: "l_fk",
-				},
-				trxObj,
-			)
+			expect(alterSchema.createFk).nthCalledWith(1, {
+				fkColumn: "jlc",
+				fkTable: "jt",
+				referencedTable: "lt",
+				referencedColumn: "lc",
+				indexName: "l_fk",
+				trx: "TRX_1",
+			})
 
-			expect(alterSchema.createFk).nthCalledWith(
-				2,
-				{
-					fkColumn: "jrc",
-					fkTable: "jt",
-					referencedTable: "rt",
-					referencedColumn: "rc",
-					indexName: "r_fk",
-				},
-				trxObj,
-			)
+			expect(alterSchema.createFk).nthCalledWith(2, {
+				fkColumn: "jrc",
+				fkTable: "jt",
+				referencedTable: "rt",
+				referencedColumn: "rc",
+				indexName: "r_fk",
+				trx: "TRX_1",
+			})
 
-			expect(alterSchema.createUniqueKey).toBeCalledWith(
-				{
-					tableName: "jt",
-					columnNames: ["jlc", "jrc"],
-				},
-				trxObj,
-			)
+			expect(alterSchema.createUniqueKey).toBeCalledWith({
+				tableName: "jt",
+				columnNames: ["jlc", "jrc"],
+				trx: "TRX_1",
+			})
 		})
 	})
 

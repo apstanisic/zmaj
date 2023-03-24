@@ -74,13 +74,11 @@ describe("ManyToManyRelationsService", () => {
 		it("should create composite unique key and log migration", async () => {
 			await service.joinManyToMany(junction)
 
-			expect(service["alterSchema"].createUniqueKey).toBeCalledWith(
-				{
-					tableName: "posts_tags",
-					columnNames: ["post_id", "tag_id"],
-				},
-				{ trx: "TEST_TRX" },
-			)
+			expect(service["alterSchema"].createUniqueKey).toBeCalledWith({
+				tableName: "posts_tags",
+				columnNames: ["post_id", "tag_id"],
+				trx: "TEST_TRX",
+			})
 		})
 
 		it("should not modify schema if composite unique key exist", async () => {
@@ -141,14 +139,12 @@ describe("ManyToManyRelationsService", () => {
 
 		it("should remove composite unique key", async () => {
 			await service.splitManyToMany("postsTags")
-			expect(alterSchema.dropUniqueKey).toBeCalledWith(
-				{
-					columnNames: ["post_id", "tag_id"],
-					indexName: mockCompositeUniqueKeyId.posts_tags,
-					tableName: "posts_tags",
-				},
-				{ trx: "TEST_TRX" },
-			)
+			expect(alterSchema.dropUniqueKey).toBeCalledWith({
+				columnNames: ["post_id", "tag_id"],
+				indexName: mockCompositeUniqueKeyId.posts_tags,
+				tableName: "posts_tags",
+				trx: "TEST_TRX",
+			})
 		})
 	})
 
@@ -197,34 +193,26 @@ describe("ManyToManyRelationsService", () => {
 		it("should drop composite unique key", async () => {
 			await service.deleteRelation(relation)
 
-			expect(service["alterSchema"].dropUniqueKey).toBeCalledWith(
-				{
-					tableName: "jt",
-					columnNames: ["ljc", "rjc"],
-					indexName: "cuq",
-				},
-				{ trx: "TEST_TRX" },
-			)
+			expect(service["alterSchema"].dropUniqueKey).toBeCalledWith({
+				tableName: "jt",
+				columnNames: ["ljc", "rjc"],
+				indexName: "cuq",
+				trx: "TEST_TRX",
+			})
 
-			expect(service["alterSchema"].dropFk).nthCalledWith(
-				1,
-				{
-					fkTable: "jt",
-					fkColumn: "ljc",
-					indexName: "fk1",
-				},
-				{ trx: "TEST_TRX" },
-			)
+			expect(service["alterSchema"].dropFk).nthCalledWith(1, {
+				fkTable: "jt",
+				fkColumn: "ljc",
+				indexName: "fk1",
+				trx: "TEST_TRX",
+			})
 
-			expect(service["alterSchema"].dropFk).nthCalledWith(
-				2,
-				{
-					fkTable: "jt",
-					fkColumn: "rjc",
-					indexName: "fk2",
-				},
-				{ trx: "TEST_TRX" },
-			)
+			expect(service["alterSchema"].dropFk).nthCalledWith(2, {
+				fkTable: "jt",
+				fkColumn: "rjc",
+				indexName: "fk2",
+				trx: "TEST_TRX",
+			})
 		})
 
 		it("should remove relations from db", async () => {

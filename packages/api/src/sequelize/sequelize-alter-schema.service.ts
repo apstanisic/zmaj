@@ -13,21 +13,17 @@ import {
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { emsg } from "@api/errors"
 import { Injectable, Logger } from "@nestjs/common"
+import { alphabetical, isEqual } from "radash"
 import {
-	DatabaseError,
 	DataType,
 	DataTypes,
+	DatabaseError,
 	QueryInterface,
 	Sequelize,
-	SequelizeScopeError,
 	UniqueConstraintError,
 } from "sequelize"
-import { alphabetical, isEqual } from "radash"
 import { z } from "zod"
 import { SequelizeService } from "./sequelize.service"
-import { filterStruct } from "@zmaj-js/common"
-
-type Shared = { trx?: any }
 
 @Injectable()
 export class SequelizeAlterSchemaService {
@@ -36,7 +32,7 @@ export class SequelizeAlterSchemaService {
 	constructor(private sq: SequelizeService, private schemaInfo: SchemaInfoService) {
 		this.qi = this.sq.orm.getQueryInterface()
 	}
-	async createTable(params: z.input<typeof CreateTableSchema>, shared?: Shared): Promise<void> {
+	async createTable(params: z.input<typeof CreateTableSchema>): Promise<void> {
 		const data = CreateTableSchema.parse(params)
 
 		await this.qi.createTable(
@@ -49,15 +45,15 @@ export class SequelizeAlterSchemaService {
 					autoIncrementIdentity: data.pkType === "auto-increment",
 				},
 			},
-			{ transaction: shared?.trx },
+			{ transaction: data.trx },
 		)
 	}
 
-	async dropTable(params: z.input<typeof DropTableSchema>, shared?: Shared): Promise<void> {
+	async dropTable(params: z.input<typeof DropTableSchema>): Promise<void> {
 		const data = DropTableSchema.parse(params)
-		await this.qi.dropTable(data.tableName, { transaction: shared?.trx })
+		await this.qi.dropTable(data.tableName, { transaction: data?.trx, cascade: !data.noCascade })
 	}
-	async createColumn(params: z.input<typeof CreateColumnSchema>, shared?: Shared): Promise<void> {
+	async createColumn(params: z.input<typeof CreateColumnSchema>): Promise<void> {
 		const data = CreateColumnSchema.parse(params)
 		await this.qi
 			.addColumn(
@@ -70,28 +66,35 @@ export class SequelizeAlterSchemaService {
 					defaultValue: this.parseDefaultValue(data.defaultValue),
 					type: this.getType(data.dataType),
 				},
-				{ transaction: shared?.trx },
+				{ transaction: data?.trx },
 			)
 			.catch((e) => this.handleColumnError(e))
 	}
 
-	async updateColumn(params: z.input<typeof UpdateColumnSchema>, shared?: Shared): Promise<void> {
+	async updateColumn(params: z.input<typeof UpdateColumnSchema>): Promise<void> {
 		const data = UpdateColumnSchema.parse(params)
 
 		const col = await this.schemaInfo.getColumn({
 			table: params.tableName,
 			column: params.columnName,
+			trx: data.trx,
+			schema: data.schema,
 		})
 		if (!col) throw500(889931)
 
 		// type must be provided, so we use existing type, and only pass changes that are not undefined
 		await this.qi
-			.changeColumn(data.tableName, data.columnName, {
-				type: col.dataType,
-				allowNull: data.nullable ?? undefined,
-				unique: data.unique ?? undefined,
-				defaultValue: this.parseDefaultValue(data.defaultValue),
-			})
+			.changeColumn(
+				data.tableName,
+				data.columnName,
+				{
+					type: col.dataType,
+					allowNull: data.nullable ?? undefined,
+					unique: data.unique ?? undefined,
+					defaultValue: this.parseDefaultValue(data.defaultValue),
+				},
+				{ transaction: data.trx },
+			)
 			.catch((e) => this.handleColumnError(e))
 	}
 
@@ -111,12 +114,12 @@ export class SequelizeAlterSchemaService {
 		throw500({ cause: error, errorCode: 5238999 })
 	}
 
-	async dropColumn(params: z.input<typeof DropColumnSchema>, shared?: Shared): Promise<void> {
+	async dropColumn(params: z.input<typeof DropColumnSchema>): Promise<void> {
 		const data = DropColumnSchema.parse(params)
-		await this.qi.removeColumn(data.tableName, data.columnName, { transaction: shared?.trx })
+		await this.qi.removeColumn(data.tableName, data.columnName, { transaction: data?.trx })
 	}
 
-	async createFk(params: z.input<typeof CreateForeignKeySchema>, shared?: Shared): Promise<void> {
+	async createFk(params: z.input<typeof CreateForeignKeySchema>): Promise<void> {
 		const data = CreateForeignKeySchema.parse(params)
 		// const indexName = data.indexName ?? `${data.fkTable}_${data.fkColumn}_foreign`
 
@@ -130,11 +133,11 @@ export class SequelizeAlterSchemaService {
 				table: data.referencedTable,
 				field: data.referencedColumn,
 			},
-			transaction: shared?.trx,
+			transaction: data?.trx,
 		})
 	}
 
-	async dropFk(params: z.input<typeof DropForeignKeySchema>, shared?: Shared): Promise<void> {
+	async dropFk(params: z.input<typeof DropForeignKeySchema>): Promise<void> {
 		const data = DropForeignKeySchema.parse(params)
 		let keyName: string
 		if (data.indexName) {
@@ -143,29 +146,27 @@ export class SequelizeAlterSchemaService {
 			const fk = await this.schemaInfo.getForeignKey({
 				table: data.fkTable,
 				column: data.fkColumn,
-				...shared,
+				schema: data.schema,
+				trx: data.trx,
 			})
 			if (!fk) throw404(42000343, emsg.invalidPayload)
 			keyName = fk.fkName
 		}
-		await this.qi.removeConstraint(data.fkTable, keyName, { transaction: shared?.trx })
+		await this.qi.removeConstraint(data.fkTable, keyName, { transaction: data?.trx })
 	}
 
-	async createUniqueKey(
-		params: z.input<typeof CreateUniqueKeySchema>,
-		shared?: Shared,
-	): Promise<void> {
+	async createUniqueKey(params: z.input<typeof CreateUniqueKeySchema>): Promise<void> {
 		const data = CreateUniqueKeySchema.parse(params)
 		// const keyName = data.indexName ?? `${data.tableName}_${data.columnNames.join("_")}_unique`
 		await this.qi.addConstraint(data.tableName, {
 			type: "unique",
 			fields: data.columnNames,
 			name: data.indexName ?? undefined,
-			transaction: shared?.trx,
+			transaction: data?.trx,
 		})
 	}
 
-	async dropUniqueKey(params: z.input<typeof DropUniqueKeySchema>, shared?: Shared): Promise<void> {
+	async dropUniqueKey(params: z.input<typeof DropUniqueKeySchema>): Promise<void> {
 		const data = DropUniqueKeySchema.parse(params)
 
 		let keyName: string
@@ -174,7 +175,7 @@ export class SequelizeAlterSchemaService {
 		} else {
 			const uniqueKeys = await this.schemaInfo.getUniqueKeys({
 				table: data.tableName,
-				trx: shared?.trx,
+				trx: data?.trx,
 			})
 
 			const columns = alphabetical(data.columnNames, (v) => v)
@@ -188,7 +189,7 @@ export class SequelizeAlterSchemaService {
 			keyName = toDelete.keyName
 		}
 
-		await this.qi.removeConstraint(data.tableName, keyName, { transaction: shared?.trx })
+		await this.qi.removeConstraint(data.tableName, keyName, { transaction: data?.trx })
 	}
 
 	/**
