@@ -84,10 +84,7 @@ describe("CollectionsService", () => {
 
 		it("should create migration to remove table from db", async () => {
 			await service.removeCollection(id)
-			expect(alterSchema.dropTable).toBeCalledWith(
-				{ tableName: "deleted_table" },
-				{ trx: "TEST_TRX" },
-			)
+			expect(alterSchema.dropTable).toBeCalledWith({ tableName: "deleted_table", trx: "TEST_TRX" })
 		})
 
 		it("should return deleted collection", async () => {
@@ -120,14 +117,12 @@ describe("CollectionsService", () => {
 
 		it("should create migration for new table", async () => {
 			await service.createCollection(dto)
-			expect(alterSchema.createTable).toBeCalledWith(
-				{
-					pkColumn: "id1",
-					pkType: "auto-increment",
-					tableName: "hello_world",
-				},
-				{ trx: "TEST_TRX" },
-			)
+			expect(alterSchema.createTable).toBeCalledWith({
+				pkColumn: "id1",
+				pkType: "auto-increment",
+				tableName: "hello_world",
+				trx: "TEST_TRX",
+			})
 		})
 
 		it("migrate and sync infra state", async () => {

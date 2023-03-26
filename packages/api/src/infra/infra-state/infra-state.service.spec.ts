@@ -256,7 +256,7 @@ describe("InfraStateService", () => {
 		})
 
 		it("should find collection if non full collection is provided", () => {
-			const col = service.getCollection({ tableName: "posts" } as any)
+			const col = service.getCollection({ collectionName: "posts" } as any)
 			expect(omit(col!, toOmit)).toEqual<Partial<CollectionDef>>(
 				omit(mockCollectionDefs.posts, toOmit),
 			)

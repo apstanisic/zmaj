@@ -19,6 +19,11 @@ export type CollectionMetadata = {
 	readonly tableName: string
 
 	/**
+	 * Table name
+	 */
+	collectionName: string
+
+	/**
 	 * This collection will not be loaded by ORM, relation won't work
 	 */
 	disabled: boolean

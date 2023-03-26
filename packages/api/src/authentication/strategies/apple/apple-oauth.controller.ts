@@ -3,7 +3,8 @@ import { AuthenticationService } from "@api/authentication/authentication.servic
 import { GetUser } from "@api/authentication/get-user.decorator"
 import { RefreshTokenService } from "@api/authentication/refresh-token.service"
 import { UserAgent } from "@api/common/decorators/user-agent.decorator"
-import { Controller, Get, InternalServerErrorException, Ip, Res, UseGuards } from "@nestjs/common"
+import { throw500 } from "@api/common/throw-http"
+import { Controller, Get, Ip, Res, UseGuards } from "@nestjs/common"
 import { AuthUser, endpoints } from "@zmaj-js/common"
 import type { Response } from "express"
 import { AppleOAuthGuard } from "./apple-oauth.guard"
@@ -24,7 +25,7 @@ export class AppleOAuthController {
 	@Get(ep.signIn)
 	@UseGuards(AppleOAuthGuard)
 	async login(): Promise<void> {
-		throw new InternalServerErrorException(12381)
+		throw500(12381)
 	}
 
 	@Get(ep.callback)

@@ -12,6 +12,7 @@ export const CreateCollectionMetadataTable = createSystemMigration({
 			{
 				...getRequiredColumns(),
 				table_name: { type: DataTypes.STRING(200), allowNull: false, unique: true },
+				collection_name: { type: DataTypes.STRING(200), allowNull: false, unique: true },
 				disabled: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 				label: { type: DataTypes.STRING(200) },
 				hidden: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },

@@ -2,7 +2,7 @@ import { Except } from "type-fest"
 import { Struct } from "../../types/struct.type"
 import { FieldDef } from "../infra-fields/field-def.type"
 import { RelationDef } from "../relations/relation-def.type"
-import { CollectionMetadata } from "./infra-collection.model"
+import { CollectionMetadata } from "./collection-metadata.model"
 import { LayoutConfig } from "./layout/layout-config.type"
 
 /**
@@ -65,7 +65,7 @@ export type CollectionDef<T extends Struct = Struct> = Except<
 	/**
 	 * Collection name (camel cased table: super_users => superUsers)
 	 */
-	collectionName: string
+	// collectionName: string
 	/**
 	 * Key for checking authorization
 	 */

@@ -1,3 +1,4 @@
+import { RelationCreateDto } from "@zmaj-js/common"
 import { plural, singular } from "pluralize"
 import { camel } from "radash"
 import { useCallback, useEffect } from "react"
@@ -9,9 +10,12 @@ import { ManualInputField } from "../../../shared/input/ManualInputField"
  * Property name for left column
  */
 export function LeftPropertyInput(): JSX.Element {
-	const { setValue, watch } = useFormContext()
-	const type = useWatch({ name: "type", defaultValue: "many-to-one" })
-	const rightTable = useWatch({ name: "rightTable", defaultValue: "zmaj_users" })
+	const { setValue } = useFormContext<RelationCreateDto>()
+	const type = useWatch<RelationCreateDto, "type">({ name: "type", defaultValue: "many-to-one" })
+	const rightCollection = useWatch<RelationCreateDto, "rightCollection">({
+		name: "rightCollection",
+		defaultValue: "zmaj_users",
+	})
 
 	/**
 	 * Convert table name to proper plurality
@@ -24,12 +28,12 @@ export function LeftPropertyInput(): JSX.Element {
 
 	// When other table and relation type change, generate new property name
 	useEffect(() => {
-		setValue("leftPropertyName", defaultPropertyName(rightTable))
-	}, [rightTable, defaultPropertyName, setValue])
+		setValue("left.propertyName", defaultPropertyName(rightCollection))
+	}, [defaultPropertyName, rightCollection, setValue])
 
 	return (
 		<ManualInputField
-			source="leftPropertyName"
+			source="left.propertyName"
 			label="Property"
 			fieldConfig={shortTextDbColumnValidation}
 			isRequired

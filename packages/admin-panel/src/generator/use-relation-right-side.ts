@@ -15,7 +15,7 @@ export function useRelationRightSide(): CollectionDef | undefined {
 
 	if (!relation) throw new AdminPanelError("9643")
 
-	const otherSide = useGetCollection(relation.otherSide.tableName)
+	const otherSide = useGetCollection(relation.otherSide.collectionName)
 
 	// if user does not have access, do not throw error
 	// if (!otherSide) throw new AdminPanelError("3011")

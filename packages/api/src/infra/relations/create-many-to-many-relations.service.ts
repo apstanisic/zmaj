@@ -7,21 +7,23 @@ import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
+	CollectionDef,
 	CollectionMetadata,
 	CollectionMetadataCollection,
 	CollectionMetadataSchema,
 	FieldMetadata,
 	FieldMetadataCollection,
 	FieldMetadataSchema,
+	JunctionRelationCreateDto2,
+	RelationCreateDto,
 	RelationMetadata,
 	RelationMetadataCollection,
-	RelationCreateDto,
 	RelationMetadataSchema,
 	zodCreate,
 } from "@zmaj-js/common"
-import { camel, title } from "radash"
+import { camel } from "radash"
 import { v4 } from "uuid"
-import { JunctionRelationCreateDto } from "./expanded-relation-dto.types"
+import { InfraStateService } from "../infra-state/infra-state.service"
 
 @Injectable()
 export class CreateManyToManyRelationsService {
@@ -29,6 +31,7 @@ export class CreateManyToManyRelationsService {
 		private schemaInfo: SchemaInfoService,
 		private repoManager: RepoManager,
 		private alterSchema: AlterSchemaService, // private infraState: InfraStateService,
+		private infraState: InfraStateService,
 	) {
 		this.relationsRepo = this.repoManager.getRepo(RelationMetadataCollection)
 		this.collectionsRepo = this.repoManager.getRepo(CollectionMetadataCollection)
@@ -39,140 +42,119 @@ export class CreateManyToManyRelationsService {
 	private collectionsRepo: OrmRepository<CollectionMetadata>
 	private fieldsRepo: OrmRepository<FieldMetadata>
 
-	private async validateDtoWithSchema(dto: RelationCreateDto): Promise<JunctionRelationCreateDto> {
-		const leftTablePk = await this.schemaInfo.getPrimaryKey(dto.leftTable)
-		const rightTablePk = await this.schemaInfo.getPrimaryKey(dto.rightTable)
+	private async validateDtoWithSchema(dto: RelationCreateDto): Promise<JunctionRelationCreateDto2> {
+		const leftCol =
+			this.infraState.getCollection(dto.leftCollection) ?? throw400(8333, emsg.noCollection)
+		const rightCol =
+			this.infraState.getCollection(dto.rightCollection) ?? throw400(99542, emsg.noCollection)
 
-		// Both tables must have pk for m2m to work
-		if (!leftTablePk) throw400(52254, emsg.noPk(dto.leftTable))
-		if (!rightTablePk) throw400(52554, emsg.noPk(dto.rightTable))
-
-		const junctionTable = await this.getJunctionTableName(dto)
-		const junctionLeftColumn = dto.junctionLeftColumn ?? `${dto.leftTable}_id`
-		const junctionRightColumn = dto.junctionRightColumn ?? `${dto.rightTable}_id`
+		const junctionLeftColumn = dto.junction?.left?.column ?? `${leftCol.tableName}_id`
+		const junctionRightColumn = dto.junction?.right?.column ?? `${rightCol.tableName}_id`
+		const junctionTable = await this.getJunctionTableName({
+			collections: [leftCol, rightCol],
+			junctionTable: dto.junction?.tableName,
+		})
 
 		return {
-			junctionTable,
-			junctionLeftColumn,
-			junctionRightColumn,
-			leftColumn: leftTablePk.columnName,
-			rightColumn: rightTablePk.columnName,
 			type: "many-to-many",
-			leftLabel: dto.leftLabel ?? title(dto.rightTable),
-			rightLabel: dto.rightLabel ?? title(dto.leftTable),
-			// should be handled
-			leftPropertyName: dto.leftPropertyName ?? throw500(43289),
-			// should be handled
-			rightPropertyName: dto.rightPropertyName ?? throw500(79532),
-			leftTable: dto.leftTable,
-			rightTable: dto.rightTable,
-			leftTemplate: dto.leftTemplate ?? null,
-			rightTemplate: dto.rightTemplate ?? null,
-			leftFkName: dto.leftFkName ?? `${junctionTable}_${junctionLeftColumn}_foreign`,
-			rightFkName: dto.rightFkName ?? `${junctionTable}_${junctionRightColumn}_foreign`,
-			leftPkType: leftTablePk.dataType,
-			rightPkType: rightTablePk.dataType,
-			// junctionLeftPropertyName: dto.junctionLeftPropertyName ?? camel(dto.leftTable),
-			junctionLeftLabel: dto.junctionLeftLabel ?? title(dto.leftTable),
-			junctionLeftPropertyName: this.getJunctionPropertyName(dto, "left"),
-			junctionLeftTemplate: dto.junctionLeftTemplate ?? null,
-			// junctionRightPropertyName: dto.junctionRightPropertyName ?? camel(dto.rightTable),
-			junctionRightLabel: dto.junctionRightLabel ?? title(dto.rightTable),
-			junctionRightPropertyName: this.getJunctionPropertyName(dto, "right"),
-			junctionRightTemplate: dto.junctionRightTemplate ?? null,
+			junction: {
+				table: junctionTable,
+				left: {
+					propertyName: dto.junction?.left?.propertyName ?? dto.leftCollection,
+					label: dto.junction?.left?.label ?? null,
+					template: dto.junction?.left?.template ?? null,
+					column: junctionLeftColumn,
+				},
+				right: {
+					label: dto.junction?.right?.label ?? null,
+					propertyName: dto.junction?.right?.propertyName ?? dto.rightCollection,
+					template: dto.junction?.right?.template ?? null,
+					column: junctionRightColumn,
+				},
+			},
+			left: {
+				...dto.left,
+				table: leftCol.tableName,
+				collectionName: leftCol.collectionName,
+				column: leftCol.pkColumn,
+				fkName: dto.fkName ?? (await this.getFreeFkName(leftCol.tableName, dto.left.column)),
+				pkType: leftCol.fields[leftCol.pkField]?.dbRawDataType ?? throw500(379993),
+			},
+			right: {
+				...dto.right,
+				table: rightCol.tableName,
+				column: rightCol.pkColumn,
+				collectionName: rightCol.collectionName,
+				fkName:
+					dto.junction?.fkName ?? (await this.getFreeFkName(rightCol.tableName, dto.right.column)),
+				pkType: rightCol.fields[rightCol.pkField]?.dbRawDataType ?? throw500(379993),
+			},
 		}
 	}
 
-	getJunctionPropertyName(dto: RelationCreateDto, side: "left" | "right"): string {
-		const propertyName =
-			side === "left" ? dto.junctionLeftPropertyName : dto.junctionRightPropertyName
-
-		// this points to main table on the side where junction property name is
-		const table = side === "left" ? dto.leftTable : dto.rightTable
-
-		const takenProperties = [
-			camel(dto.leftColumn),
-			camel(dto.rightColumn),
-			camel("id"), //
-		]
-
-		if (propertyName) {
-			if (takenProperties.includes(propertyName)) throw400(342999, emsg.propertyTaken(propertyName))
-			return propertyName
+	private async getJunctionTableName(params: {
+		junctionTable?: string | null
+		collections: [CollectionDef, CollectionDef]
+	}): Promise<string> {
+		if (params.junctionTable) {
+			const exist = await this.schemaInfo.hasTable(params.junctionTable)
+			if (exist) throw400(5392864, emsg.collectionExists(params.junctionTable))
+			return params.junctionTable
 		}
 
-		for (let i = 1; i < 5; i++) {
-			const name = camel(table) + (i === 1 ? "" : i)
-			if (!takenProperties.includes(name)) return name
-		}
-		// will never happen
-		throw500(3729432)
-	}
+		const baseName = `${params.collections[0].tableName}_${params.collections[1].tableName}`
 
-	private async getJunctionTableName(
-		dto: Pick<RelationCreateDto, "junctionTable" | "leftTable" | "rightTable">,
-	): Promise<string> {
-		// if user provided table name, we will never try to override it
-		// so we throw if it's takes
-		if (dto.junctionTable) {
-			const exist = await this.schemaInfo.hasTable(dto.junctionTable)
-			if (exist) throw400(5392864, emsg.collectionExists(dto.junctionTable))
-			return dto.junctionTable
-		}
-
-		const baseName = `${dto.leftTable}_${dto.rightTable}`
-
-		for (let i = 1; i < 100; i++) {
+		for (let i = 1; i < 30; i++) {
 			const name = baseName + (i === 1 ? "" : `_${i}`)
 			const exist = await this.schemaInfo.hasTable(name)
 			if (!exist) return name
 		}
-		return `${baseName}_${v4()}`
+		return `${baseName}_${v4().substring(24)}`
 	}
 
-	private async modifySchema(dto: JunctionRelationCreateDto, trx: Transaction): Promise<void> {
+	private async modifySchema(dto: JunctionRelationCreateDto2, trx: Transaction): Promise<void> {
 		await this.alterSchema.createTable({
 			pkColumn: "id",
 			pkType: "auto-increment",
-			tableName: dto.junctionTable,
+			tableName: dto.junction.table,
 			trx,
 		})
 
 		await this.alterSchema.createColumn({
-			columnName: dto.junctionLeftColumn,
-			tableName: dto.junctionTable,
-			dataType: { type: "specific", value: dto.leftPkType },
+			columnName: dto.junction.left.column,
+			tableName: dto.junction.table,
+			dataType: { type: "specific", value: dto.left.pkType },
 			trx,
 		})
 
 		await this.alterSchema.createColumn({
-			columnName: dto.junctionRightColumn,
-			tableName: dto.junctionTable,
-			dataType: { type: "specific", value: dto.rightPkType },
+			columnName: dto.junction.right.column,
+			tableName: dto.junction.table,
+			dataType: { type: "specific", value: dto.right.pkType },
 			trx,
 		})
 
 		await this.alterSchema.createFk({
-			fkColumn: dto.junctionLeftColumn,
-			fkTable: dto.junctionTable,
-			referencedTable: dto.leftTable,
-			referencedColumn: dto.leftColumn,
-			indexName: dto.leftFkName,
+			fkTable: dto.junction.table,
+			fkColumn: dto.junction.left.column,
+			referencedTable: dto.left.table,
+			referencedColumn: dto.left.column,
+			indexName: dto.left.fkName,
 			trx,
 		})
 
 		await this.alterSchema.createFk({
-			fkColumn: dto.junctionRightColumn,
-			fkTable: dto.junctionTable,
-			referencedTable: dto.rightTable,
-			referencedColumn: dto.rightColumn,
-			indexName: dto.rightFkName,
+			fkTable: dto.junction.table,
+			fkColumn: dto.junction.right.column,
+			referencedTable: dto.right.table,
+			referencedColumn: dto.right.column,
+			indexName: dto.right.fkName,
 			trx,
 		})
 
 		await this.alterSchema.createUniqueKey({
-			tableName: dto.junctionTable,
-			columnNames: [dto.junctionLeftColumn, dto.junctionRightColumn],
+			tableName: dto.junction.table,
+			columnNames: [dto.junction.left.column, dto.junction.right.column],
 			trx,
 		})
 	}
@@ -181,37 +163,37 @@ export class CreateManyToManyRelationsService {
 		dto,
 		trx,
 	}: {
-		dto: JunctionRelationCreateDto
+		dto: JunctionRelationCreateDto2
 		trx: Transaction
 	}): Promise<RelationMetadata> {
 		// zod should this catch already
-		if (dto.leftTable.startsWith("zmaj")) throw500(53498)
+		if (dto.left.table.startsWith("zmaj")) throw500(53498)
 
 		const mainRelation = await this.relationsRepo.createOne({
 			trx,
 			data: zodCreate(RelationMetadataSchema, {
-				tableName: dto.leftTable,
+				tableName: dto.left.table,
 				// collectionId,
-				fkName: dto.leftFkName,
-				label: dto.leftLabel,
-				propertyName: dto.leftPropertyName,
-				template: dto.leftTemplate,
-				mtmFkName: dto.rightFkName,
+				fkName: dto.left.fkName,
+				label: dto.left.label,
+				propertyName: dto.left.propertyName,
+				template: dto.left.template,
+				mtmFkName: dto.right.fkName,
 			}),
 		})
 
-		if (!dto.rightTable.startsWith("zmaj")) {
+		if (!dto.right.table.startsWith("zmaj")) {
 			// const collectionId = this.infraState.findCollection(dto.rightTable)?.id ?? throw500(789532)
 			await this.relationsRepo.createOne({
 				trx,
 				data: zodCreate(RelationMetadataSchema, {
-					tableName: dto.rightTable,
+					tableName: dto.right.table,
 					// collectionId,
-					fkName: dto.rightFkName,
-					label: dto.rightLabel,
-					propertyName: dto.rightPropertyName,
-					template: dto.rightTemplate,
-					mtmFkName: dto.leftFkName,
+					fkName: dto.right.fkName,
+					label: dto.right.label,
+					propertyName: dto.right.propertyName,
+					template: dto.right.template,
+					mtmFkName: dto.left.fkName,
 				}),
 			})
 		}
@@ -220,31 +202,35 @@ export class CreateManyToManyRelationsService {
 			trx,
 			data: [
 				zodCreate(RelationMetadataSchema, {
-					tableName: dto.junctionTable,
+					tableName: dto.junction.table,
 					// collectionId: junctionCollectionId,
-					fkName: dto.leftFkName,
-					label: dto.junctionLeftLabel,
-					propertyName: dto.junctionLeftPropertyName,
-					template: dto.junctionLeftTemplate,
+					fkName: dto.left.fkName,
+					label: dto.junction.left.label,
+					propertyName: dto.junction.left.propertyName,
+					template: dto.junction.left.template,
 				}),
 				zodCreate(RelationMetadataSchema, {
-					tableName: dto.junctionTable,
+					tableName: dto.junction.table,
 					// collectionId: junctionCollectionId,
-					fkName: dto.rightFkName,
-					label: dto.junctionRightLabel,
-					propertyName: dto.junctionRightPropertyName,
-					template: dto.junctionRightTemplate,
+					fkName: dto.right.fkName,
+					label: dto.junction.right.label,
+					propertyName: dto.junction.right.propertyName,
+					template: dto.junction.right.template,
 				}),
 			],
 		})
 		return mainRelation
 	}
 
-	async createCollectionAndFields(dto: JunctionRelationCreateDto, trx: Transaction): Promise<void> {
+	async createCollectionAndFields(
+		dto: JunctionRelationCreateDto2,
+		trx: Transaction,
+	): Promise<void> {
 		await this.collectionsRepo.createOne({
 			trx,
 			data: zodCreate(CollectionMetadataSchema, {
-				tableName: dto.junctionTable,
+				tableName: dto.junction.table,
+				collectionName: camel(dto.junction.table),
 				hidden: true,
 			}),
 		})
@@ -253,23 +239,23 @@ export class CreateManyToManyRelationsService {
 			trx,
 			data: zodCreate(FieldMetadataSchema, {
 				columnName: "id",
-				tableName: dto.junctionTable,
+				tableName: dto.junction.table,
 			}),
 		})
 
 		await this.fieldsRepo.createOne({
 			trx,
 			data: zodCreate(FieldMetadataSchema, {
-				columnName: dto.junctionLeftColumn,
-				tableName: dto.junctionTable,
+				columnName: dto.junction.left.column,
+				tableName: dto.junction.table,
 			}),
 		})
 
 		await this.fieldsRepo.createOne({
 			trx,
 			data: zodCreate(FieldMetadataSchema, {
-				columnName: dto.junctionRightColumn,
-				tableName: dto.junctionTable,
+				columnName: dto.junction.right.column,
+				tableName: dto.junction.table,
 			}),
 		})
 	}
@@ -285,5 +271,16 @@ export class CreateManyToManyRelationsService {
 				return mainRelation
 			},
 		})
+	}
+	async getFreeFkName(table: string, column: string, trx?: Transaction): Promise<string> {
+		const allKeys = await this.schemaInfo.getForeignKeys({ trx })
+		let i = 1
+		while (i < 30) {
+			const keyName = `${table}_${column}${i > 1 ? "_" + i : ""}`
+			const taken = allKeys.some((k) => k.fkName === keyName)
+			if (!taken) return keyName
+			i += 1
+		}
+		return `fk_${v4().substring(24)}`
 	}
 }

@@ -29,7 +29,7 @@ const Step1 = memo(() => {
 	return (
 		<StepSection index={0}>
 			<ManualInputField
-				source="tableName"
+				source="collectionName"
 				fieldConfig={shortTextDbColumnValidation}
 				isRequired
 				disabled
@@ -40,6 +40,12 @@ const Step1 = memo(() => {
 				fieldConfig={shortTextDbColumnValidation}
 				disabled={isEdit}
 				isRequired
+			/>
+
+			<ManualInputField
+				source="fieldName"
+				fieldConfig={shortTextDbColumnValidation}
+				description="Customize key at which you can access property (leave empty to camel case column)"
 			/>
 
 			<ManualInputField

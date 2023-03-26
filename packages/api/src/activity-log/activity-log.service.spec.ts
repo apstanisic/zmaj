@@ -153,7 +153,10 @@ describe("ActivityLogService", () => {
 		})
 
 		it("should create 'create' logs correctly", () => {
-			const event = CreateFinishEventStub({ result: [{ id: 5, title: "hello" }] })
+			const event = CreateFinishEventStub({
+				collection: mockCollectionDefs.posts,
+				result: [{ id: 5, title: "hello" }],
+			})
 			const res = service["generateLogs"](event)
 			expect(res[0]).toMatchObject({
 				action: "create",
@@ -167,6 +170,7 @@ describe("ActivityLogService", () => {
 
 		it("should create 'delete' logs correctly", () => {
 			const event = DeleteFinishEventStub({
+				collection: mockCollectionDefs.posts,
 				result: [{ id: 5 }],
 				toDelete: [{ id: 5, original: { id: 5, title: "to-delete" } }],
 			})
@@ -183,6 +187,7 @@ describe("ActivityLogService", () => {
 
 		it("should create 'update' logs correctly", () => {
 			const event = UpdateFinishEventStub({
+				collection: mockCollectionDefs.posts,
 				result: [{ id: 5, title: "changed" }],
 				toUpdate: [
 					{
@@ -205,6 +210,7 @@ describe("ActivityLogService", () => {
 
 		it("should throw if update does not have proper previous data", () => {
 			const event = UpdateFinishEventStub({
+				collection: mockCollectionDefs.posts,
 				result: [{ id: 5, title: "changed" }],
 				toUpdate: [],
 			})
@@ -213,6 +219,7 @@ describe("ActivityLogService", () => {
 
 		it("should throw if delete does not have proper previous data", () => {
 			const event = DeleteFinishEventStub({
+				collection: mockCollectionDefs.posts,
 				result: [{ id: 5, title: "changed" }],
 				toDelete: [],
 			})
@@ -223,6 +230,7 @@ describe("ActivityLogService", () => {
 			const original = { id: 5, date: new Date() }
 			const changed = { id: 5, date: addMinutes(original.date, 5) }
 			const event = UpdateFinishEventStub({
+				collection: mockCollectionDefs.posts,
 				result: [changed],
 				toUpdate: [{ id: 5, original, changed }],
 			})

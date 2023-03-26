@@ -196,8 +196,14 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 			return created.map((v) => v.get({ plain: true }))
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
-				const [field = "", value = ""] = getFirstProperty(error.fields) ?? []
-				throw400(738294, emsg.uniqueExists(field, value))
+				// const [field = "", value = ""] = getFirstProperty(error.fields) ?? []
+				throw400(
+					738294,
+					emsg.compositeUnique(
+						Object.keys(error.fields),
+						Object.values(error.fields).map((v) => JSON.stringify(v)),
+					),
+				)
 			}
 
 			console.log({ error })

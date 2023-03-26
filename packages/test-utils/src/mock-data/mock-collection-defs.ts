@@ -23,7 +23,7 @@ function expand(table: keyof typeof t): CollectionDef {
 		// fullFields: Object.values(fullFields),
 		relations: mockRelationDefs[table],
 		// fullRelations: Object.values(mockRelationDefs[table]),
-		authzKey: `collections.${camel(table)}`,
+		authzKey: `collections.${mockCollectionMetadata[table].collectionName}`,
 		layoutConfig: mockCollectionMetadata[table].layoutConfig as any,
 		// createdAtFieldId,
 		// updatedAtFieldId,

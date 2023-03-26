@@ -1,8 +1,7 @@
 import { throw500 } from "@api/common/throw-http"
 import { Injectable, Logger } from "@nestjs/common"
+import { CollectionDef, ColumnDataType, Struct, getColumnType } from "@zmaj-js/common"
 import { DataType, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
-import { ColumnDataType, CollectionDef, getColumnType, Struct } from "@zmaj-js/common"
-import { alphabetical } from "radash"
 import { v4 } from "uuid"
 
 @Injectable()
@@ -95,7 +94,7 @@ export class SequelizeModelsGenerator {
 			properties[field.fieldName] = property
 		})
 
-		orm.define(col.tableName, properties, {
+		orm.define(col.collectionName, properties, {
 			freezeTableName: true,
 			tableName: col.tableName,
 			timestamps: true,
@@ -110,8 +109,8 @@ export class SequelizeModelsGenerator {
 		models: Struct<ModelStatic<Model<any>>>,
 	): void {
 		for (const rel of Object.values(col.relations)) {
-			const leftModel = models[rel.tableName]
-			const rightModel = models[rel.otherSide.tableName]
+			const leftModel = models[rel.collectionName]
+			const rightModel = models[rel.otherSide.collectionName]
 			// if collection is disabled, it can infer with relations
 			if (!leftModel || !rightModel) continue
 
@@ -140,7 +139,7 @@ export class SequelizeModelsGenerator {
 			} else if (rel.type === "many-to-many") {
 				leftModel.belongsToMany(rightModel, {
 					as: rel.propertyName,
-					through: models[rel.junction.tableName] ?? rel.junction.tableName,
+					through: models[rel.junction.collectionName] ?? rel.junction.collectionName,
 					sourceKey: rel.fieldName,
 					targetKey: rel.otherSide.fieldName,
 					foreignKey: rel.junction.thisSide.fieldName,

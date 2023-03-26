@@ -2,279 +2,247 @@ import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common"
-import { asMock, RelationCreateDto, isUUID, uuidRegex } from "@zmaj-js/common"
+import {
+	CollectionDef,
+	JunctionRelationCreateDto2,
+	RelationCreateDto,
+	asMock,
+	uuidRegex,
+} from "@zmaj-js/common"
+import { CollectionDefStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { CreateManyToManyRelationsService } from "./create-many-to-many-relations.service"
-import { JunctionRelationCreateDto } from "./expanded-relation-dto.types"
+import { InfraStateService } from "../infra-state/infra-state.service"
+import { v4 } from "uuid"
 
 describe("CreateManyToManyRelationsService", () => {
 	let service: CreateManyToManyRelationsService
 	let schemaInfoS: SchemaInfoService
 	let alterSchema: AlterSchemaService
-	let dto: JunctionRelationCreateDto
+	let dto: JunctionRelationCreateDto2
+	let infraState: InfraStateService
+
 	//
 	beforeEach(async () => {
 		const module = await buildTestModule(CreateManyToManyRelationsService).compile()
 		service = module.get(CreateManyToManyRelationsService)
 		alterSchema = module.get(AlterSchemaService)
 		schemaInfoS = module.get(SchemaInfoService)
+		infraState = module.get(InfraStateService)
 
 		dto = {
-			junctionLeftColumn: "jlc",
-			junctionLeftLabel: "jll",
-			junctionLeftPropertyName: "jlp",
-			junctionLeftTemplate: "jl_tp",
-			junctionRightColumn: "jrc",
-			junctionRightLabel: "jrl",
-			junctionRightPropertyName: "jrp",
-			junctionRightTemplate: "jr_tp",
-			junctionTable: "jt",
-			leftColumn: "id_l",
-			leftFkName: "lfk",
-			leftLabel: "ll",
-			leftPkType: "uuid",
-			leftPropertyName: "lp",
-			leftTable: "lt",
-			leftTemplate: "ltp",
-			rightColumn: "id_r",
-			rightFkName: "rfk",
-			rightLabel: "rl",
-			rightPkType: "uuid",
-			rightPropertyName: "rp",
-			rightTable: "rt",
-			rightTemplate: "rtp",
+			junction: {
+				left: {
+					column: "jlc",
+					label: "jll",
+					propertyName: "jlp",
+					template: "jl_tp",
+				},
+				right: {
+					column: "jrc",
+					label: "jrl",
+					propertyName: "jrp",
+					template: "jr_tp",
+				},
+				table: "jt",
+			},
+			left: {
+				column: "id_l",
+				fkName: "lfk",
+				label: "ll",
+				pkType: "uuid",
+				propertyName: "lp",
+				table: "lt",
+				template: "ltp",
+				collectionName: "lt",
+			},
+			right: {
+				column: "id_r",
+				fkName: "rfk",
+				label: "rl",
+				pkType: "uuid",
+				propertyName: "rp",
+				table: "rt",
+				template: "rtp",
+				collectionName: "rt",
+			},
 			type: "many-to-many",
 		}
 	})
 
-	describe("getJunctionPropertyName", () => {
-		let dto: RelationCreateDto
-
-		beforeEach(() => {
-			dto = new RelationCreateDto({
-				leftColumn: "post_id6",
-				leftTable: "comments",
-				rightTable: "posts",
-				rightColumn: "id",
-				type: "many-to-many",
-				leftPropertyName: "postT",
-				rightPropertyName: "commentsT",
-			})
-		})
-
-		it("should throw if name is provided and taken", () => {
-			dto.junctionLeftPropertyName = "id"
-			expect(() => service["getJunctionPropertyName"](dto, "left")).toThrow(BadRequestException)
-		})
-
-		it("should return name if free", () => {
-			dto.junctionLeftPropertyName = "freeProp"
-			const res = service["getJunctionPropertyName"](dto, "left")
-			expect(res).toEqual("freeProp")
-		})
-
-		it("should return first free name without number", () => {
-			const res = service["getJunctionPropertyName"](dto, "left")
-			expect(res).toEqual("comments")
-		})
-
-		it("should return proper side", () => {
-			const res1 = service["getJunctionPropertyName"](dto, "left")
-			expect(res1).toEqual("comments")
-
-			const res2 = service["getJunctionPropertyName"](dto, "right")
-			expect(res2).toEqual("posts")
-		})
-
-		it("should return first free name", () => {
-			dto.leftTable = "id"
-			const res = service["getJunctionPropertyName"](dto, "left")
-			expect(res).toEqual("id2")
-		})
-	})
-
 	describe("validateDtoWithSchema", () => {
 		let dto: RelationCreateDto
+		let leftCol: CollectionDef
+		let rightCol: CollectionDef
 		beforeEach(() => {
+			leftCol = CollectionDefStub({ pkColumn: "l_id" })
+			rightCol = CollectionDefStub({ pkColumn: "r_id" })
 			dto = new RelationCreateDto({
-				leftColumn: "lid",
-				rightColumn: "lid",
-				leftTable: "ltb",
-				rightTable: "rtb",
+				left: {
+					column: "lid",
+					propertyName: "lpn",
+				},
+				right: {
+					column: "rid",
+					propertyName: "rpn",
+				},
+				leftCollection: leftCol.collectionName,
+				rightCollection: rightCol.collectionName,
 				type: "many-to-many",
-				leftPropertyName: "lpn",
-				rightPropertyName: "rpn",
 			})
 			schemaInfoS.getPrimaryKey = vi.fn().mockResolvedValue({ columnName: "id", dataType: "uuid" })
 			service["getJunctionTableName"] = vi.fn(async () => "jt")
-			service["getJunctionPropertyName"] = vi.fn((dto, side) => {
-				const provided =
-					side === "left" ? dto.junctionLeftPropertyName : dto.junctionRightPropertyName
-				return provided ?? `junction_prop_${side}`
-			})
+			infraState["_collections"] = {
+				[leftCol.collectionName]: leftCol, //
+				[rightCol.collectionName]: rightCol, //
+			}
+			service["getFreeFkName"] = vi.fn(async () => v4())
+			// service["getJunctionTableName"] = vi.fn((dto, side) => {
+			// 	const provided =
+			// 		side === "left" ? dto.junctionLeftPropertyName : dto.junctionRightPropertyName
+			// 	return provided ?? `junction_prop_${side}`
+			// })
 		})
 		//
 
-		it("should throw if table pks are invalid", async () => {
-			asMock(schemaInfoS.getPrimaryKey).mockResolvedValue(false)
-			await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(BadRequestException)
-		})
+		// it("should throw if table pks are invalid", async () => {
+		// 	await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(BadRequestException)
+		// })
 
 		it("should use proper junction table name", async () => {
 			const res = await service["validateDtoWithSchema"](dto)
-			expect(res.junctionTable).toEqual("jt")
+			expect(res.junction.table).toEqual("jt")
 		})
 
 		it("should take pks from scheme", async () => {
 			const res = await service["validateDtoWithSchema"](dto)
-			expect(res.leftColumn).toEqual("id")
-			expect(res.rightColumn).toEqual("id")
-		})
-
-		it("should use provided data", async () => {
+			expect(res.left.column).toEqual(leftCol.pkColumn)
+			expect(res.right.column).toEqual(rightCol.pkColumn)
 			//
-			dto = {
-				...dto,
-				junctionLeftColumn: "q",
-				junctionLeftLabel: "w",
-				junctionLeftPropertyName: "e",
-				junctionLeftTemplate: "r",
-				junctionRightColumn: "t",
-				junctionRightLabel: "y",
-				junctionRightPropertyName: "a",
-				junctionRightTemplate: "s",
-				junctionTable: "jt",
-				leftColumn: "d",
-				leftFkName: "f",
-				leftLabel: "g",
-				leftPropertyName: "h",
-				leftTable: "j",
-				leftTemplate: "k",
-				rightColumn: "l",
-				rightFkName: "z",
-				rightLabel: "x",
-				rightPropertyName: "c",
-				rightTable: "v",
-				rightTemplate: "v",
-				type: "many-to-many",
-			}
-			const res = await service["validateDtoWithSchema"](dto)
-			expect(res).toEqual({
-				junctionLeftColumn: "q",
-				junctionLeftLabel: "w",
-				junctionLeftPropertyName: "e",
-				junctionLeftTemplate: "r",
-				junctionRightColumn: "t",
-				junctionRightLabel: "y",
-				junctionRightPropertyName: "a",
-				junctionRightTemplate: "s",
-				junctionTable: "jt",
-				leftColumn: expect.any(String),
-				leftFkName: "f",
-				leftLabel: "g",
-				leftPkType: "uuid",
-				leftPropertyName: "h",
-				leftTable: "j",
-				leftTemplate: "k",
-				rightColumn: expect.any(String),
-				rightFkName: "z",
-				rightLabel: "x",
-				rightPkType: "uuid",
-				rightPropertyName: "c",
-				rightTable: "v",
-				rightTemplate: "v",
-				type: "many-to-many",
-			})
+			expect(res.left.column).not.toEqual(dto.left.column)
+			expect(res.right.column).not.toEqual(dto.right.column)
 		})
 
 		it("should fill missing data", async () => {
+			dto.fkName = "fk123"
+			dto.junction ??= {}
+			dto.junction.fkName = "fk456"
 			const res = await service["validateDtoWithSchema"](dto)
 			expect(res).toEqual({
-				junctionLeftColumn: "ltb_id",
-				junctionLeftLabel: "Ltb",
-				junctionLeftPropertyName: "junction_prop_left",
-				junctionLeftTemplate: null,
-				junctionRightColumn: "rtb_id",
-				junctionRightLabel: "Rtb",
-				junctionRightPropertyName: "junction_prop_right",
-				junctionRightTemplate: null,
-				junctionTable: "jt",
-				leftColumn: "id",
-				leftFkName: "jt_ltb_id_foreign",
-				leftLabel: "Rtb",
-				leftPkType: "uuid",
-				leftPropertyName: "lpn",
-				leftTable: "ltb",
-				leftTemplate: null,
-				rightColumn: "id",
-				rightFkName: "jt_rtb_id_foreign",
-				rightLabel: "Ltb",
-				rightPkType: "uuid",
-				rightPropertyName: "rpn",
-				rightTable: "rtb",
-				rightTemplate: null,
+				junction: {
+					left: {
+						column: leftCol.tableName + "_id",
+						label: null,
+						propertyName: leftCol.collectionName,
+						template: null,
+					},
+					right: {
+						column: rightCol.tableName + "_id",
+						label: null,
+						propertyName: rightCol.collectionName,
+						template: null,
+					},
+					table: "jt",
+				},
+				left: {
+					collectionName: leftCol.collectionName,
+					column: leftCol.pkColumn,
+					// mock is generating uuid
+					fkName: "fk123",
+					pkType: leftCol.fields[leftCol.pkField]!.dbRawDataType,
+					propertyName: "lpn",
+					table: leftCol.tableName,
+				},
+				right: {
+					collectionName: rightCol.collectionName,
+					column: rightCol.pkColumn,
+					fkName: "fk456",
+					pkType: rightCol.fields[rightCol.pkField]!.dbRawDataType,
+					propertyName: "rpn",
+					table: rightCol.tableName,
+				},
 				type: "many-to-many",
-			})
+			} satisfies JunctionRelationCreateDto2)
 			//
 		})
 	})
 
 	describe("getJunctionTableName", () => {
-		let dto: Pick<RelationCreateDto, "junctionTable" | "leftTable" | "rightTable">
+		let leftCol: CollectionDef
+		let rightCol: CollectionDef
+		let collections: [CollectionDef, CollectionDef]
 		//
 		beforeEach(() => {
-			dto = { leftTable: "l_table", rightTable: "r_table", junctionTable: undefined }
+			leftCol = CollectionDefStub({ tableName: "qwerty" })
+			rightCol = CollectionDefStub({ tableName: "asdf" })
+			collections = [leftCol, rightCol]
 			schemaInfoS.hasTable = vi.fn().mockResolvedValue(false)
 		})
 
 		it("should throw if table is specified and already exist", async () => {
 			asMock(schemaInfoS.hasTable).mockResolvedValue(true)
 			await expect(
-				service["getJunctionTableName"]({ ...dto, junctionTable: "hello" }),
+				service["getJunctionTableName"]({ collections, junctionTable: "hello" }),
 			).rejects.toThrow(BadRequestException)
 		})
 
 		it("should return specified table name if table is free ", async () => {
-			const res = await service["getJunctionTableName"]({ ...dto, junctionTable: "hello" })
+			const res = await service["getJunctionTableName"]({ collections, junctionTable: "hello" })
 			expect(res).toEqual("hello")
 		})
 
-		it("should append uuid after 100 tries with int", async () => {
+		it("should append last part of uuid after 30 tries with int", async () => {
 			schemaInfoS.hasTable = vi.fn().mockResolvedValue(true)
-			const res = await service["getJunctionTableName"](dto)
-			expect(res).toMatch("l_table_r_table_")
-			expect(isUUID(res.replace("l_table_r_table_", ""))).toBe(true)
+			const res = await service["getJunctionTableName"]({ collections })
+			expect(res).toMatch("qwerty_asdf_")
+			expect(res).toHaveLength(12 + "qwerty_asdf_".length)
+			// expect(isUUID(res.replace("l_table_r_table_", ""))).toBe(true)
 		})
 
 		it("should not append anything if table name is free without suffix", async () => {
-			const res = await service["getJunctionTableName"](dto)
-			expect(res).toBe("l_table_r_table")
+			const res = await service["getJunctionTableName"]({ collections })
+			expect(res).toBe("qwerty_asdf")
 		})
 
 		it("should append first free suffix", async () => {
 			schemaInfoS.hasTable = vi.fn().mockResolvedValueOnce(true).mockResolvedValueOnce(true)
 
-			const res = await service["getJunctionTableName"](dto)
-			expect(res).toBe("l_table_r_table_3")
+			const res = await service["getJunctionTableName"]({ collections })
+			expect(res).toBe("qwerty_asdf_3")
 		})
 	})
 
 	describe("modifySchema", () => {
-		let dto: JunctionRelationCreateDto
+		let dto: JunctionRelationCreateDto2
 		beforeEach(() => {
 			dto = {
-				leftTable: "lt",
-				leftColumn: "lc",
-				rightTable: "rt",
-				rightColumn: "rc",
-				junctionTable: "jt",
-				junctionLeftColumn: "jlc",
-				junctionRightColumn: "jrc",
-				leftPkType: "uuid",
-				rightPkType: "int",
-				leftFkName: "l_fk",
-				rightFkName: "r_fk",
-			} as Partial<JunctionRelationCreateDto> as any
+				type: "many-to-many",
+				left: {
+					table: "lt",
+					column: "lc",
+					collectionName: "lcl",
+					fkName: "l_fk",
+					pkType: "uuid",
+					propertyName: "lpn",
+					label: "ll",
+					template: "lt",
+				},
+				right: {
+					table: "rt",
+					column: "rc",
+					collectionName: "rcl",
+					fkName: "r_fk",
+					pkType: "int",
+					propertyName: "rpn",
+					label: "rl",
+					template: "rt",
+				},
+				junction: {
+					left: { column: "jlc", propertyName: "jlp" }, //
+					right: { column: "jrc", propertyName: "rlp" }, //
+					table: "jt",
+				},
+			}
 
 			alterSchema.createColumn = vi.fn()
 			alterSchema.createFk = vi.fn()
@@ -340,7 +308,7 @@ describe("CreateManyToManyRelationsService", () => {
 		})
 		//
 		it("should throw if left table is system", async () => {
-			dto.leftTable = "zmaj_test"
+			dto.left.table = "zmaj_test"
 			await expect(service["saveRelationsToDb"]({ dto, trx: "TRX_1" as any })).rejects.toThrow(
 				InternalServerErrorException,
 			)
@@ -416,7 +384,7 @@ describe("CreateManyToManyRelationsService", () => {
 		})
 
 		it("should not create right relation if system table", async () => {
-			dto.rightTable = "zmaj_test"
+			dto.right.table = "zmaj_test"
 			await service["saveRelationsToDb"]({ dto, trx: "TRX_1" as any })
 			expect(createOne).toBeCalledTimes(1)
 		})

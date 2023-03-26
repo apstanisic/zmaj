@@ -32,12 +32,12 @@ export function AdvancedOptions(): JSX.Element {
 			>
 				<Columns>
 					<ManualInputField
-						source="leftLabel"
+						source="left.label"
 						label="Label"
 						description="Leave empty for default value"
 					/>
 					<ManualInputField
-						source="rightLabel"
+						source="right.label"
 						label="Label (other side)"
 						description="Leave empty for default value"
 					/>
@@ -45,12 +45,12 @@ export function AdvancedOptions(): JSX.Element {
 
 				<Columns>
 					<ManualInputField
-						source="leftTemplate"
+						source="left.template"
 						description="Leave empty for default value"
 						label="Template"
 					/>
 					<ManualInputField
-						source="rightTemplate"
+						source="right.template"
 						description="Leave empty for default value"
 						label="Template (other side)"
 					/>

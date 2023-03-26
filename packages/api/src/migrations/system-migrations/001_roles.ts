@@ -1,6 +1,6 @@
-import { createSystemMigration } from "../create-system-migration"
+import { RoleCollection } from "@zmaj-js/common"
 import { DataTypes } from "sequelize"
-import { Role } from "@zmaj-js/common"
+import { createSystemMigration } from "../create-system-migration"
 import { getRequiredColumns } from "../migrations.utils"
 
 const table = "zmaj_roles"
@@ -20,7 +20,7 @@ export const CreateRolesTable = createSystemMigration({
 		)
 		await qi.addIndex(table, ["created_at"], { transaction: trx })
 
-		await repoManager.getRepo<Role>(table).createMany({
+		await repoManager.getRepo(RoleCollection).createMany({
 			trx: trx as any,
 			data: [
 				{

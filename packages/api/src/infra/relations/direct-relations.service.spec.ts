@@ -6,37 +6,58 @@ import {
 	ForbiddenException,
 	InternalServerErrorException,
 } from "@nestjs/common"
-import { asMock, RelationCreateDto, makeWritable, RelationDef } from "@zmaj-js/common"
-import { RelationMetadataStub, RelationDefStub } from "@zmaj-js/test-utils"
+import {
+	CollectionDef,
+	DirectRelationCreateDto3,
+	RelationCreateDto,
+	RelationDef,
+	asMock,
+	makeWritable,
+} from "@zmaj-js/common"
+import { CollectionDefStub, RelationDefStub, RelationMetadataStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { InfraStateService } from "../infra-state/infra-state.service"
 import { DirectRelationService } from "./direct-relations.service"
-import { DirectRelationCreateDto } from "./expanded-relation-dto.types"
 
 describe("DirectRelationsService", () => {
 	let service: DirectRelationService
 	let schemaInfoService: SchemaInfoService
 	let alterSchemaService: AlterSchemaService
+	let infraState: InfraStateService
 	//
 	beforeEach(async () => {
 		const module = await buildTestModule(DirectRelationService).compile()
 		service = module.get(DirectRelationService)
 		schemaInfoService = module.get(SchemaInfoService)
 		alterSchemaService = module.get(AlterSchemaService)
+		infraState = module.get(InfraStateService)
 	})
 
 	describe("validateDtoWithSchema", () => {
 		let dto: RelationCreateDto
+
+		let leftCol: CollectionDef
+		let rightCol: CollectionDef
 		beforeEach(() => {
-			dto = RelationCreateDto.fromPartial({
-				leftTable: "lt",
-				rightTable: "rt",
-				leftColumn: "lc",
-				rightColumn: "rc",
-				leftPropertyName: "lpn",
-				rightPropertyName: "rpn",
+			leftCol = CollectionDefStub()
+			rightCol = CollectionDefStub()
+
+			dto = new RelationCreateDto({
+				leftCollection: leftCol.collectionName,
+				rightCollection: rightCol.collectionName,
+				left: { column: "lc", propertyName: "lpn" },
+				right: { column: "rc", propertyName: "rpn" },
 				type: "many-to-one",
+				fkName: "hello",
 			})
-			schemaInfoService.hasTable = vi.fn().mockResolvedValue(true)
+
+			infraState.getCollection = vi.fn((col: string) =>
+				leftCol.collectionName === col
+					? leftCol
+					: rightCol.collectionName === col
+					? rightCol
+					: undefined,
+			)
 
 			schemaInfoService.getPrimaryKey = vi
 				.fn()
@@ -45,31 +66,36 @@ describe("DirectRelationsService", () => {
 			schemaInfoService.hasColumn = vi.fn().mockResolvedValue(false)
 		})
 
-		it("should throw if tables don't exist", async () => {
-			asMock(schemaInfoService.hasTable).mockResolvedValueOnce(false)
+		it("should throw if collection don't exist", async () => {
+			asMock(infraState.getCollection).mockReturnValue(undefined)
 			await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(BadRequestException)
 		})
 
 		it("should reorder dto if it's o2m", async () => {
 			dto.type = "one-to-many"
-			service["reverseOneToManyDto"] = vi.fn((dto) => ({
+			dto.right.column = "reversed_side_123"
+			service["reverseIfOtm"] = vi.fn((dto) => ({
 				...dto,
 				type: "many-to-one",
-				leftColumn: "reversed_side_123",
+				left: dto.right,
+				right: dto.left,
 			}))
 			const res = await service["validateDtoWithSchema"](dto)
-			expect(res.leftColumn).toEqual("reversed_side_123")
+			expect(res.left.column).toEqual("reversed_side_123")
 		})
 
 		it("should throw if fk table is system table", async () => {
-			dto.leftTable = "zmaj_test"
+			// dto.leftCollection = "zmajTest"
+			vi.mocked(infraState.getCollection).mockReturnValue(
+				CollectionDefStub({ tableName: "zmaj_users" }),
+			)
 			await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(ForbiddenException)
 		})
 
-		it("should throw if pk side does not have pk", async () => {
-			asMock(schemaInfoService.getPrimaryKey).mockResolvedValue(undefined)
-			await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(ForbiddenException)
-		})
+		// it("should throw if pk side does not have pk", async () => {
+		// 	asMock(schemaInfoService.getPrimaryKey).mockResolvedValue(undefined)
+		// 	await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(ForbiddenException)
+		// })
 
 		it("should throw if fk column already exist", async () => {
 			asMock(schemaInfoService.hasColumn).mockResolvedValue(true)
@@ -83,98 +109,117 @@ describe("DirectRelationsService", () => {
 			)
 		})
 		it("should use pk info as right column, not provided value", async () => {
-			dto.rightColumn = "test"
-			const res = await service["validateDtoWithSchema"]({ ...dto, rightColumn: "id5" })
-			expect(res.rightColumn).toEqual("id")
+			dto.right.column = "test"
+			const res = await service["validateDtoWithSchema"]({
+				...dto,
+				right: { ...dto.right, column: "id5" },
+			})
+			expect(res.right.column).toEqual(rightCol.pkColumn)
 		})
 
 		it("should expand relation", async () => {
 			const res = await service["validateDtoWithSchema"](
 				new RelationCreateDto({
-					leftColumn: "post_id_1",
-					leftFkName: "comments_post_id_foreign_1",
-					leftLabel: "Posts_1",
-					leftPropertyName: "posts_1",
-					leftTable: "comments_1",
-					leftTemplate: "l_tmp",
+					leftCollection: leftCol.collectionName,
+					rightCollection: rightCol.collectionName,
+					fkName: "comments_post_id_foreign_1",
 					onDelete: "CASCADE",
-					rightColumn: "id_1",
-					rightLabel: "Comments_1",
-					rightPropertyName: "comments_1",
-					rightTable: "posts_1",
-					rightTemplate: "r_tmp",
+					left: {
+						column: "post_id_1",
+						label: "Posts_1",
+						propertyName: "posts_1",
+						template: "l_tmp",
+					},
+					right: {
+						column: "id_1",
+						label: "Comments_1",
+						propertyName: "comments_1",
+						template: "r_tmp",
+					},
 					type: "many-to-one",
 				}),
 			)
 
 			expect(res).toEqual({
-				leftColumn: "post_id_1",
-				leftFkName: "comments_post_id_foreign_1",
-				leftLabel: "Posts_1",
-				leftPropertyName: "posts_1",
-				leftTable: "comments_1",
-				leftTemplate: "l_tmp",
+				leftCollection: leftCol.collectionName,
+				rightCollection: rightCol.collectionName,
+				fkName: "comments_post_id_foreign_1",
 				onDelete: "CASCADE",
-				rightColumn: "id",
-				rightLabel: "Comments_1",
-				rightPropertyName: "comments_1",
-				rightTable: "posts_1",
+				left: {
+					column: "post_id_1",
+					label: "Posts_1",
+					propertyName: "posts_1",
+					table: leftCol.tableName,
+					template: "l_tmp",
+				},
+				right: {
+					column: rightCol.pkColumn,
+					label: "Comments_1",
+					propertyName: "comments_1",
+					template: "r_tmp",
+					table: rightCol.tableName,
+				},
+				pkType: rightCol.fields[rightCol.pkField]!.dbRawDataType,
 				type: "many-to-one",
-				rightTemplate: "r_tmp",
-				rightPkType: "uuid",
-			})
+			} satisfies DirectRelationCreateDto3)
 		})
 	})
 
-	describe("reverseOneToManyDto", () => {
-		it("should throw if relation is not o2m", () => {
-			expect(() => service["reverseOneToManyDto"]({ type: "many-to-one" } as any)).toThrow(
-				InternalServerErrorException,
-			)
+	describe("reverseIfOtm", () => {
+		it("should do nothing if m2o", () => {
+			const res = service["reverseIfOtm"]({ type: "many-to-one" } as any)
+			expect(res).toEqual({ type: "many-to-one" })
 		})
 
 		it("should reverse o2m to m2o", () => {
-			const res = service["reverseOneToManyDto"](
+			const res = service["reverseIfOtm"](
 				RelationCreateDto.fromPartial({
-					leftColumn: "id",
-					leftTable: "posts",
-					leftLabel: "Comments",
-					leftPropertyName: "comments",
-					leftTemplate: "{comment_prop}",
+					leftCollection: "posts",
+					left: {
+						column: "id",
+						label: "Comments",
+						propertyName: "comments",
+						template: "{comment_prop}",
+					},
 
-					rightColumn: "post_id",
-					rightTable: "comments",
-					rightLabel: "Posts",
-					rightPropertyName: "posts",
-					rightTemplate: "{post_title}",
+					rightCollection: "comments",
+					right: {
+						column: "post_id",
+						label: "Posts",
+						propertyName: "posts",
+						template: "{post_title}",
+					},
 					onDelete: "CASCADE",
-
 					type: "one-to-many",
-					leftFkName: "l_fk_name",
+					fkName: "l_fk_name",
 				}),
 			)
 			expect(res).toEqual({
-				rightColumn: "id",
-				rightTable: "posts",
-				rightLabel: "Comments",
-				rightPropertyName: "comments",
-				rightTemplate: "{comment_prop}",
+				rightCollection: "posts",
+				right: {
+					column: "id",
+					label: "Comments",
+					propertyName: "comments",
+					template: "{comment_prop}",
+				},
 
-				leftColumn: "post_id",
-				leftTable: "comments",
-				leftLabel: "Posts",
-				leftPropertyName: "posts",
-				leftTemplate: "{post_title}",
+				leftCollection: "comments",
+				left: {
+					column: "post_id",
+					label: "Posts",
+					propertyName: "posts",
+					template: "{post_title}",
+				},
 				onDelete: "CASCADE",
 
 				type: "many-to-one",
-				leftFkName: "l_fk_name",
+				fkName: "l_fk_name",
 			})
 		})
 	})
 
 	describe("createRelation", () => {
-		let expandedDto: DirectRelationCreateDto
+		let expandedDto: DirectRelationCreateDto3
 		let dto: RelationCreateDto
 		const createOne = vi.fn().mockResolvedValue("saved")
 		const createOneField = vi.fn().mockResolvedValue("saved_field")
@@ -182,19 +227,25 @@ describe("DirectRelationsService", () => {
 		beforeEach(() => {
 			expandedDto = {
 				type: "many-to-one",
-				leftTable: "posts",
-				rightTable: "comments",
-				leftColumn: "comment_id",
-				rightColumn: "id",
-				leftFkName: "left_fk_name",
-				leftLabel: "ll",
-				leftPropertyName: "lp",
-				leftTemplate: "lt",
+				leftCollection: "posts",
+				rightCollection: "comments",
+				fkName: "my_fk_name",
+				left: {
+					column: "comment_id",
+					label: "ll",
+					propertyName: "lp",
+					template: "lt",
+					table: "posts",
+				},
+				right: {
+					column: "id",
+					label: "rl",
+					propertyName: "rp",
+					template: "rt",
+					table: "comments",
+				},
+				pkType: "uuid",
 				onDelete: "CASCADE",
-				rightLabel: "rl",
-				rightPkType: "uuid",
-				rightPropertyName: "rp",
-				rightTemplate: "rt",
 			}
 
 			dto = new RelationCreateDto(expandedDto)
@@ -233,7 +284,7 @@ describe("DirectRelationsService", () => {
 				onDelete: "CASCADE",
 				referencedColumn: "id",
 				referencedTable: "comments",
-				indexName: "posts_comment_id_foreign",
+				indexName: "my_fk_name",
 				trx: "TEST_TRX",
 			})
 		})
@@ -243,7 +294,7 @@ describe("DirectRelationsService", () => {
 			expect(createOne).nthCalledWith(1, {
 				trx: "TEST_TRX",
 				data: expect.objectContaining({
-					fkName: "posts_comment_id_foreign",
+					fkName: "my_fk_name",
 					label: "ll",
 					propertyName: "lp",
 					tableName: "posts",
@@ -258,7 +309,7 @@ describe("DirectRelationsService", () => {
 			expect(createOne).nthCalledWith(2, {
 				trx: "TEST_TRX",
 				data: expect.objectContaining({
-					fkName: "posts_comment_id_foreign",
+					fkName: "my_fk_name",
 					label: "rl",
 					propertyName: "rp",
 					tableName: "comments",
@@ -270,7 +321,7 @@ describe("DirectRelationsService", () => {
 		it("should not create other side if system relation", async () => {
 			service["validateDtoWithSchema"] = vi.fn(async () => ({
 				...expandedDto,
-				rightTable: "zmaj_test",
+				right: { ...expandedDto.right, table: "zmaj_test" },
 			}))
 			await service.createRelation(dto)
 			expect(createOne).toBeCalledTimes(1)

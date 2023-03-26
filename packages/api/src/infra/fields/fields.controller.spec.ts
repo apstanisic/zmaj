@@ -28,10 +28,9 @@ describe("FieldsController", () => {
 
 		beforeEach(() => {
 			dto = new FieldCreateDto({
-				// collectionId: v4(),
 				columnName: randDatabaseColumn(),
 				dataType: "short-text",
-				tableName: "posts",
+				collectionName: "posts",
 			})
 		})
 

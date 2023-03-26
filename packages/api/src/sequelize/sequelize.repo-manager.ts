@@ -26,19 +26,19 @@ export class SequelizeRepoManager extends RepoManager {
 	}
 
 	getRepo<T extends Struct<any> = Struct<unknown>>(
-		tableOrCol: string | CollectionDef<T>,
+		col: string | CollectionDef<T>,
 	): OrmRepository<T> {
-		const tableName = isString(tableOrCol) ? tableOrCol : tableOrCol.tableName
-		const collectionName = camel(tableName)
+		const collection = isString(col) ? col : col.collectionName
+		// const collectionName = camel(collection)
 
-		const exist = this.sq.models[tableName]
+		const exist = this.sq.models[collection]
 
 		if (!exist) throw500(73924)
 
-		const repo = this.repositories[collectionName]
+		const repo = this.repositories[collection]
 		if (repo) return repo as OrmRepository<T>
-		const created = new SequelizeRepository<T>(this.sq, tableName)
-		this.repositories[collectionName] = created as OrmRepository<any>
+		const created = new SequelizeRepository<T>(this.sq, collection)
+		this.repositories[collection] = created as OrmRepository<any>
 		return created as OrmRepository<T>
 	}
 

@@ -1,18 +1,18 @@
 import { throw400 } from "@api/common/throw-http"
 import {
 	CompositeUnique,
-	SchemaInfoService,
-	SingleUniqueKey,
-	UniqueKey,
 	RequiredTableAndColumnParams,
 	SchemaInfoBasicParams,
+	SchemaInfoService,
+	SingleUniqueKey,
 	TableAndColumnParams,
 	TableOnlyParams,
+	UniqueKey,
 } from "@api/database/schema/schema-info.service"
 import { Injectable } from "@nestjs/common"
 import { CompositeUniqueKey, DbColumn, ForeignKey, notNil } from "@zmaj-js/common"
-import { SetRequired } from "type-fest"
 import { SequelizeService } from "./sequelize.service"
+import { trim } from "radash"
 
 type PgColumn = {
 	schemaName: string
@@ -167,11 +167,11 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
 
 		return result.map((v) => ({
 			autoIncrement: v.autoIncrement,
-			columnName: v.columnName,
+			columnName: v.columnName, //maybe trim(v, '"') since pg treats differently upper case
 			dataType: v.dataType,
 			defaultValue: v.defaultValue,
 			nullable: v.nullable,
-			tableName: v.tableName,
+			tableName: v.tableName, //maybe trim(v, '"') since pg treats differently upper case
 			primaryKey: v.primaryKey,
 			schemaName: v.schemaName,
 			unique: v.unique,

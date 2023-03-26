@@ -12,45 +12,52 @@ import { RightColumnInput } from "./RightColumnInput"
 import { RightPropertyInput } from "./RightPropertyInput"
 
 type RelationFormProps = {
-	tables: string[]
+	collections: string[]
 }
 
-export const RelationCreateForm = ({ tables }: RelationFormProps): JSX.Element => {
+export const RelationCreateForm = ({ collections }: RelationFormProps): JSX.Element => {
 	const type = useWatch<RelationCreateDto, "type">({ name: "type" })
-	const leftTable = useWatch<RelationCreateDto, "leftTable">({ name: "leftTable" })
-	const rightTable = useWatch<RelationCreateDto, "rightTable">({ name: "rightTable" })
-	const leftCollection = useGetCollection(leftTable) ?? throwInApp("49327")
-	const rightCollection = useGetCollection(rightTable) ?? throwInApp("907213")
+	const leftCollectionName = useWatch<RelationCreateDto, "leftCollection">({
+		name: "leftCollection",
+	})
+	const rightCollectionName = useWatch<RelationCreateDto, "rightCollection">({
+		name: "rightCollection",
+	})
+	const leftCollection = useGetCollection(leftCollectionName) ?? throwInApp("49327")
+	const rightCollection = useGetCollection(rightCollectionName) ?? throwInApp("907213")
 
 	const { setValue } = useFormContext<RelationCreateDto>()
 
 	const leftTableChoices = useMemo(
-		() => tables.filter((t) => !t.startsWith("zmaj")).map((value) => ({ value })),
-		[tables],
+		() => collections.filter((t) => !t.startsWith("zmaj")).map((value) => ({ value })),
+		[collections],
 	)
 
 	const rightTableChoices = useMemo(() => {
 		return type === "one-to-many" || type === "ref-one-to-one"
-			? tables.filter((t) => !t.startsWith("zmaj")).map((value) => ({ value }))
-			: tables.map((value) => ({ value }))
-	}, [tables, type])
+			? collections.filter((t) => !t.startsWith("zmaj")).map((value) => ({ value }))
+			: collections.map((value) => ({ value }))
+	}, [collections, type])
 
 	useEffect(() => {
-		setValue("leftLabel", "")
-		setValue("rightLabel", "")
-		setValue("leftTemplate", "")
-		setValue("rightTemplate", "")
-		setValue("leftFkName", "")
-		setValue("rightFkName", "")
+		setValue("left.label", "")
+		setValue("right.label", "")
+		setValue("left.template", "")
+		setValue("right.template", "")
+		setValue("fkName", "")
+		setValue("junction.fkName", "")
 		setValue("onDelete", "SET NULL")
-		setValue("junctionLeftColumn", "")
-		setValue("junctionRightColumn", "")
-		setValue("junctionTable", "")
+		setValue("junction.left.column", "")
+		setValue("junction.right.column", "")
+		setValue("junction.tableName", "")
 
-		if (rightTable.startsWith("zmaj") && (type === "one-to-many" || type === "ref-one-to-one")) {
-			setValue("rightTable", rightTableChoices[0]?.value ?? "_")
+		if (
+			rightCollectionName.startsWith("zmaj") &&
+			(type === "one-to-many" || type === "ref-one-to-one")
+		) {
+			setValue("rightCollection", rightTableChoices[0]?.value ?? "_")
 		}
-	}, [type, leftTable, rightTableChoices, setValue, rightTable])
+	}, [type, leftCollectionName, rightTableChoices, setValue, rightCollectionName])
 
 	return (
 		<div className="crud-content">
@@ -80,16 +87,16 @@ export const RelationCreateForm = ({ tables }: RelationFormProps): JSX.Element =
 			<div className="flex gap-x-3">
 				<ManualInputField
 					isRequired
-					source="leftTable"
-					label="Table"
+					source="leftCollection"
+					label="Collection"
 					disabled
 					Component={DropdownInputField}
 					fieldConfig={{ component: { dropdown: { choices: leftTableChoices } } }}
 				/>
 				<ManualInputField
 					isRequired
-					source="rightTable"
-					label="Table (other side)"
+					source="rightCollection"
+					label="Collection (other side)"
 					disabled={rightTableChoices.length === 0}
 					defaultValue={rightTableChoices[0]}
 					Component={DropdownInputField}
@@ -99,7 +106,7 @@ export const RelationCreateForm = ({ tables }: RelationFormProps): JSX.Element =
 
 			<div className="flex gap-x-3">
 				<LeftPropertyInput />
-				<RightPropertyInput type={type} leftTable={leftTable} />
+				<RightPropertyInput type={type} leftCollection={leftCollectionName} />
 			</div>
 			<div className="flex gap-x-3">
 				<LeftColumnInput leftCollection={leftCollection} />

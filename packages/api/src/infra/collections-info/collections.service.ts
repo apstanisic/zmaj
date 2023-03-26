@@ -50,7 +50,12 @@ export class CollectionsService {
 						}),
 					})
 
-					await this.alterSchema.createTable(dto, { trx })
+					await this.alterSchema.createTable({
+						pkColumn: dto.pkColumn,
+						pkType: dto.pkType,
+						tableName: dto.tableName,
+						trx,
+					})
 
 					return created
 				},
@@ -74,7 +79,7 @@ export class CollectionsService {
 			return this.repoManager.transaction({
 				fn: async (trx) => {
 					const deleted = await this.repo.deleteById({ trx, id: collectionId })
-					await this.alterSchema.dropTable({ tableName: deleted.tableName }, { trx })
+					await this.alterSchema.dropTable({ tableName: deleted.tableName, trx })
 					return deleted
 				},
 			})

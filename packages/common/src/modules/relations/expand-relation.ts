@@ -3,7 +3,7 @@ import { camel, pick } from "radash"
 import { CompositeUniqueKey } from "../database/composite-unique-key.type"
 import { ForeignKey } from "../database/foreign-key.type"
 import { CollectionDef } from "../infra-collections/collection-def.type"
-import { CollectionMetadata } from "../infra-collections/infra-collection.model"
+import { CollectionMetadata } from "../infra-collections/collection-metadata.model"
 import { RelationDef } from "./relation-def.type"
 import { RelationMetadata } from "./relation-metadata.model"
 
@@ -87,8 +87,6 @@ export function expandRelation(
 		onError(95623988)
 
 	const rightCollection = collections.find((col) => col.tableName === otherFk.referencedTable)
-
-	// if (!rightCollection) throw new InternalServerErrorException("905712")
 
 	const rightRelation = allRelations.find(
 		// (r) => r.fkName === otherFk.fkName && r.collectionId === rightCollection?.id,

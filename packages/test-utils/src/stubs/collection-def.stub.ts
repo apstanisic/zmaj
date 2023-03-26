@@ -36,6 +36,7 @@ export const CollectionDefStub = Stub<CollectionDef>(() => {
 	// 	...fullRelations.map((r) => [r.propertyName, r]),
 	// 	...fullFields.map((r) => [r.fieldName, r]),
 	// ])
+	const pkField = fields[0]!
 
 	return {
 		...base,
@@ -46,8 +47,8 @@ export const CollectionDefStub = Stub<CollectionDef>(() => {
 		relations: Object.fromEntries(relations.map((r) => [r.propertyName, r])),
 		fields: Object.fromEntries(fields.map((r) => [r.fieldName, r])),
 		isJunctionTable: false, //random(1, 10) > 9,
-		pkColumn: "id",
-		pkField: "id",
+		pkColumn: pkField.columnName,
+		pkField: pkField.fieldName,
 		pkType: randBoolean() ? "auto-increment" : "uuid",
 		collectionName: camel(base.tableName),
 		authzKey: `collections.${camel(base.tableName)}`,

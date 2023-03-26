@@ -81,13 +81,13 @@ export class BuildTestDbService {
 
 		// posts_info
 		const postIdsForPostInfo = shuffle(postIds)
-		const postsInfo = await this.repoManager.getRepo<TPostInfo>("posts_info").createMany({
+		const postsInfo = await this.repoManager.getRepo<TPostInfo>("postsInfo").createMany({
 			data: times(25, () => TPostInfoStub({ postId: postIdsForPostInfo.shift() })),
 		})
 
 		// posts_tags
 		// for every post, create between 0 and 8 (inclusive) tag connections
-		const postsTags = await this.repoManager.getRepo<TPostTag>("posts_tags").createMany({
+		const postsTags = await this.repoManager.getRepo<TPostTag>("postsTags").createMany({
 			data: postIds
 				.map((postId) => {
 					const tIds = shuffle(tagIds)
@@ -101,8 +101,8 @@ export class BuildTestDbService {
 		await this.repoManager.getRepo<TPost>("posts").createMany({ data: mockData.posts as any })
 		await this.repoManager.getRepo<TTag>("tags").createMany({ data: mockData.tags })
 		await this.repoManager.getRepo<TComment>("comments").createMany({ data: mockData.comments })
-		await this.repoManager.getRepo<TPostInfo>("posts_info").createMany({ data: mockData.postInfo })
-		await this.repoManager.getRepo<TPostTag>("posts_tags").createMany({ data: mockData.postsTags })
+		await this.repoManager.getRepo<TPostInfo>("postsInfo").createMany({ data: mockData.postInfo })
+		await this.repoManager.getRepo<TPostTag>("postsTags").createMany({ data: mockData.postsTags })
 	}
 
 	async dropSystemTables(trx?: Trx): Promise<void> {
@@ -291,9 +291,9 @@ export class BuildTestDbService {
 		const productRepo = this.repoManager.getRepo("products")
 		const reviewRepo = this.repoManager.getRepo("reviews")
 		const orderRepo = this.repoManager.getRepo("orders")
-		const orderProductRepo = this.repoManager.getRepo("order_products")
+		const orderProductRepo = this.repoManager.getRepo("orderProducts")
 		const categoryRepo = this.repoManager.getRepo("categories")
-		const productTagRepo = this.repoManager.getRepo("products_tags")
+		const productTagRepo = this.repoManager.getRepo("productsTags")
 
 		await this.repoManager.transaction({
 			fn: async (trx) => {
@@ -334,7 +334,7 @@ export class BuildTestDbService {
 		const tagRepo = this.repoManager.getRepo("tags")
 		const postsRepo = this.repoManager.getRepo("posts")
 		const commentsRepo = this.repoManager.getRepo("comments")
-		const postsTagsRepo = this.repoManager.getRepo("posts_tags")
+		const postsTagsRepo = this.repoManager.getRepo("postsTags")
 
 		const data = createBlogDemo()
 

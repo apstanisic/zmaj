@@ -2,7 +2,7 @@ import { throw500 } from "@api/common/throw-http"
 import { AuthorizationService, InfraStateService } from "@api/index"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException, ForbiddenException } from "@nestjs/common"
-import { ReadUrlQueryStub } from "@zmaj-js/test-utils"
+import { ReadUrlQueryStub, mockCollectionDefs } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ReadBeforeEvent, ReadStartEvent } from "./crud-event.types"
 import { CrudReadJoinService } from "./crud-read-join.service"
@@ -49,7 +49,7 @@ describe("CrudReadJoinService", () => {
 	describe("getOnlyEntitiesThatUserCanUpdate", () => {
 		let event: ReadStartEvent
 		beforeEach(() => {
-			event = ReadStartEventStub()
+			event = ReadStartEventStub({ collection: mockCollectionDefs.posts })
 			event.options.otmFkField = "post_id"
 			event.options.otmShowForbidden = false
 			event.filter = { type: "id", id: 5 }

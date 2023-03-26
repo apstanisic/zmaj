@@ -7,8 +7,9 @@ import {
 	snakeCase,
 	times,
 	UUID,
+	CollectionDef,
 } from "@zmaj-js/common"
-import { RelationDefStub } from "@zmaj-js/test-utils"
+import { CollectionDefStub, RelationDefStub } from "@zmaj-js/test-utils"
 import { WritableDeep } from "type-fest"
 import { v4 } from "uuid"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -38,55 +39,49 @@ describe("RelationsService", () => {
 	/**
 	 *
 	 */
-	describe("getPropertyName", () => {
+	describe("ensureFreeProperty", () => {
 		let dto: RelationCreateDto
+		let col: CollectionDef
 
 		beforeEach(() => {
+			col = CollectionDefStub({ collectionName: "comments" })
 			dto = new RelationCreateDto({
-				leftColumn: "post_id6",
-				leftTable: "comments",
-				rightTable: "posts",
-				rightColumn: "id",
+				leftCollection: "comments",
+				rightCollection: "posts",
+				left: {
+					column: "post_id6",
+					propertyName: "postProp",
+				},
+				right: {
+					column: "id",
+					propertyName: "commentsProp",
+				},
 				type: "many-to-one",
-				leftPropertyName: "postProp",
-				rightPropertyName: "commentsProp",
 			})
 		})
-
-		it("should throw if collection does not exist", () => {
-			dto.leftTable = "non_exist"
-			expect(() => service["getPropertyName"](dto, "left")).toThrow(BadRequestException)
+		it("should do nothing if free", () => {
+			infraState.getCollection = vi.fn(() => col)
+			expect(() =>
+				service["ensureFreeProperty"](dto.rightCollection, dto.right.propertyName),
+			).not.toThrow()
 		})
 
-		it("should throw if name is provided and taken", () => {
-			dto.leftPropertyName = "body"
-			expect(() => service["getPropertyName"](dto, "left")).toThrow(BadRequestException)
+		it("should throw if left property name is taken", () => {
+			col.collectionName = "posts"
+			col.relations["commentsProp"] = RelationDefStub()
+			infraState.getCollection = vi.fn(() => col)
+			expect(() =>
+				service["ensureFreeProperty"](dto.rightCollection, dto.right.propertyName),
+			).toThrow(BadRequestException)
 		})
 
-		it("should return name if free", () => {
-			dto.leftPropertyName = "freeProp"
-			const res = service["getPropertyName"](dto, "left")
-			expect(res).toEqual("freeProp")
+		it("should throw if right property name is taken", () => {
+			col.relations["postProp"] = RelationDefStub()
+			infraState.getCollection = vi.fn(() => col)
+			expect(() =>
+				service["ensureFreeProperty"](dto.leftCollection, dto.left.propertyName),
+			).toThrow(BadRequestException)
 		})
-
-		// it("should return first free name without number", () => {
-		// 	const res = service["getPropertyName"](dto, "left")
-		// 	expect(res).toEqual("postsProp")
-		// })
-
-		// it("should return first free name", () => {
-		// 	infraState.collections.comments!.properties["posts"] = {} as any
-		// 	const res = service["getPropertyName"](dto, "left")
-		// 	expect(res).toEqual("posts2")
-		// })
-
-		// it("should throw if 50 names are invalid", () => {
-		// 	infraState.collections.comments!.properties["posts"] = {} as any
-		// 	for (let i = 0; i < 50; i++) {
-		// 		infraState.collections.comments!.properties["posts" + i] = {} as any
-		// 	}
-		// 	expect(() => service["getPropertyName"](dto, "left")).toThrow(BadRequestException)
-		// })
 	})
 
 	/**
@@ -97,32 +92,16 @@ describe("RelationsService", () => {
 
 		beforeEach(() => {
 			dto = new RelationCreateDto({
-				leftColumn: "lc",
-				leftTable: "lt",
-				rightTable: "rt",
-				rightColumn: "rc",
+				leftCollection: "lt",
+				rightCollection: "rt",
+				left: { column: "lc", propertyName: "lpn" },
+				right: { column: "rc", propertyName: "rpn" },
 				type: "many-to-one",
-				leftPropertyName: "lpn",
-				rightPropertyName: "rpn",
 			})
 			service["directRelationsService"].createRelation = vi.fn().mockResolvedValue({ id: 5 })
 			service["mtmService"].createRelation = vi.fn().mockResolvedValue({ id: 3 })
 			service["getRelationFromState"] = vi.fn((id) => ({ full: true, id }) as any)
-			service["getPropertyName"] = vi.fn((_, side) => `property_${side}`)
-		})
-
-		it("should modify dto to set proper property names", async () => {
-			await service.createRelation(dto)
-
-			expect(dto.leftPropertyName).toEqual("property_left")
-			expect(dto.rightPropertyName).toEqual("property_right")
-
-			expect(service["directRelationsService"].createRelation).toBeCalledWith(
-				expect.objectContaining({
-					leftPropertyName: "property_left",
-					rightPropertyName: "property_right",
-				}),
-			)
+			service["ensureFreeProperty"] = vi.fn(() => undefined)
 		})
 
 		it("should call direct service if dto is not m2m", async () => {

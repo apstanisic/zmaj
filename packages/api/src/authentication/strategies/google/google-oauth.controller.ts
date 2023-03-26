@@ -16,6 +16,7 @@ import {
 import { AuthUser, endpoints } from "@zmaj-js/common"
 import type { Response } from "express"
 import { GoogleOAuthGuard } from "./google-oauth.guard"
+import { throw500 } from "@api/common/throw-http"
 
 const ep = endpoints.auth.oauth.google
 
@@ -33,7 +34,7 @@ export class GoogleOAuthController {
 	@Get(ep.signIn)
 	@UseGuards(GoogleOAuthGuard)
 	async login(): Promise<void> {
-		throw new InternalServerErrorException(12381)
+		throw500(12381)
 	}
 
 	@Redirect()

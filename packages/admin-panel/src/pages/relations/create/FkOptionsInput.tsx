@@ -7,7 +7,7 @@ export function FkOptionsInput(props: Pick<RelationCreateDto, "type">): JSX.Elem
 	return (
 		<>
 			<ManualInputField
-				source="leftFkName"
+				source="fkName"
 				label="Foreign Key Name"
 				description="Leave empty for default value"
 				fieldConfig={shortTextDbColumnValidation}
@@ -36,7 +36,7 @@ export function FkOptionsInput(props: Pick<RelationCreateDto, "type">): JSX.Elem
 				/>
 			) : (
 				<ManualInputField
-					source="rightFkName"
+					source="junction.fkName"
 					label="Second Foreign Key Name"
 					description="Leave empty for default value"
 					fieldConfig={shortTextDbColumnValidation}

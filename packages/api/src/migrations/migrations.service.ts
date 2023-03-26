@@ -16,6 +16,7 @@ import { MigrationsConfig } from "./migrations.config"
 import { MigrationsUmzugStorage } from "./migrations.umzug-storage"
 import { systemMigrations } from "./system-migrations/mod"
 import { CreateMigrationsTable } from "./system-migrations/000_migrations"
+import { throw500 } from "@api/common/throw-http"
 
 /**
  */
@@ -87,7 +88,7 @@ export class MigrationsService {
 			.catch((e: MigrationError) => {
 				this.logger.error("Problem running migrations")
 				this.logger.error(e.message)
-				throw e.cause ?? new InternalServerErrorException(4292102)
+				throw e.cause ?? throw500(4292102)
 			})
 	}
 

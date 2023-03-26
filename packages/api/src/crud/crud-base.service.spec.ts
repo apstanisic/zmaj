@@ -353,7 +353,7 @@ describe("CrudBaseService", () => {
 
 		//
 		beforeEach(() => {
-			event = UpdateBeforeEventStub()
+			event = UpdateBeforeEventStub({ collection: mockCollectionDefs.posts })
 		})
 
 		it("should throw if we filter by id, but id is not present", () => {

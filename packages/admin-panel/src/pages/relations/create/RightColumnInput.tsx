@@ -1,4 +1,4 @@
-import { CollectionDef, RelationCreateDto } from "@zmaj-js/common"
+import { CollectionDef, RelationCreateDto, snakeCase } from "@zmaj-js/common"
 import { singular } from "pluralize"
 import { camel } from "radash"
 import { useCallback, useEffect } from "react"
@@ -19,26 +19,28 @@ export function RightColumnInput({
 }): JSX.Element {
 	const { setValue } = useFormContext<RelationCreateDto>()
 	const type = useWatch<RelationCreateDto, "type">({ name: "type" })
-	const leftTable: string = useWatch<RelationCreateDto, "leftTable">({ name: "leftTable" })
+	const leftCollection: string = useWatch<RelationCreateDto, "leftCollection">({
+		name: "leftCollection",
+	})
 
 	const getDefaultValue = useCallback(() => {
 		// if o2m or m2m, pk must be used
 		if (type === "many-to-one" || type === "many-to-many" || type === "owner-one-to-one") {
 			return rightCollection.pkField
 		} else {
-			const defaultName = singular(leftTable + "_id")
-			const free = rightCollection.fields[camel(defaultName)] === undefined
-			return free ? defaultName : getFreeFkColumn(rightCollection, leftTable)
+			const defaultName = snakeCase(singular(leftCollection) + "Id")
+			const free = !Object.values(rightCollection.fields).some((f) => f.columnName === defaultName)
+			return free ? defaultName : getFreeFkColumn(rightCollection, leftCollection)
 		}
-	}, [leftTable, rightCollection, type])
+	}, [leftCollection, rightCollection, type])
 
 	useEffect(() => {
-		setValue("rightColumn", getDefaultValue())
-	}, [getDefaultValue, leftTable, rightCollection, setValue, type])
+		setValue("right.column", getDefaultValue())
+	}, [getDefaultValue, rightCollection, setValue, type])
 
 	return (
 		<ManualInputField
-			source="rightColumn"
+			source="right.column"
 			disabled={type !== "one-to-many" && type !== "ref-one-to-one"}
 			defaultValue={getDefaultValue()}
 			label="Database Column (other side)"

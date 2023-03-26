@@ -89,10 +89,11 @@ describe("FieldsService", () => {
 
 		it("should remove column from db schema", async () => {
 			await service.deleteField(id)
-			expect(alterSchema.dropColumn).toBeCalledWith(
-				{ columnName: "col", tableName: "tab" },
-				{ trx: "TEST_TRX" },
-			)
+			expect(alterSchema.dropColumn).toBeCalledWith({
+				columnName: "col",
+				tableName: "tab",
+				trx: "TEST_TRX",
+			})
 		})
 
 		it("should migration and sync schema after creating", async () => {
@@ -110,7 +111,7 @@ describe("FieldsService", () => {
 
 			dto = new FieldCreateDto({
 				// collectionId: v4(),
-				tableName: "posts",
+				collectionName: "posts",
 				columnName: "col1",
 				dataType: "boolean",
 				dbDefaultValue: null,
@@ -133,8 +134,10 @@ describe("FieldsService", () => {
 			dto.dbDefaultValue = "hello_world"
 			await service.createField(dto)
 			expect(alterSchema.createColumn).toBeCalledWith(
-				expect.objectContaining({ defaultValue: { type: "normal", value: "hello_world" } }),
-				{ trx: "TEST_TRX" },
+				expect.objectContaining({
+					defaultValue: { type: "normal", value: "hello_world" },
+					trx: "TEST_TRX",
+				}),
 			)
 		})
 
@@ -142,8 +145,7 @@ describe("FieldsService", () => {
 			dto.dbDefaultValue = "$:NOW()"
 			await service.createField(dto)
 			expect(alterSchema.createColumn).toBeCalledWith(
-				expect.objectContaining({ defaultValue: { type: "raw", value: "NOW()" } }),
-				{ trx: "TEST_TRX" },
+				expect.objectContaining({ defaultValue: { type: "raw", value: "NOW()" }, trx: "TEST_TRX" }),
 			)
 		})
 
@@ -160,20 +162,18 @@ describe("FieldsService", () => {
 
 		it("should add column to db schema", async () => {
 			await service.createField(dto)
-			expect(alterSchema.createColumn).toBeCalledWith(
-				{
-					columnName: "col1",
-					dataType: {
-						type: "general",
-						value: "boolean",
-					},
-					defaultValue: null,
-					nullable: false,
-					tableName: "posts",
-					unique: false,
+			expect(alterSchema.createColumn).toBeCalledWith({
+				columnName: "col1",
+				dataType: {
+					type: "general",
+					value: "boolean",
 				},
-				{ trx: "TEST_TRX" },
-			)
+				defaultValue: null,
+				nullable: false,
+				tableName: "posts",
+				unique: false,
+				trx: "TEST_TRX",
+			})
 		})
 
 		it("should run migration after creating", async () => {

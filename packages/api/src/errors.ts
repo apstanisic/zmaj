@@ -16,6 +16,10 @@ export const emsg = {
 			`You can't create record since there is already record with field '${field}'` as const
 		return value === undefined ? base : (`${base} and value '${JSON.stringify(value)}'` as const)
 	},
+	compositeUnique: (fields: string[], values: string[]) =>
+		`You can't create record since there is already record with fields '${fields.join(
+			",",
+		)} and values ${values.join(",")}'`,
 	recordNotFound: "Record not found",
 	notFound: (type?: string) => `${type ?? "Record"} not found` as const,
 	cantDeleteHasFk: "Record can't be deleted since FK points to it",
@@ -63,6 +67,7 @@ export const emsg = {
 	noRelation: "Relation does not exist",
 	noField: "Field does not exist",
 	noCollection: "Collection does not exists",
+	noTable: "Table does not exists",
 	noPk: (table: string) => `Table '${table}' does not have primary key` as const,
 	notMtmRelation: "Relation is not many to many",
 	isSystemTable: "You can't modify system table",

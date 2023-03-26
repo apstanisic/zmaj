@@ -258,7 +258,7 @@ describe("SequelizeRepository", () => {
 			let piRepo: SequelizeRepository<TPostInfo>
 
 			beforeEach(() => {
-				piRepo = new SequelizeRepository<TPostInfo>(ormS, "posts_info")
+				piRepo = new SequelizeRepository<TPostInfo>(ormS, "postsInfo")
 			})
 
 			describe("owner", () => {

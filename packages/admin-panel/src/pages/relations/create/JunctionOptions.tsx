@@ -9,19 +9,19 @@ export function JunctionOptions(): JSX.Element {
 	return (
 		<Columns>
 			<ManualInputField
-				source="junctionLeftColumn"
+				source="junction.left.column"
 				label="Junction Field"
 				description={description}
 				fieldConfig={fieldConfig}
 			/>
 			<ManualInputField
-				source="junctionTable"
+				source="junction.table"
 				label="Junction Table"
 				description={description}
 				fieldConfig={fieldConfig}
 			/>
 			<ManualInputField
-				source="junctionRightColumn"
+				source="junction.right.column"
 				label="Junction Field"
 				description={description}
 				fieldConfig={fieldConfig}

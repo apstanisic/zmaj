@@ -1,6 +1,6 @@
 import { DefineCollection } from "@common/collection-builder/define-collection"
 import { systemPermissions } from "../permissions"
-import { CollectionMetadata } from "./infra-collection.model"
+import { CollectionMetadata } from "./collection-metadata.model"
 
 export const CollectionMetadataCollection = DefineCollection<CollectionMetadata>({
 	tableName: "zmaj_collection_metadata",
@@ -25,6 +25,7 @@ export const CollectionMetadataCollection = DefineCollection<CollectionMetadata>
 	fields: {
 		id: { dataType: "uuid", isPrimaryKey: true, columnName: "id", canUpdate: false },
 		tableName: { dataType: "short-text", columnName: "table_name", canUpdate: false },
+		collectionName: { dataType: "short-text", columnName: "collection_name", canUpdate: false },
 		createdAt: {
 			dataType: "datetime",
 			columnName: "created_at",

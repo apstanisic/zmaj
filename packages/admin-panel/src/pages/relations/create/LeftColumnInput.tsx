@@ -1,6 +1,6 @@
-import { CollectionDef, RelationCreateDto } from "@zmaj-js/common"
+import { CollectionDef, RelationCreateDto, snakeCase } from "@zmaj-js/common"
 import { singular } from "pluralize"
-import { camel } from "radash"
+import { camel, snake } from "radash"
 import { useCallback, useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import { shortTextDbColumnValidation } from "../../../shared/db-column-form-validation"
@@ -20,26 +20,28 @@ export function LeftColumnInput({
 }): JSX.Element {
 	const { setValue } = useFormContext<RelationCreateDto>()
 	const type = useWatch<RelationCreateDto, "type">({ name: "type" })
-	const rightTable: string = useWatch<RelationCreateDto, "rightTable">({ name: "rightTable" })
+	const rightCollection: string = useWatch<RelationCreateDto, "rightCollection">({
+		name: "rightCollection",
+	})
 
 	const getDefaultValue = useCallback(() => {
 		if (type === "one-to-many" || type === "many-to-many" || type === "ref-one-to-one") {
 			return leftCollection.pkField
 		} else {
-			const defaultName = singular(rightTable + "_id")
-			const free = leftCollection.fields[camel(defaultName)] === undefined
+			const defaultName = snakeCase(singular(rightCollection) + "Id")
+			const free = !Object.values(leftCollection.fields).some((f) => f.columnName === defaultName)
 			//.every((f) => f.columnName !== defaultName)
-			return free ? defaultName : getFreeFkColumn(leftCollection, rightTable)
+			return free ? defaultName : getFreeFkColumn(leftCollection, rightCollection)
 		}
-	}, [leftCollection, rightTable, type])
+	}, [leftCollection, rightCollection, type])
 
 	useEffect(() => {
-		setValue("leftColumn", getDefaultValue())
-	}, [type, rightTable, setValue, leftCollection, getDefaultValue])
+		setValue("left.column", getDefaultValue())
+	}, [type, setValue, leftCollection, getDefaultValue])
 
 	return (
 		<ManualInputField
-			source="leftColumn"
+			source="left.column"
 			disabled={type !== "many-to-one" && type !== "owner-one-to-one"}
 			label="Database Column"
 			defaultValue={getDefaultValue()}

@@ -30,7 +30,10 @@ export class RelationsController {
 	async createRelation(
 		@DtoBody(RelationCreateDto) body: RelationCreateDto,
 	): Promise<Data<RelationDef>> {
-		const created = await this.service.createRelation(body)
+		const created = await this.service.createRelation(body).catch((e) => {
+			console.log({ e })
+			throw e
+		})
 		return wrap(created)
 	}
 

@@ -1,4 +1,4 @@
-import { throw400, throw404, throw500 } from "@api/common/throw-http"
+import { throw400, throw403, throw404, throw500 } from "@api/common/throw-http"
 import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { emsg } from "@api/errors"
@@ -10,6 +10,7 @@ import {
 	RelationUpdateDto,
 	RelationDef,
 	UUID,
+	CollectionDef,
 } from "@zmaj-js/common"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { OnInfraChangeService } from "../on-infra-change.service"
@@ -32,26 +33,14 @@ export class RelationsService {
 
 	private repo: OrmRepository<RelationMetadata>
 
-	private getPropertyName(dto: RelationCreateDto, side: "left" | "right"): string {
-		const currentTable = side === "left" ? dto.leftTable : dto.rightTable
-		// const otherTable = side === "left" ? dto.rightTable : dto.leftTable
-		const propertyName = side === "left" ? dto.leftPropertyName : dto.rightPropertyName
-
-		const collection =
-			this.infraState.getCollection(currentTable) ?? throw400(3293793, emsg.noCollection)
-
-		// if (propertyName) {
-		const taken = collection.fields[propertyName] ?? collection.relations[propertyName]
-		if (taken) throw400(73294, emsg.propertyTaken(propertyName))
-		return propertyName
-		// }
-
-		// for (let i = 1; i < 50; i++) {
-		// 	const property = camelCase(otherTable) + (i === 1 ? "" : i)
-		// 	const taken = collection.properties[property]
-		// 	if (!taken) return property
-		// }
-		// throw400(73392423)
+	ensureFreeProperty(collectionName: string, property: string): void {
+		const col = this.infraState.getCollection(collectionName)
+		if (col?.fields[property]) {
+			throw400(379843, emsg.propertyTaken(property))
+		}
+		if (col?.relations[property]) {
+			throw400(69932, emsg.propertyTaken(property))
+		}
 	}
 
 	/**
@@ -61,8 +50,8 @@ export class RelationsService {
 	 * @returns Created relation
 	 */
 	async createRelation(dto: RelationCreateDto): Promise<RelationDef> {
-		dto.leftPropertyName = this.getPropertyName(dto, "left")
-		dto.rightPropertyName = this.getPropertyName(dto, "right")
+		this.ensureFreeProperty(dto.leftCollection, dto.left.propertyName)
+		this.ensureFreeProperty(dto.rightCollection, dto.right.propertyName)
 
 		const created = await this.onInfraChange.executeChange(async () => {
 			const relation =

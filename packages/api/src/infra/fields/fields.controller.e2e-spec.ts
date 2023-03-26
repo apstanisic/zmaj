@@ -38,6 +38,7 @@ describe("RelationController e2e", () => {
 	let collection: CollectionDef
 	//
 	const tableName = "test_table_field_metadata"
+	const collectionName = camel(tableName)
 
 	//
 	beforeAll(async () => {
@@ -75,7 +76,7 @@ describe("RelationController e2e", () => {
 			})
 		})
 
-		collection = infraStateService.getCollection(tableName) ?? throwErr("7843612")
+		collection = infraStateService.getCollection(collectionName) ?? throwErr("7843612")
 
 		user = await all.createUser()
 	})
@@ -104,7 +105,7 @@ describe("RelationController e2e", () => {
 						columnName: newField,
 						dataType: "long-text",
 						isNullable: true,
-						tableName: tableName,
+						collectionName: collectionName,
 					}),
 				)
 
@@ -130,7 +131,7 @@ describe("RelationController e2e", () => {
 
 			//
 			// created field should be added to repo
-			const testRepo = repoManager.getRepo(tableName)
+			const testRepo = repoManager.getRepo(collectionName)
 			await testRepo.createOne({ data: { [fieldInState!.fieldName]: "test_me" } })
 			const inTable = await testRepo.findWhere({})
 			expect(inTable).toEqual([{ id: 1, name: null, value: null, [camel(newField)]: "test_me" }])
@@ -190,7 +191,7 @@ describe("RelationController e2e", () => {
 				.insert({ name: "test", value: "new value" })
 				.toQuery()
 			await repoManager.rawQuery(rawQuery)
-			const inDb = await repoManager.getRepo(tableName).findWhere({})
+			const inDb = await repoManager.getRepo(collectionName).findWhere({})
 			expect(inDb).toEqual([{ id: 1, name: "test" }])
 			expect(inDb[0]?.["value"]).toBeUndefined()
 		})
@@ -231,7 +232,7 @@ describe("RelationController e2e", () => {
 			// should remove field from repo
 			const rawQuery = knexQuery.from(tableName).insert({ name: "test_delete" }).toQuery()
 			await repoManager.rawQuery(rawQuery)
-			const inDb = await repoManager.getRepo(tableName).findWhere({})
+			const inDb = await repoManager.getRepo(collectionName).findWhere({})
 			expect(inDb).toEqual([{ id: 1, name: "test_delete" }])
 			expect(inDb[0]?.["value"]).toBeUndefined()
 

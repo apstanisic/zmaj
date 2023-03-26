@@ -10,7 +10,8 @@ export const FieldCreateSchema = FieldUpdateSchema.omit({
 	isUnique: true,
 }).extend({
 	columnName: DbFieldSchema,
-	tableName: DbFieldSchema,
+	fieldName: DbFieldSchema.nullish(),
+	collectionName: DbFieldSchema,
 	dataType: z.enum(allColumnDataTypes),
 	isUnique: z.boolean().default(false),
 	isNullable: z.boolean().default(true),

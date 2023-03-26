@@ -242,7 +242,7 @@ export class CrudUpdateToMany {
 
 			const rightId = row[relation.otherSide.fieldName]
 			// should always be ID
-			if (!isIdType(rightId)) throw new InternalServerErrorException("967412")
+			if (!isIdType(rightId)) throw500(967412)
 
 			// we always check many side
 			// in o2m, we must check if we can change fk, in m2m we always check if we can change property

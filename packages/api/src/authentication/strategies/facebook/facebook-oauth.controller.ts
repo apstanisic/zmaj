@@ -16,6 +16,7 @@ import {
 import { AuthUser, endpoints } from "@zmaj-js/common"
 import type { Response } from "express"
 import { FacebookOAuthGuard } from "./facebook-oauth.guard"
+import { throw500 } from "@api/common/throw-http"
 
 const ep = endpoints.auth.oauth.google
 
@@ -33,7 +34,7 @@ export class FacebookOAuthController {
 	@Get(ep.signIn)
 	@UseGuards(FacebookOAuthGuard)
 	async login(): Promise<never> {
-		throw new InternalServerErrorException(12381)
+		throw500(12381)
 	}
 
 	@Redirect()

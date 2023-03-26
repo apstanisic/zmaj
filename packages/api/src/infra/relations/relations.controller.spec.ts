@@ -24,13 +24,11 @@ describe("RelationsController", () => {
 		beforeEach(() => {
 			service.createRelation = vi.fn().mockResolvedValue("created_relation")
 			dto = new RelationCreateDto({
-				leftColumn: "lc",
-				leftTable: "lt",
-				rightColumn: "rc",
-				rightTable: "rt",
+				left: { column: "lc", propertyName: "lpn" },
+				right: { column: "rc", propertyName: "rpn" },
+				leftCollection: "lt",
+				rightCollection: "rt",
 				type: "many-to-one",
-				leftPropertyName: "lpn",
-				rightPropertyName: "rpn",
 			})
 		})
 		//

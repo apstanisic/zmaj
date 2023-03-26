@@ -21,6 +21,7 @@ import supertest from "supertest"
 import { v4 } from "uuid"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { InfraStateService } from "../infra-state/infra-state.service"
+import { camel } from "radash"
 
 const tableName = "test_table_collection_metadata"
 
@@ -76,7 +77,7 @@ describe("CollectionsController e2e", () => {
 			})
 		})
 
-		collection = infraStateService.getCollection(tableName) ?? throwErr("78439214")
+		collection = infraStateService.getCollection(camel(tableName)) ?? throwErr("78439214")
 	})
 
 	afterEach(async () => {
@@ -103,6 +104,7 @@ describe("CollectionsController e2e", () => {
 				.send(
 					new CollectionCreateDto({
 						tableName: tableName,
+						collectionName: tableName,
 						pkColumn: "id2",
 						pkType: "uuid",
 					}),

@@ -16,7 +16,7 @@ export const CollectionShowFields = memo(() => {
 
 	const newFieldHref = useHref({
 		pathname: getCrudUrl(FieldMetadataCollection, "create"),
-		search: `source=${JSON.stringify({ tableName: collection?.tableName })}`,
+		search: `source=${JSON.stringify({ collectionName: collection?.collectionName })}`,
 	})
 
 	if (!collection) return <></>

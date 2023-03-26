@@ -36,7 +36,7 @@ export class FieldsService {
 
 	async createField(data: FieldCreateDto): Promise<FieldMetadata> {
 		const collection =
-			this.infraState.getCollection(data.tableName) ?? throw400(48932, emsg.noCollection)
+			this.infraState.getCollection(data.collectionName) ?? throw400(48932, emsg.noCollection)
 
 		if (collection.fields[camel(data.columnName)]) {
 			throw400(32912, emsg.fieldExists(data.columnName))
@@ -54,17 +54,15 @@ export class FieldsService {
 				fn: async (trx) => {
 					const field = await this.repo.createOne({ data: toCreate, trx: trx })
 
-					await this.alterSchema.createColumn(
-						{
-							tableName: collection.tableName,
-							defaultValue: this.getDefaultValue(data.dbDefaultValue),
-							columnName: data.columnName,
-							nullable: data.isNullable,
-							dataType: { type: "general", value: data.dataType },
-							unique: data.isUnique,
-						},
-						{ trx },
-					)
+					await this.alterSchema.createColumn({
+						tableName: collection.tableName,
+						defaultValue: this.getDefaultValue(data.dbDefaultValue),
+						columnName: data.columnName,
+						nullable: data.isNullable,
+						dataType: { type: "general", value: data.dataType },
+						unique: data.isUnique,
+						trx,
+					})
 
 					return field
 				},
@@ -118,10 +116,11 @@ export class FieldsService {
 				fn: async (trx) => {
 					const field = await this.repo.deleteById({ id, trx })
 
-					await this.alterSchema.dropColumn(
-						{ columnName: field.columnName, tableName: fieldInState.tableName },
-						{ trx },
-					)
+					await this.alterSchema.dropColumn({
+						columnName: field.columnName,
+						tableName: fieldInState.tableName,
+						trx,
+					})
 
 					return field
 				},

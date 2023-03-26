@@ -6,19 +6,22 @@ import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
+	DirectRelationCreateDto2,
+	DirectRelationCreateDto3,
 	FieldMetadata,
 	FieldMetadataCollection,
 	FieldMetadataSchema,
+	RelationCreateDto,
+	RelationDef,
 	RelationMetadata,
 	RelationMetadataCollection,
-	RelationCreateDto,
 	RelationMetadataSchema,
-	RelationDef,
 	zodCreate,
 } from "@zmaj-js/common"
-import { title } from "radash"
+import { Except } from "type-fest"
 import { InfraStateService } from "../infra-state/infra-state.service"
-import { DirectRelationCreateDto } from "./expanded-relation-dto.types"
+import { Transaction } from "@api/database/orm-specs/Transaction"
+import { v4 } from "uuid"
 
 @Injectable()
 export class DirectRelationService {
@@ -34,54 +37,62 @@ export class DirectRelationService {
 		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataCollection)
 	}
 
+	async getFreeFkName(table: string, column: string, trx?: Transaction): Promise<string> {
+		const allKeys = await this.schemaInfo.getForeignKeys({ trx })
+		let i = 1
+		while (i < 30) {
+			const keyName = `${table}_${column}${i > 1 ? "_" + i : ""}`
+			const taken = allKeys.some((k) => k.fkName === keyName)
+			if (!taken) return keyName
+			i += 1
+		}
+		return `fk_${v4().substring(24)}`
+	}
 	/**
 	 * New relation from controller
 	 * We need access to db service for schema info
 	 * It ensures that schema is okay, and that everything is possible to be created
 	 */
-	private async validateDtoWithSchema(dto: RelationCreateDto): Promise<DirectRelationCreateDto> {
-		if (dto.type === "many-to-many") throw500(352342)
-		// Tables must exists, we can't otherwise make FKs
-		const leftTableExists = await this.schemaInfo.hasTable(dto.leftTable)
-		const rightTableExists = await this.schemaInfo.hasTable(dto.rightTable)
-		if (!rightTableExists || !leftTableExists) throw400(44901981, emsg.noCollection)
-
-		if (dto.type === "one-to-many" || dto.type === "ref-one-to-one") {
-			dto = this.reverseOneToManyDto(dto)
-		}
-		// just for ts
-		if (dto.type !== "owner-one-to-one" && dto.type !== "many-to-one") throw500(973123)
+	private async validateDtoWithSchema(
+		anyDto: RelationCreateDto,
+	): Promise<DirectRelationCreateDto3> {
+		if (anyDto.type === "many-to-many") throw500(352342)
+		const dto = this.reverseIfOtm(anyDto)
+		const leftCol =
+			this.infraState.getCollection(dto.leftCollection) ?? throw400(37439, emsg.noCollection)
+		const rightCol =
+			this.infraState.getCollection(dto.rightCollection) ?? throw400(900231, emsg.noCollection)
 
 		// can't modify system table
-		if (dto.leftTable.startsWith("zmaj")) throw403(42392, emsg.isSystemTable)
+		if (leftCol.tableName.startsWith("zmaj")) throw403(42392, emsg.isSystemTable)
 
-		// can't create fk if other table does not have pk
-		const rightPk = await this.schemaInfo.getPrimaryKey(dto.rightTable)
-		if (!rightPk) throw403(9372423, emsg.noPk(dto.rightTable))
-
-		const alreadyExist = await this.schemaInfo.hasColumn(dto.leftTable, dto.leftColumn)
+		const alreadyExist = await this.schemaInfo.hasColumn(leftCol.tableName, dto.left.column)
 		// we check if user provided fk column that already exist
-		if (alreadyExist) throw400(51932, emsg.fieldExists(dto.leftColumn))
+		if (alreadyExist) throw400(51932, emsg.fieldExists(dto.left.column))
+
+		const fkName = dto.fkName ?? (await this.getFreeFkName(leftCol.tableName, dto.left.column))
 
 		return {
-			leftColumn: dto.leftColumn,
-			leftTable: dto.leftTable,
-			rightTable: dto.rightTable,
-			leftTemplate: dto.leftTemplate ?? null,
-			rightTemplate: dto.rightTemplate ?? null,
 			type: dto.type,
-			rightColumn: rightPk.columnName,
-			leftFkName: dto.leftFkName ?? `${dto.leftTable}_${dto.leftColumn}_foreign`,
-			leftLabel: dto.leftLabel ?? title(dto.rightTable),
-			// leftPropertyName: dto.leftPropertyName ?? camelCase(dto.rightTable),
-			// it should never come to generated name, cause it should be generated in RelationsService,
-			leftPropertyName: dto.leftPropertyName ?? throw500(324932),
-			rightLabel: dto.rightLabel ?? title(dto.leftTable),
-			// rightPropertyName: dto.rightPropertyName ?? camelCase(dto.leftTable),
-			// it should never come to generated name, cause it should be generated in RelationsService,
-			rightPropertyName: dto.rightPropertyName ?? throw500(32432),
-			rightPkType: rightPk.dataType,
-			onDelete: dto.onDelete ?? null,
+			left: {
+				column: dto.left.column,
+				propertyName: dto.left.propertyName,
+				template: dto.left.template ?? null,
+				label: dto.left.label ?? null,
+				table: leftCol.tableName,
+			},
+			right: {
+				column: rightCol.pkColumn,
+				propertyName: dto.right.propertyName,
+				template: dto.right.template ?? null,
+				label: dto.right.label ?? null,
+				table: rightCol.tableName,
+			},
+			fkName,
+			pkType: rightCol.fields[rightCol.pkField]?.dbRawDataType ?? throw500(993499),
+			onDelete: dto.onDelete,
+			leftCollection: dto.leftCollection,
+			rightCollection: dto.rightCollection,
 		}
 	}
 
@@ -89,49 +100,42 @@ export class DirectRelationService {
 	 * Reverse one-to-many to many-to-one, because then we have one less case for creating
 	 * It also works on ref-one-to-one
 	 */
-	private reverseOneToManyDto(dto: RelationCreateDto): Omit<RelationCreateDto, "type"> & {
-		type: "many-to-one" | "owner-one-to-one"
-	} {
-		if (dto.type !== "one-to-many" && dto.type !== "ref-one-to-one") throw500(42391)
+	private reverseIfOtm(dto: Except<RelationCreateDto, "junction">): DirectRelationCreateDto2 {
+		if (dto.type === "many-to-many") throw500(389999)
+
+		if (dto.type === "many-to-one" || dto.type === "owner-one-to-one") {
+			return { ...dto, type: dto.type }
+		}
 		return {
 			type: dto.type === "ref-one-to-one" ? "owner-one-to-one" : "many-to-one",
-			leftColumn: dto.rightColumn,
-			rightColumn: dto.leftColumn,
-			leftTable: dto.rightTable,
+			left: dto.right,
+			right: dto.left,
+			leftCollection: dto.rightCollection,
 			onDelete: dto.onDelete,
-			rightTable: dto.leftTable,
-			leftLabel: dto.rightLabel,
-			leftPropertyName: dto.rightPropertyName,
-			rightLabel: dto.leftLabel,
-			rightPropertyName: dto.leftPropertyName,
-			leftFkName: dto.leftFkName,
-			leftTemplate: dto.rightTemplate,
-			rightTemplate: dto.leftTemplate,
+			rightCollection: dto.leftCollection,
+			fkName: dto.fkName,
 		}
 	}
 
 	async createRelation(data: RelationCreateDto): Promise<RelationMetadata> {
 		const dto = await this.validateDtoWithSchema(data)
-		// const collection = this.infraState.findCollection(dto.leftTable) ?? throw500(429083)
 
 		return this.repoManager.transaction({
 			fn: async (trx) => {
 				await this.alterSchema.createColumn({
-					columnName: dto.leftColumn,
-					tableName: dto.leftTable,
-					dataType: { type: "specific", value: dto.rightPkType },
+					columnName: dto.left.column,
+					tableName: dto.left.table,
+					dataType: { type: "specific", value: dto.pkType },
 					unique: dto.type === "owner-one-to-one",
 					trx,
 				})
 
-				const fkName = `${dto.leftTable}_${dto.leftColumn}_foreign`
-
 				await this.alterSchema.createFk({
-					fkColumn: dto.leftColumn,
-					fkTable: dto.leftTable,
-					referencedTable: dto.rightTable,
-					referencedColumn: dto.rightColumn,
-					indexName: fkName,
+					fkColumn: dto.left.column,
+					fkTable: dto.left.table,
+					referencedTable: dto.right.table,
+					referencedColumn: dto.right.column,
+					indexName: dto.fkName,
 					onDelete: dto.onDelete,
 					trx,
 				})
@@ -139,8 +143,8 @@ export class DirectRelationService {
 				const fkField = await this.fieldsRepo.createOne({
 					trx,
 					data: zodCreate(FieldMetadataSchema, {
-						columnName: dto.leftColumn,
-						tableName: dto.leftTable,
+						columnName: dto.left.column,
+						tableName: dto.left.table,
 					}),
 				})
 
@@ -149,27 +153,25 @@ export class DirectRelationService {
 				const rel1 = await this.repo.createOne({
 					trx,
 					data: zodCreate(RelationMetadataSchema, {
-						fkName,
-						label: dto.leftLabel,
-						propertyName: dto.leftPropertyName,
-						tableName: dto.leftTable,
-						template: dto.leftTemplate,
-						// collectionId: collection.id,
+						fkName: dto.fkName,
+						label: dto.left.label,
+						propertyName: dto.left.propertyName,
+						tableName: dto.left.table,
+						template: dto.left.template,
 					}),
 				})
 
 				let rel2: RelationMetadata | undefined = undefined
 
-				if (!dto.rightTable.startsWith("zmaj")) {
+				if (!dto.right.table.startsWith("zmaj")) {
 					rel2 = await this.repo.createOne({
 						trx,
 						data: zodCreate(RelationMetadataSchema, {
-							fkName,
-							label: dto.rightLabel,
-							propertyName: dto.rightPropertyName,
-							tableName: dto.rightTable,
-							template: dto.rightTemplate,
-							// collectionId: this.infraState.findCollection(dto.rightTable)?.id ?? throw500(429083),
+							fkName: dto.fkName,
+							label: dto.right.label,
+							propertyName: dto.right.propertyName,
+							tableName: dto.right.table,
+							template: dto.right.template,
 						}),
 					})
 				}

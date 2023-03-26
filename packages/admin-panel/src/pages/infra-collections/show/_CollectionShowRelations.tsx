@@ -16,7 +16,9 @@ export const CollectionShowRelations = memo(() => {
 
 	const newRelationHref = useHref({
 		pathname: getCrudUrl(RelationMetadataCollection, "create"),
-		search: `disable_leftTable=true&source=${JSON.stringify({ leftTable: collection?.tableName })}`,
+		search: `disable_leftCollection=true&source=${JSON.stringify({
+			leftCollection: collection?.collectionName,
+		})}`,
 	})
 
 	return (

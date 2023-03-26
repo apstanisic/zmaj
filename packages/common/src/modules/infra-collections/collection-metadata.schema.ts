@@ -1,18 +1,25 @@
 import { now } from "@common/utils/now"
-import { ModelSchema, DbFieldSchema } from "@common/zod"
+import { DbFieldSchema, ModelSchema } from "@common/zod"
+import { camel } from "radash"
 import { v4 } from "uuid"
 import { z } from "zod"
-import { CollectionMetadata } from "./infra-collection.model"
+import { CollectionMetadata } from "./collection-metadata.model"
 
 export const CollectionMetadataSchema = ModelSchema<CollectionMetadata>()(
-	z.object({
-		tableName: DbFieldSchema,
-		id: z.string().uuid().default(v4),
-		createdAt: z.date().default(now),
-		label: z.string().nullable().default(null),
-		disabled: z.boolean().default(false),
-		hidden: z.boolean().default(false),
-		displayTemplate: z.string().nullable().default(null),
-		layoutConfig: z.record(z.unknown()).default({}),
-	}),
+	z
+		.object({
+			tableName: DbFieldSchema,
+			collectionName: DbFieldSchema.nullish(),
+			id: z.string().uuid().default(v4),
+			createdAt: z.date().default(now),
+			label: z.string().nullable().default(null),
+			disabled: z.boolean().default(false),
+			hidden: z.boolean().default(false),
+			displayTemplate: z.string().nullable().default(null),
+			layoutConfig: z.record(z.unknown()).default({}),
+		})
+		.transform((v) => ({
+			...v,
+			collectionName: v.collectionName ?? camel(v.tableName),
+		})),
 )

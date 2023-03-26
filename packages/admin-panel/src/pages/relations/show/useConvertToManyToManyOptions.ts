@@ -5,7 +5,7 @@ import { useGetCollection } from "../../../state/use-get-collection"
  *
  */
 export function useGetJunctionCollection(relation?: RelationDef): CollectionDef | undefined {
-	const futureJunction =
+	const futureJunctionCollection =
 		relation === undefined
 			? undefined
 			: relation.type === "many-to-one"
@@ -14,7 +14,7 @@ export function useGetJunctionCollection(relation?: RelationDef): CollectionDef 
 			? relation.otherSide.collectionName
 			: undefined
 
-	const col = useGetCollection(futureJunction ?? "_never")
+	const col = useGetCollection(futureJunctionCollection ?? "_never")
 
 	if (!col || Object.values(col.relations).length !== 2) return
 

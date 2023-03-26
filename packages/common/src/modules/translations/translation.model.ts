@@ -1,6 +1,6 @@
 import { Struct } from "@common/types"
 import { EntityRef } from "../crud-types/entity-ref.type"
-import { CollectionMetadata } from "../infra-collections/infra-collection.model"
+import { CollectionMetadata } from "../infra-collections/collection-metadata.model"
 
 export type Translation = {
 	/**

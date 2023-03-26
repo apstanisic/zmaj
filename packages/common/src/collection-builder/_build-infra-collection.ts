@@ -19,7 +19,7 @@ export function buildCollection<T extends Struct = Struct>(
 	return {
 		id: v4(),
 		definedInCode: true,
-		authzKey: params.authzKey ?? `collections.${camel(tableName)}`,
+		authzKey: params.authzKey ?? `collections.${params.collectionName ?? camel(tableName)}`,
 		createdAt: new Date(),
 		hidden: false,
 		pkField: "id",

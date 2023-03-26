@@ -1,8 +1,9 @@
-import { ZodDto } from "@common/zod"
+import { ZodDto, nilDefault } from "@common/zod"
 import { DbFieldSchema } from "@common/zod/zod-utils"
 import { isString } from "radash"
 import { z } from "zod"
 import { onColumnDeleteActions } from "./on-column-delete-actions.consts"
+import { Except } from "type-fest"
 
 /**
  * Require both left and right column. We will strip if they are not required
@@ -23,9 +24,9 @@ export const RelationCreateSchema = z.object({
 	rightTemplate: z.string().nullable().default(null),
 	//
 	// left table can't be system table
-	leftTable: DbFieldSchema.refine((v) => !v.startsWith("zmaj")),
+	leftCollection: DbFieldSchema.refine((v) => !v.startsWith("zmaj")),
 	leftColumn: DbFieldSchema,
-	rightTable: DbFieldSchema,
+	rightCollection: DbFieldSchema,
 	rightColumn: DbFieldSchema,
 	//
 	onDelete: z
@@ -52,4 +53,71 @@ export const RelationCreateSchema = z.object({
 	junctionRightTemplate: z.string().nullish(),
 })
 
-export class RelationCreateDto extends ZodDto(RelationCreateSchema) {}
+const sideOptions = z.object({
+	propertyName: DbFieldSchema,
+	column: DbFieldSchema,
+	label: z.string().nullish(),
+	template: z.string().nullish(),
+})
+const junctionSide = sideOptions
+	.pick({ label: true, template: true })
+	.extend({ propertyName: DbFieldSchema.nullish(), column: DbFieldSchema.nullish() })
+	.nullish()
+
+const v2 = z.object({
+	type: z.enum([
+		"many-to-many",
+		"one-to-many",
+		"many-to-one",
+		"owner-one-to-one",
+		"ref-one-to-one",
+	]),
+	leftCollection: DbFieldSchema,
+	rightCollection: DbFieldSchema,
+	left: sideOptions,
+	right: sideOptions,
+	fkName: DbFieldSchema.nullish(),
+	junction: z
+		.object({
+			tableName: DbFieldSchema.nullish(),
+			left: junctionSide,
+			right: junctionSide,
+			fkName: DbFieldSchema.nullish(),
+		})
+		.nullish(),
+	onDelete: z.enum(onColumnDeleteActions).nullish().transform(nilDefault("SET NULL")),
+})
+
+export class RelationCreateDto extends ZodDto(v2) {}
+
+export type DirectRelationCreateDto2 = Except<RelationCreateDto, "type" | "junction"> & {
+	type: "many-to-one" | "owner-one-to-one"
+}
+
+export type DirectRelationCreateDto3 = DirectRelationCreateDto2 & {
+	left: DirectRelationCreateDto2["left"] & { table: string }
+	right: DirectRelationCreateDto2["right"] & { table: string }
+	pkType: string
+	fkName: string
+}
+
+export type JunctionRelationCreateDto2 = {
+	type: "many-to-many"
+	left: DirectRelationCreateDto2["left"] & {
+		table: string
+		pkType: string
+		fkName: string
+		collectionName: string
+	}
+	right: DirectRelationCreateDto2["right"] & {
+		table: string
+		pkType: string
+		fkName: string
+		collectionName: string
+	}
+	junction: {
+		table: string
+		left: DirectRelationCreateDto2["left"]
+		right: DirectRelationCreateDto2["right"]
+	}
+}

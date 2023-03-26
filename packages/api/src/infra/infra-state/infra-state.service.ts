@@ -109,11 +109,11 @@ export class InfraStateService {
 		collection: UUID | string | CollectionMetadata | CollectionDef,
 	): CollectionDef | undefined {
 		if (isStruct(collection)) {
-			return this._collections[camel(collection.tableName)]
+			return this._collections[collection.collectionName]
 		} else if (isUUID(collection)) {
 			return Object.values(this._collections).find((c) => c.id === collection)
 		} else {
-			return this._collections[camel(collection)]
+			return this._collections[collection]
 		}
 	}
 
@@ -209,8 +209,6 @@ export class InfraStateService {
 	}
 
 	private expandCollection(collection: CollectionMetadata): CollectionDef | undefined {
-		const collectionName = camel(collection.tableName)
-
 		const pkColumn = this._columns.find(
 			(col) => col.tableName === collection.tableName && col.primaryKey,
 		)
@@ -227,12 +225,11 @@ export class InfraStateService {
 		return {
 			...collection,
 			definedInCode: false,
-			collectionName,
 			pkType: pkColumn.autoIncrement ? "auto-increment" : "uuid",
 			pkColumn: pkColumn.columnName,
 			pkField: camel(pkColumn.columnName),
 			isJunctionTable: isJunctionTable,
-			authzKey: `collections.${collectionName}`,
+			authzKey: `collections.${collection.collectionName}`,
 			fields: Object.fromEntries(fields.map((f) => [f.fieldName, f])),
 			relations: Object.fromEntries(relations.map((f) => [f.propertyName, f])),
 			layoutConfig: LayoutConfigSchema.parse(collection.layoutConfig),
