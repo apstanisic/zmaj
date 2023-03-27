@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test"
 import { RelationDef, CollectionCreateDto, RelationCreateDto, throwErr } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollection } from "../utils/infra-test-helpers.js"
+import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
+import { camel } from "radash"
 
 const leftTableName = "mtm_left_table_join"
 const rightTableName = "mtm_right_table_join"
@@ -13,9 +14,9 @@ let relation1: RelationDef
 let relation2: RelationDef
 
 async function deleteTables(sdk: ZmajSdk): Promise<void> {
-	await deleteCollection(junctionTableName, sdk)
-	await deleteCollection(leftTableName, sdk)
-	await deleteCollection(rightTableName, sdk)
+	await deleteCollectionByTable(junctionTableName, sdk)
+	await deleteCollectionByTable(leftTableName, sdk)
+	await deleteCollectionByTable(rightTableName, sdk)
 }
 
 test.beforeEach(async () => {
@@ -34,25 +35,21 @@ test.beforeEach(async () => {
 
 	relation1 = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
-			leftColumn: "left_id",
-			leftTable: junctionTableName,
-			rightTable: leftTableName,
-			rightColumn: "id",
+			leftCollection: camel(junctionTableName),
+			rightCollection: camel(leftTableName),
+			left: { column: "left_id", propertyName: "propInner" },
+			right: { column: "id", propertyName: "propOuter" },
 			type: "many-to-one",
-			leftPropertyName: "propInner",
-			rightPropertyName: "propOuter",
 		}),
 	})
 
 	relation2 = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
-			leftColumn: "right_id",
-			leftTable: junctionTableName,
-			rightTable: rightTableName,
-			rightColumn: "id",
+			leftCollection: camel(junctionTableName),
+			rightCollection: camel(rightTableName),
+			left: { column: "right_id", propertyName: "propInner2" },
+			right: { column: "id", propertyName: "propOuter2" },
 			type: "many-to-one",
-			leftPropertyName: "propInner2",
-			rightPropertyName: "propOuter2",
 		}),
 	})
 })

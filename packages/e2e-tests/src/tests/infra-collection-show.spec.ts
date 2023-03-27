@@ -1,19 +1,19 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollection } from "../utils/infra-test-helpers.js"
+import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
 
 const tableName = "test_show_playwright"
 
 test.beforeEach(async () => {
 	const sdk = getSdk()
-	await deleteCollection(tableName, sdk)
+	await deleteCollectionByTable(tableName, sdk)
 	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName, label: "Test345" },
 	})
 })
 
-test.afterEach(async () => deleteCollection(tableName))
+test.afterEach(async () => deleteCollectionByTable(tableName))
 
 test("Show Collection", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

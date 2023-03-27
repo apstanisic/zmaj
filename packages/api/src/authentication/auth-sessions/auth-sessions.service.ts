@@ -4,7 +4,7 @@ import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { emsg } from "@api/errors"
-import { Injectable, UnauthorizedException } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 import { Cron, CronExpression } from "@nestjs/schedule"
 import {
 	AuthSession,

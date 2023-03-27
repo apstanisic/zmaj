@@ -1,21 +1,23 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollection } from "../utils/infra-test-helpers.js"
+import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
+import { camel } from "radash"
 
 const tableName = "field_test_show_playwright"
+const collectionName = camel(tableName)
 
 test.beforeEach(async () => {
 	const sdk = getSdk()
-	await deleteCollection(tableName, sdk)
+	await deleteCollectionByTable(tableName, sdk)
 	await sdk.infra.collections.createOne({
-		data: { pkColumn: "id", pkType: "auto-increment", tableName, label: "Test345" },
+		data: { pkColumn: "id", pkType: "auto-increment", tableName, label: "Test345", collectionName },
 	})
 	await sdk.infra.fields.createOne({
 		data: {
 			columnName: "to_show",
 			dataType: "short-text",
-			tableName,
+			collectionName,
 			isNullable: true,
 			isUnique: false,
 			dbDefaultValue: null,
@@ -23,7 +25,7 @@ test.beforeEach(async () => {
 	})
 })
 
-test.afterEach(async () => deleteCollection(tableName))
+test.afterEach(async () => deleteCollectionByTable(tableName))
 
 test("Show Field", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

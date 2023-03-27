@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollection } from "../utils/infra-test-helpers.js"
+import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
 
 const leftTableName = "test_rel_create_left"
 const rightTableName = "test_rel_create_right"
 
 test.beforeEach(async () => {
-	await deleteCollection(leftTableName)
-	await deleteCollection(rightTableName)
+	await deleteCollectionByTable(leftTableName)
+	await deleteCollectionByTable(rightTableName)
 
 	const sdk = getSdk()
 
@@ -22,8 +22,8 @@ test.beforeEach(async () => {
 
 test.afterEach(async () => {
 	const sdk = getSdk()
-	await deleteCollection(leftTableName, sdk)
-	await deleteCollection(rightTableName, sdk)
+	await deleteCollectionByTable(leftTableName, sdk)
+	await deleteCollectionByTable(rightTableName, sdk)
 })
 
 test("Create many-to-one relation", async ({ page }) => {

@@ -1,5 +1,4 @@
 import { Except } from "type-fest"
-import { endpoints } from "./endpoints"
 import { ActivityLog } from "./modules/activity-log/activity-log.model"
 
 type ApiReturnTypes<Ep> = {

@@ -1,6 +1,5 @@
 import { CollectionDef, RelationCreateDto, snakeCase } from "@zmaj-js/common"
 import { singular } from "pluralize"
-import { camel } from "radash"
 import { useCallback, useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import { ManualInputField } from "../../../shared/input/ManualInputField"

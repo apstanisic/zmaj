@@ -7,7 +7,7 @@ import {
 	ListLayoutDefinition,
 	ShowLayoutDefinition,
 } from "./layout-definitions.types"
-import { CalendarLayout, ListGalleryLayout } from "./list"
+import { ListGalleryLayout } from "./list"
 import { ListTableLayout } from "./list/table/table-layout"
 import { SimpleShowLayout } from "./show"
 import { TabsShowLayout } from "./show/TabsShowLayout"

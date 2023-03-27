@@ -7,7 +7,7 @@ import { TransactionIsolationLevel } from "@api/database/orm-specs/TransactionIs
 import { Injectable } from "@nestjs/common"
 import { Sequelize, literal } from "sequelize"
 import { CollectionDef, Struct } from "@zmaj-js/common"
-import { camel, isString } from "radash"
+import { isString } from "radash"
 import { SequelizeRepository } from "./sequelize.repository"
 import { SequelizeService } from "./sequelize.service"
 

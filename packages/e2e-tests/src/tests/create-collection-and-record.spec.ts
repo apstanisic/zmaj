@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollection } from "../utils/infra-test-helpers.js"
+import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 
 const tableName = "all_test"
 
-test.beforeEach(async () => deleteCollection(tableName))
-test.afterAll(async () => deleteCollection(tableName))
+test.beforeEach(async () => deleteCollectionByTable(tableName))
+test.afterAll(async () => deleteCollectionByTable(tableName))
 
 test("Create Collection and record", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

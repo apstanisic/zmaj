@@ -12,7 +12,6 @@ import {
 import { Injectable } from "@nestjs/common"
 import { CompositeUniqueKey, DbColumn, ForeignKey, notNil } from "@zmaj-js/common"
 import { SequelizeService } from "./sequelize.service"
-import { trim } from "radash"
 
 type PgColumn = {
 	schemaName: string

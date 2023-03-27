@@ -1,15 +1,7 @@
 import { DtoBody } from "@api/common/decorators/dto-body.decorator"
 import { Controller, Get, Post, Put } from "@nestjs/common"
-import {
-	AuthUser,
-	endpoints,
-	OtpDisableDto,
-	OtpEnableDto,
-	SignInDto,
-	StructDto,
-} from "@zmaj-js/common"
+import { AuthUser, endpoints, OtpDisableDto, OtpEnableDto } from "@zmaj-js/common"
 import { GetUser } from "../get-user.decorator"
-import { RequestMfaPrompt } from "./request-mfa-prompt.type"
 import { UsersMfaService } from "./users-mfa.service"
 
 const ep = endpoints.auth.mfa

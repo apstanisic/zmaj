@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { CollectionCreateDto, RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
-import { deleteCollection } from "../utils/infra-test-helpers.js"
+import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
+import { camel } from "radash"
 
 const leftTableName = "mtm_left_table_split"
 const rightTableName = "mtm_right_table_split"
@@ -11,9 +12,9 @@ const junctionTableName = "mtm_junction_table_split"
 let relation1: RelationDef
 
 async function deleteTables(sdk: ZmajSdk): Promise<void> {
-	await deleteCollection(junctionTableName, sdk)
-	await deleteCollection(leftTableName, sdk)
-	await deleteCollection(rightTableName, sdk)
+	await deleteCollectionByTable(junctionTableName, sdk)
+	await deleteCollectionByTable(leftTableName, sdk)
+	await deleteCollectionByTable(rightTableName, sdk)
 }
 
 test.beforeEach(async () => {
@@ -29,14 +30,20 @@ test.beforeEach(async () => {
 
 	relation1 = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
-			leftTable: leftTableName,
-			rightTable: rightTableName,
-			leftColumn: "id",
-			rightColumn: "id",
+			leftCollection: camel(leftTableName),
+			rightCollection: camel(rightTableName),
+			left: {
+				column: "id",
+				propertyName: "leftProp",
+			},
+			right: {
+				column: "id",
+				propertyName: "rightProp",
+			},
 			type: "many-to-many",
-			leftPropertyName: "leftProp",
-			rightPropertyName: "rightProp",
-			junctionTable: junctionTableName,
+			junction: {
+				tableName: junctionTableName,
+			},
 		}),
 	})
 })

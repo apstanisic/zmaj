@@ -1,9 +1,7 @@
-import { EncryptionModule } from "@api/encryption/encryption.module"
 import { DynamicModule, Module } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
-import { UserCreateDto, systemCollections } from "@zmaj-js/common"
+import { systemCollections } from "@zmaj-js/common"
 import { CliDbModule } from "./bootstrap-cli-db"
-import { UsersService } from "@api/users/users.service"
 import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
 import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
 

@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollection } from "../utils/infra-test-helpers.js"
+import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
 
 const tableName = "playwright_collection_update_test"
 
 test.beforeEach(async () => {
-	await deleteCollection(tableName)
+	await deleteCollectionByTable(tableName)
 	await getSdk().infra.collections.createOne({
 		data: {
 			tableName,
@@ -17,7 +17,7 @@ test.beforeEach(async () => {
 	})
 })
 
-test.afterEach(async () => deleteCollection(tableName))
+test.afterEach(async () => deleteCollectionByTable(tableName))
 
 test("Update Collection", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

@@ -2,7 +2,7 @@ import { GlobalConfig } from "@api/app/global-app.config"
 import { AuthenticationConfig } from "@api/authentication/authentication.config"
 import { AuthenticationService } from "@api/authentication/authentication.service"
 import { throw500 } from "@api/common/throw-http"
-import { Injectable, InternalServerErrorException } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 import { PassportStrategy } from "@nestjs/passport"
 import { castArray, isError } from "@zmaj-js/common"
 import AppleStrategy, {

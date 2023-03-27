@@ -1,4 +1,4 @@
-import { CoreAdmin, useResourceContext, useStoreContext } from "ra-core"
+import { CoreAdmin, useStoreContext } from "ra-core"
 import polyglotI18nProvider from "ra-i18n-polyglot"
 import englishMessages from "ra-language-english"
 import { Fragment, memo, useMemo } from "react"

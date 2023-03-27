@@ -1,7 +1,7 @@
 import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { SequelizeService } from "@api/sequelize/sequelize.service"
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import { DbMigrationCollection } from "@zmaj-js/common"
 import { isString } from "radash"
 import { MigrationError, Umzug } from "umzug"

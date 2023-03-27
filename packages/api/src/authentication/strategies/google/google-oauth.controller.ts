@@ -4,15 +4,7 @@ import { GetUser } from "@api/authentication/get-user.decorator"
 import { RefreshTokenService } from "@api/authentication/refresh-token.service"
 import { RedirectResponse } from "@api/common"
 import { UserAgent } from "@api/common/decorators/user-agent.decorator"
-import {
-	Controller,
-	Get,
-	InternalServerErrorException,
-	Ip,
-	Redirect,
-	Res,
-	UseGuards,
-} from "@nestjs/common"
+import { Controller, Get, Ip, Redirect, Res, UseGuards } from "@nestjs/common"
 import { AuthUser, endpoints } from "@zmaj-js/common"
 import type { Response } from "express"
 import { GoogleOAuthGuard } from "./google-oauth.guard"

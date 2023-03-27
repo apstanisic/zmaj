@@ -1,16 +1,17 @@
 import { expect, test } from "@playwright/test"
 import { RelationCreateDto } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollection } from "../utils/infra-test-helpers.js"
+import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
+import { camel } from "radash"
 
 const leftTableName = "test_rel_delete_left"
 const rightTableName = "test_rel_delete_right"
 
 test.beforeEach(async () => {
 	const sdk = getSdk()
-	await deleteCollection(leftTableName, sdk)
-	await deleteCollection(rightTableName, sdk)
+	await deleteCollectionByTable(leftTableName, sdk)
+	await deleteCollectionByTable(rightTableName, sdk)
 
 	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: leftTableName },
@@ -21,20 +22,24 @@ test.beforeEach(async () => {
 
 	await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
-			leftColumn: "ref_id",
-			leftTable: leftTableName,
-			rightTable: rightTableName,
-			rightColumn: "id",
+			leftCollection: camel(leftTableName),
+			rightCollection: camel(rightTableName),
+			left: {
+				column: "ref_id",
+				propertyName: "prop1",
+			},
+			right: {
+				column: "id",
+				propertyName: "prop2",
+			},
 			type: "many-to-one",
-			leftPropertyName: "prop1",
-			rightPropertyName: "prop2",
 		}),
 	})
 })
 
 test.afterEach(async () => {
-	await deleteCollection(leftTableName)
-	await deleteCollection(rightTableName)
+	await deleteCollectionByTable(leftTableName)
+	await deleteCollectionByTable(rightTableName)
 })
 
 test("Delete Relation", async ({ page }) => {
