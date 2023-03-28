@@ -1,6 +1,6 @@
 import { columnNameRegex } from "@common/regexes"
+import { isNil } from "@common/utils/lodash"
 import { z } from "zod"
-import { isNil } from ".."
 
 /** Zod validation for db column and table name  */
 export const DbFieldSchema = z.string().regex(columnNameRegex).min(2).max(100)

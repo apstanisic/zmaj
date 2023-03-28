@@ -35,12 +35,12 @@ describe("DirectRelationsService", () => {
 
 	describe("validateDtoWithSchema", () => {
 		let dto: RelationCreateDto
-
 		let leftCol: CollectionDef
 		let rightCol: CollectionDef
+
 		beforeEach(() => {
-			leftCol = CollectionDefStub()
-			rightCol = CollectionDefStub()
+			leftCol = CollectionDefStub({ collectionName: "hello" })
+			rightCol = CollectionDefStub({ collectionName: "world" })
 
 			dto = new RelationCreateDto({
 				leftCollection: leftCol.collectionName,
@@ -52,53 +52,37 @@ describe("DirectRelationsService", () => {
 			})
 
 			infraState.getCollection = vi.fn((col: string) =>
-				leftCol.collectionName === col
+				col === leftCol.collectionName
 					? leftCol
-					: rightCol.collectionName === col
+					: col === rightCol.collectionName
 					? rightCol
 					: undefined,
 			)
-
-			schemaInfoService.getPrimaryKey = vi
-				.fn()
-				.mockResolvedValue({ columnName: "id", dataType: "uuid" })
 
 			schemaInfoService.hasColumn = vi.fn().mockResolvedValue(false)
 		})
 
 		it("should throw if collection don't exist", async () => {
-			asMock(infraState.getCollection).mockReturnValue(undefined)
+			vi.mocked(infraState.getCollection).mockReturnValue(undefined)
 			await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(BadRequestException)
 		})
 
 		it("should reorder dto if it's o2m", async () => {
 			dto.type = "one-to-many"
 			dto.right.column = "reversed_side_123"
-			service["reverseIfOtm"] = vi.fn((dto) => ({
-				...dto,
-				type: "many-to-one",
-				left: dto.right,
-				right: dto.left,
-			}))
 			const res = await service["validateDtoWithSchema"](dto)
 			expect(res.left.column).toEqual("reversed_side_123")
 		})
 
 		it("should throw if fk table is system table", async () => {
-			// dto.leftCollection = "zmajTest"
 			vi.mocked(infraState.getCollection).mockReturnValue(
 				CollectionDefStub({ tableName: "zmaj_users" }),
 			)
 			await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(ForbiddenException)
 		})
 
-		// it("should throw if pk side does not have pk", async () => {
-		// 	asMock(schemaInfoService.getPrimaryKey).mockResolvedValue(undefined)
-		// 	await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(ForbiddenException)
-		// })
-
 		it("should throw if fk column already exist", async () => {
-			asMock(schemaInfoService.hasColumn).mockResolvedValue(true)
+			vi.mocked(schemaInfoService.hasColumn).mockResolvedValue(true)
 			await expect(service["validateDtoWithSchema"](dto)).rejects.toThrow(BadRequestException)
 		})
 
@@ -118,27 +102,28 @@ describe("DirectRelationsService", () => {
 		})
 
 		it("should expand relation", async () => {
-			const res = await service["validateDtoWithSchema"](
-				new RelationCreateDto({
-					leftCollection: leftCol.collectionName,
-					rightCollection: rightCol.collectionName,
-					fkName: "comments_post_id_foreign_1",
-					onDelete: "CASCADE",
-					left: {
-						column: "post_id_1",
-						label: "Posts_1",
-						propertyName: "posts_1",
-						template: "l_tmp",
-					},
-					right: {
-						column: "id_1",
-						label: "Comments_1",
-						propertyName: "comments_1",
-						template: "r_tmp",
-					},
-					type: "many-to-one",
-				}),
-			)
+			service["reverseIfOtm"] = vi.fn((v) => v as any)
+			const partialDto = new RelationCreateDto({
+				leftCollection: leftCol.collectionName,
+				rightCollection: rightCol.collectionName,
+				fkName: "comments_post_id_foreign_1",
+				onDelete: "CASCADE",
+				left: {
+					column: "post_id_1",
+					label: "Posts_1",
+					propertyName: "posts_1",
+					template: "l_tmp",
+				},
+				right: {
+					column: "id_1",
+					label: "Comments_1",
+					propertyName: "comments_1",
+					template: "r_tmp",
+				},
+				type: "many-to-one",
+			})
+
+			const res = await service["validateDtoWithSchema"](partialDto)
 
 			expect(res).toEqual({
 				leftCollection: leftCol.collectionName,

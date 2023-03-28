@@ -17,16 +17,6 @@ export function Stub<T>(
 	//
 	return (override?: OverrideParam<T>) => {
 		const base = isFunction(schemaOrFn) ? schemaOrFn() : fn!()
-		// let full
-		// if (isFunction(override)) {
-		// 	full = override(base)
-		// } else if (isStruct(override)) {
-		// 	for (const [key, val] of Object.entries(override)) {
-		// 		base[key] = val
-		// 	}
-
-		// 	// { ...base, ...override }
-		// }
 		const full = isFunction(override) ? override(base) : { ...base, ...override }
 		return !isFunction(schemaOrFn) ? schemaOrFn.parse(full) : full
 	}

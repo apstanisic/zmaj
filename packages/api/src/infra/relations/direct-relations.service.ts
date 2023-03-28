@@ -57,6 +57,7 @@ export class DirectRelationService {
 		anyDto: RelationCreateDto,
 	): Promise<DirectRelationCreateDto3> {
 		if (anyDto.type === "many-to-many") throw500(352342)
+
 		const dto = this.reverseIfOtm(anyDto)
 		const leftCol =
 			this.infraState.getCollection(dto.leftCollection) ?? throw400(37439, emsg.noCollection)
@@ -71,7 +72,6 @@ export class DirectRelationService {
 		if (alreadyExist) throw400(51932, emsg.fieldExists(dto.left.column))
 
 		const fkName = dto.fkName ?? (await this.getFreeFkName(leftCol.tableName, dto.left.column))
-
 		return {
 			type: dto.type,
 			left: {

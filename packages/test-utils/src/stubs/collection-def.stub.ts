@@ -1,23 +1,20 @@
 import { randBoolean } from "@ngneat/falso"
 import { CollectionDef, LayoutConfigSchema, Stub, times } from "@zmaj-js/common"
-import { camel } from "radash"
+import { CollectionMetadataStub } from "./collection-metadata.stub.js"
 import { FieldDefStub } from "./field-def.stub.js"
 import { RelationDefStub } from "./relation-def.stub.js"
-import { CollectionMetadataStub } from "./collection-metadata.stub.js"
 
 export const CollectionDefStub = Stub<CollectionDef>(() => {
 	const base = CollectionMetadataStub()
-	// const fields = times(8, () => FieldMetadataStub({ collectionId: base.id }))
-	// const relations = times(3, () => RelationMetadataStub({ collectionId: base.id }))
-	// const fields = Array.from(times(8, (i) => FieldMetadataStub({ tableName: base.tableName })))
-	const fields = Array.from(
-		times(8, (i) =>
-			FieldDefStub({
-				// collectionId: base.id,
-				fieldName: "field" + i,
-				columnName: "field_" + i,
-			}),
-		),
+	const fields = times(8, (i) =>
+		FieldDefStub({
+			// collectionId: base.id,
+			fieldName: "field" + i,
+			columnName: "field_" + i,
+			tableName: base.tableName,
+			collectionName: base.collectionName,
+			isPrimaryKey: false,
+		}),
 	)
 	// const relations = Array.from(
 	// 	times(3, (i) => RelationMetadataStub({ tableName: base.tableName, propertyName: "rel" + i })),
@@ -26,23 +23,17 @@ export const CollectionDefStub = Stub<CollectionDef>(() => {
 		times(3, (i) =>
 			RelationDefStub({
 				tableName: base.tableName,
-				collectionName: camel(base.tableName),
+				collectionName: base.collectionName,
 				propertyName: "rel" + i,
 			}),
 		),
 	)
 
-	// const properties = Object.fromEntries([
-	// 	...fullRelations.map((r) => [r.propertyName, r]),
-	// 	...fullFields.map((r) => [r.fieldName, r]),
-	// ])
 	const pkField = fields[0]!
+	pkField.isPrimaryKey = true
 
 	return {
 		...base,
-		// properties,
-		// fullFields,
-		// fullRelations,
 		definedInCode: false,
 		relations: Object.fromEntries(relations.map((r) => [r.propertyName, r])),
 		fields: Object.fromEntries(fields.map((r) => [r.fieldName, r])),
@@ -50,8 +41,7 @@ export const CollectionDefStub = Stub<CollectionDef>(() => {
 		pkColumn: pkField.columnName,
 		pkField: pkField.fieldName,
 		pkType: randBoolean() ? "auto-increment" : "uuid",
-		collectionName: camel(base.tableName),
-		authzKey: `collections.${camel(base.tableName)}`,
+		authzKey: `collections.${base.collectionName}`,
 		layoutConfig: LayoutConfigSchema.parse({}),
 	}
 })
