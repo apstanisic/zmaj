@@ -1,7 +1,12 @@
 {
 	"$schema": "./node_modules/rome/configuration_schema.json",
 	"files": {
-		"ignore": ["./packages/**/dist/*", "./packages/**/build/*", "./examples/**/dist/*"]
+		"ignore": [
+			"./packages/**/dist/*",
+			"./packages/**/build/*",
+			"./examples/**/dist/*",
+			"./**/*.json"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -13,6 +18,7 @@
 			"semicolons": "asNeeded"
 		}
 	},
+	"organizeImports": { "enabled": false },
 	"linter": {
 		"enabled": false,
 		"rules": {

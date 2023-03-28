@@ -181,9 +181,11 @@ export class S3Storage extends BaseStorage {
 	/**
 	 * Upload file
 	 */
-	async upload({ path, source, config }: FileUploadParams): Promise<
-		NativeResult<PutObjectCommandOutput>
-	> {
+	async upload({
+		path,
+		source,
+		config,
+	}: FileUploadParams): Promise<NativeResult<PutObjectCommandOutput>> {
 		if (this.uploadDisabled) throw new FileUploadDisabledError()
 
 		try {
