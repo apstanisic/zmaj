@@ -4,12 +4,10 @@
 	"pipeline": {
 		"//#format": {},
 		"tsc": {
-			"dependsOn": ["//#format"],
 			"inputs": ["src/**", "../../tsconfig.json", "tsconfig.json", "tsconfig.build.json"],
 			"outputs": []
 		},
 		"lint": {
-			"dependsOn": ["//#format"],
 			"inputs": ["src/**", "../../.eslintrc.cjs", ".eslintrc.cjs"],
 			"outputs": ["src/**"]
 		},

@@ -1,5 +1,5 @@
 import { randBetweenDate, randPastDate, randWord } from "@ngneat/falso"
-import { SecurityToken, SecurityTokenSchema, Stub, stub } from "@zmaj-js/common"
+import { SecurityToken, SecurityTokenSchema, stub } from "@zmaj-js/common"
 import { addMinutes, subMinutes } from "date-fns"
 import { v4 } from "uuid"
 

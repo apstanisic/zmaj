@@ -91,7 +91,7 @@ export class BuildTestDbService {
 			data: postIds
 				.map((postId) => {
 					const tIds = shuffle(tagIds)
-					return times(random(0, 8), () => TPostTagStub({ postId, tagId: tIds.shift() }))
+					return times(random(1, 9), (i) => TPostTagStub({ id: i, postId, tagId: tIds.shift() }))
 				})
 				.flatMap((v) => v),
 		})

@@ -51,6 +51,7 @@ describe("AuthSessionsController e2e", () => {
 				confirmedEmail: true,
 				status: "active",
 				roleId: ADMIN_ROLE_ID,
+				otpToken: null,
 			}),
 		})
 	})

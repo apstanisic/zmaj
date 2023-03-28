@@ -71,6 +71,7 @@ describe("InfraStateService", () => {
 			const res = service["expandField"](field)
 			expect(res).toEqual<FieldDef>({
 				...field,
+				fieldConfig: field.fieldConfig as any,
 				dataType: "datetime",
 				dbDefaultValue: "now()",
 				hasDefaultValue: true,

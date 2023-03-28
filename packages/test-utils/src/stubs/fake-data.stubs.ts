@@ -27,4 +27,10 @@ export const TPostInfoStub = stub(() => ({
 
 export const TTagStub = stub(() => ({ id: v4(), name: randColor() }))
 
-export const TPostTagStub = stub(() => ({ id: null as null | number, postId: v4(), tagId: v4() }))
+export const TPostTagStub = stub<{ postId: string; tagId: string; id?: number | null | undefined }>(
+	() => ({
+		id: undefined,
+		postId: v4(),
+		tagId: v4(),
+	}),
+)
