@@ -1,19 +1,27 @@
 import { randBoolean, randNumber, randPhrase, randWord } from "@ngneat/falso"
-import { Stub, UrlQuerySchema } from "@zmaj-js/common"
-import { range } from "radash"
+import { Filter, Struct, UrlQuery, UrlQuerySchema, stub, times } from "@zmaj-js/common"
 
-export const ReadUrlQueryStub = Stub(UrlQuerySchema, () => ({
-	limit: randNumber({ min: 1, max: 100 }),
-	page: randNumber({ min: 1, max: 10 }),
-	count: randBoolean(),
-	fields: {},
-	filter: Object.fromEntries(
-		range(0, 6, () => [randWord(), randPhrase()]), //
-	), //
-	sort: {},
-	otmShowForbidden: false,
-}))
+export const ReadUrlQueryStub = stub<UrlQuery>(
+	() => ({
+		limit: randNumber({ min: 1, max: 100 }),
+		page: randNumber({ min: 1, max: 10 }),
+		count: randBoolean(),
+		fields: {},
+		filter: Object.fromEntries(
+			times(6, () => [randWord(), randPhrase()]), //
+		),
+		sort: {},
+		otmShowForbidden: false,
+		cursor: undefined,
+		language: undefined,
+		mtmCollection: undefined,
+		mtmProperty: undefined,
+		mtmRecordId: undefined,
+		otmFkField: undefined,
+	}),
+	UrlQuerySchema,
+)
 
-export const FilterStub = Stub(() => {
-	return Object.fromEntries(range(0, 6, () => [randWord(), randPhrase()])) //
+export const FilterStub = stub<Filter<Struct>>(() => {
+	return Object.fromEntries(times(6, () => [randWord(), randPhrase()])) //
 })

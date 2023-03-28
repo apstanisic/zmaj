@@ -8,7 +8,7 @@ import { asMock, throwErr, times } from "@zmaj-js/common"
 import { AxiosRequestConfig } from "axios"
 import { Writable } from "type-fest"
 import { beforeEach, describe, expect, it, Mock, vi } from "vitest"
-import { WebhookStub } from "./webhook.stub"
+import { WebhookStub } from "@zmaj-js/test-utils"
 import { WebhooksService } from "./webhooks.service"
 
 describe("WebhooksService", () => {

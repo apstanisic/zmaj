@@ -1,8 +1,9 @@
 import { CrudRequestStub } from "@api/common/decorators/crud-request.stub"
 import { Transaction } from "@api/database/orm-specs/Transaction"
 import { randJSON, randNumber } from "@ngneat/falso"
-import { Stub, times } from "@zmaj-js/common"
+import { stub, times } from "@zmaj-js/common"
 import { CollectionDefStub } from "@zmaj-js/test-utils"
+import { isObject, isString, omit } from "radash"
 import {
 	CreateAfterEvent,
 	CreateBeforeEvent,
@@ -10,20 +11,26 @@ import {
 	CreateStartEvent,
 } from "../crud-event.types"
 
-export const CreateBeforeEventStub = Stub<CreateBeforeEvent<any>>(() => {
-	const req = CrudRequestStub()
+export const CreateBeforeEventStub = stub<CreateBeforeEvent<any>>((modify) => {
+	const req = CrudRequestStub(modify.req)
+	const collection = isString(req.collection)
+		? CollectionDefStub({ collectionName: req.collection })
+		: isObject(req.collection)
+		? req.collection
+		: CollectionDefStub()
+
 	return {
 		action: "create",
 		type: "before",
 		user: req.user,
 		req,
-		collection: CollectionDefStub(),
+		collection,
 		dto: times(randNumber({ min: 1, max: 5 }), (i) => randJSON({ totalKeys: 3 })),
 	}
 })
 
-export const CreateStartEventStub = Stub<CreateStartEvent<any>>(() => {
-	const base = CreateBeforeEventStub()
+export const CreateStartEventStub = stub<CreateStartEvent<any>>((modify) => {
+	const base = CreateBeforeEventStub(omit(modify, ["type"]))
 
 	return {
 		...base,
@@ -32,8 +39,8 @@ export const CreateStartEventStub = Stub<CreateStartEvent<any>>(() => {
 	}
 })
 
-export const CreateFinishEventStub = Stub<CreateFinishEvent<any>>(() => {
-	const base = CreateStartEventStub()
+export const CreateFinishEventStub = stub<CreateFinishEvent<any>>((modify) => {
+	const base = CreateStartEventStub(omit(modify, ["type"]))
 
 	return {
 		...base,
@@ -42,8 +49,8 @@ export const CreateFinishEventStub = Stub<CreateFinishEvent<any>>(() => {
 	}
 })
 
-export const CreateAfterEventStub = Stub<CreateAfterEvent<any>>(() => {
-	const base = CreateFinishEventStub()
+export const CreateAfterEventStub = stub<CreateAfterEvent<any>>((modify) => {
+	const base = CreateFinishEventStub(omit(modify, ["type"]))
 
 	return {
 		...base,

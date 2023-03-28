@@ -1,17 +1,21 @@
 import { CrudRequest } from "@api/common/decorators/crud-request.decorator"
 import { randBoolean, randIp, randNumber, randUserAgent, randWord } from "@ngneat/falso"
-import { Stub, times } from "@zmaj-js/common"
+import { stub, times } from "@zmaj-js/common"
 import { AuthUserStub, ReadUrlQueryStub } from "@zmaj-js/test-utils"
+import { isObject, isString } from "radash"
 
-export const CrudRequestStub = Stub<CrudRequest>(() => {
-	const table = randWord()
+export const CrudRequestStub = stub<CrudRequest>(({ collection }) => {
+	const collectionName = isString(collection)
+		? collection
+		: isObject(collection)
+		? collection.collectionName
+		: randWord()
 	return {
 		user: randBoolean() ? AuthUserStub() : undefined,
 		ip: randIp(),
 		userAgent: randUserAgent(),
-		collection: table,
-		// flags: {},
-		params: { table },
+		collection: collection ?? collectionName,
+		params: { collection: collectionName },
 		body: Object.fromEntries(times(randNumber({ min: 1, max: 6 }), () => [randWord(), randWord()])),
 		query: ReadUrlQueryStub(),
 		isCrudRequest: true,

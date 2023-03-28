@@ -15,8 +15,8 @@ import {
 import supertest from "supertest"
 import { v4 } from "uuid"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
-import { WebhookStub } from "./webhook.stub"
 import { WebhooksService } from "./webhooks.service"
+import { WebhookStub } from "@zmaj-js/test-utils"
 
 describe("WebhooksController e2e", () => {
 	let all: TestBundle

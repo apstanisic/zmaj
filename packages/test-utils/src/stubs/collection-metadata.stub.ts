@@ -1,23 +1,19 @@
-import {
-	randAnimalType,
-	randBoolean,
-	randChanceBoolean,
-	randJobTitle,
-	randPastDate,
-} from "@ngneat/falso"
-import { CollectionMetadataSchema, Stub } from "@zmaj-js/common"
+import { randBoolean, randChanceBoolean, randJobTitle, randPastDate, randWord } from "@ngneat/falso"
+import { CollectionMetadata, CollectionMetadataSchema, stub } from "@zmaj-js/common"
+import { camel } from "radash"
+import { v4 } from "uuid"
 
-export const CollectionMetadataStub = Stub(CollectionMetadataSchema, () => ({
-	createdAt: randPastDate(),
-	// description: randSentence(),
-	disabled: randChanceBoolean({ chanceTrue: 0.15 }),
-	hidden: randBoolean(),
-	label: randJobTitle(),
-	tableName: randAnimalType(),
-	// validation: {},
-	layoutConfig: {},
-	displayTemplate: "{id}",
-	// createdAtFieldId: null,
-	// updatedAtFieldId: null,
-	// icon: randWord(),
-}))
+export const CollectionMetadataStub = stub<CollectionMetadata>((modify) => {
+	const tableName = modify.tableName ?? randWord()
+	return {
+		createdAt: randPastDate(),
+		disabled: randChanceBoolean({ chanceTrue: 0.15 }),
+		hidden: randBoolean(),
+		label: randJobTitle(),
+		tableName,
+		collectionName: modify.collectionName ?? camel(tableName),
+		layoutConfig: {},
+		displayTemplate: "{id}",
+		id: v4(),
+	}
+}, CollectionMetadataSchema)

@@ -1,9 +1,9 @@
 import { CrudRequestStub } from "@api/common/decorators/crud-request.stub"
 import { Transaction } from "@api/database/orm-specs/Transaction"
 import { randBoolean, randPhrase, randWord } from "@ngneat/falso"
-import { Stub, times } from "@zmaj-js/common"
-import { FilterStub, CollectionDefStub } from "@zmaj-js/test-utils"
-import { random } from "radash"
+import { stub, times } from "@zmaj-js/common"
+import { CollectionDefStub, FilterStub } from "@zmaj-js/test-utils"
+import { isObject, isString, omit, random } from "radash"
 import { v4 } from "uuid"
 import {
 	UpdateAfterEvent,
@@ -12,21 +12,26 @@ import {
 	UpdateStartEvent,
 } from "../crud-event.types"
 
-export const UpdateBeforeEventStub = Stub<UpdateBeforeEvent>(() => {
-	const req = CrudRequestStub()
+export const UpdateBeforeEventStub = stub<UpdateBeforeEvent>((modify) => {
+	const req = CrudRequestStub(modify.req)
+	const collection = isString(req.collection)
+		? CollectionDefStub({ collectionName: req.collection })
+		: isObject(req.collection)
+		? req.collection
+		: CollectionDefStub()
 	return {
 		action: "update",
 		type: "before",
 		user: req.user,
 		changes: Object.fromEntries(times(3, (i) => ["val" + i, randPhrase()])),
 		filter: { type: "where", where: FilterStub() },
-		req: req,
-		collection: CollectionDefStub(),
+		req,
+		collection,
 	}
 })
 
-export const UpdateStartEventStub = Stub<UpdateStartEvent>(() => {
-	const base = UpdateBeforeEventStub()
+export const UpdateStartEventStub = stub<UpdateStartEvent>((modify) => {
+	const base = UpdateBeforeEventStub(omit(modify, ["type"]))
 
 	const toUpdate: UpdateStartEvent["toUpdate"] = times(random(1, 8), () => {
 		const id = v4()
@@ -49,8 +54,8 @@ export const UpdateStartEventStub = Stub<UpdateStartEvent>(() => {
 	}
 })
 
-export const UpdateFinishEventStub = Stub<UpdateFinishEvent>(() => {
-	const base = UpdateStartEventStub()
+export const UpdateFinishEventStub = stub<UpdateFinishEvent>((modify) => {
+	const base = UpdateStartEventStub(omit(modify, ["type"]))
 	return {
 		...base,
 		type: "finish",
@@ -58,8 +63,8 @@ export const UpdateFinishEventStub = Stub<UpdateFinishEvent>(() => {
 	}
 })
 
-export const UpdateAfterEventStub = Stub<UpdateAfterEvent>(() => {
-	const base = UpdateFinishEventStub()
+export const UpdateAfterEventStub = stub<UpdateAfterEvent>((modify) => {
+	const base = UpdateFinishEventStub(omit(modify, ["type"]))
 	return {
 		...base,
 		type: "after",

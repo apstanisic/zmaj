@@ -1,55 +1,44 @@
 import { randColor, randWord } from "@ngneat/falso"
-import { RelationDef, Stub, StubResult } from "@zmaj-js/common"
-import { camel, pick } from "radash"
+import { DirectRelation, JunctionRelation, RelationDef, stub } from "@zmaj-js/common"
+import { camel } from "radash"
 import { RelationMetadataStub } from "./relation-metadata.js"
 
-export const RelationDefStub: StubResult<RelationDef> = Stub<RelationDef>(() => {
-	const base = RelationMetadataStub()
-	const leftColumn = randColor()
-	const rightColumn = randColor()
+export const RelationDefStub = stub<RelationDef>((modify) => {
+	const base = RelationMetadataStub(modify.relation)
+	if (modify.type === "many-to-many") {
+		base.mtmFkName = randWord()
+	}
+	const leftColumn = modify.columnName ?? randColor()
+	const rightColumn = modify.otherSide?.columnName ?? randColor()
 	const leftTable = base.tableName
-	const rightTable = randWord()
+	const rightTable = modify.otherSide?.tableName ?? randWord()
 	const notMtm: RelationDef = {
 		relation: base,
 		type: "many-to-one",
-		collectionName: camel(leftTable),
+		collectionName: modify.collectionName ?? camel(leftTable),
 		tableName: leftTable,
 		columnName: leftColumn,
-		fieldName: camel(leftColumn),
+		fieldName: modify.fieldName ?? camel(leftColumn),
 		propertyName: base.propertyName,
 		id: base.id,
-		otherSide: {
+		otherSide: modify.otherSide ?? {
 			columnName: rightColumn,
 			tableName: rightTable,
 			fieldName: camel(rightColumn),
 			propertyName: randWord(),
 			collectionName: camel(rightTable),
 		},
-
-		// mtmFkName: null,
-		// collectionId: v4(),
-	}
+	} satisfies DirectRelation
 
 	if (!base.mtmFkName) return notMtm
 
-	const junctionLeftColumn = randColor()
-	const junctionRightColumn = randColor()
+	const junctionLeftColumn = modify.junction?.thisSide.columnName ?? randColor()
+	const junctionRightColumn = modify.junction?.otherSide.columnName ?? randColor()
 
-	const junctionTable = randWord()
+	const junctionTable = modify.junction?.tableName ?? randWord()
 	return {
-		...pick(notMtm, [
-			"collectionName",
-			"columnName",
-			"id",
-			"tableName",
-			"propertyName",
-			"relation",
-			"fieldName",
-			"otherSide",
-		]),
-		mtmFkName: base.mtmFkName!,
+		...notMtm,
 		type: "many-to-many",
-
 		junction: {
 			collectionName: camel(junctionTable),
 			tableName: junctionTable,
@@ -67,5 +56,5 @@ export const RelationDefStub: StubResult<RelationDef> = Stub<RelationDef>(() => 
 				propertyName: camel(rightTable),
 			},
 		},
-	}
+	} satisfies JunctionRelation
 })

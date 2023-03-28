@@ -1,9 +1,9 @@
 import { CrudRequestStub } from "@api/common/decorators/crud-request.stub"
 import { Transaction } from "@api/database/orm-specs/Transaction"
 import { randNumber, randWord } from "@ngneat/falso"
-import { Stub, times } from "@zmaj-js/common"
-import { FilterStub, CollectionDefStub } from "@zmaj-js/test-utils"
-import { random } from "radash"
+import { stub, times } from "@zmaj-js/common"
+import { CollectionDefStub, FilterStub } from "@zmaj-js/test-utils"
+import { isObject, isString, omit, random } from "radash"
 import { v4 } from "uuid"
 import {
 	DeleteAfterEvent,
@@ -12,20 +12,25 @@ import {
 	DeleteStartEvent,
 } from "../crud-event.types"
 
-export const DeleteBeforeEventStub = Stub<DeleteBeforeEvent<any>>(() => {
-	const req = CrudRequestStub()
+export const DeleteBeforeEventStub = stub<DeleteBeforeEvent<any>>((modify) => {
+	const req = CrudRequestStub(modify.req)
+	const collection = isString(req.collection)
+		? CollectionDefStub({ collectionName: req.collection })
+		: isObject(req.collection)
+		? req.collection
+		: CollectionDefStub()
 	return {
 		action: "delete",
 		type: "before",
 		user: req.user,
 		req,
-		collection: CollectionDefStub(),
+		collection,
 		filter: { type: "where", where: FilterStub() },
 	}
 })
 
-export const DeleteStartEventStub = Stub<DeleteStartEvent<any>>(() => {
-	const base = DeleteBeforeEventStub()
+export const DeleteStartEventStub = stub<DeleteStartEvent<any>>((modify) => {
+	const base = DeleteBeforeEventStub(omit(modify, ["type"]))
 	const toDelete = times(random(1, 5), () => ({
 		id: v4(),
 		original: {
@@ -43,8 +48,8 @@ export const DeleteStartEventStub = Stub<DeleteStartEvent<any>>(() => {
 	}
 })
 
-export const DeleteFinishEventStub = Stub<DeleteFinishEvent<any>>(() => {
-	const base = DeleteStartEventStub()
+export const DeleteFinishEventStub = stub<DeleteFinishEvent<any>>((modify) => {
+	const base = DeleteStartEventStub(omit(modify, ["type"]))
 
 	return {
 		...base,
@@ -53,8 +58,8 @@ export const DeleteFinishEventStub = Stub<DeleteFinishEvent<any>>(() => {
 	}
 })
 
-export const DeleteAfterEventStub = Stub<DeleteAfterEvent<any>>(() => {
-	const base = DeleteFinishEventStub()
+export const DeleteAfterEventStub = stub<DeleteAfterEvent<any>>((modify) => {
+	const base = DeleteFinishEventStub(omit(modify, ["type"]))
 
 	return {
 		...base,

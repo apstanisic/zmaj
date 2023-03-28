@@ -1,25 +1,24 @@
-import { isFunction } from "radash"
 import { z } from "zod"
-import { AnyFn } from "./types"
+import { isStruct } from "./utils/is-struct"
 
-type OverrideParam<T> = T extends z.ZodTypeAny
-	? Partial<z.input<T>> | ((stub: z.output<T>) => z.output<T>)
-	: Partial<T> | ((stub: T) => T)
+export function stub<T>(
+	defaultStubFn: (data: Partial<T>) => T,
+	schema?: z.ZodType<T, any, any>,
+): (data?: Partial<T>) => T {
+	return (data?: Partial<T>) => {
+		let res: T
+		if (isStruct(data)) {
+			res = defaultStubFn(data)
+		} else {
+			res = defaultStubFn({})
+		}
 
-type OverrideFn<T> = (override?: OverrideParam<T>) => T extends z.ZodTypeAny ? z.output<T> : T
+		// Do not create new object, mutate already created
+		// If we created instance of class, this can mess up with types
+		for (const key of Object.keys(data ?? {})) {
+			res[key as keyof T] = data?.[key as keyof T] as any
+		}
 
-export function Stub<T>(fn: () => T): OverrideFn<T>
-export function Stub<T extends z.ZodTypeAny>(schema: T, fn: () => z.input<T>): OverrideFn<T>
-export function Stub<T>(
-	schemaOrFn: z.ZodTypeAny | AnyFn,
-	fn?: () => z.input<z.ZodTypeAny>,
-): OverrideFn<T> {
-	//
-	return (override?: OverrideParam<T>) => {
-		const base = isFunction(schemaOrFn) ? schemaOrFn() : fn!()
-		const full = isFunction(override) ? override(base) : { ...base, ...override }
-		return !isFunction(schemaOrFn) ? schemaOrFn.parse(full) : full
+		return schema ? schema.parse(res) : res
 	}
 }
-// ts complains
-export type StubResult<T> = OverrideFn<T>

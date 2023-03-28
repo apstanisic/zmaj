@@ -6,13 +6,19 @@ import {
 	randUserAgent,
 	randUuid,
 } from "@ngneat/falso"
-import { AuthSessionSchema, Stub } from "@zmaj-js/common"
+import { AuthSession, AuthSessionSchema, now, stub } from "@zmaj-js/common"
+import { v4 } from "uuid"
 
-export const AuthSessionStub = Stub(AuthSessionSchema, () => ({
-	ip: randIp(),
-	userId: randUuid(),
-	refreshToken: randPassword(),
-	validUntil: randFutureDate(),
-	lastUsed: randRecentDate(),
-	userAgent: randUserAgent(),
-}))
+export const AuthSessionStub = stub<AuthSession>(
+	() => ({
+		createdAt: now(),
+		id: v4(),
+		ip: randIp(),
+		userId: randUuid(),
+		refreshToken: randPassword(),
+		validUntil: randFutureDate(),
+		lastUsed: randRecentDate(),
+		userAgent: randUserAgent(),
+	}),
+	AuthSessionSchema,
+)
