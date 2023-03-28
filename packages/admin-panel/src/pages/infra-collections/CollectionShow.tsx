@@ -41,6 +41,7 @@ export const CollectionShow = memo(() => {
 				{/* Tab 1 */}
 				<TabsSection index={0}>
 					<ManualShowField source="id" />
+					<ManualShowField source="collectionName" />
 					<ManualShowField source="tableName" />
 					<ManualShowField source="label" />
 					<ManualShowField source="pkField" label="Primary Key Field" />

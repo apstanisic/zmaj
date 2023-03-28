@@ -29,6 +29,11 @@ export const CollectionCreate = memo(() => {
 							fieldConfig={shortTextDbColumnValidation}
 							isRequired
 						/>
+						<ManualInputField
+							source="collectionName"
+							fieldConfig={shortTextDbColumnValidation}
+							description="Customize collection name (leave empty to use camel cased table name)"
+						/>
 
 						<ManualInputField
 							source="pkColumn"
@@ -59,13 +64,6 @@ export const CollectionCreate = memo(() => {
 						<ManualInputField source="disabled" Component={BooleanInputField} />
 						<ManualInputField source="hidden" Component={BooleanInputField} />
 						<ManualInputField source="layoutConfig" Component={JsonInputField} defaultValue={{}} />
-						{/* <ManualInputField source="description" Component={TextareaInputField} /> */}
-						{/* <ManualInputField
-              source="validation"
-              Component={JsonInputField}
-              isRequired
-              defaultValue={{}}
-            /> */}
 					</StepSection>
 				</StepLayout>
 			</ManualInputLayout>
