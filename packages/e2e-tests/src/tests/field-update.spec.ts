@@ -40,7 +40,7 @@ test("Update Field", async ({ page }) => {
 	)
 
 	await page.getByRole("tab", { name: "Fields" }).click()
-	await page.getByRole("link", { name: "toUpdate short-text" }).click()
+	await page.getByRole("link", { name: `Column: "to_update"` }).click()
 
 	await page.getByRole("button", { name: /Edit/ }).click()
 	await expect(page).toHaveURL(createIdRegex("http://localhost:7100/admin/#/zmajFieldMetadata/$ID"))

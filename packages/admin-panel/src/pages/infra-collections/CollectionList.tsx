@@ -31,7 +31,8 @@ export const CollectionList = memo(() => {
 			<Card>
 				<Empty />
 				<SimpleListLayout<CollectionDef>
-					primaryText={(col) => col.tableName}
+					primaryText={(col) => col.collectionName}
+					secondaryText={(col) => `Table: "${col.tableName}"`}
 					// secondaryText={(col) => col.description}
 					// linkType="show"
 					startIcon={(col) => <MdViewList />}

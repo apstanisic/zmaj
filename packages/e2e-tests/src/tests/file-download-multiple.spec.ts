@@ -54,7 +54,7 @@ test("Download multiple files", async ({ page }) => {
 	let secWait = 5
 	while (downloadCount < 2 && secWait > 0) {
 		await sleep(1000)
-		secWait--
+		secWait -= 1
 	}
 	expect(downloadCount).toEqual(2)
 	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajFiles?${query}`)

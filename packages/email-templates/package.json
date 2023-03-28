@@ -40,7 +40,7 @@
 	"devDependencies": {
 		"@faire/mjml-react": "^3.2.0",
 		"@types/mjml": "^4.7.0",
-		"@types/react": "^18.0.28",
+		"@types/react": "^18.0.30",
 		"@types/react-dom": "^18.0.11",
 		"mjml": "^4.13.0",
 		"react": "^18.2.0",

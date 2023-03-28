@@ -40,7 +40,7 @@ test("Show Field", async ({ page }) => {
 	)
 
 	await page.getByRole("tab", { name: "Fields" }).click()
-	await page.getByRole("link", { name: "toShow short-text" }).click()
+	await page.getByRole("link", { name: `Column: "to_show"` }).click()
 
 	await expect(page).toHaveURL(
 		createIdRegex("http://localhost:7100/admin/#/zmajFieldMetadata/$ID/show"),

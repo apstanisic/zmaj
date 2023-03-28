@@ -1,6 +1,11 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
-import { CollectionMetadataCollection, RelationCreateDto } from "@zmaj-js/common"
+import {
+	CollectionMetadataCollection,
+	RelationCreateDto,
+	filterStruct,
+	notNil,
+} from "@zmaj-js/common"
 import { plural, singular } from "pluralize"
 import { useNotify, useRedirect } from "ra-core"
 import { memo, useEffect, useMemo } from "react"
@@ -9,11 +14,20 @@ import { GeneratedCreatePage } from "../../generator/pages/GeneratedCreatePage"
 import { useNonSystemCollections } from "../../state/infra-state-v2"
 import { useInfraState } from "../../state/useInfraState"
 import { RelationCreateForm } from "./create/RelationCreateForm"
+import { crush, construct } from "radash"
+
+function removeEmptyValues(val: any): unknown {
+	const flat = filterStruct(crush(val), (v) => notNil(v) && v !== "")
+	return construct(flat) as unknown
+}
 
 export const RelationCreate = memo(() => {
 	const infra = useInfraState()
 	return (
-		<GeneratedCreatePage onCreate={async (relation) => infra.refetch()}>
+		<GeneratedCreatePage
+			transform={removeEmptyValues}
+			onCreate={async (relation) => infra.refetch()}
+		>
 			<Content />
 		</GeneratedCreatePage>
 	)

@@ -3,6 +3,7 @@ import { createIdRegex } from "../utils/create-id-regex.js"
 import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 
 const tableName = "all_test"
+const collectionName = "allTest"
 
 test.beforeEach(async () => deleteCollectionByTable(tableName))
 test.afterAll(async () => deleteCollectionByTable(tableName))
@@ -37,7 +38,7 @@ test("Create Collection and record", async ({ page }) => {
 	// click to add new field
 	await page.getByRole("button", { name: "Add field" }).click()
 	await expect(page).toHaveURL(
-		"http://localhost:7100/admin/#/zmajFieldMetadata/create?source={%22tableName%22:%22all_test%22}",
+		"http://localhost:7100/admin/#/zmajFieldMetadata/create?source={%22collectionName%22:%22allTest%22}",
 	)
 
 	// set column name to be name
@@ -60,7 +61,7 @@ test("Create Collection and record", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	// go to our collection
-	await page.getByRole("link", { name: tableName }).click()
+	await page.getByRole("link", { name: `Table: "${tableName}"` }).click()
 	await expect(page).toHaveURL(
 		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
@@ -71,7 +72,7 @@ test("Create Collection and record", async ({ page }) => {
 	// add new relation
 	await page.getByRole("button", { name: "Add relation" }).click()
 	await expect(page).toHaveURL(
-		"http://localhost:7100/admin/#/zmajRelationMetadata/create?disable_leftTable=true&source={%22leftTable%22:%22all_test%22}",
+		"http://localhost:7100/admin/#/zmajRelationMetadata/create?disable_leftCollection=true&source={%22leftCollection%22:%22allTest%22}",
 	)
 
 	// set relation type
@@ -79,14 +80,14 @@ test("Create Collection and record", async ({ page }) => {
 	await page.getByRole("option", { name: ">-- Many to One" }).getByText(">-- Many to One").click()
 
 	// set right table
-	await page.getByRole("button", { name: /Table \(other side\)/ }).click()
-	await page.getByRole("option", { name: "zmaj_users" }).getByText("zmaj_users").click()
+	await page.getByRole("button", { name: /Collection \(other side\)/ }).click()
+	await page.getByRole("option", { name: "zmajUsers" }).getByText("zmajUsers").click()
 
 	// set left property name
-	await page.locator('input[name="leftPropertyName"]').fill("user")
+	await page.locator('input[name="left.propertyName"]').fill("user")
 
 	// set left column name
-	await page.locator('input[name="leftColumn"]').fill("user_id")
+	await page.locator('input[name="left.column"]').fill("user_id")
 
 	// create relation
 	await page.getByRole("button", { name: /Save/ }).click()
@@ -108,7 +109,7 @@ test("Create Collection and record", async ({ page }) => {
 	// Fix this. Since this clicks on first dropdown
 	// await page.getByLabel("Zmaj Users").getByRole("button", { name: "▼" }).click()
 
-	await page.locator("text=Zmaj Users").click()
+	await page.getByText("User", { exact: true }).click()
 	// await page.getByLabel("Zmaj Users").click()
 	await page.keyboard.press("Enter")
 

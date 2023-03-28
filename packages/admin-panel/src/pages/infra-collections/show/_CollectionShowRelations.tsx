@@ -31,7 +31,7 @@ export const CollectionShowRelations = memo(() => {
 						<SimpleListLayout<RelationDef>
 							// linkType="show"
 							primaryText={(relation) =>
-								`${relation.tableName}.${relation.propertyName} <-> ${relation.otherSide.tableName}`
+								`${relation.tableName}.${relation.propertyName} ⟶ ${relation.otherSide.tableName}`
 							}
 							secondaryText={(relation) => relation.type}
 							rowClassName="border-b"

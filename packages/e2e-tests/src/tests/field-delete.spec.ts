@@ -40,7 +40,7 @@ test("Delete Field", async ({ page }) => {
 	)
 
 	await page.getByRole("tab", { name: "Fields" }).click()
-	await page.getByRole("link", { name: "toDelete short-text" }).click()
+	await page.getByRole("link", { name: `Column: "to_delete"` }).click()
 
 	await page.getByRole("button", { name: /Delete/ }).click()
 	await page.getByRole("button", { name: "Confirm" }).click()

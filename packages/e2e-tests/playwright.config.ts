@@ -46,7 +46,7 @@ export default defineConfig({
 		// storageState: JSON.parse(readFileSync("src/state/storage-state.json", "utf-8")),
 		//"src/state/storage-state.json", //path.join(dir, ""), // `${e2ePackage}/state/storage-state.json`,
 		storageState: path.join(dir, "src/state/storage-state.json"),
-		// launchOptions: { slowMo: 50 },
+		launchOptions: { slowMo: 50 },
 	},
 	/* Global setup */
 	globalSetup: `${e2ePackage}/playwright-setup`,

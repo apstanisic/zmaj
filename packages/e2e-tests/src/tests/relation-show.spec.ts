@@ -8,19 +8,24 @@ import { camel } from "radash"
 const leftTableName = "test_rel_show_left"
 const rightTableName = "test_rel_show_right"
 
+let leftCollectionId: string
+let relationId: string
+
 test.beforeEach(async () => {
 	const sdk = getSdk()
 	await deleteCollectionByTable(leftTableName, sdk)
 	await deleteCollectionByTable(rightTableName, sdk)
 
-	await sdk.infra.collections.createOne({
+	const col1 = await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: leftTableName },
 	})
-	await sdk.infra.collections.createOne({
+	leftCollectionId = col1.id
+
+	const col2 = await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: rightTableName },
 	})
 
-	await sdk.infra.relations.createOne({
+	const relation = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
 			leftCollection: camel(leftTableName),
 			rightCollection: camel(rightTableName),
@@ -35,6 +40,7 @@ test.beforeEach(async () => {
 			type: "many-to-one",
 		}),
 	})
+	relationId = relation.id
 })
 
 test.afterEach(async () => {
@@ -51,15 +57,15 @@ test("Show Relation", async ({ page }) => {
 	await page.getByRole("link", { name: "Collections" }).click()
 	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
-	await page.getByRole("link", { name: leftTableName }).click()
+	await page.getByRole("link", { name: `Table: "${leftTableName}"` }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
+		`http://localhost:7100/admin/#/zmajCollectionMetadata/${leftCollectionId}/show`,
 	)
 
 	await page.getByRole("tab", { name: "Relations" }).click()
 
-	await page.getByText(`${leftTableName}.prop1 <-> ${rightTableName}`).click()
+	await page.getByText(`${leftTableName}.prop1 ⟶ ${rightTableName}`).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmajRelationMetadata/$ID/show"),
+		`http://localhost:7100/admin/#/zmajRelationMetadata/${relationId}/show`,
 	)
 })

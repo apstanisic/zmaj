@@ -29,7 +29,7 @@
 			"outputs": ["dist/**", "build/**"]
 		},
 		"build": {
-			"dependsOn": ["//#format", "^build", "prebuild"],
+			"dependsOn": ["//#format", "^build"],
 			"outputs": ["dist/**", "build/**"]
 		}
 	}

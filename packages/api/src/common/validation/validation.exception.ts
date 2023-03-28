@@ -8,7 +8,7 @@ export class ValidationException extends HttpException {
 	constructor(error: ZodError, options?: { zmajCode?: number; httpCode?: HttpStatus }) {
 		const httpCode = options?.httpCode ?? 400
 
-		const errors = mapValues(error.flatten().fieldErrors, (v) => v?.join("; "))
+		const errors = Object.fromEntries(error.issues.map((iss) => [iss.path.join("."), iss.message]))
 
 		const details = Object.values(mapValues(errors, (v, k: string) => `Field "${k}": ${v}`))
 

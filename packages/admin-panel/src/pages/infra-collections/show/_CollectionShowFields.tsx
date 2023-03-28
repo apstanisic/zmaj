@@ -28,7 +28,9 @@ export const CollectionShowFields = memo(() => {
 					<SimpleListLayout<FieldDef>
 						// linkType="show"
 						primaryText={(field) => field.fieldName}
-						secondaryText={(field) => field.componentName ?? field.dataType}
+						secondaryText={(field) =>
+							`Column: "${field.columnName}" - ${field.componentName ?? field.dataType}`
+						}
 						endIcon={(field) => <CollectionShowFieldsIcon collection={collection} field={field} />}
 						rowClassName="border-b"
 						// rowStyle={(r) => ({ borderBottom: "1px solid #ccc" })}

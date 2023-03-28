@@ -2,9 +2,15 @@ import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
 import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
+import { camel } from "radash"
 
 const leftTableName = "test_rel_create_left"
 const rightTableName = "test_rel_create_right"
+
+const leftCollectionName = camel(leftTableName)
+const rightCollectionName = camel(rightTableName)
+
+let leftCollectionId: string
 
 test.beforeEach(async () => {
 	await deleteCollectionByTable(leftTableName)
@@ -12,9 +18,16 @@ test.beforeEach(async () => {
 
 	const sdk = getSdk()
 
-	await sdk.infra.collections.createOne({
-		data: { pkColumn: "id", pkType: "auto-increment", tableName: leftTableName },
+	const leftCollection = await sdk.infra.collections.createOne({
+		data: {
+			pkColumn: "id",
+			pkType: "auto-increment",
+			tableName: leftTableName,
+			collectionName: leftCollectionName,
+		},
 	})
+	leftCollectionId = leftCollection.id
+
 	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: rightTableName },
 	})
@@ -35,13 +48,13 @@ test("Create many-to-one relation", async ({ page }) => {
 
 	await page.getByRole("link", { name: leftTableName }).click()
 	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
+		`http://localhost:7100/admin/#/zmajCollectionMetadata/${leftCollectionId}/show`,
 	)
 
 	await page.getByRole("tab", { name: "Relations" }).click()
 	await page.getByRole("button", { name: "Add relation" }).click()
 	await expect(page).toHaveURL(
-		`http://localhost:7100/admin/#/zmajRelationMetadata/create?disable_leftTable=true&source={%22leftTable%22:%22${leftTableName}%22}`,
+		`http://localhost:7100/admin/#/zmajRelationMetadata/create?disable_leftCollection=true&source={%22leftCollection%22:%22${leftCollectionName}%22}`,
 	)
 
 	await page.getByRole("button", { name: /Type/ }).click()
@@ -51,8 +64,8 @@ test("Create many-to-one relation", async ({ page }) => {
 
 	// await page.getByRole("button", { name: ">-- Many to One ▼" }).press("Tab")
 
-	await page.getByRole("button", { name: /Table \(other side\)/ }).click()
-	await page.getByRole("option", { name: rightTableName }).click()
+	await page.getByRole("button", { name: /Collection \(other side\)/ }).click()
+	await page.getByRole("option", { name: rightCollectionName }).click()
 	// await page.keyboard.press("Enter")
 	// await page.getByRole("option", { name: rightTableName }).getByText(rightTableName).click()
 
