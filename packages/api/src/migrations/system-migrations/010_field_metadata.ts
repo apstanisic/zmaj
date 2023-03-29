@@ -21,6 +21,7 @@ export const CreateFieldMetadataTable = createSystemMigration({
 					},
 					onDelete: "CASCADE",
 				},
+				field_name: { type: DataTypes.STRING(200), allowNull: false },
 				can_create: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
 				can_update: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
 				can_read: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
@@ -41,6 +42,12 @@ export const CreateFieldMetadataTable = createSystemMigration({
 		await qi.addConstraint(table, {
 			type: "unique",
 			fields: ["table_name", "column_name"],
+			transaction: trx,
+		})
+
+		await qi.addConstraint(table, {
+			type: "unique",
+			fields: ["table_name", "field_name"],
 			transaction: trx,
 		})
 

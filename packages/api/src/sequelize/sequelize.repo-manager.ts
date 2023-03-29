@@ -29,7 +29,6 @@ export class SequelizeRepoManager extends RepoManager {
 		col: string | CollectionDef<T>,
 	): OrmRepository<T> {
 		const collection = isString(col) ? col : col.collectionName
-		// const collectionName = camel(collection)
 
 		const exist = this.sq.models[collection]
 

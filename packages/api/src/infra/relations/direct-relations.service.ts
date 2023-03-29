@@ -22,6 +22,7 @@ import { Except } from "type-fest"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { Transaction } from "@api/database/orm-specs/Transaction"
 import { v4 } from "uuid"
+import { camel } from "radash"
 
 @Injectable()
 export class DirectRelationService {
@@ -145,6 +146,7 @@ export class DirectRelationService {
 					data: zodCreate(FieldMetadataSchema, {
 						columnName: dto.left.column,
 						tableName: dto.left.table,
+						fieldName: camel(dto.left.column),
 					}),
 				})
 

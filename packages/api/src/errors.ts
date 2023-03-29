@@ -80,6 +80,7 @@ export const emsg = {
 	//
 	collectionExists: (col: string) => `Collection '${col}' already exists` as const,
 	fieldExists: (field: string) => `Field '${field}' already exists` as const,
+	columnExists: (column: string) => `Column '${column}' already exists` as const,
 	propertyTaken: (property: string) => `Property '${property}' already exist` as const,
 	mtmJoinInvalid: "It's not possible to join relations",
 	mtmSplitInvalid: "There is no many-to-many relation",

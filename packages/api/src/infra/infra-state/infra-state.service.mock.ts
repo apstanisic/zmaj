@@ -1,5 +1,4 @@
 import { allMockCollectionDefs, allMockFieldDefs, allMockRelationDefs } from "@zmaj-js/test-utils"
-import { camel } from "radash"
 import { vi } from "vitest"
 import { InfraStateService } from "./infra-state.service"
 
@@ -13,7 +12,7 @@ export function mockInfraStateService(): InfraStateService {
 		...state["_systemCollections"],
 	])
 	state["_collections"] = structuredClone(
-		Object.fromEntries(allCollections.map((c) => [camel(c.tableName), c])),
+		Object.fromEntries(allCollections.map((c) => [c.collectionName, c])),
 	)
 	state.initializeState = vi.fn(async () => {})
 	return state

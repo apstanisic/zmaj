@@ -24,6 +24,11 @@ export type FieldMetadata = {
 	readonly tableName: string
 
 	/**
+	 * At which key column value can be accessed
+	 */
+	fieldName: string
+
+	/**
 	 * Can value be updated. Useful for readonly values
 	 */
 	canUpdate: boolean

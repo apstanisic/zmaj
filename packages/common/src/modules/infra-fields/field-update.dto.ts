@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { ZodDto } from "../../zod/zod-dto"
 import { FieldMetadataSchema } from "./field-metadata.schema"
+import { DbFieldSchema, zodStripNull } from "@common/zod"
 
 export const FieldUpdateSchema = FieldMetadataSchema.pick({
 	canCreate: true,
@@ -18,6 +19,7 @@ export const FieldUpdateSchema = FieldMetadataSchema.pick({
 		isUnique: z.boolean().nullish(),
 		isNullable: z.boolean().nullish(),
 		dbDefaultValue: z.unknown().nullish(),
+		fieldName: DbFieldSchema.nullish().transform(zodStripNull),
 	})
 	.partial()
 

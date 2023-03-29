@@ -9,7 +9,6 @@ export const FieldDefSchema = ModelSchema<FieldDef>()(
 	FieldMetadataSchema.omit({ fieldConfig: true }).extend({
 		fieldConfig: FieldConfigSchema,
 		collectionName: DbFieldSchema,
-		fieldName: DbFieldSchema,
 		isPrimaryKey: z.boolean().default(false),
 		isUnique: z.boolean().default(false),
 		isForeignKey: z.boolean().default(false),

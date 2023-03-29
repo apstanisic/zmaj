@@ -16,10 +16,6 @@ export type FieldDef = Except<FieldMetadata, "fieldConfig"> & {
 	 */
 	collectionName: string
 	/**
-	 * Camel cased column name
-	 */
-	fieldName: string
-	/**
 	 * is field primary key
 	 */
 	isPrimaryKey: boolean

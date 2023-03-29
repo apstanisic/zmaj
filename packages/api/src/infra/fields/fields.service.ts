@@ -15,6 +15,7 @@ import {
 	UUID,
 	zodCreate,
 	isBoolean,
+	getFreeValue,
 } from "@zmaj-js/common"
 import { camel, isString, title } from "radash"
 import { z } from "zod"
@@ -38,15 +39,26 @@ export class FieldsService {
 		const collection =
 			this.infraState.getCollection(data.collectionName) ?? throw400(48932, emsg.noCollection)
 
-		if (collection.fields[camel(data.columnName)]) {
-			throw400(32912, emsg.fieldExists(data.columnName))
+		if (Object.values(collection.fields).some((f) => f.columnName === data.columnName)) {
+			throw400(32912, emsg.columnExists(data.columnName))
 		}
+
+		// if provided, always use provided value, let it error. If not get first free value
+		const fieldName =
+			data.fieldName ??
+			getFreeValue(
+				camel(data.columnName),
+				(name) =>
+					collection.fields[name] === undefined && //
+					collection.relations[name] === undefined,
+			)
 
 		const toCreate = zodCreate(FieldMetadataSchema, {
 			...data,
 			label: data.label ?? title(data.columnName),
 			description: data.description,
 			tableName: collection.tableName,
+			fieldName,
 		})
 
 		return this.appInfraSync.executeChange(async () =>

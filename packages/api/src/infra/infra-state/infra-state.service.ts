@@ -5,23 +5,23 @@ import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
 	CollectionDef,
+	CollectionMetadata,
 	CompositeUniqueKey,
 	DbColumn,
 	FieldConfigSchema,
 	FieldDef,
-	ForeignKey,
-	getColumnType,
-	CollectionMetadata,
 	FieldMetadata,
+	ForeignKey,
+	LayoutConfigSchema,
+	RelationDef,
 	RelationMetadata,
+	Struct,
+	UUID,
+	getColumnType,
 	isStruct,
 	isUUID,
-	LayoutConfigSchema,
 	notNil,
-	RelationDef,
-	Struct,
 	systemCollections,
-	UUID,
 } from "@zmaj-js/common"
 import { camel } from "radash"
 import { ExpandRelationsService } from "./expand-relations.service"
@@ -175,8 +175,7 @@ export class InfraStateService {
 		return {
 			...field,
 			// collectionId: collection.id,
-			collectionName: camel(field.tableName),
-			fieldName: camel(field.columnName),
+			collectionName: collection.collectionName,
 			dataType: getColumnType(column.dataType),
 			dbRawDataType: column.dataType,
 			dbDefaultValue: column.defaultValue,
@@ -222,12 +221,14 @@ export class InfraStateService {
 		const fields = this._fields.filter((f) => f.tableName === collection.tableName)
 		const relations = this._relations.filter((rel) => rel.tableName === collection.tableName)
 
+		const pkField = fields.find((f) => f.columnName === pkColumn.columnName) ?? throw500(983331)
+
 		return {
 			...collection,
 			definedInCode: false,
 			pkType: pkColumn.autoIncrement ? "auto-increment" : "uuid",
 			pkColumn: pkColumn.columnName,
-			pkField: camel(pkColumn.columnName),
+			pkField: pkField.fieldName,
 			isJunctionTable: isJunctionTable,
 			authzKey: `collections.${collection.collectionName}`,
 			fields: Object.fromEntries(fields.map((f) => [f.fieldName, f])),

@@ -240,6 +240,7 @@ export class CreateManyToManyRelationsService {
 			data: zodCreate(FieldMetadataSchema, {
 				columnName: "id",
 				tableName: dto.junction.table,
+				fieldName: "id",
 			}),
 		})
 
@@ -248,6 +249,7 @@ export class CreateManyToManyRelationsService {
 			data: zodCreate(FieldMetadataSchema, {
 				columnName: dto.junction.left.column,
 				tableName: dto.junction.table,
+				fieldName: camel(dto.junction.left.column),
 			}),
 		})
 
@@ -256,6 +258,7 @@ export class CreateManyToManyRelationsService {
 			data: zodCreate(FieldMetadataSchema, {
 				columnName: dto.junction.right.column,
 				tableName: dto.junction.table,
+				fieldName: camel(dto.junction.right.column),
 			}),
 		})
 	}

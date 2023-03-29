@@ -1,9 +1,8 @@
 import { IconButton } from "@admin-panel/ui/IconButton"
 import { Table } from "@admin-panel/ui/Table"
-import { camel } from "radash"
 import { useMemo } from "react"
 import { MdCheck, MdClose } from "react-icons/md"
-import { useInfraTables } from "../../state/infra-state-v2"
+import { useNonSystemCollections } from "../../state/infra-state-v2"
 
 type WebhooksEventsProps = {
 	events?: readonly string[]
@@ -11,12 +10,9 @@ type WebhooksEventsProps = {
 }
 
 export function WebhooksEvents(props: WebhooksEventsProps): JSX.Element {
-	const allTables = useInfraTables()
+	const col = useNonSystemCollections()
 
-	const webhookCollections = useMemo(
-		() => allTables.filter((t) => !t.startsWith("zmaj")).map((v) => camel(v)),
-		[allTables],
-	)
+	const webhookCollections = useMemo(() => col.map((c) => c.collectionName), [col])
 
 	if (props.events?.length === 0) {
 		return <p className="text-xl text-center my-5">No Collections</p>
@@ -35,13 +31,13 @@ export function WebhooksEvents(props: WebhooksEventsProps): JSX.Element {
 			</Table.Head>
 			<Table.Body>
 				{/*  */}
-				{webhookCollections.map((table, i) => (
+				{webhookCollections.map((collection, i) => (
 					<Table.Row key={i}>
-						<Table.Column>{table}</Table.Column>
+						<Table.Column>{collection}</Table.Column>
 						{["create", "update", "delete"].map((action: string, i) => (
 							<Table.Column width="100px" key={i}>
 								{/* If passed on click handler, it will be a button */}
-								<EventButton {...props} action={action} collection={table} />
+								<EventButton {...props} action={action} collection={collection} />
 							</Table.Column>
 						))}
 					</Table.Row>

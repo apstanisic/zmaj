@@ -1,5 +1,5 @@
 import { now } from "@common/utils/now"
-import { ModelSchema, DbFieldSchema } from "@common/zod"
+import { DbFieldSchema, ModelSchema } from "@common/zod"
 import { v4 } from "uuid"
 import { z } from "zod"
 import { FieldMetadata } from "./field-metadata.model"
@@ -9,6 +9,7 @@ export const FieldMetadataSchema = ModelSchema<FieldMetadata>()(
 		columnName: DbFieldSchema,
 		tableName: DbFieldSchema,
 		//
+		fieldName: DbFieldSchema,
 		id: z.string().uuid().default(v4),
 		createdAt: z.date().default(now),
 		label: z.string().max(100).nullable().default(null),

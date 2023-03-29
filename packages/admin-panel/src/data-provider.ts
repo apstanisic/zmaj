@@ -67,15 +67,14 @@ export function initDataProvider(sdk: ZmajSdk, collections?: CollectionDef[]): D
 	}
 
 	function startCrud(resource: string): CrudClient<any, any, any> {
-		const camelV = camel(resource)
-		if (camelV === "zmajRelationMetadata") return sdk.infra.relations
-		if (camelV === "zmajFieldMetadata") return sdk.infra.fields
-		if (camelV === "zmajCollectionMetadata") return sdk.infra.collections
-		if (camelV === "zmajFiles") return sdk.files
-		if (camelV === "zmajUsers") return sdk.users
-		if (camelV === "zmajRoles") return sdk.roles
-		if (camelV === "zmajPermissions") return sdk.permissions
-		if (camelV === "zmajWebhooks") return sdk.webhooks
+		if (resource === "zmajRelationMetadata") return sdk.infra.relations
+		if (resource === "zmajFieldMetadata") return sdk.infra.fields
+		if (resource === "zmajCollectionMetadata") return sdk.infra.collections
+		if (resource === "zmajFiles") return sdk.files
+		if (resource === "zmajUsers") return sdk.users
+		if (resource === "zmajRoles") return sdk.roles
+		if (resource === "zmajPermissions") return sdk.permissions
+		if (resource === "zmajWebhooks") return sdk.webhooks
 
 		const name = resource.startsWith("collections.")
 			? resource.replace("collections.", "")

@@ -22,7 +22,8 @@ export function LeftPropertyInput(): JSX.Element {
 	 * If other side has many, it's plural, otherwise singular
 	 */
 	const defaultPropertyName = useCallback(
-		(val = "property") => (type.endsWith("many") ? plural(camel(val)) : singular(camel(val))),
+		(property = "property") =>
+			type.endsWith("many") ? plural(camel(property)) : singular(camel(property)),
 		[type],
 	)
 

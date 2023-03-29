@@ -8,9 +8,10 @@ import {
 	FieldMetadata,
 	FieldMetadataCollection,
 	FieldMetadataSchema,
+	getFreeValue,
 	zodCreate,
 } from "@zmaj-js/common"
-import { title } from "radash"
+import { camel, title } from "radash"
 
 /**
  * Sync field info with database
@@ -92,6 +93,11 @@ export class InfraSchemaFieldsSyncService {
 
 			if (fieldExist) continue
 
+			const fieldName = getFreeValue(
+				camel(column.columnName), // free if there is no field with same field name and table name
+				(v) => !fields.some((f) => f.fieldName === v && f.tableName === column.tableName),
+			)
+
 			missing.push(
 				zodCreate(FieldMetadataSchema, {
 					columnName: column.columnName,
@@ -99,6 +105,7 @@ export class InfraSchemaFieldsSyncService {
 					// collectionId: collection.id,
 					label: title(column.columnName),
 					tableName: column.tableName,
+					fieldName: fieldName,
 				}),
 			)
 		}

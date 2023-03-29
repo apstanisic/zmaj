@@ -7,8 +7,10 @@ import {
 	CollectionMetadata,
 	CollectionMetadataCollection,
 	CollectionMetadataSchema,
+	getFreeValue,
 	zodCreate,
 } from "@zmaj-js/common"
+import { camel } from "radash"
 
 @Injectable()
 export class InfraSchemaCollectionsSyncService {
@@ -64,7 +66,13 @@ export class InfraSchemaCollectionsSyncService {
 			// there is no collection info with table name
 			.filter((table) => !collections.some((col) => col.tableName === table))
 			// create object
-			.map((tableName) => zodCreate(CollectionMetadataSchema, { tableName }))
+			.map((tableName) => {
+				const collectionName = getFreeValue(
+					camel(tableName), // is free if every collection does not have that name
+					(v) => collections.every((c) => c.collectionName !== v),
+				)
+				return zodCreate(CollectionMetadataSchema, { tableName, collectionName })
+			})
 
 		if (missing.length === 0) return
 

@@ -14,8 +14,10 @@ import {
 	RelationMetadataSchema,
 	isIn,
 	zodCreate,
+	RelationDef,
 } from "@zmaj-js/common"
 import { camel, title } from "radash"
+import { SetOptional, SetRequired } from "type-fest"
 
 /**
  * Sync relations with FKs. This ensures that relations are valid, and can freely be used
@@ -104,6 +106,33 @@ export class InfraSchemaRelationsSyncService {
 	}
 
 	/**
+	 * This will get first free property name. If relation id is provided, method will
+	 * compare propertyName with itself
+	 */
+	getFreePropertyName(
+		relation: Pick<RelationDef, "tableName" | "propertyName"> & Partial<Pick<RelationDef, "id">>,
+	): string {
+		// fields in collection that current relation is located
+		const fieldsPropertyNames = this.fields
+			.filter((f) => f.tableName === relation.tableName)
+			.map((f) => f.fieldName)
+
+		// relations in same collection
+		const relationsPropertyNames = this.relations
+			// don't compare with itself
+			.filter((r) => r.tableName === relation.tableName && r.id !== relation.id)
+			.map((r) => r.propertyName)
+
+		const takenPropertyNames = [...fieldsPropertyNames, ...relationsPropertyNames]
+
+		// value is free if it's not included in fields and relations
+		const freePropertyName = getFreeValue(
+			relation.propertyName,
+			(val) => !takenPropertyNames.includes(val),
+		)
+		return freePropertyName
+	}
+	/**
 	 * Create missing relations
 	 *
 	 * Foreign key exists, but not relation metadata in db
@@ -128,13 +157,17 @@ export class InfraSchemaRelationsSyncService {
 
 			// create relation if it does not exist
 			if (!manySideExist) {
+				const propertyName = this.getFreePropertyName({
+					propertyName: camel(fk.referencedTable),
+					tableName: fk.fkTable,
+				})
+
 				missingRelations.push(
 					zodCreate(RelationMetadataSchema, {
-						// collectionId: manyCollection.id,
+						propertyName,
 						fkName: fk.fkName,
 						mtmFkName: null,
 						label: title(fk.referencedTable),
-						propertyName: camel(fk.referencedTable),
 						template: null,
 						tableName: fk.fkTable,
 					}),
@@ -154,12 +187,16 @@ export class InfraSchemaRelationsSyncService {
 
 				// create relation if it does not exist
 				if (!oneSideExist) {
+					const propertyName = this.getFreePropertyName({
+						propertyName: camel(fk.fkTable),
+						tableName: fk.referencedTable,
+					})
 					missingRelations.push(
 						zodCreate(RelationMetadataSchema, {
+							propertyName,
 							fkName: fk.fkName,
 							mtmFkName: null,
 							label: title(fk.fkTable),
-							propertyName: camel(fk.fkTable),
 							template: null,
 							tableName: fk.referencedTable,
 						}),
@@ -191,36 +228,14 @@ export class InfraSchemaRelationsSyncService {
 	/** Prevent relations from having duplicate property names or same property name as field */
 	private async fixNamingCollisions(): Promise<void> {
 		for (const rel of this.relations) {
-			// fields in collection that current relation is located
-			const fieldsPropertyNames = this.fields
-				// .filter((f) => f.collectionId === rel.collectionId)
-				.filter((f) => f.tableName === rel.tableName)
-				.map((f) => camel(f.columnName))
-
-			// relations in same collection
-			const relationsPropertyNames = this.relations
-				// don't compare with itself
-				// .filter((r) => r.collectionId === rel.collectionId && r.id !== rel.id)
-				.filter((r) => r.tableName === rel.tableName && r.id !== rel.id)
-				.map((r) => r.propertyName)
-
-			const freePropertyName = getFreeValue(
-				rel.propertyName,
-				// value is free if it's not included in fields and relations
-				(valToCheck) =>
-					!fieldsPropertyNames.includes(valToCheck) && !relationsPropertyNames.includes(valToCheck),
-				"_",
-			)
+			// value is free if it's not included in fields and relations
+			const freePropertyName = this.getFreePropertyName(rel)
 
 			if (freePropertyName === rel.propertyName) continue
 
 			this.logger.log(`Fixing relation naming collision: ${rel.tableName}.${rel.propertyName}`)
 
 			await this.repo.updateById({ id: rel.id, changes: { propertyName: freePropertyName } })
-			// await this.db
-			// 	.start(RelationMetadataCollection)
-			// 	.update({ property_name: freePropertyName })
-			// 	.where({ id: rel.id })
 
 			// we have to update relations after every change
 			await this.onChange()

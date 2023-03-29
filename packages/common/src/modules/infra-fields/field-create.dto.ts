@@ -1,4 +1,4 @@
-import { DbFieldSchema } from "@common/zod/zod-utils"
+import { DbFieldSchema, zodStripNull } from "@common/zod/zod-utils"
 import { z } from "zod"
 import { ZodDto } from "../../zod/zod-dto"
 import { allColumnDataTypes } from "./all-column-data-types.consts"
@@ -10,7 +10,7 @@ export const FieldCreateSchema = FieldUpdateSchema.omit({
 	isUnique: true,
 }).extend({
 	columnName: DbFieldSchema,
-	fieldName: DbFieldSchema.nullish(),
+	fieldName: DbFieldSchema.nullish().transform(zodStripNull),
 	collectionName: DbFieldSchema,
 	dataType: z.enum(allColumnDataTypes),
 	isUnique: z.boolean().default(false),

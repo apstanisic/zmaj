@@ -18,6 +18,7 @@ export const FieldMetadataCollection = DefineCollection<FieldMetadata>({
 			canCreate: false,
 		},
 		columnName: { dataType: "short-text", canUpdate: false, columnName: "column_name" },
+		fieldName: { dataType: "short-text", columnName: "field_name" },
 		tableName: {
 			dataType: "short-text",
 			canUpdate: false,
