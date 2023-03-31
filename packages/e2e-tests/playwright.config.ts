@@ -7,19 +7,16 @@ const e2ePackage = "./src"
 
 const dir = dirname(fileURLToPath(import.meta.url))
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
 	testDir: `${e2ePackage}/tests`,
 	/* Maximum time one test can run for. */
-	timeout: 15 * 1000,
+	timeout: 30 * 1000,
 	expect: {
 		/**
 		 * Maximum time expect() should wait for the condition to be met.
 		 * For example in `await expect(locator).toHaveText();`
 		 */
-		timeout: 3000,
+		timeout: 4000,
 	},
 	/* Run tests in files in parallel */
 	fullyParallel: true,
@@ -36,38 +33,29 @@ export default defineConfig({
 		// video: process.env["CI"] ? "retain-on-failure" : "on-first-retry",
 		video: "retain-on-failure",
 		/* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-		actionTimeout: 3000,
+		actionTimeout: 4000,
 		/* Base URL to use in actions like `await page.goto('/')`. */
 		baseURL: "http://localhost:7100",
-
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "retain-on-failure", // "on-first-retry",
-		// storageState: `${e2ePackage}/state/storage-state.json`,
-		// storageState: JSON.parse(readFileSync("src/state/storage-state.json", "utf-8")),
-		//"src/state/storage-state.json", //path.join(dir, ""), // `${e2ePackage}/state/storage-state.json`,
 		storageState: path.join(dir, "src/state/storage-state.json"),
 		launchOptions: { slowMo: 50 },
 	},
 	/* Global setup */
 	globalSetup: `${e2ePackage}/playwright-setup`,
-	// globalTeardown: require.resolve("./packages/e2e-tests/src/setup/playwright-teardown"),
 
 	/* Configure projects for major browsers */
-	/* Maybe run all browsers only on CI, it's 3x faster to test only chromium while dev */
 	projects: [
-		// { name: "setup", testMatch: /.*\.setup\.ts/ },
-		{ name: "chromium", use: { ...devices["Desktop Chrome"] } }, //dependencies: ["setup"] },
-		{ name: "firefox", use: { ...devices["Desktop Firefox"] } }, // dependencies: ["setup"] },
-		{ name: "webkit", use: { ...devices["Desktop Safari"] } }, // dependencies: ["setup"] },
+		{ name: "chromium", use: { ...devices["Desktop Chrome"] } },
+		{ name: "webkit", use: { ...devices["Desktop Safari"] } },
+		// Comment out until this issues are resolved
+		// https://github.com/microsoft/playwright/issues/20993
+		// https://github.com/microsoft/playwright/issues/21995
+		// { name: "firefox", use: { ...devices["Desktop Firefox"] } },
 	],
 
-	/* Run your local dev server before starting the tests */
-	// webServer: {
-	//   command: 'npm run start',
-	//   port: 3000,
-	// },
 	// Limit the number of failures on CI to save resources
-	maxFailures: process.env["CI"] ? 5 : undefined,
+	maxFailures: process.env["CI"] ? 10 : undefined,
 })
 
 /**

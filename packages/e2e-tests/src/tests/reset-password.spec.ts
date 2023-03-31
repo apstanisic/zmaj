@@ -41,7 +41,7 @@ test("Reset password", async ({ page, context }) => {
 	await page.getByText(/Reset password/).first().click()
 
 	// https://playwright.dev/docs/pages#handling-new-pages
-	const pagePromise = context.waitForEvent("page")
+	const pagePromise = context.waitForEvent("page", { timeout: 6000 })
 	// email is displayed in iframe
 	// https://playwright.dev/docs/frames
 	await page.frameLocator("#preview-html").getByRole("link", { name: "Set new password" }).click()
