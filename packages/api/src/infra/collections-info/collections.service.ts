@@ -18,6 +18,7 @@ import {
 } from "@zmaj-js/common"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { OnInfraChangeService } from "../on-infra-change.service"
+import { camel } from "radash"
 
 @Injectable()
 export class CollectionsService {
@@ -47,6 +48,7 @@ export class CollectionsService {
 						data: zodCreate(FieldMetadataSchema, {
 							columnName: dto.pkColumn,
 							tableName: dto.tableName,
+							fieldName: camel(dto.pkColumn),
 						}),
 					})
 

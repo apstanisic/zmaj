@@ -38,7 +38,7 @@ describe("ManyToManyRelationsService", () => {
 		beforeEach(() => {
 			rel1 = structuredClone(mockRelationDefs.posts_tags.post)
 			rel2 = structuredClone(mockRelationDefs.posts_tags.tag)
-			infraState["_relations"] = [rel1, rel2] as any
+			vi.spyOn(infraState, "relations", "get").mockReturnValue([rel1, rel2] as any)
 
 			service["alterSchema"].createUniqueKey = vi.fn()
 			service["schemaInfo"].getCompositeUniqueKeys = vi.fn().mockResolvedValue([])
@@ -117,12 +117,13 @@ describe("ManyToManyRelationsService", () => {
 			makeWritable(rel1).type = "many-to-one"
 			makeWritable(rel2).type = "many-to-one"
 			// rel1.type = "many-to-one"
-			infraState["_relations"] = [rel1, rel2]
+			vi.spyOn(infraState, "relations", "get").mockReturnValue([rel1, rel2] as any)
+
 			await expect(service.splitManyToMany("postsTags")).rejects.toThrow(BadRequestException)
 		})
 
 		it("should not throw if there is only 1 relations (other is system table)", async () => {
-			infraState["_relations"] = [rel1]
+			vi.spyOn(infraState, "relations", "get").mockReturnValue([rel1] as any)
 			await expect(service.splitManyToMany("postsTags")).resolves.not.toThrow()
 		})
 

@@ -132,7 +132,9 @@ describe("RelationsService", () => {
 	 */
 	describe("getRelationFromState", () => {
 		it("should get relation from state", () => {
-			infraState["_relations"] = times(10, (i) => ({ id: String(i), full: true }) as any)
+			vi.spyOn(infraState, "relations", "get").mockReturnValue(
+				times(10, (i) => ({ id: String(i), full: true }) as any),
+			)
 			const res = service["getRelationFromState"]("6")
 			expect(res).toEqual({ full: true, id: "6" })
 		})
@@ -226,12 +228,12 @@ describe("RelationsService", () => {
 		beforeEach(() => {
 			service["mtmService"].splitManyToMany = vi.fn()
 			// after split state should be like this
-			infraState["_relations"] = [
+			vi.spyOn(infraState, "relations", "get").mockReturnValue([
 				RelationDefStub({ otherSide: buildOtherSideForJunction(junctionCollection) }),
 				RelationDefStub({ otherSide: buildOtherSideForJunction(junctionCollection) }),
 				RelationDefStub(),
 				RelationDefStub(),
-			]
+			])
 		})
 
 		it("should call service to split relation", async () => {
@@ -268,12 +270,12 @@ describe("RelationsService", () => {
 				uniqueKey: "qwer",
 			})
 
-			infraState["_relations"] = [
+			vi.spyOn(infraState, "relations", "get").mockReturnValue([
 				RelationDefStub({ junction: buildJunctionPart(junction), type: "many-to-many" }),
 				RelationDefStub({ junction: buildJunctionPart(junction), type: "many-to-many" }),
 				RelationDefStub(),
 				RelationDefStub(),
-			]
+			])
 		})
 
 		it("should join many to many", async () => {

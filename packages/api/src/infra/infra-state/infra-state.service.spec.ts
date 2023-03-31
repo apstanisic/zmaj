@@ -1,50 +1,59 @@
+import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
-import { InfraService } from "@api/infra/infra.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { InternalServerErrorException } from "@nestjs/common"
-import { CollectionDef, FieldDef, systemCollections } from "@zmaj-js/common"
+import { TestingModule } from "@nestjs/testing"
 import {
-	allMockColumns,
-	allMockForeignKeys,
+	CollectionDef,
+	FieldDef,
+	nestByTableAndColumnName,
+	systemCollections,
+} from "@zmaj-js/common"
+import {
+	CollectionMetadataStub,
+	DbColumnStub,
+	FieldMetadataStub,
+	ForeignKeyStub,
+	RelationMetadataStub,
 	allMockCollectionMetadata,
+	allMockColumns,
+	allMockFieldDefs,
 	allMockFieldMetadata,
+	allMockForeignKeys,
+	allMockRelationDefs,
 	allMockRelationMetadata,
 	mockCollectionConsts,
 	mockCollectionDefs,
+	mockCollectionMetadata,
 	mockCompositeUniqueKeys,
 	mockFields,
-	mockCollectionMetadata,
 	mockRelationMetadata,
 } from "@zmaj-js/test-utils"
 import { omit } from "radash"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { InfraService } from "../infra.service"
 import { ExpandRelationsService } from "./expand-relations.service"
-import { InfraStateService } from "./infra-state.service"
+import { InfraStateService, InitialDbState } from "./infra-state.service"
+
+const dbState: InitialDbState = structuredClone({
+	columns: nestByTableAndColumnName(allMockColumns),
+	fieldMetadata: allMockFieldMetadata,
+	relationMetadata: allMockRelationMetadata,
+	collectionMetadata: allMockCollectionMetadata,
+	fks: allMockForeignKeys,
+	compositeUniqueKeys: Object.values(mockCompositeUniqueKeys),
+})
 
 describe("InfraStateService", () => {
 	let service: InfraStateService
-	let infraService: InfraService
-	let schemaInfoService: SchemaInfoService
+	let module: TestingModule
 
 	beforeEach(async () => {
-		const module = await buildTestModule(InfraStateService).compile()
+		module = await buildTestModule(InfraStateService).compile()
 
 		service = module.get(InfraStateService)
-		//
 		service["expandRelationsService"] = new ExpandRelationsService()
-		//
-		schemaInfoService = module.get(SchemaInfoService)
-		schemaInfoService.getColumns = vi.fn(async () => allMockColumns)
-		schemaInfoService.getForeignKeys = vi.fn(async () => allMockForeignKeys)
-		schemaInfoService.getCompositeUniqueKeys = vi.fn(async () =>
-			Object.values(mockCompositeUniqueKeys),
-		)
-
-		//
-		infraService = module.get(InfraService)
-		infraService.getCollectionMetadata = vi.fn(async () => allMockCollectionMetadata)
-		infraService.getFieldMetadata = vi.fn(async () => allMockFieldMetadata)
-		infraService.getRelationMetadata = vi.fn(async () => allMockRelationMetadata)
+		service["getDbState"] = vi.fn(async () => dbState)
 	})
 
 	/**
@@ -53,22 +62,18 @@ describe("InfraStateService", () => {
 	describe("expandField", () => {
 		const field = mockFields.posts.created_at
 
-		beforeEach(async () => {
-			await service["setStateFromDb"]()
-		})
-
 		it("should throw if there is not collection for this field", () => {
-			service["_dbCollections"] = []
-			expect(() => service["expandField"](field)).toThrow(InternalServerErrorException)
+			const state: InitialDbState = { ...dbState, collectionMetadata: [] }
+			expect(() => service["expandField"](field, state)).toThrow(InternalServerErrorException)
 		})
 
 		it("should throw if there is not column for this field", () => {
-			service["_columns"] = []
-			expect(() => service["expandField"](field)).toThrow(InternalServerErrorException)
+			const state: InitialDbState = { ...dbState, columns: {} }
+			expect(() => service["expandField"](field, state)).toThrow(InternalServerErrorException)
 		})
 
 		it("should expand field", () => {
-			const res = service["expandField"](field)
+			const res = service["expandField"](field, dbState)
 			expect(res).toEqual<FieldDef>({
 				...field,
 				fieldConfig: field.fieldConfig as any,
@@ -91,18 +96,16 @@ describe("InfraStateService", () => {
 	describe("expandCollection", () => {
 		const collection = mockCollectionMetadata.posts
 
-		beforeEach(async () => {
-			await service.initializeState()
-		})
-
 		it("should return undefined if there is no pk", () => {
-			service["_columns"] = []
-			const res = service["expandCollection"](collection)
+			const fields = allMockFieldDefs.filter(
+				(f) => f.tableName === collection.tableName && !f.isPrimaryKey,
+			)
+			const res = service["expandCollection"](collection, fields, allMockRelationDefs)
 			expect(res).toBeUndefined()
 		})
 
 		it("should expand collection", () => {
-			const res = service["expandCollection"](collection)
+			const res = service["expandCollection"](collection, allMockFieldDefs, allMockRelationDefs)
 			expect(res).toEqual<CollectionDef>({
 				...collection,
 				pkColumn: "id",
@@ -119,10 +122,9 @@ describe("InfraStateService", () => {
 		})
 
 		it("should set fields", () => {
-			const res = service["expandCollection"](collection)!
+			const res = service["expandCollection"](collection, allMockFieldDefs, allMockRelationDefs)!
 			const amountOfFields = allMockFieldMetadata.filter((f) => f.tableName === "posts").length
 			expect(Object.keys(res.fields)).toHaveLength(amountOfFields)
-			//
 		})
 
 		it("should set relations", () => {
@@ -130,7 +132,7 @@ describe("InfraStateService", () => {
 				(r) => r.tableName === "posts",
 			).length
 
-			const res = service["expandCollection"](collection)!
+			const res = service["expandCollection"](collection, allMockFieldDefs, allMockRelationDefs)!
 			expect(Object.keys(res.relations)).toHaveLength(amountOfRelations)
 		})
 	})
@@ -141,23 +143,22 @@ describe("InfraStateService", () => {
 	describe("expandRelation", () => {
 		const relation = mockRelationMetadata.comments.post
 		beforeEach(async () => {
-			await service["setStateFromDb"]()
 			service["expandRelationsService"].expand = vi.fn().mockReturnValue("expanded")
 		})
 
 		it("should expand infra relation", () => {
-			const res = service["expandRelation"](relation)
+			const res = service["expandRelation"](relation, dbState)
 			expect(res).toEqual("expanded")
 		})
 
 		it("should pass required params", () => {
-			service["expandRelation"](relation)
+			service["expandRelation"](relation, dbState)
 			expect(service["expandRelationsService"].expand).toBeCalledWith(relation, {
-				fks: service["_fks"],
-				compositeUniqueKeys: service["_compositeUniqueKeys"],
-				collections: [...allMockCollectionMetadata, ...systemCollections],
+				fks: dbState.fks,
+				compositeUniqueKeys: dbState.compositeUniqueKeys,
+				collections: [...dbState.collectionMetadata, ...systemCollections],
 				allRelations: [
-					...allMockRelationMetadata,
+					...dbState.relationMetadata,
 					...systemCollections.flatMap((c) => Object.values(c.relations).map((v) => v.relation)),
 				],
 			})
@@ -169,23 +170,44 @@ describe("InfraStateService", () => {
 	 */
 	describe("getStateFromDb", () => {
 		it("should get state from db and store it in the class", async () => {
-			infraService.getCollectionMetadata = vi.fn().mockResolvedValue([1])
-			infraService.getFieldMetadata = vi.fn().mockResolvedValue([2])
-			infraService.getRelationMetadata = vi.fn().mockResolvedValue([3])
+			const colStub = [CollectionMetadataStub({ tableName: "col_qwerty" })]
+			const fieldsStub = [FieldMetadataStub({ tableName: "field_qwerty" })]
+			const relStub = [RelationMetadataStub({ tableName: "rel_qwerty" })]
+			const columnsStub = [DbColumnStub({ tableName: "column_qwerty" })]
+			const fksStub = [ForeignKeyStub({ fkTable: "fk_qwerty" })]
+			const uniqueStub = [{ tableName: "fk_qwerty" } as any]
 
-			schemaInfoService.getColumns = vi.fn().mockResolvedValue([4])
-			schemaInfoService.getForeignKeys = vi.fn().mockResolvedValue([5])
-			schemaInfoService.getCompositeUniqueKeys = vi.fn().mockResolvedValue([6])
+			const schemaInfoService = module.get(SchemaInfoService)
 
-			await service["setStateFromDb"]()
+			schemaInfoService.getColumns = vi.fn(async () => columnsStub)
+			// use infra fks because of duplicates
+			// schemaInfoService.getForeignKeys = vi.fn(async () => fksStub)
+			schemaInfoService.getCompositeUniqueKeys = vi.fn(async () => uniqueStub)
 
-			expect(service["_dbCollections"]).toEqual([1])
-			expect(service["_dbFields"]).toEqual([2])
-			expect(service["_dbRelations"]).toEqual([3])
-			//
-			expect(service["_columns"]).toEqual([4])
-			expect(service["_fks"]).toEqual([5])
-			expect(service["_compositeUniqueKeys"]).toEqual([6])
+			const infraService = module.get(InfraService)
+
+			infraService.getCollectionMetadata = vi.fn(async () => colStub)
+			infraService.getFieldMetadata = vi.fn(async () => fieldsStub)
+			infraService.getRelationMetadata = vi.fn(async () => relStub)
+			// use this instead of schemaInfo.getFk
+			infraService.getForeignKeys = vi.fn(async () => fksStub)
+
+			// We are overwriting default `getDbState` in `beforeEach`
+			const service = new InfraStateService(
+				schemaInfoService,
+				infraService,
+				module.get(BootstrapRepoManager),
+			)
+			const res = await service["getDbState"]()
+
+			expect(res).toEqual<InitialDbState>({
+				collectionMetadata: colStub,
+				columns: nestByTableAndColumnName(columnsStub),
+				compositeUniqueKeys: uniqueStub,
+				fieldMetadata: fieldsStub,
+				fks: fksStub,
+				relationMetadata: relStub,
+			})
 		})
 	})
 
@@ -194,41 +216,37 @@ describe("InfraStateService", () => {
 	 */
 	describe("initializeState", () => {
 		it("should expand fields", async () => {
-			service["expandField"] = vi.fn().mockImplementation((v) => ({ ...v, collectionName: "qwe" }))
-
 			expect(service.fields).toHaveLength(0)
 			await service.initializeState()
-			expect(service.fields).toHaveLength(allMockFieldMetadata.length)
+			const userFields = service.fields.filter((f) => !f.tableName.startsWith("zmaj"))
+			expect(userFields).toHaveLength(allMockFieldMetadata.length)
 
-			service.fields.forEach((f) => {
-				expect(f.collectionName).toEqual("qwe")
-			})
+			for (const field of userFields) {
+				expect(field.dataType).toBeDefined()
+			}
 		})
 
 		it("should expand relations", async () => {
-			service["expandRelation"] = vi.fn((v): any => ({ ...v, fieldName: "qwe" }))
-
 			expect(service.relations).toHaveLength(0)
 			await service.initializeState()
-			expect(service.relations).toHaveLength(allMockRelationMetadata.length)
+			const userRelations = service.relations.filter((r) => !r.tableName.startsWith("zmaj"))
+			expect(userRelations).toHaveLength(allMockRelationMetadata.length)
 
-			service.relations.forEach((r) => {
-				expect(r.fieldName).toEqual("qwe")
-			})
+			for (const relation of userRelations) {
+				expect(relation.collectionName).toBeDefined()
+			}
 		})
 
 		it("should expand collections", async () => {
-			service["expandCollection"] = vi
-				.fn()
-				.mockImplementation((v) => ({ ...v, collectionName: "qwe" }))
-
-			expect(service["_nonSystemCollections"]).toHaveLength(0)
+			expect(service.collections).toEqual({})
 			await service.initializeState()
-			expect(service["_nonSystemCollections"]).toHaveLength(allMockCollectionMetadata.length)
+			expect(Object.keys(service.collections)).toHaveLength(
+				allMockCollectionMetadata.length + systemCollections.length,
+			)
 
-			service["_nonSystemCollections"].forEach((f) => {
-				expect(f.collectionName).toEqual("qwe")
-			})
+			for (const collection of Object.values(service.collections)) {
+				expect(collection.authzKey).toBeDefined()
+			}
 		})
 	})
 

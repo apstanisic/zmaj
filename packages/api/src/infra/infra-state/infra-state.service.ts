@@ -20,12 +20,21 @@ import {
 	getColumnType,
 	isStruct,
 	isUUID,
+	nestByTableAndColumnName,
 	notNil,
 	systemCollections,
 } from "@zmaj-js/common"
+import { objectify } from "radash"
 import { ExpandRelationsService } from "./expand-relations.service"
-import { group, mapValues, objectify } from "radash"
 
+export type InitialDbState = {
+	columns: Struct<Struct<DbColumn>>
+	fks: ForeignKey[]
+	compositeUniqueKeys: CompositeUniqueKey[]
+	collectionMetadata: CollectionMetadata[]
+	fieldMetadata: FieldMetadata[]
+	relationMetadata: RelationMetadata[]
+}
 /**
  * Keep all needed infra info in memory, so we can access it quickly
  */
@@ -35,38 +44,9 @@ export class InfraStateService {
 	/** Track current version. Used for cache */
 	version = Date.now()
 
-	/** DB schema columns */
-	private _columns: Struct<Struct<DbColumn>> = {}
-
-	/** DB foreign keys */
-	private _fks: readonly ForeignKey[] = []
-	/** Composite unique keys (used for m2m) */
-	private _compositeUniqueKeys: readonly CompositeUniqueKey[] = []
-
-	/** Collections in DB */
-	private _dbCollections: readonly CollectionMetadata[] = []
-
-	/** Fields in DB */
-	private _dbFields: readonly FieldMetadata[] = []
-
-	/** Relations in DB */
-	private _dbRelations: readonly RelationMetadata[] = []
-
-	/** Expanded DB fields */
-	private _fields: readonly FieldDef[] = []
-
-	/** Expanded relations */
-	private _relations: readonly RelationDef[] = []
-
-	/** System collections */
-	private readonly _systemCollections: readonly CollectionDef[] = structuredClone(systemCollections)
-
-	/** Expanded DB collections */
-	private _nonSystemCollections: readonly CollectionDef[] = []
-
 	/**
 	 * Expanded collections, both system and non system
-	 * Key is camel case table, value is collection
+	 * Key collection name, value is collection
 	 */
 	private _collections: Struct<CollectionDef> = {}
 
@@ -79,21 +59,17 @@ export class InfraStateService {
 
 	/** Fields */
 	get fields(): Readonly<FieldDef[]> {
-		return this._fields
+		return Object.values(this.collections).flatMap((c) => Object.values(c.fields))
 	}
 
 	/** Relations */
 	get relations(): Readonly<RelationDef[]> {
-		return this._relations
+		return Object.values(this.collections).flatMap((c) => Object.values(c.relations))
 	}
 
 	/** Collections */
 	get collections(): Struct<CollectionDef> {
 		return this._collections
-	}
-
-	get fks(): readonly ForeignKey[] {
-		return this._fks
 	}
 
 	/**
@@ -117,45 +93,57 @@ export class InfraStateService {
 		}
 	}
 
-	async setStateFromDb(): Promise<void> {
-		await this.bootRepo
+	private async getDbState(): Promise<InitialDbState> {
+		const result = await this.bootRepo
 			.transaction({
-				fn: async (trx) => {
+				fn: async (trx): Promise<InitialDbState> => {
 					// db schema
-					this._columns = nestColumns(await this.schemaInfo.getColumns({ trx }))
-					this._fks = await this.schemaInfo.getForeignKeys({ trx })
+					const columns = nestByTableAndColumnName(await this.schemaInfo.getColumns({ trx }))
+					const fks = await this.infra.getForeignKeys(trx)
 
-					this._compositeUniqueKeys = await this.schemaInfo.getCompositeUniqueKeys({ trx })
+					const compositeUniqueKeys = await this.schemaInfo.getCompositeUniqueKeys({ trx })
 
 					// Get simple db values
-					this._dbCollections = await this.infra.getCollectionMetadata(trx)
-					this._dbFields = await this.infra.getFieldMetadata(trx)
-					this._dbRelations = await this.infra.getRelationMetadata(trx)
+					const collectionMetadata = await this.infra.getCollectionMetadata(trx)
+					const fieldMetadata = await this.infra.getFieldMetadata(trx)
+					const relationMetadata = await this.infra.getRelationMetadata(trx)
+					return {
+						collectionMetadata,
+						columns,
+						compositeUniqueKeys,
+						fieldMetadata,
+						fks,
+						relationMetadata,
+					}
 				},
 			})
-			.catch((e) => {
-				this.logger.error("DB Problem", e)
+			.catch((error) => {
+				this.logger.error("DB Problem", error)
+				throw error
 			})
+		return result
 	}
 
 	async initializeState(): Promise<void> {
 		this.version = Date.now()
 
-		await this.setStateFromDb()
+		const dbState = await this.getDbState()
 
 		// Expand Fields
-		this._fields = this._dbFields.map((field) => this.expandField(field))
+		const fields = dbState.fieldMetadata.map((field) => this.expandField(field, dbState))
 
 		// Expand relations
-		this._relations = this._dbRelations.map((relation) => this.expandRelation(relation))
+		const relations = dbState.relationMetadata.map((relation) =>
+			this.expandRelation(relation, dbState),
+		)
 
 		// Expand collections
-		this._nonSystemCollections = this._dbCollections
-			.map((collection) => this.expandCollection(collection))
+		const userCollections = dbState.collectionMetadata
+			.map((collection) => this.expandCollection(collection, fields, relations))
 			// don't use without pk
 			.filter(notNil)
 
-		const allCollections = [...this._nonSystemCollections, ...this._systemCollections]
+		const allCollections = [...userCollections, ...systemCollections]
 
 		// remove this object before settings values again
 		this._collections = {}
@@ -164,12 +152,16 @@ export class InfraStateService {
 		}
 	}
 
-	private expandField(field: FieldMetadata): FieldDef {
-		const collection = this._dbCollections.find((c) => c.tableName === field.tableName)
-		const column = this._columns[field.tableName]?.[field.columnName]
+	private expandField(field: FieldMetadata, dbState: InitialDbState): FieldDef {
+		const collection = dbState.collectionMetadata.find((c) => c.tableName === field.tableName)
+		const column = dbState.columns[field.tableName]?.[field.columnName]
 
 		if (!collection) throw500(979852)
 		if (!column) throw500(710023)
+
+		const isForeignKey = dbState.fks.some(
+			(fk) => fk.fkTable === column.tableName && fk.fkColumn === column.tableName,
+		)
 
 		return {
 			...field,
@@ -182,64 +174,53 @@ export class InfraStateService {
 			isPrimaryKey: column.primaryKey,
 			isUnique: column.unique,
 			isAutoIncrement: column.autoIncrement,
-			isForeignKey: this._fks.some(
-				(fk) => fk.fkTable === column.tableName && fk.fkColumn === column.tableName,
-			),
+			isForeignKey,
 			// column.foreignKey !== undefined,
 			hasDefaultValue: column.defaultValue !== null,
 			fieldConfig: FieldConfigSchema.parse(field.fieldConfig),
 		}
 	}
 
-	private expandRelation(relation: RelationMetadata): RelationDef {
+	private expandRelation(relation: RelationMetadata, dbState: InitialDbState): RelationDef {
 		return this.expandRelationsService.expand(relation, {
-			fks: this._fks,
-			compositeUniqueKeys: this._compositeUniqueKeys,
-			collections: [...this._dbCollections, ...this._systemCollections],
+			fks: dbState.fks,
+			compositeUniqueKeys: dbState.compositeUniqueKeys,
+			collections: [...dbState.collectionMetadata, ...systemCollections],
 			allRelations: [
-				...this._dbRelations,
-				...this._systemCollections.flatMap((c) =>
-					Object.values(c.relations).map((v) => v.relation),
-				), //flatMap((c) => c.fullRelations),
+				...dbState.relationMetadata,
+				...systemCollections.flatMap((c) => Object.values(c.relations).map((v) => v.relation)),
 			],
 		})
 		//
 	}
 
-	private expandCollection(collection: CollectionMetadata): CollectionDef | undefined {
-		const pkColumn = Object.values(this._columns[collection.tableName] ?? {}).find(
-			(col) => col.primaryKey,
-		)
-		// ignore collection if not pk
-		if (!pkColumn) return undefined
+	private expandCollection(
+		collection: CollectionMetadata,
+		allFields: FieldDef[],
+		allRelations: RelationDef[],
+	): CollectionDef | undefined {
+		const fields = allFields.filter((f) => f.tableName === collection.tableName)
+		const relations = allRelations.filter((rel) => rel.tableName === collection.tableName)
 
-		const isJunctionTable = this._relations.some(
+		const pkField = fields.find((f) => f.isPrimaryKey)
+		// ignore collection if not pk
+		if (!pkField) return undefined
+
+		const isJunctionTable = allRelations.some(
 			(r) => r.type === "many-to-many" && r.junction.tableName === collection.tableName,
 		)
-
-		const fields = this._fields.filter((f) => f.tableName === collection.tableName)
-		const relations = this._relations.filter((rel) => rel.tableName === collection.tableName)
-
-		const pkField = fields.find((f) => f.columnName === pkColumn.columnName) ?? throw500(983331)
 
 		return {
 			...collection,
 			definedInCode: false,
-			pkType: pkColumn.autoIncrement ? "auto-increment" : "uuid",
-			pkColumn: pkColumn.columnName,
+			pkType: pkField.isAutoIncrement ? "auto-increment" : "uuid",
+			pkColumn: pkField.columnName,
 			pkField: pkField.fieldName,
 			isJunctionTable: isJunctionTable,
 			authzKey: `collections.${collection.collectionName}`,
-			fields: Object.fromEntries(fields.map((f) => [f.fieldName, f])),
-			relations: Object.fromEntries(relations.map((f) => [f.propertyName, f])),
+			fields: objectify(fields, (f) => f.fieldName),
+			relations: objectify(relations, (r) => r.propertyName),
 			layoutConfig: LayoutConfigSchema.parse(collection.layoutConfig),
 		}
 	}
-}
-
-function nestColumns(columns: DbColumn[]): Struct<Struct<DbColumn>> {
-	const groups = group(columns, (col) => col.tableName)
-	return mapValues(groups, (colInOneTable) =>
-		objectify(colInOneTable ?? [], (col) => col.columnName),
-	)
 }

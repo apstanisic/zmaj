@@ -112,13 +112,7 @@ const SidebarContent = (): JSX.Element => {
 				// every generated resource should provide collection that was used to generate it
 				.filter((res) => {
 					const collection: CollectionDef = res.options.collection
-					if (
-						collection === undefined ||
-						collection.disabled ||
-						collection.hidden
-						// ||
-						// collection.isJunctionTable
-					) {
+					if (collection === undefined || collection.disabled || collection.hidden) {
 						return false
 					}
 					return true

@@ -5,10 +5,12 @@ import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
+	DbColumn,
 	FieldMetadata,
 	FieldMetadataCollection,
 	FieldMetadataSchema,
 	getFreeValue,
+	nestByTableAndColumnName,
 	zodCreate,
 } from "@zmaj-js/common"
 import { camel, title } from "radash"
@@ -33,26 +35,23 @@ export class InfraSchemaFieldsSyncService {
 	 * Call after collections are initialized
 	 */
 	async sync(): Promise<void> {
-		await this.removeFieldsWithoutColumn()
-		await this.addMissingFields()
+		const columns = await this.schemaInfo.getColumns()
+		const fields = await this.infraService.getFieldMetadata()
+
+		await this.removeFieldsWithoutColumn(fields, columns)
+		await this.addMissingFields(fields, columns)
 	}
 
 	/**
 	 * Ensure that there is no field info for non existing column
 	 */
-	private async removeFieldsWithoutColumn(): Promise<void> {
-		const columns = await this.schemaInfo.getColumns()
-		const fields = await this.infraService.getFieldMetadata()
-
+	private async removeFieldsWithoutColumn(
+		fields: FieldMetadata[],
+		columns: DbColumn[],
+	): Promise<void> {
+		const nestedColumns = nestByTableAndColumnName(columns)
 		// Return only fields that don't exist as column
-		const redundant = fields.filter((field) => {
-			return !columns.some(
-				(c) =>
-					c.tableName === field.tableName && //
-					c.columnName === field.columnName,
-			)
-		})
-		// .map((f) => f.id)
+		const redundant = fields.filter((f) => nestedColumns[f.tableName]?.[f.columnName] === undefined)
 
 		if (redundant.length === 0) return
 
@@ -77,20 +76,15 @@ export class InfraSchemaFieldsSyncService {
 	/**
 	 * Ensure that every column has field metadata
 	 */
-	private async addMissingFields(): Promise<void> {
-		const fields = await this.infraService.getFieldMetadata()
-		const systemAndUserColumns = await this.schemaInfo.getColumns()
-		const columns = systemAndUserColumns.filter((col) => !col.tableName.startsWith("zmaj"))
-
+	private async addMissingFields(fields: FieldMetadata[], columns: DbColumn[]): Promise<void> {
 		const missing: FieldMetadata[] = []
 
-		for (const column of columns) {
-			const fieldExist = fields.some(
-				(f) =>
-					f.tableName === column.tableName && //
-					f.columnName === column.columnName,
-			)
+		const nestedFields = nestByTableAndColumnName(fields)
 
+		for (const column of columns) {
+			if (column.tableName.startsWith("zmaj")) continue
+
+			const fieldExist = nestedFields[column.tableName]?.[column.columnName]
 			if (fieldExist) continue
 
 			const fieldName = getFreeValue(
@@ -102,7 +96,6 @@ export class InfraSchemaFieldsSyncService {
 				zodCreate(FieldMetadataSchema, {
 					columnName: column.columnName,
 					canUpdate: !column.primaryKey,
-					// collectionId: collection.id,
 					label: title(column.columnName),
 					tableName: column.tableName,
 					fieldName: fieldName,

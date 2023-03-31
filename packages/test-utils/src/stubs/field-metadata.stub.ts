@@ -10,7 +10,7 @@ import { camel, random } from "radash"
 import { v4 } from "uuid"
 
 export const FieldMetadataStub = stub<FieldMetadata>((modify) => {
-	const columnName = snakeCase(randDatabaseColumn())
+	const columnName = modify.columnName ?? snakeCase(randDatabaseColumn())
 	return {
 		displayTemplate: null,
 		id: v4(),
@@ -22,7 +22,7 @@ export const FieldMetadataStub = stub<FieldMetadata>((modify) => {
 		componentName: null,
 		label: randWord(),
 		columnName,
-		fieldName: camel(columnName),
+		fieldName: modify.fieldName ?? camel(columnName),
 		fieldConfig: {},
 		description: randBoolean() ? randSentence() : null,
 		tableName: randWord(),

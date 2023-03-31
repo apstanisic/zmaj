@@ -37,7 +37,7 @@ describe("InfraSchemaRelationsSyncService", () => {
 		infraS.getFieldMetadata = vi.fn(async () => allMockFieldMetadata)
 		infraS.getCollectionMetadata = vi.fn(async () => allMockCollectionMetadata)
 		infraS.getRelationMetadata = vi.fn(async () => allMockRelationMetadata)
-		schemaS.getForeignKeys = vi.fn(async () => allMockForeignKeys)
+		infraS.getForeignKeys = vi.fn(async () => allMockForeignKeys)
 
 		await service.getFreshState()
 	})
@@ -208,10 +208,10 @@ describe("InfraSchemaRelationsSyncService", () => {
 				.concat(withCollision)
 			service["relations"] = newRelations
 
-			infraS.getRelationMetadata = vi.fn().mockResolvedValue(newRelations)
+			infraS.getRelationMetadata = vi.fn(async () => newRelations)
 
 			await service["fixNamingCollisions"]()
-			expect(repo.updateById).toBeCalledWith({ id: rel.id, changes: { propertyName: "body_1" } })
+			expect(repo.updateById).toBeCalledWith({ id: rel.id, changes: { propertyName: "body1" } })
 		})
 	})
 

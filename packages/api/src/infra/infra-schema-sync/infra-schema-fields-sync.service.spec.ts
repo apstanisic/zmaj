@@ -1,8 +1,8 @@
 import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { buildTestModule } from "@api/testing/build-test-module"
-import { DbColumn, CollectionMetadata, FieldMetadata, times } from "@zmaj-js/common"
-import { DbColumnStub, CollectionMetadataStub, FieldMetadataStub } from "@zmaj-js/test-utils"
+import { DbColumn, FieldMetadata, times } from "@zmaj-js/common"
+import { DbColumnStub, FieldMetadataStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraService } from "../infra.service"
 import { InfraSchemaFieldsSyncService } from "./infra-schema-fields-sync.service"
@@ -13,12 +13,21 @@ describe("InfraSchemaFieldsSyncService", () => {
 	let schemaInfoS: SchemaInfoService
 	let repo: OrmRepository<FieldMetadata>
 
+	let columns: DbColumn[]
+	let fields: FieldMetadata[]
+
 	beforeEach(async () => {
 		const module = await buildTestModule(InfraSchemaFieldsSyncService).compile()
 		service = module.get(InfraSchemaFieldsSyncService)
 		infraService = module.get(InfraService)
 		schemaInfoS = module.get(SchemaInfoService)
 		repo = service.repo
+		//
+		columns = times(5, (i) => DbColumnStub({ tableName: `tb_${i}`, columnName: `cl_${i}` }))
+		fields = times(5, (i) => FieldMetadataStub({ tableName: `tb_${i}`, columnName: `cl_${i}` }))
+
+		infraService.getFieldMetadata = vi.fn(async () => fields)
+		schemaInfoS.getColumns = vi.fn(async () => columns)
 	})
 
 	it("should have proper repo", () => {
@@ -26,20 +35,12 @@ describe("InfraSchemaFieldsSyncService", () => {
 	})
 
 	describe("removeFieldsWithoutColumn", () => {
-		let columns: DbColumn[]
-		let fields: FieldMetadata[]
 		beforeEach(() => {
-			columns = times(5, (i) => DbColumnStub({ tableName: `tb_${i}`, columnName: `cl_${i}` }))
-			fields = times(5, (i) => FieldMetadataStub({ tableName: `tb_${i}`, columnName: `cl_${i}` }))
-
-			service["addMissingFields"] = vi.fn()
-			schemaInfoS.getColumns = vi.fn().mockImplementation(async () => columns)
-			infraService.getFieldMetadata = vi.fn().mockImplementation(async () => fields)
 			repo.deleteWhere = vi.fn()
 		})
 
 		it("should do nothing if there are no redundant fields", async () => {
-			await service.sync()
+			await service["removeFieldsWithoutColumn"](fields, columns)
 			expect(repo.deleteWhere).not.toBeCalled()
 		})
 
@@ -54,26 +55,12 @@ describe("InfraSchemaFieldsSyncService", () => {
 	})
 
 	describe("addMissingFields", () => {
-		let columns: DbColumn[]
-		let fields: FieldMetadata[]
-		let collections: CollectionMetadata[]
 		beforeEach(() => {
-			collections = times(5, (i) => CollectionMetadataStub({ tableName: `tb_${i}` }))
-
-			columns = times(5, (i) => DbColumnStub({ tableName: `tb_${i}`, columnName: `cl_${i}` }))
-
-			fields = times(5, (i) => FieldMetadataStub({ tableName: `tb_${i}`, columnName: `cl_${i}` }))
-
-			service["removeFieldsWithoutColumn"] = vi.fn()
-			schemaInfoS.getColumns = vi.fn().mockImplementation(async () => columns)
-			infraService.getFieldMetadata = vi.fn().mockImplementation(async () => fields)
-			infraService.getCollectionMetadata = vi.fn().mockImplementation(async () => collections)
-
 			repo.createMany = vi.fn()
 		})
 
 		it("should do nothing if all columns have field", async () => {
-			await service.sync()
+			await service["addMissingFields"](fields, columns)
 			expect(repo.createMany).not.toBeCalled()
 		})
 
@@ -105,8 +92,8 @@ describe("InfraSchemaFieldsSyncService", () => {
 		it("should sync columns and fields", async () => {
 			await service.sync()
 
-			expect(service["addMissingFields"]).toBeCalled()
-			expect(service["removeFieldsWithoutColumn"]).toBeCalled()
+			expect(service["addMissingFields"]).toBeCalledWith(fields, columns)
+			expect(service["removeFieldsWithoutColumn"]).toBeCalledWith(fields, columns)
 		})
 	})
 })

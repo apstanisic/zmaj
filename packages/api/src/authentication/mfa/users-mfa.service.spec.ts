@@ -44,7 +44,7 @@ describe("UsersMfaService", () => {
 		let jwtService: JwtService
 		beforeEach(() => {
 			user = AuthUserStub({ email: "hello@example.com" })
-			dbUser = UserStub({ email: "hello@example.com", status: "active" })
+			dbUser = UserStub({ email: "hello@example.com", status: "active", otpToken: null })
 			//
 			usersService = module.get(UsersService)
 			makeWritable(usersService).repo ??= {} as any

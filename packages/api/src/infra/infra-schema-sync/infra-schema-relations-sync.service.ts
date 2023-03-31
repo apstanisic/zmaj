@@ -5,19 +5,18 @@ import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
-	ForeignKey,
-	getFreeValue,
 	CollectionMetadata,
 	FieldMetadata,
+	ForeignKey,
+	RelationDef,
 	RelationMetadata,
 	RelationMetadataCollection,
 	RelationMetadataSchema,
+	getFreeValue,
 	isIn,
 	zodCreate,
-	RelationDef,
 } from "@zmaj-js/common"
 import { camel, title } from "radash"
-import { SetOptional, SetRequired } from "type-fest"
 
 /**
  * Sync relations with FKs. This ensures that relations are valid, and can freely be used
@@ -58,7 +57,7 @@ export class InfraSchemaRelationsSyncService {
 		this.fields = await this.infraService.getFieldMetadata()
 		this.collections = await this.infraService.getCollectionMetadata()
 		this.relations = await this.infraService.getRelationMetadata()
-		this.fks = await this.schemaInfo.getForeignKeys()
+		this.fks = await this.infraService.getForeignKeys()
 	}
 
 	/**
@@ -129,6 +128,7 @@ export class InfraSchemaRelationsSyncService {
 		const freePropertyName = getFreeValue(
 			relation.propertyName,
 			(val) => !takenPropertyNames.includes(val),
+			{ between: "" },
 		)
 		return freePropertyName
 	}

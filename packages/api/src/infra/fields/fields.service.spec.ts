@@ -3,7 +3,7 @@ import { throw500 } from "@api/common/throw-http"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { ForbiddenException } from "@nestjs/common"
 import { CollectionDef, FieldDef, FieldMetadata, FieldCreateDto, UUID } from "@zmaj-js/common"
-import { FieldDefStub, FieldMetadataStub } from "@zmaj-js/test-utils"
+import { CollectionDefStub, FieldDefStub, FieldMetadataStub } from "@zmaj-js/test-utils"
 import { Writable } from "type-fest"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraStateService } from "../infra-state/infra-state.service"
@@ -69,7 +69,14 @@ describe("FieldsService", () => {
 			id = field.id as UUID
 			service.repo.deleteById = vi.fn().mockImplementation(async () => field)
 			alterSchema.dropColumn = vi.fn()
-			infraState["_fields"] = [...infraState.fields, fullField]
+
+			infraState["_collections"] = structuredClone(infraState.collections)
+			infraState["_collections"]["myCol"] = CollectionDefStub({
+				collectionName: "myCol",
+				tableName: field.tableName,
+				fields: { [field.fieldName]: fullField },
+			})
+			// infraState["_fields"] = [...infraState.fields, fullField]
 		})
 
 		it("should throw if field is pk", async () => {
