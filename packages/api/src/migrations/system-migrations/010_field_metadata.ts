@@ -51,12 +51,14 @@ export const CreateFieldMetadataTable = createSystemMigration({
 			transaction: trx,
 		})
 
+		// table can have only one column where is_created_at is true
 		await qi.addIndex(table, ["table_name", "is_created_at"], {
 			unique: true,
 			where: { is_created_at: true },
 			transaction: trx,
 		})
 
+		// table can have only one column where is_updated_at is true
 		await qi.addIndex(table, ["table_name", "is_updated_at"], {
 			unique: true,
 			where: { is_updated_at: true },

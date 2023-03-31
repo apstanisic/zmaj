@@ -23,8 +23,8 @@ import {
 	notNil,
 	systemCollections,
 } from "@zmaj-js/common"
-import { camel } from "radash"
 import { ExpandRelationsService } from "./expand-relations.service"
+import { group, mapValues, objectify } from "radash"
 
 /**
  * Keep all needed infra info in memory, so we can access it quickly
@@ -36,7 +36,7 @@ export class InfraStateService {
 	version = Date.now()
 
 	/** DB schema columns */
-	private _columns: readonly DbColumn[] = []
+	private _columns: Struct<Struct<DbColumn>> = {}
 
 	/** DB foreign keys */
 	private _fks: readonly ForeignKey[] = []
@@ -122,8 +122,9 @@ export class InfraStateService {
 			.transaction({
 				fn: async (trx) => {
 					// db schema
-					this._columns = await this.schemaInfo.getColumns({ trx })
+					this._columns = nestColumns(await this.schemaInfo.getColumns({ trx }))
 					this._fks = await this.schemaInfo.getForeignKeys({ trx })
+
 					this._compositeUniqueKeys = await this.schemaInfo.getCompositeUniqueKeys({ trx })
 
 					// Get simple db values
@@ -165,9 +166,7 @@ export class InfraStateService {
 
 	private expandField(field: FieldMetadata): FieldDef {
 		const collection = this._dbCollections.find((c) => c.tableName === field.tableName)
-		const column = this._columns.find(
-			(col) => col.tableName === field.tableName && col.columnName === field.columnName,
-		)
+		const column = this._columns[field.tableName]?.[field.columnName]
 
 		if (!collection) throw500(979852)
 		if (!column) throw500(710023)
@@ -208,8 +207,8 @@ export class InfraStateService {
 	}
 
 	private expandCollection(collection: CollectionMetadata): CollectionDef | undefined {
-		const pkColumn = this._columns.find(
-			(col) => col.tableName === collection.tableName && col.primaryKey,
+		const pkColumn = Object.values(this._columns[collection.tableName] ?? {}).find(
+			(col) => col.primaryKey,
 		)
 		// ignore collection if not pk
 		if (!pkColumn) return undefined
@@ -236,4 +235,11 @@ export class InfraStateService {
 			layoutConfig: LayoutConfigSchema.parse(collection.layoutConfig),
 		}
 	}
+}
+
+function nestColumns(columns: DbColumn[]): Struct<Struct<DbColumn>> {
+	const groups = group(columns, (col) => col.tableName)
+	return mapValues(groups, (colInOneTable) =>
+		objectify(colInOneTable ?? [], (col) => col.columnName),
+	)
 }

@@ -43,6 +43,12 @@ const Step1 = memo(() => {
 			/>
 
 			<ManualInputField
+				source="fieldName"
+				fieldConfig={shortTextDbColumnValidation}
+				description="Customize field name (leave empty to use camel cased column name)"
+			/>
+
+			<ManualInputField
 				isRequired
 				source="dataType"
 				disabled={isEdit}

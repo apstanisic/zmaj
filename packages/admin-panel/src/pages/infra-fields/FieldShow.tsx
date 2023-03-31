@@ -65,6 +65,8 @@ const Content = memo(() => {
 	return (
 		<TabsLayout sections={FieldConfig ? sections : sections.slice(0, 2)}>
 			<TabsSection>
+				<ManualShowField source="collectionName" />
+				<ManualShowField source="fieldName" />
 				<ManualShowField source="columnName" />
 				{/* <MyReferenceField source="tableName" reference=""></MyReferenceField> */}
 				<ManualShowField source="tableName" />
