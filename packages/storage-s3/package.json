@@ -38,9 +38,9 @@
 		"extends": "../../.eslintrc.cjs"
 	},
 	"dependencies": {
-		"@aws-sdk/abort-controller": "^3.296.0",
-		"@aws-sdk/client-s3": "^3.300.0",
-		"@aws-sdk/lib-storage": "^3.300.0",
+		"@aws-sdk/abort-controller": "^3.303.0",
+		"@aws-sdk/client-s3": "^3.304.0",
+		"@aws-sdk/lib-storage": "^3.304.0",
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/storage-core": "workspace:*",
 		"zod": "^3.21.4"

@@ -28,7 +28,7 @@
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/test-utils": "workspace:*",
 		"otplib": "^12.0.1",
-		"radash": "^10.7.1",
+		"radash": "^10.8.1",
 		"zmaj": "workspace:*"
 	}
 }
