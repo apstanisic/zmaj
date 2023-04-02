@@ -32,7 +32,8 @@ const buildAuthz = memo((data: AllowedAction[] | null) => {
 		{ resolveAction },
 	)
 })
-export function useAuthzState(): DefinedUseQueryResult<AnyMongoAbility> {
+
+function useAuthzState(): DefinedUseQueryResult<AnyMongoAbility> {
 	const sdk = useSdk()
 
 	return useQuery({

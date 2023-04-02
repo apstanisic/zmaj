@@ -1,7 +1,6 @@
 /// <reference types="vitest" />
 import { resolve } from "path"
 import swc from "unplugin-swc"
-// import react from "@vitejs/plugin-react-swc";
 import { configDefaults, defineConfig } from "vitest/config"
 
 // https://github.com/vitest-dev/vitest/issues/740#issuecomment-1254766751
@@ -14,8 +13,6 @@ try {
 
 export default defineConfig({
 	plugins: [swc.vite()],
-	// not working
-	// plugins: [react({tsDecorators: true, plugins: []})],
 	test: {
 		alias: {
 			"@client-sdk": resolve(__dirname, "packages/client-sdk/src"),
@@ -27,7 +24,6 @@ export default defineConfig({
 		passWithNoTests: true,
 		clearMocks: true,
 		exclude: [...configDefaults.exclude, "./packages/e2e-tests", "./scripts"],
-		browser: { enabled: false },
 		dangerouslyIgnoreUnhandledErrors: false,
 		globals: false,
 		logHeapUsage: false,

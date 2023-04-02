@@ -17,6 +17,7 @@ export type UseRegisterCrudLayoutParams = {
 
 /**
  *  This hook is used for registering app layouts
+ *  TODO This does not need to be a hook
  */
 export function useRegisterCrudLayout(params: UseRegisterCrudLayoutParams = {}): void {
 	useEffect(() => {

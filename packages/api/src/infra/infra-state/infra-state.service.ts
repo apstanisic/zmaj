@@ -6,12 +6,9 @@ import { Injectable, Logger } from "@nestjs/common"
 import {
 	CollectionDef,
 	CollectionMetadata,
-	CompositeUniqueKey,
-	DbColumn,
 	FieldConfigSchema,
 	FieldDef,
 	FieldMetadata,
-	ForeignKey,
 	LayoutConfigSchema,
 	RelationDef,
 	RelationMetadata,
@@ -26,15 +23,8 @@ import {
 } from "@zmaj-js/common"
 import { objectify } from "radash"
 import { ExpandRelationsService } from "./expand-relations.service"
+import { InitialDbState } from "./InitialDbState"
 
-export type InitialDbState = {
-	columns: Struct<Struct<DbColumn>>
-	fks: ForeignKey[]
-	compositeUniqueKeys: CompositeUniqueKey[]
-	collectionMetadata: CollectionMetadata[]
-	fieldMetadata: FieldMetadata[]
-	relationMetadata: RelationMetadata[]
-}
 /**
  * Keep all needed infra info in memory, so we can access it quickly
  */

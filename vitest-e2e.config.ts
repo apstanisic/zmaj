@@ -27,7 +27,6 @@ export default defineConfig({
 		},
 		clearMocks: true,
 		globals: false,
-		browser: { enabled: false },
 		// mockReset: true,
 		// restoreMocks: true,
 		dangerouslyIgnoreUnhandledErrors: false,

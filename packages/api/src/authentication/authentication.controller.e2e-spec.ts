@@ -55,6 +55,7 @@ describe("AuthenticationController e2e", () => {
 				confirmedEmail: true,
 				status: "active",
 				password: "password",
+				otpToken: null,
 			}),
 		})
 		user = AuthUser.fromUser(fullUser)

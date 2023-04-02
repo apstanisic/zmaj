@@ -9,6 +9,11 @@ export type CustomPage = {
 	hideLayout?: boolean
 }
 
+/**
+ *
+ * @param pages This has to be a function, since react admin is checking only first children
+ * So this must not be element. Use memo when using in code to avoid rerender
+ */
 export function renderCustomPages(pages: CustomPage[]): JSX.Element {
 	const withLayout = pages.filter((p) => p.hideLayout !== true)
 	const withoutLayout = pages.filter((p) => p.hideLayout)

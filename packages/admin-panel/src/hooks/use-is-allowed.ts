@@ -5,6 +5,14 @@ import { isString } from "radash"
 import { useEffect, useMemo } from "react"
 import { useAuthz } from "../state/authz-state"
 
+/**
+ * Check if action is allowed
+ * @example
+ * ```js
+ * useIsAllowed('update', 'posts', 'title')
+ * useIsAllowed('delete', 'comments')
+ * ```
+ */
 export function useIsAllowed(
 	action: string,
 	collection: CollectionDef | string,
@@ -19,6 +27,10 @@ export function useIsAllowed(
 	)
 }
 
+/**
+ * Check system permission. Used as a function, so it can be used when initializing
+ * in resource functions
+ */
 export function checkSystem<T extends keyof typeof systemPermissions>(
 	authz: AnyMongoAbility,
 	resourceKey: T,
@@ -28,6 +40,10 @@ export function checkSystem<T extends keyof typeof systemPermissions>(
 	return authz.can(perm.action, perm.resource)
 }
 
+/**
+ * Check if system action is allowed
+ * This is same as `useIsAllowed`, but this hook provides types for system permissions
+ */
 export function useIsAllowedSystem<T extends keyof typeof systemPermissions>(
 	resourceKey: T,
 	actionKey: keyof typeof systemPermissions[T]["actions"],
@@ -36,6 +52,9 @@ export function useIsAllowedSystem<T extends keyof typeof systemPermissions>(
 	return useIsAllowed(perm.action, perm.resource)
 }
 
+/**
+ * This hook will check if action is allowed, and redirect to home page if not
+ */
 export function useRedirectForbidden<T extends keyof typeof systemPermissions>(
 	resourceKey: T,
 	actionKey: keyof typeof systemPermissions[T]["actions"],

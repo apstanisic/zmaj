@@ -5,6 +5,7 @@ import { Test, TestingModuleBuilder } from "@nestjs/testing"
 import { isFunction } from "radash"
 import { mockConfigService, mockGlobalConfig } from "./config.service.mock"
 import { mockRepoManagers } from "./repo-manager.mock"
+import { InfraConfig } from "@api/infra/infra.config"
 
 /**
  * There are couple built in providers:
@@ -27,6 +28,7 @@ export function buildTestModule(
 		...mockRepoManagers(),
 		mockConfigService,
 		mockGlobalConfig,
+		{ provide: InfraConfig, useFactory: () => new InfraConfig({ defaultCase: "none" }) },
 		{ provide: InfraStateService, useFactory: mockInfraStateService },
 		...additionalProviders.map((pr) =>
 			isFunction(pr) ? ({ provide: pr, useValue: {} } as ValueProvider) : pr,

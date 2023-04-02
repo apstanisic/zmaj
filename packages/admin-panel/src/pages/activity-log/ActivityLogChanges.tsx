@@ -24,7 +24,7 @@ export const ActivityLogChanges = memo(() => {
 	)
 
 	const fields = useMemo(
-		() => unique(Object.keys(previous).concat(Object.keys(current ?? {}))),
+		() => unique([...Object.keys(previous), ...Object.keys(current ?? {})]),
 		[current, previous],
 	)
 

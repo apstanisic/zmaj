@@ -21,7 +21,7 @@ import {
 } from "./hooks/use-register-crud-layouts"
 import { useRegisterFieldComponents } from "./hooks/use-register-field-components"
 import { useRegisterTemplatePipes } from "./hooks/use-register-template-pipes"
-import { CustomPage } from "./types/CustomPage"
+import { CustomPage } from "./app-layout/CustomPage"
 
 export type AppProps = SetOptional<
 	GlobalConfig,
@@ -52,7 +52,7 @@ export function App(props: AppProps): JSX.Element {
 					apiUrl: props.apiUrl,
 					appName: props.appName ?? "Admin Panel",
 					sidebarItems: props.sidebarItems ?? [],
-					imageInAuthPages: props.imageInAuthPages ?? "https://source.unsplash.com/random",
+					imageInAuthPages: props.imageInAuthPages,
 				}}
 			>
 				<SdkContextProvider value={sdk}>

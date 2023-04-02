@@ -40,6 +40,7 @@ const devConfig: ConfigureAppParams = merge(defaultUserConfig, {
 	// cache: { enabled: false },
 	database: { logging: false },
 	config: { envPath: ".env.dev", throwOnNoEnvFile: true },
+	infra: { defaultCase: "camel" },
 } as ConfigureAppParams)
 
 const testConfig: ConfigureAppParams = merge(devConfig, {

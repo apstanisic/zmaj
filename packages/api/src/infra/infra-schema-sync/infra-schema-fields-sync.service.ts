@@ -14,6 +14,7 @@ import {
 	zodCreate,
 } from "@zmaj-js/common"
 import { camel, title } from "radash"
+import { InfraConfig } from "../infra.config"
 
 /**
  * Sync field info with database
@@ -25,6 +26,7 @@ export class InfraSchemaFieldsSyncService {
 		private infraService: InfraService,
 		private schemaInfo: SchemaInfoService,
 		private bootstrapRepoManager: BootstrapRepoManager,
+		private config: InfraConfig,
 	) {
 		this.repo = this.bootstrapRepoManager.getRepo(FieldMetadataCollection)
 	}
@@ -87,9 +89,11 @@ export class InfraSchemaFieldsSyncService {
 			const fieldExist = nestedFields[column.tableName]?.[column.columnName]
 			if (fieldExist) continue
 
+			// free if there is no field with same field name and table name
 			const fieldName = getFreeValue(
-				camel(column.columnName), // free if there is no field with same field name and table name
+				column.columnName,
 				(v) => !fields.some((f) => f.fieldName === v && f.tableName === column.tableName),
+				{ case: this.config.defaultCase },
 			)
 
 			missing.push(

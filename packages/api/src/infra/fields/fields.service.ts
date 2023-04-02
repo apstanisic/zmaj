@@ -17,10 +17,11 @@ import {
 	isBoolean,
 	getFreeValue,
 } from "@zmaj-js/common"
-import { camel, isString, title } from "radash"
+import { isString, title } from "radash"
 import { z } from "zod"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { OnInfraChangeService } from "../on-infra-change.service"
+import { InfraConfig } from "../infra.config"
 
 @Injectable()
 export class FieldsService {
@@ -29,6 +30,7 @@ export class FieldsService {
 		private readonly infraState: InfraStateService,
 		private readonly appInfraSync: OnInfraChangeService,
 		private readonly alterSchema: AlterSchemaService,
+		private readonly config: InfraConfig,
 	) {
 		this.repo = this.repoManager.getRepo(FieldMetadataCollection)
 	}
@@ -47,10 +49,11 @@ export class FieldsService {
 		const fieldName =
 			data.fieldName ??
 			getFreeValue(
-				camel(data.columnName),
+				data.columnName,
 				(name) =>
 					collection.fields[name] === undefined && //
 					collection.relations[name] === undefined,
+				{ case: this.config.defaultCase },
 			)
 
 		const toCreate = zodCreate(FieldMetadataSchema, {

@@ -17,8 +17,8 @@ import {
 	zodCreate,
 } from "@zmaj-js/common"
 import { InfraStateService } from "../infra-state/infra-state.service"
+import { InfraConfig } from "../infra.config"
 import { OnInfraChangeService } from "../on-infra-change.service"
-import { camel } from "radash"
 
 @Injectable()
 export class CollectionsService {
@@ -29,6 +29,7 @@ export class CollectionsService {
 		private readonly appInfraSync: OnInfraChangeService,
 		private readonly alterSchema: AlterSchemaService,
 		private readonly infraState: InfraStateService,
+		private readonly infraConfig: InfraConfig,
 	) {
 		this.repo = this.repoManager.getRepo(CollectionMetadataCollection)
 		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataCollection)
@@ -40,7 +41,10 @@ export class CollectionsService {
 				fn: async (trx) => {
 					const created = await this.repo.createOne({
 						trx,
-						data: zodCreate(CollectionMetadataSchema, dto),
+						data: zodCreate(CollectionMetadataSchema, {
+							...dto,
+							collectionName: dto.collectionName ?? this.infraConfig.toCase(dto.tableName),
+						}),
 					})
 
 					await this.fieldsRepo.createOne({
@@ -48,7 +52,7 @@ export class CollectionsService {
 						data: zodCreate(FieldMetadataSchema, {
 							columnName: dto.pkColumn,
 							tableName: dto.tableName,
-							fieldName: camel(dto.pkColumn),
+							fieldName: this.infraConfig.toCase(dto.pkColumn),
 						}),
 					})
 

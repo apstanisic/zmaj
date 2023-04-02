@@ -15,6 +15,7 @@ describe("times", () => {
 describe("snakeCase", () => {
 	it("should work", () => {
 		expect(snakeCase("helloWorld23Test")).toEqual("hello_world_23_test")
+		expect(snakeCase("helloWorld23")).toEqual("hello_world_23")
 	})
 })
 

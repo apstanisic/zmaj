@@ -2,6 +2,9 @@ import { ResourceDefinition } from "ra-core"
 import { isString } from "radash"
 import { useTitle } from "react-use"
 
+/**
+ * Change page title
+ */
 export function useHtmlTitle(
 	titleOrResource: string | ResourceDefinition,
 	action: string = "",

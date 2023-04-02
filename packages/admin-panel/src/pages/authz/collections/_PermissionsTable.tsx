@@ -1,11 +1,11 @@
 import { Table } from "@admin-panel/ui/Table"
 import { Permission } from "@zmaj-js/common"
 import { LayoutSection } from "../../../crud-layouts/ui/LayoutSection"
-import { useNonSystemCollections } from "../../../state/infra-state-v2"
+import { useUserCollections } from "../../../hooks/use-user-collections"
 import { CollectionPermissionsRow } from "./CollectionPermissionsRow"
 
 export function PermissionsTable(props: { allowedPermissions: Permission[] }): JSX.Element {
-	const nonSystemCollections = useNonSystemCollections()
+	const nonSystemCollections = useUserCollections()
 
 	if (nonSystemCollections.length === 0) {
 		return <p className="mt-8 text-center text-xl">No user collections</p>

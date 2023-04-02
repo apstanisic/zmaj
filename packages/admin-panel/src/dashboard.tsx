@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom"
 import { useHtmlTitle } from "./hooks/use-html-title"
-import { useNonSystemCollections } from "./state/infra-state-v2"
+import { useUserCollections } from "./hooks/use-user-collections"
 
 export function Dashboard(): JSX.Element {
-	const userCollections = useNonSystemCollections()
+	const userCollections = useUserCollections()
 	useHtmlTitle("Dashboard")
 
 	return (

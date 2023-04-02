@@ -11,7 +11,7 @@ import { useNotify, useRedirect } from "ra-core"
 import { memo, useEffect, useMemo } from "react"
 import { ManualInputLayout } from "../../crud-layouts/input/ManualInputLayout"
 import { GeneratedCreatePage } from "../../generator/pages/GeneratedCreatePage"
-import { useNonSystemCollections } from "../../state/infra-state-v2"
+import { useUserCollections } from "../../hooks/use-user-collections"
 import { useInfraState } from "../../state/useInfraState"
 import { RelationCreateForm } from "./create/RelationCreateForm"
 import { crush, construct } from "radash"
@@ -38,7 +38,7 @@ function Content(): JSX.Element {
 	// we expect that this value is provided with url
 	const redirect = useRedirect()
 	const notify = useNotify()
-	const cols = useNonSystemCollections()
+	const cols = useUserCollections()
 	const collectionNames = useMemo(() => {
 		return ["zmajUsers", "zmajFiles", ...cols.map((c) => c.collectionName)]
 	}, [cols])

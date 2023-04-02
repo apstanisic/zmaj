@@ -1,6 +1,6 @@
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { useNonSystemCollections } from "@admin-panel/state/infra-state-v2"
+import { useUserCollections } from "@admin-panel/hooks/use-user-collections"
 import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
 import { CollectionMetadataCollection, FieldDef } from "@zmaj-js/common"
 import { useRedirect } from "ra-core"
@@ -35,7 +35,7 @@ function StartButtons(): JSX.Element {
 	const field = useRecord<FieldDef>()
 	const redirect = useRedirect()
 
-	const cols = useNonSystemCollections()
+	const cols = useUserCollections()
 	const col = useMemo(
 		() => cols.find((t) => t.tableName === field?.tableName),
 		[cols, field?.tableName],

@@ -28,7 +28,7 @@ import { usersResource } from "./pages/users/UsersResource"
 import { webhookResource } from "./pages/webhooks/WebhookResource"
 import { useAuthz } from "./state/authz-state"
 import { useInfraState } from "./state/useInfraState"
-import { CustomPage, renderCustomPages } from "./types/CustomPage"
+import { CustomPage, renderCustomPages } from "./app-layout/CustomPage"
 import { CircularProgress } from "./ui/CircularProgress"
 
 const messages = { en: englishMessages }
@@ -110,9 +110,10 @@ export function AdminPanel(props: { customPages?: CustomPage[] }): JSX.Element {
 			),
 		[authz, sdk.auth.isSignedIn],
 	)
-	const userCustomPages = useMemo(() => {
-		return <>{renderCustomPages(props.customPages ?? [])}</>
-	}, [props.customPages])
+	const userCustomPages = useMemo(
+		() => <>{renderCustomPages(props.customPages ?? [])}</>,
+		[props.customPages],
+	)
 
 	if (!sdk.auth.isSignedIn && !publicAuthInfo.isSuccess) return <Loading />
 	if (sdk.auth.isSignedIn && collections.data.length < 1) return <Loading />

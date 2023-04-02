@@ -8,6 +8,8 @@ import { InfraService } from "./infra.service"
 import { OnInfraChangeService } from "./on-infra-change.service"
 import { RelationsModule } from "./relations/relations.module"
 import { UserInfraService } from "./user-infra.service"
+import { ConfigurableModuleClass } from "./infra.module-definition"
+import { InfraConfig } from "./infra.config"
 
 @Global()
 @Module({
@@ -18,8 +20,8 @@ import { UserInfraService } from "./user-infra.service"
 		InfraSchemaSyncModule,
 		InfraStateModule,
 	],
-	providers: [UserInfraService, OnInfraChangeService, UserInfraService, InfraService],
-	exports: [OnInfraChangeService, UserInfraService, InfraService],
+	providers: [UserInfraService, OnInfraChangeService, UserInfraService, InfraService, InfraConfig],
+	exports: [OnInfraChangeService, UserInfraService, InfraService, InfraConfig],
 	controllers: [InfraController],
 })
-export class InfraModule {}
+export class InfraModule extends ConfigurableModuleClass {}

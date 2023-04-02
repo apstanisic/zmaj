@@ -2,6 +2,7 @@ import { ActivityLogConfigParams } from "@api/activity-log/activity-log.config"
 import { SecurityConfigParams } from "@api/app/security.config"
 import { type CrudConfigParams } from "@api/crud/crud.config"
 import { type FilesConfigParams } from "@api/files/files.config"
+import { InfraConfigParams } from "@api/infra/infra.config"
 import { AuthenticationConfigParams } from "../authentication/authentication.config"
 import { AuthorizationParams } from "../authorization/authorization.module"
 import { ConfigModuleParams } from "../config/config.config"
@@ -14,14 +15,11 @@ import { CustomModule, CustomProvider } from "./custom-modules.module"
 import { GlobalConfigParams } from "./global-app.config"
 
 export type ConfigureAppParams = {
-	/**
-	 * Any external modules that user wants
-	 */
+	/** Any external modules that user wants */
 	customModules?: CustomModule[]
+	/** User can pass services directly */
 	customProviders?: CustomProvider[]
-	//
 	config?: ConfigModuleParams
-
 	global?: GlobalConfigParams
 	crud?: CrudConfigParams
 	authentication?: AuthenticationConfigParams
@@ -35,4 +33,5 @@ export type ConfigureAppParams = {
 	files?: FilesConfigParams
 	migrations?: MigrationsConfigParams
 	security?: SecurityConfigParams
+	infra?: InfraConfigParams
 }

@@ -18,11 +18,3 @@ import { InfraSchemaSyncService } from "./infra-schema-sync.service"
 	exports: [INFRA_SCHEMA_SYNC_FINISHED, InfraSchemaSyncService],
 })
 export class InfraSchemaSyncModule {}
-
-/**
- * KNEX
- * MIGRATIONS
- * INFRA -> This!
- * INFRA STATE
- * ORM
- */

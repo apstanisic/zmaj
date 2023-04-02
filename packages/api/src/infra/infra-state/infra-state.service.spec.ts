@@ -33,7 +33,8 @@ import { omit } from "radash"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraService } from "../infra.service"
 import { ExpandRelationsService } from "./expand-relations.service"
-import { InfraStateService, InitialDbState } from "./infra-state.service"
+import { InfraStateService } from "./infra-state.service"
+import { InitialDbState } from "./InitialDbState"
 
 const dbState: InitialDbState = structuredClone({
 	columns: nestByTableAndColumnName(allMockColumns),

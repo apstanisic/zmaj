@@ -1,18 +1,18 @@
 import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { buildTestModule } from "@api/testing/build-test-module"
-import { asMock, RelationMetadata } from "@zmaj-js/common"
+import { RelationMetadata } from "@zmaj-js/common"
 import {
-	allMockForeignKeys,
 	allMockCollectionMetadata,
 	allMockFieldMetadata,
+	allMockForeignKeys,
 	allMockRelationMetadata,
 	ForeignKeyStub,
+	mockFkNames,
 	RelationMetadataStub,
 	mockCollectionConsts as t,
-	mockFkNames,
 } from "@zmaj-js/test-utils"
-import { beforeEach, describe, expect, it, SpyInstance, vi } from "vitest"
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest"
 import { InfraService } from "../infra.service"
 import { InfraSchemaRelationsSyncService } from "./infra-schema-relations-sync.service"
 
@@ -22,7 +22,7 @@ describe("InfraSchemaRelationsSyncService", () => {
 	let schemaS: SchemaInfoService
 	let repo: OrmRepository<RelationMetadata>
 
-	let onChangeSpy: SpyInstance
+	let state: Awaited<ReturnType<InfraSchemaRelationsSyncService["getFreshState"]>>
 
 	beforeEach(async () => {
 		const module = await buildTestModule(InfraSchemaRelationsSyncService).compile()
@@ -32,14 +32,14 @@ describe("InfraSchemaRelationsSyncService", () => {
 
 		repo = service.repo
 
-		onChangeSpy = vi.spyOn(service, "onChange").mockResolvedValue(undefined)
+		state = {
+			fieldMetadata: [...allMockFieldMetadata],
+			collectionMetadata: [...allMockCollectionMetadata],
+			relationMetadata: [...allMockRelationMetadata],
+			fks: [...allMockForeignKeys],
+		}
 
-		infraS.getFieldMetadata = vi.fn(async () => allMockFieldMetadata)
-		infraS.getCollectionMetadata = vi.fn(async () => allMockCollectionMetadata)
-		infraS.getRelationMetadata = vi.fn(async () => allMockRelationMetadata)
-		infraS.getForeignKeys = vi.fn(async () => allMockForeignKeys)
-
-		await service.getFreshState()
+		service.getFreshState = vi.fn(async () => state)
 	})
 
 	it("should have proper repo", () => {
@@ -51,7 +51,7 @@ describe("InfraSchemaRelationsSyncService", () => {
 			repo.deleteWhere = vi.fn()
 		})
 		it("should not do anything if everything is correct", async () => {
-			await service["removeInvalidRelations"]()
+			await service["removeInvalidRelations"](state)
 			expect(repo.deleteWhere).not.toBeCalled()
 		})
 
@@ -59,20 +59,11 @@ describe("InfraSchemaRelationsSyncService", () => {
 			const redundant = RelationMetadataStub({
 				tableName: t.posts.snake,
 			})
-			service["relations"] = [...allMockRelationMetadata, redundant]
-			await service["removeInvalidRelations"]()
+			state.relationMetadata = [...allMockRelationMetadata, redundant]
+			await service["removeInvalidRelations"](state)
 			expect(repo.deleteWhere).toBeCalledWith({
 				where: { id: { $in: [redundant.id] } },
 			})
-		})
-
-		it("should refresh relations if there was a change", async () => {
-			const redundant = RelationMetadataStub({
-				tableName: t.posts.snake,
-			})
-			service["relations"] = [...allMockRelationMetadata, redundant]
-			await service["removeInvalidRelations"]()
-			expect(onChangeSpy).toBeCalled()
 		})
 	})
 
@@ -82,7 +73,7 @@ describe("InfraSchemaRelationsSyncService", () => {
 		})
 		//
 		it("should not do anything if everything is ok", async () => {
-			await service["createMissingRelations"]()
+			await service["createMissingRelations"](state)
 			expect(repo.createMany).not.toBeCalled()
 		})
 
@@ -94,8 +85,8 @@ describe("InfraSchemaRelationsSyncService", () => {
 				referencedTable: "posts_info",
 				fkName: "fk_name",
 			})
-			service["fks"] = [...allMockForeignKeys, missing]
-			await service["createMissingRelations"]()
+			state.fks = [...allMockForeignKeys, missing]
+			await service["createMissingRelations"](state)
 			expect(repo.createMany).toBeCalledWith({
 				data: [
 					expect.objectContaining({
@@ -129,15 +120,15 @@ describe("InfraSchemaRelationsSyncService", () => {
 				referencedTable: "posts_info",
 				fkName: "fk_name",
 			})
-			service["fks"] = [...allMockForeignKeys, missing]
-			service["relations"] = [
+			state.fks = [...allMockForeignKeys, missing]
+			state.relationMetadata = [
 				...allMockRelationMetadata,
 				RelationMetadataStub({
 					fkName: "fk_name",
 					tableName: t.posts.snake,
 				}),
 			]
-			await service["createMissingRelations"]()
+			await service["createMissingRelations"](state)
 			expect(repo.createMany).toBeCalledWith({
 				data: [
 					expect.objectContaining({
@@ -160,8 +151,8 @@ describe("InfraSchemaRelationsSyncService", () => {
 				referencedTable: "zmaj_test",
 				fkName: "fk_name",
 			})
-			service["fks"] = [...allMockForeignKeys, missing]
-			service["relations"] = [
+			state.fks = [...allMockForeignKeys, missing]
+			state.relationMetadata = [
 				...allMockRelationMetadata,
 				RelationMetadataStub({
 					fkName: "fk_name",
@@ -169,7 +160,7 @@ describe("InfraSchemaRelationsSyncService", () => {
 					tableName: t.posts.snake,
 				}),
 			]
-			await service["createMissingRelations"]()
+			await service["createMissingRelations"](state)
 			expect(repo.createMany).not.toBeCalled()
 		})
 
@@ -181,8 +172,8 @@ describe("InfraSchemaRelationsSyncService", () => {
 				referencedTable: "post_info",
 				fkName: "fk_name",
 			})
-			service["fks"] = [...allMockForeignKeys, missing]
-			await service["createMissingRelations"]()
+			state.fks = [...allMockForeignKeys, missing]
+			await service["createMissingRelations"](state)
 			expect(repo.createMany).not.toBeCalled()
 		})
 	})
@@ -193,7 +184,7 @@ describe("InfraSchemaRelationsSyncService", () => {
 		})
 		//
 		it("should do nothing if all relation properties are free", async () => {
-			await service["fixNamingCollisions"]()
+			await service["fixNamingCollisions"](state)
 			expect(repo.updateById).not.toBeCalled()
 		})
 
@@ -206,11 +197,11 @@ describe("InfraSchemaRelationsSyncService", () => {
 			const newRelations = allMockRelationMetadata
 				.filter((r) => r.id !== rel.id)
 				.concat(withCollision)
-			service["relations"] = newRelations
+			state.relationMetadata = newRelations
 
 			infraS.getRelationMetadata = vi.fn(async () => newRelations)
 
-			await service["fixNamingCollisions"]()
+			await service["fixNamingCollisions"](state)
 			expect(repo.updateById).toBeCalledWith({ id: rel.id, changes: { propertyName: "body1" } })
 		})
 	})
@@ -220,16 +211,16 @@ describe("InfraSchemaRelationsSyncService", () => {
 			repo.updateWhere = vi.fn()
 		})
 		it("should not do anything if everything is ok", async () => {
-			await service["splitInvalidManyToMany"]()
+			await service["splitInvalidManyToMany"](state)
 			expect(repo.updateWhere).not.toBeCalled()
 		})
 
 		it("convert m2m to m2o relation if invalid", async () => {
 			const rel = allMockRelationMetadata.find((r) => r.tableName === t.posts_info.snake)!
 			const asMtm: RelationMetadata = { ...rel, mtmFkName: "hello" }
-			service["relations"] = allMockRelationMetadata.filter((r) => r.id !== rel.id).concat(asMtm)
+			state.relationMetadata = allMockRelationMetadata.filter((r) => r.id !== rel.id).concat(asMtm)
 
-			await service["splitInvalidManyToMany"]()
+			await service["splitInvalidManyToMany"](state)
 			expect(repo.updateWhere).toBeCalledWith({
 				where: { id: { $in: [rel.id] } },
 				changes: { mtmFkName: null },
@@ -245,26 +236,23 @@ describe("InfraSchemaRelationsSyncService", () => {
 			schemaS.getForeignKeys = vi.fn()
 		})
 		it("should sync in correct order", async () => {
-			const createMissing = vi.fn()
-			const fixNaming = vi.fn()
-			const splitInvalid = vi.fn()
-			const removeInvalid = vi.fn()
+			const createMissing = vi.fn(async () => [])
+			const splitInvalid = vi.fn(async () => [])
+			const removeInvalid = vi.fn(async () => [])
+			const fixNaming = vi.fn(async () => {})
 
-			service["createMissingRelations"] = createMissing
 			service["removeInvalidRelations"] = removeInvalid
+			service["createMissingRelations"] = createMissing
 			service["fixNamingCollisions"] = fixNaming
 			service["splitInvalidManyToMany"] = splitInvalid
 
+			// position this mock is called
+			const getPlace = (mock: Mock): number => mock.mock.invocationCallOrder[0]!
+
 			await service["sync"]()
-			expect(asMock(removeInvalid).mock.invocationCallOrder[0]!).toBeLessThan(
-				asMock(splitInvalid).mock.invocationCallOrder[0]!,
-			)
-			expect(asMock(splitInvalid).mock.invocationCallOrder[0]!).toBeLessThan(
-				asMock(createMissing).mock.invocationCallOrder[0]!,
-			)
-			expect(asMock(createMissing).mock.invocationCallOrder[0]!).toBeLessThan(
-				asMock(fixNaming).mock.invocationCallOrder[0]!,
-			)
+			expect(getPlace(removeInvalid)).toBeLessThan(getPlace(createMissing))
+			expect(getPlace(createMissing)).toBeLessThan(getPlace(splitInvalid))
+			expect(getPlace(splitInvalid)).toBeLessThan(getPlace(fixNaming))
 
 			// expect(removeInvalid).toHaveBeenCalledBefore(splitInvalid, true)
 			// expect(splitInvalid).toHaveBeenCalledBefore(createMissing, true)

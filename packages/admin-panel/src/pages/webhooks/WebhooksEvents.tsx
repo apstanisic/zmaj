@@ -2,7 +2,7 @@ import { IconButton } from "@admin-panel/ui/IconButton"
 import { Table } from "@admin-panel/ui/Table"
 import { useMemo } from "react"
 import { MdCheck, MdClose } from "react-icons/md"
-import { useNonSystemCollections } from "../../state/infra-state-v2"
+import { useUserCollections } from "../../hooks/use-user-collections"
 
 type WebhooksEventsProps = {
 	events?: readonly string[]
@@ -10,7 +10,7 @@ type WebhooksEventsProps = {
 }
 
 export function WebhooksEvents(props: WebhooksEventsProps): JSX.Element {
-	const col = useNonSystemCollections()
+	const col = useUserCollections()
 
 	const webhookCollections = useMemo(() => col.map((c) => c.collectionName), [col])
 

@@ -15,7 +15,7 @@ export type GlobalConfig = {
 	adminPanelUrl: string
 	appName: string
 	sidebarItems: SidebarItem[]
-	imageInAuthPages: string
+	imageInAuthPages?: string
 }
 
 export const [GlobalConfigContextProvider, useGlobalConfigContext] = generateContext<GlobalConfig>({
@@ -23,5 +23,5 @@ export const [GlobalConfigContextProvider, useGlobalConfigContext] = generateCon
 	apiUrl: "/api",
 	sidebarItems: [],
 	appName: "Admin Panel",
-	imageInAuthPages: "https://source.unsplash.com/random",
+	// imageInAuthPages: "https://source.unsplash.com/random",
 })

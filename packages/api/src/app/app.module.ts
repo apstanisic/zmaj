@@ -85,9 +85,7 @@ export class AppModule {
 				// //
 				GlobalProvidersModule,
 				SequelizeModule,
-				InfraSchemaSyncModule,
-				InfraModule,
-				InfraStateModule,
+				InfraModule.register(params.infra ?? {}),
 				AuthenticationModule.register(params?.authentication ?? {}),
 				AuthorizationModule.register(params?.authorization ?? {}),
 				UsersModule,

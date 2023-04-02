@@ -11,6 +11,7 @@ import {
 	zodCreate,
 } from "@zmaj-js/common"
 import { camel } from "radash"
+import { InfraConfig } from "../infra.config"
 
 @Injectable()
 export class InfraSchemaCollectionsSyncService {
@@ -19,6 +20,7 @@ export class InfraSchemaCollectionsSyncService {
 		private infraService: InfraService,
 		private schemaInfo: SchemaInfoService,
 		private bootstrapRepoManager: BootstrapRepoManager,
+		private config: InfraConfig,
 	) {
 		this.repo = this.bootstrapRepoManager.getRepo(CollectionMetadataCollection)
 	}
@@ -68,8 +70,9 @@ export class InfraSchemaCollectionsSyncService {
 			// create object
 			.map((tableName) => {
 				const collectionName = getFreeValue(
-					camel(tableName), // is free if every collection does not have that name
+					tableName, // is free if every collection does not have that name
 					(v) => collections.every((c) => c.collectionName !== v),
+					{ case: this.config.defaultCase },
 				)
 				return zodCreate(CollectionMetadataSchema, { tableName, collectionName })
 			})

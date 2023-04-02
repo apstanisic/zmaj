@@ -21,17 +21,18 @@ import {
 	RelationMetadataSchema,
 	zodCreate,
 } from "@zmaj-js/common"
-import { camel } from "radash"
 import { v4 } from "uuid"
 import { InfraStateService } from "../infra-state/infra-state.service"
+import { InfraConfig } from "../infra.config"
 
 @Injectable()
 export class CreateManyToManyRelationsService {
 	constructor(
 		private schemaInfo: SchemaInfoService,
 		private repoManager: RepoManager,
-		private alterSchema: AlterSchemaService, // private infraState: InfraStateService,
+		private alterSchema: AlterSchemaService,
 		private infraState: InfraStateService,
+		private config: InfraConfig,
 	) {
 		this.relationsRepo = this.repoManager.getRepo(RelationMetadataCollection)
 		this.collectionsRepo = this.repoManager.getRepo(CollectionMetadataCollection)
@@ -230,7 +231,7 @@ export class CreateManyToManyRelationsService {
 			trx,
 			data: zodCreate(CollectionMetadataSchema, {
 				tableName: dto.junction.table,
-				collectionName: camel(dto.junction.table),
+				collectionName: this.config.toCase(dto.junction.table),
 				hidden: true,
 			}),
 		})
@@ -249,7 +250,7 @@ export class CreateManyToManyRelationsService {
 			data: zodCreate(FieldMetadataSchema, {
 				columnName: dto.junction.left.column,
 				tableName: dto.junction.table,
-				fieldName: camel(dto.junction.left.column),
+				fieldName: this.config.toCase(dto.junction.left.column),
 			}),
 		})
 
@@ -258,7 +259,7 @@ export class CreateManyToManyRelationsService {
 			data: zodCreate(FieldMetadataSchema, {
 				columnName: dto.junction.right.column,
 				tableName: dto.junction.table,
-				fieldName: camel(dto.junction.right.column),
+				fieldName: this.config.toCase(dto.junction.right.column),
 			}),
 		})
 	}
