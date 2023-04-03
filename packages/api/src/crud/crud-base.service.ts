@@ -16,7 +16,7 @@ import {
 	notNil,
 	Struct,
 } from "@zmaj-js/common"
-import { isEmpty } from "radash"
+import { isEmpty, omit } from "radash"
 import { PartialDeep } from "type-fest"
 import {
 	CrudAfterEvent,
@@ -252,8 +252,8 @@ export class CrudBaseService<Item extends Struct> {
 	 */
 	protected removePk<T>(collection: CollectionDef, obj: Struct): Partial<T> {
 		const pk = collection.pkField
-		const data = { ...obj }
-		delete data[pk]
+		// this shallow clones object, and removed pk
+		const data = omit(obj, [pk])
 		return data as Partial<T>
 	}
 

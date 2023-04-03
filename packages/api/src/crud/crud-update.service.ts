@@ -44,10 +44,9 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 			{ ...params, collection, action: "update", type: "before" }, //
 		)
 
-		// PK can't be changed, so pk property is deleted just in case
+		// PK can't be changed, so pk property is omitted
 		// don't throw an error since it's easy to accidentally provide id with other data
-		// afterEmit1.changes = this.removePk(collection, afterEmit1.changes)
-		delete afterEmit1.changes[collection.pkField]
+		afterEmit1.changes = omit(afterEmit1.changes, [collection.pkField])
 
 		// if no change is provided, throw
 		// user can update only relations, so don't throw here, simply return item that should

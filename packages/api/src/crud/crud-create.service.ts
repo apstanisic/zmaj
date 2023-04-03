@@ -9,7 +9,7 @@ import type {
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import { castArray, Struct } from "@zmaj-js/common"
-import { isEmpty } from "radash"
+import { isEmpty, omit } from "radash"
 import { Except, PartialDeep } from "type-fest"
 import { CrudBaseService } from "./crud-base.service"
 
@@ -45,10 +45,9 @@ export class CrudCreateService<Item extends Struct = Struct> extends CrudBaseSer
 		// I don't know if 400 should be used, or something other
 		if (Object.keys(collection.fields).length < 2) throw400(9274, emsg.tableHasOnlyPk)
 
-		// we need to clone data, since we are mutating it by deleting ID
-		const dto = castArray<Struct>(structuredClone(params.dto))
-		// Delete pk if provided
-		dto.forEach((r) => delete r[collection.pkField])
+		const dto = castArray<Struct>(structuredClone(params.dto)).map((v) =>
+			omit(v, [collection.pkField]),
+		)
 
 		if (dto.length < 1) throw400(382033, emsg.emptyPayload)
 
