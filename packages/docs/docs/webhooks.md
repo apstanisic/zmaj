@@ -52,7 +52,7 @@ It also has **experimental** support for changes to users, roles, permissions, w
 In the future, it will support additional events (auth events...).
 
 Events format stored in database is "action.resource". For example, to trigger on created post,
-Every collection is a resource. Collection is camel cased table.
+Every collection is a resource.
 Create posts will be `create.posts`, update comments `update.comments`, delete users `delete.zmajUsers`.
 Using system collections is experimental.
 

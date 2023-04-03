@@ -3,9 +3,7 @@ title: Collections
 ---
 
 Every table is represented as a collection, with a single row in `zmaj_collection_metadata`.
-Collection name is camel cased table name, so if table name is `super_posts`, collection name
-will be `superPosts`.
-Fields are also converted to camel case, so `post_id` column will be `postId` field.
+Collection name will by default be the same as the table name, but you can change it.
 
 ## Disabling collection
 
@@ -80,6 +78,20 @@ import { LayoutConfigSchema, type LayoutConfig } from "zmaj"
 // This will ensure that correct config is provided.
 // Set this value to `layoutConfig` property in collection
 const config: LayoutConfig = LayoutConfigSchema.parse({})
+```
+
+## Changing default collection name
+
+Zmaj will generate collections for existing tables, and create names for them.
+By default, Zmaj will try to reuse table name.
+You can customize how name will look like with `options.infra.defaultCase = "camel"`.
+This will not impact collections that already exist.
+
+```js
+import { runServer } from "zmaj"
+
+// "camel" | "snake" | "none", defaults to "none"
+await runServer({ infra: { defaultCase: "camel" } })
 ```
 
 <!--

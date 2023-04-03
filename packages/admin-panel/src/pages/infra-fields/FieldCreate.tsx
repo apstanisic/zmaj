@@ -28,10 +28,3 @@ export const FieldCreate = memo(() => {
 		</GeneratedCreatePage>
 	)
 })
-
-// import { DevTool } from "@hookform/devtools"
-// import { useFormContext } from "react-hook-form"
-// function Tool() {
-// 	const cont = useFormContext().control
-// 	return <DevTool control={cont} />
-// }

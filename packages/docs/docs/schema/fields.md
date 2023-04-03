@@ -3,8 +3,7 @@ title: Fields
 ---
 
 Every column is represented as a single field.
-Field name is column name converted to camel case, so if column name is `post_id`, field name
-will be `postId`.
+Field name will by default be the same as the column name, but you can change it.
 Every field is tied to single collection (as column is to the table). If collection is disabled, all
 it's fields are unaccessible. Data about fields in stored in `zmaj_field_metadata`.
 
@@ -78,3 +77,17 @@ Some properties are constant, and some are dependent on type of column (and sele
 Validation provided here is only used in client, so make sure to validate data on the server as well.
 Best way to edit field config is trough admin panel, since configuration is different depending on component,
 and component can provide it's own inputs (e.g. number input can provide min and max input).
+
+### Changing default collection name
+
+Zmaj will generate collections for existing tables, and create names for them.
+By default, Zmaj will try to reuse table name.
+You can customize how name will look like with `options.infra.defaultCase = "camel"`.
+This will not impact collections that already exist.
+
+```js
+import { runServer } from "zmaj"
+
+// "camel" | "snake" | "none", defaults to "none"
+await runServer({ infra: { defaultCase: "camel" } })
+```

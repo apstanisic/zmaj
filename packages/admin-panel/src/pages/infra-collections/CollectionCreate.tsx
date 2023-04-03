@@ -28,11 +28,12 @@ export const CollectionCreate = memo(() => {
 							source="tableName"
 							fieldConfig={shortTextDbColumnValidation}
 							isRequired
+							description="Table name in database"
 						/>
 						<ManualInputField
 							source="collectionName"
 							fieldConfig={shortTextDbColumnValidation}
-							description="Customize collection name (leave empty to use camel cased table name)"
+							description="Collection name at which it will be accessed (leave empty for default)"
 						/>
 
 						<ManualInputField

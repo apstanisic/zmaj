@@ -9,8 +9,7 @@ which is a thin wrapper around [Sequelize](https://sequelize.org/). It provides 
 ## Using ORM
 
 You can inject `RepoManager` in any of your services. It provides method `getRepo` that will
-return repository for specified collection. You can pass either table name or collection name
-(collection name is camel-cased version of table name). ORM will use database schema, combined with
+return repository for specified collection. ORM will use database schema, combined with
 configuration for provided collection to generate proper entities and proper relations.
 
 ```ts
@@ -22,7 +21,8 @@ class MyService {
 	repo: OrmRepository<{ id: number; title: string }>
 
 	constructor(private repoManager: RepoManager) {
-		this.repo = this.repoManager.getRepo("posts")
+		// "posts" is collection name
+		this.repo = this.repoManager.getRepo<{ id: number; title: string }>("posts")
 	}
 
 	async findAllPosts() {

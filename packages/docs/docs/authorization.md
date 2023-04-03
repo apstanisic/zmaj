@@ -79,18 +79,20 @@ const conditions = {
 
 Since permissions are stored in database, zmaj has placeholder values that will be replaced at runtime
 with real values.
-Currently there are `"$CURRENT_USER", "$CURRENT_ROLE", "$DATE:some-value", "$CURRENT_DATE"`:
+Currently there are `"$CURRENT_USER", "$CURRENT_ROLE", "$DATE:some-value":
 It is possible for you to [write custom transformer](#writing-custom-condition-transformers).
 
+<!-- Currently there are `"$CURRENT_USER", "$CURRENT_ROLE", "$DATE:some-value", "$CURRENT_DATE"`: -->
+
 | Example                          | Description                                                                            |
-| :------------------------------- | :------------------------------------------------------------------------------------- |
+| :------------------------------- | :------------------------------------------------------------------------------------- | -------------------- |
 | "$CURRENT_USER"                  | Injects current user's ID                                                              |
 | "$CURRENT_ROLE"                  | Injects current user's role ID                                                         |
 | "$DATE:2022-09-12T16:12:53.343Z" | Creates `Date` object with provided value                                              |
 | "$DATE:10000"                    | Creates `Date` object provided unix timestamp (in seconds)                             |
-| "$CURRENT_DATE"                  | Injects current date                                                                   |
+| <!--                             | "$CURRENT_DATE"                                                                        | Injects current date |
 | "$CURRENT_DATE:3d"               | Injects date that is 3 days in the future ([uses `ms`](https://github.com/vercel/ms))  |
-| "$CURRENT_DATE:-5s"              | Injects date that is 5 seconds in the past ([uses `ms`](https://github.com/vercel/ms)) |
+| "$CURRENT_DATE:-5s"              | Injects date that is 5 seconds in the past ([uses `ms`](https://github.com/vercel/ms)) | -->                  |
 
 ## Configuring
 
