@@ -422,7 +422,10 @@ export class AuthorizationService {
 			)
 		}
 
-		const result = abilities.build({ detectSubjectType: (data) => data.__caslType, resolveAction })
+		const result = abilities.build({
+			detectSubjectType: (data) => data["__caslType"],
+			resolveAction,
+		})
 		// cache value
 		this.cache.values.set(user?.userId ?? "public", result)
 		return result
