@@ -53,7 +53,8 @@ export class TemplateParser {
 	 * @param options Additional options
 	 * @returns parsed template
 	 */
-	parse(template: string, values: Struct<unknown> = {}, options: ParseOptions = {}): string {
+	parse(template: string, values?: Struct<unknown> | null, options: ParseOptions = {}): string {
+		values ??= {}
 		const toReplace = template.match(templateRegex) ?? []
 		for (const item of toReplace) {
 			const value = this.parseVar(trim(item, "{}"), values)

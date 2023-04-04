@@ -25,6 +25,11 @@ describe("templateParser", () => {
 		expect(parsed).toBe("hello  1")
 	})
 
+	it("should allow to pass null as values", () => {
+		const parsed = templateParser.parse("test_{me}", null)
+		expect(parsed).toBe("test_")
+	})
+
 	it("should trim result replace with empty string if value is nil", () => {
 		const parsed = templateParser.parse("  hello ", {})
 		expect(parsed).toBe("hello")
