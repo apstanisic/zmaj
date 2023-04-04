@@ -547,7 +547,7 @@ importers:
         specifier: ^0.7.36
         version: 0.7.36
       '@zmaj-js/test-utils':
-        specifier: workspace:^0.2.0
+        specifier: workspace:^0.2.1
         version: link:../test-utils
 
   packages/cli:
