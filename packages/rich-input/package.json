@@ -14,7 +14,7 @@
 		"node": ">=18.0.0"
 	},
 	"name": "@zmaj-js/rich-input",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
