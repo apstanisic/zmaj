@@ -23,7 +23,7 @@
 		"test-gui": "playwright test -c ./playwright.config.ts"
 	},
 	"dependencies": {
-		"@playwright/test": "1.32.1",
+		"@playwright/test": "1.32.2",
 		"@zmaj-js/client-sdk": "workspace:*",
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/test-utils": "workspace:*",
