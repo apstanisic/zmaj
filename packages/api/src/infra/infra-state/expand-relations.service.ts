@@ -8,6 +8,7 @@ import {
 	CollectionMetadata,
 	RelationMetadata,
 	RelationDef,
+	FieldMetadata,
 } from "@zmaj-js/common"
 
 type ExpandRelationParams = {
@@ -15,6 +16,7 @@ type ExpandRelationParams = {
 	fks: readonly ForeignKey[]
 	collections: readonly (CollectionMetadata | CollectionDef)[]
 	compositeUniqueKeys: readonly CompositeUniqueKey[]
+	fields: FieldMetadata[]
 }
 
 @Injectable()

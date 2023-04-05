@@ -4,12 +4,14 @@ import { mockCompositeUniqueKeys } from "./mock-composite-unique-keys.js"
 import { allMockForeignKeys } from "./mock-fks.js"
 import { allMockCollectionMetadata } from "./mock-infra-collections.js"
 import { allMockRelationMetadata, mockRelationMetadata } from "./mock-relations.js"
+import { allMockFieldMetadata } from "./mock-field-metadata.js"
 
 function expand(rel: RelationMetadata): RelationDef {
 	return expandRelation(rel, {
 		allRelations: allMockRelationMetadata,
 		collections: allMockCollectionMetadata,
 		fks: allMockForeignKeys,
+		fields: allMockFieldMetadata,
 		compositeUniqueKeys: Object.values(mockCompositeUniqueKeys),
 		onError: (code: number) => {
 			throw new Error(code.toString())

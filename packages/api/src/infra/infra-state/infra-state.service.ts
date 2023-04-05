@@ -175,6 +175,7 @@ export class InfraStateService {
 		return this.expandRelationsService.expand(relation, {
 			fks: dbState.fks,
 			compositeUniqueKeys: dbState.compositeUniqueKeys,
+			fields: dbState.fieldMetadata,
 			collections: [...dbState.collectionMetadata, ...systemCollections],
 			allRelations: [
 				...dbState.relationMetadata,
