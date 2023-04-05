@@ -52,60 +52,60 @@ export class TestingUtilsService {
 		const repoCol = this.repoManager.getRepo(CollectionMetadataCollection)
 		const repoRel = this.repoManager.getRepo(RelationMetadataCollection)
 
-		await this.onChange.executeChange(async () => {
-			// posts
+		// posts
 
-			await repoCol.updateWhere({
-				where: { tableName: "posts" },
-				changes: { displayTemplate: "{title}" },
-			})
-			await repo.updateWhere({
-				where: { tableName: "posts", columnName: "likes" as keyof TPost },
-				changes: { componentName: "int" },
-			})
-			await repoRel.updateWhere({
-				where: { tableName: "posts", propertyName: "postsTags" },
-				changes: new RelationUpdateDto({ propertyName: "tags", label: "Tags" }),
-			})
-			await repo.updateWhere({
-				where: { tableName: "posts", columnName: "body" },
-				changes: { componentName: "long-text" },
-			})
+		await repoCol.updateWhere({
+			where: { tableName: "posts" },
+			changes: { displayTemplate: "{title}" },
+		})
+		await repo.updateWhere({
+			where: { tableName: "posts", columnName: "likes" as keyof TPost },
+			changes: { componentName: "int" },
+		})
+		await repoRel.updateWhere({
+			where: { tableName: "posts", propertyName: "postsTags" },
+			changes: new RelationUpdateDto({ propertyName: "tags", label: "Tags" }),
+		})
+		await repo.updateWhere({
+			where: { tableName: "posts", columnName: "body" },
+			changes: { componentName: "long-text" },
+		})
 
-			// comments
-			await repoCol.updateWhere({
-				where: { tableName: "comments" },
-				changes: { displayTemplate: "{body}" },
-			})
-			await repo.updateWhere({
-				where: { tableName: "comments", columnName: "body" as keyof TComment },
-				changes: { componentName: "markdown" },
-			})
+		// comments
+		await repoCol.updateWhere({
+			where: { tableName: "comments" },
+			changes: { displayTemplate: "{body}" },
+		})
+		await repo.updateWhere({
+			where: { tableName: "comments", columnName: "body" as keyof TComment },
+			changes: { componentName: "markdown" },
+		})
 
-			// tags
-			await repoCol.updateWhere({
-				where: { tableName: "tags" },
-				changes: { displayTemplate: "{name}" },
-			})
+		// tags
+		await repoCol.updateWhere({
+			where: { tableName: "tags" },
+			changes: { displayTemplate: "{name}" },
+		})
 
-			// post_info
-			await repo.updateWhere({
-				where: { tableName: "post_info", columnName: "additionalInfo" as keyof TPostInfo },
-				changes: { componentName: "key-value" },
-			})
+		// post_info
+		await repo.updateWhere({
+			where: { tableName: "post_info", columnName: "additionalInfo" as keyof TPostInfo },
+			changes: { componentName: "key-value" },
+		})
 
-			// posts_tags
-			await repoRel.updateWhere({
-				where: { tableName: "tags", propertyName: "postsTags" },
-				changes: new RelationUpdateDto({ propertyName: "posts", label: "Posts" }),
-			})
+		// posts_tags
+		await repoRel.updateWhere({
+			where: { tableName: "tags", propertyName: "postsTags" },
+			changes: new RelationUpdateDto({ propertyName: "posts", label: "Posts" }),
+		})
+
+		await repoRel.updateWhere({
+			where: { tableName: "posts", propertyName: "postsTags" },
+			changes: new RelationUpdateDto({ propertyName: "tags", label: "Tags" }),
 		})
 		await this.relationsService.joinManyToMany("postsTags")
 	}
 
-	async createExamplePostsProject(): Promise<void> {
-		await this.onChange.executeChange(async () => this.testData.createPostsExampleTables())
-	}
 	async dropUserTables(): Promise<void> {
 		this.onChange.executeChange(async () => this.testData.dropAllNonSystemTables())
 	}

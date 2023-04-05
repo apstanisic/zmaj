@@ -1,4 +1,6 @@
 import { throw400, throw404, throw500 } from "@api/common/throw-http"
+import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
+import { RawQueryOptions } from "@api/database/orm-specs/RawQueryOptions"
 import { CreateManyParams } from "@api/database/orm-specs/create/CreateManyParams"
 import { CreateOneParams } from "@api/database/orm-specs/create/CreateOneParams"
 import { DeleteByIdParams } from "@api/database/orm-specs/delete/DeleteByIdParams"
@@ -9,11 +11,27 @@ import { FindByIdOptions } from "@api/database/orm-specs/find/FindByIdOptions"
 import { FindManyOptions } from "@api/database/orm-specs/find/FindManyOptions"
 import { FindOneOptions } from "@api/database/orm-specs/find/FindOneOptions"
 import { ReturnedFields } from "@api/database/orm-specs/find/returned-fields"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RawQueryOptions } from "@api/database/orm-specs/RawQueryOptions"
 import { UpdateManyOptions } from "@api/database/orm-specs/update/UpdateManyOptions"
 import { UpdateOneOptions } from "@api/database/orm-specs/update/UpdateOneOptions"
 import { emsg } from "@api/errors"
+import {
+	Comparison,
+	Fields,
+	Filter,
+	IdArraySchema,
+	IdType,
+	Struct,
+	filterStruct,
+	getFirstKey,
+	getFirstProperty,
+	isIdType,
+	isNil,
+	isStruct,
+	notNil,
+	zodCreate,
+} from "@zmaj-js/common"
+import { inspect } from "node:util"
+import { get, isArray, isEmpty, mapValues, pick, set } from "radash"
 import {
 	ForeignKeyConstraintError,
 	IncludeOptions,
@@ -23,24 +41,6 @@ import {
 	UniqueConstraintError,
 	WhereOptions,
 } from "sequelize"
-import {
-	Comparison,
-	Fields,
-	Filter,
-	filterStruct,
-	getFirstKey,
-	getFirstProperty,
-	IdArraySchema,
-	IdType,
-	isIdType,
-	isNil,
-	isStruct,
-	notNil,
-	Struct,
-	zodCreate,
-} from "@zmaj-js/common"
-import { inspect } from "node:util"
-import { get, isArray, isEmpty, mapValues, pick, set } from "radash"
 import { SequelizeService } from "./sequelize.service"
 
 const symbolComparisons: Record<Comparison | "$and" | "$or", symbol> = {
@@ -57,7 +57,7 @@ const symbolComparisons: Record<Comparison | "$and" | "$or", symbol> = {
 	$or: Op.or,
 }
 export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extends OrmRepository<T> {
-	constructor(private orm: SequelizeService, private tableName: string) {
+	constructor(private orm: SequelizeService, private collectionName: string) {
 		super()
 	}
 
@@ -206,7 +206,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 				)
 			}
 
-			console.log({ error })
+			// console.log({ error })
 
 			throw500({ errorCode: 891200, message: emsg.dbProblem, cause: error })
 		}
@@ -329,7 +329,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	 * and we do not want to keep track
 	 */
 	private get model(): ModelStatic<Model<T, Partial<T>>> {
-		return this.orm.models[this.tableName] ?? throw500(19732, emsg.noModel(this.tableName))
+		return (
+			this.orm.models[this.collectionName] ?? throw500(19732, emsg.noModel(this.collectionName))
+		)
 	}
 
 	get pk(): string {
@@ -350,7 +352,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 		const fieldsAndRelations = this.parseFields({
 			// fields: params.fields,
 			fields: fields,
-			table: this.tableName,
+			collection: this.collectionName,
 			filterRelations: whereResult.toAdd,
 		})
 		return { where: whereResult.where, ...fieldsAndRelations }
@@ -381,13 +383,13 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	 */
 	private parseFields<F extends Fields<T> | undefined>({
 		fields,
-		table,
+		collection,
 		property,
 		filterRelations,
 	}: // subQuery,
 	{
 		fields: F
-		table: string
+		collection: string
 		property?: string
 		filterRelations?: string[]
 		// subQuery?: boolean
@@ -395,13 +397,14 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 		// clone since filter relations will mutate this value
 		fields = structuredClone(fields ?? ({} as F))
 
+		const model = this.orm.models[collection] ?? throw500(378324, emsg.noModel(collection))
 		// if fields is empty, get all columns
 		// we need to specify here, since if filter add join, we don't know what fields to fetch
 		// so if it's empty, get all
 		if (isEmpty(fields)) {
 			// `getAttributes` returns column property as key, and it's data.
 			// we are simply taking all property names and settings them to true
-			fields = mapValues(this.model.getAttributes(), (v) => true) as F
+			fields = mapValues(model.getAttributes(), (v) => true) as F
 		}
 		filterRelations?.forEach((relation) => {
 			const alreadyAdded = get(fields, relation)
@@ -414,7 +417,6 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 		const attributes: string[] = []
 		const include: IncludeOptions[] = []
 
-		const model = this.orm.models[table] ?? throw500(378324, emsg.noModel(table))
 		const fieldsMeta = model.getAttributes()
 
 		// delete fields!.$subQuery
@@ -450,7 +452,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 				// if some fields are specified, we need to recursively check for normal field and relations
 				const deep = this.parseFields({
 					fields: value as any,
-					table: relMeta.target.tableName,
+					collection: relMeta.target.name,
 					property: relMeta.as,
 					filterRelations: filterRelations
 						?.filter((r) => r.includes("."))

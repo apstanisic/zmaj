@@ -37,6 +37,7 @@ import {
 } from "@zmaj-js/test-utils"
 import { draw, pick, random, shuffle, unique } from "radash"
 import { DataTypes, QueryInterface } from "sequelize"
+import { configureBlogInfra } from "./blog-demo"
 import mockData from "./const-mocks.json"
 import { initECommerce, storeCollectionDefs } from "./ecommerce-demo"
 
@@ -276,6 +277,7 @@ export class BuildTestDbService {
 				transaction: trx,
 			},
 		)
+		await configureBlogInfra(this.repoManager, trx)
 	}
 
 	async createMockAdmin(): Promise<User> {
