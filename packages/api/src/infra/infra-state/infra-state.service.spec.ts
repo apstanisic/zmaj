@@ -158,6 +158,7 @@ describe("InfraStateService", () => {
 				fks: dbState.fks,
 				compositeUniqueKeys: dbState.compositeUniqueKeys,
 				collections: [...dbState.collectionMetadata, ...systemCollections],
+				fields: dbState.fieldMetadata,
 				allRelations: [
 					...dbState.relationMetadata,
 					...systemCollections.flatMap((c) => Object.values(c.relations).map((v) => v.relation)),

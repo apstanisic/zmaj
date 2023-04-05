@@ -31,14 +31,14 @@ type BaseRelation = {
 		thisSide: {
 			columnName: string
 			fieldName: string
-			propertyName?: string
-			relationId?: string
+			// propertyName?: string
+			// relationId?: string
 		}
 		otherSide: {
 			columnName: string
 			fieldName: string
-			propertyName?: string
-			relationId?: string
+			// propertyName?: string
+			// relationId?: string
 		}
 	}
 }

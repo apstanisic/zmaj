@@ -100,6 +100,10 @@ export function expandRelation(
 		const junctionLeftField = fields[leftFk.fkTable]?.[leftFk.fkColumn] ?? onError(9789)
 		const junctionRightField = fields[rightFk.fkTable]?.[rightFk.fkColumn] ?? onError(987333)
 
+		const rightRelation = allRelations.find(
+			(r) => r.fkName === relation.mtmFkName && r.mtmFkName === relation.fkName,
+		)
+
 		const compositeUnique =
 			compositeUniqueKeys.find(
 				(key) =>
@@ -122,6 +126,8 @@ export function expandRelation(
 				tableName: rightCol.tableName,
 				columnName: rightField?.columnName,
 				fieldName: rightField?.fieldName,
+				propertyName: rightRelation?.propertyName,
+				relationId: rightRelation?.id,
 			},
 			junction: {
 				collectionName: junctionCol.collectionName,

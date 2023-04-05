@@ -47,13 +47,11 @@ export const RelationDefStub = stub<RelationDef>((modify) => {
 			thisSide: {
 				columnName: junctionLeftColumn,
 				fieldName: camel(junctionLeftColumn),
-				propertyName: camel(leftTable),
 			},
 
 			otherSide: {
 				columnName: junctionRightColumn,
 				fieldName: camel(junctionRightColumn),
-				propertyName: camel(rightTable),
 			},
 		},
 	} satisfies JunctionRelation
