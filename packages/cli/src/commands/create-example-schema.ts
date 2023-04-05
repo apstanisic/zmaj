@@ -35,6 +35,13 @@ export function createExampleSchemaCommand(yr: BaseYargs): void {
 					alias: "f",
 					description: "Force action",
 				})
+				.option("type", {
+					type: "string",
+					default: "blog",
+					choices: ["blog", "store"] as const,
+					alias: "t",
+					description: "",
+				})
 				.option("env-file", {
 					type: "string",
 					demandOption: false,
@@ -50,9 +57,11 @@ async function createExampleSchema(params: {
 	force: boolean
 	deleteUser: boolean
 	deleteSystem: boolean
+	type: string
 }): Promise<void> {
 	const { envFile, createData, force, deleteSystem, deleteUser } = params
 	const { full: envPath } = await envFilePrompt(envFile)
+	const type = params.type !== "blog" ? "store" : "blog"
 
 	if (deleteUser && !force) processExit(1, "You must pass --force to delete existing tables")
 	if (deleteSystem && !force) processExit(1, "You must pass --force to delete existing tables")
@@ -101,13 +110,21 @@ async function createExampleSchema(params: {
 
 		const sp = spinner()
 		sp.start(pc.blue("Creating example tables"))
-		await service.createPostsExampleTables()
+		if (type === "blog") {
+			await service.createPostsExampleTables()
+		} else {
+			await service.createStoreSchema()
+		}
 		sp.stop(pc.green("Example tables created"))
 
 		if (createData) {
 			const s3 = spinner()
 			s3.start(pc.blue("Creating example data"))
-			await service.seedRandomData()
+			if (type === "blog") {
+				await service.seedRandomData()
+			} else {
+				await service.seedECommerceDemo()
+			}
 			s3.stop(pc.green("Example data created"))
 		}
 		await sq.onModuleDestroy()

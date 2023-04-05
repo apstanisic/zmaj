@@ -2,6 +2,7 @@ import { GlobalConfig } from "@api/app/global-app.config"
 import { throw500 } from "@api/common/throw-http"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { MigrationsConfig } from "@api/migrations/migrations.config"
+import { MigrationsService } from "@api/migrations/migrations.service"
 import { MigrationsUmzugStorage } from "@api/migrations/migrations.umzug-storage"
 import { getRequiredColumns } from "@api/migrations/migrations.utils"
 import { SequelizeSchemaInfoService } from "@api/sequelize/sequelize-schema-info.service"
@@ -37,7 +38,7 @@ import {
 import { draw, pick, random, shuffle, unique } from "radash"
 import { DataTypes, QueryInterface } from "sequelize"
 import mockData from "./const-mocks.json"
-import { MigrationsService } from "@api/migrations/migrations.service"
+import { initECommerce, storeCollectionDefs } from "./ecommerce-demo"
 
 type Trx = any // Transaction | SqTrx
 
@@ -53,7 +54,7 @@ export class BuildTestDbService {
 	}
 
 	async initSqWithMocks(): Promise<void> {
-		await this.sq.init([...systemCollections, ...allMockCollectionDefs])
+		await this.sq.init([...systemCollections, ...allMockCollectionDefs, ...storeCollectionDefs])
 	}
 
 	private exampleProjectTables = ["posts", "comments", "tags", "posts_tags", "posts_info"] as const
@@ -178,6 +179,15 @@ export class BuildTestDbService {
 		// }
 	}
 
+	async createStoreSchema(trx?: Trx): Promise<void> {
+		await this.repoManager.transaction({
+			trx,
+			fn: async (trx) => {
+				await initECommerce(this.sq, trx)
+			},
+		})
+	}
+
 	async createPostsExampleTables(trx?: Trx): Promise<void> {
 		await this.qi.createTable(
 			"posts",
@@ -284,7 +294,7 @@ export class BuildTestDbService {
 		})
 	}
 
-	async buildECommerceDemo(): Promise<void> {
+	async seedECommerceDemo(): Promise<void> {
 		const roleRepo = this.repoManager.getRepo(RoleCollection)
 		const userRepo = this.repoManager.getRepo(UserCollection)
 		const tagRepo = this.repoManager.getRepo("tags")

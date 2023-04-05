@@ -17,7 +17,6 @@ class Playground {
 
 	@Get("dev")
 	async playground(): Promise<any> {
-		await this.service.buildBlogDemo()
 		return true
 	}
 }

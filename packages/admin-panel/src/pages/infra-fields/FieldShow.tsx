@@ -67,9 +67,9 @@ const Content = memo(() => {
 			<TabsSection>
 				<ManualShowField source="collectionName" />
 				<ManualShowField source="fieldName" />
+				<ManualShowField source="tableName" />
 				<ManualShowField source="columnName" />
 				{/* <MyReferenceField source="tableName" reference=""></MyReferenceField> */}
-				<ManualShowField source="tableName" />
 				<ManualShowField
 					source="dataType"
 					label="Field Data Type"

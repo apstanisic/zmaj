@@ -22,20 +22,25 @@ export const RelationEdit = memo(() => {
 				<ManualInputField source="type" disabled />
 				<Columns>
 					<ManualInputField source="tableName" disabled />
-					<ManualInputField source="columnName" disabled />
+					<ManualInputField source="otherSide.tableName" label="Table Name (other side)" disabled />
 				</Columns>
 				<Columns>
-					<ManualInputField source="otherSide.tableName" disabled />
-					<ManualInputField source="otherSide.columnName" disabled />
+					<ManualInputField source="columnName" disabled />
+					<ManualInputField
+						source="otherSide.columnName"
+						label="Column Name (other side)"
+						disabled
+					/>
 				</Columns>
 				{/* don't make this full width, to signal it to the user that this is for the left side */}
 				<div className="w-4/5 md:w-2/3">
 					<ManualInputField
 						source="relation.propertyName"
+						label="Property Name"
 						fieldConfig={shortTextDbColumnValidation}
 					/>
-					<ManualInputField source="relation.label" />
-					<ManualInputField source="relation.template" />
+					<ManualInputField source="relation.label" label="Label" />
+					<ManualInputField source="relation.template" label="Display Template" />
 				</div>
 			</ManualInputLayout>
 		</GeneratedEditPage>

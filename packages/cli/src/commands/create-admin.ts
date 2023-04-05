@@ -26,7 +26,7 @@ export function createAdminUserCommand(yr: BaseYargs): void {
 async function createAdmin(cliParams: {
 	email?: string
 	envFile?: string
-	usePasswordPassword?: boolean
+	password?: string
 }): Promise<void> {
 	if (cliParams.email && !isEmail(cliParams.email)) processExit(1, "Invalid email")
 
@@ -45,13 +45,15 @@ async function createAdmin(cliParams: {
 
 	if (isCancel(email)) processExit()
 
-	const untrimmedPass = await password({
-		message: "Enter admin password",
-		validate(value) {
-			if (value.trim().length < 8) return "Must be at least 8 characters"
-			return
-		},
-	})
+	const untrimmedPass =
+		cliParams.password ??
+		(await password({
+			message: "Enter admin password",
+			validate(value) {
+				if (value.trim().length < 8) return "Must be at least 8 characters"
+				return
+			},
+		}))
 	if (isCancel(untrimmedPass)) processExit()
 	const pass = untrimmedPass.trim()
 
