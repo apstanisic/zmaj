@@ -240,14 +240,14 @@ describe("ExpandRelationsService", () => {
 				},
 				junction: {
 					thisSide: {
-						// propertyName: "tag",
+						propertyName: "tag",
 						columnName: "tag_id",
 						fieldName: "tagId",
 					},
 					otherSide: {
 						columnName: "post_id",
 						fieldName: "postId",
-						// propertyName: "post",
+						propertyName: "post",
 					},
 
 					collectionName: "postsTags",
@@ -289,14 +289,14 @@ describe("ExpandRelationsService", () => {
 
 				junction: {
 					thisSide: {
-						// propertyName: "post",
+						propertyName: "post",
 						columnName: "post_id",
 						fieldName: "postId",
 					},
 					otherSide: {
 						columnName: "tag_id",
 						fieldName: "tagId",
-						// propertyName: "tag",
+						propertyName: "tag",
 					},
 					collectionName: "postsTags",
 					tableName: "posts_tags",

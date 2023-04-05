@@ -36,14 +36,14 @@ export const ManyToManyCurrent = memo((props: PropsWithChildren) => {
 				}}
 				queryOptions={{
 					select(all) {
-						const inner = all.data.map((row) => row[relation.junction.otherSide.propertyName!])
+						const inner = all.data.map((row) => row[relation.junction.otherSide.propertyName])
 						return { ...all, data: inner }
 					},
 					meta: {
 						fields: {
 							id: true,
 							[relation.junction.otherSide.fieldName]: true,
-							[relation.junction.otherSide.propertyName!]: true,
+							[relation.junction.otherSide.propertyName]: true,
 						},
 					},
 					enabled: !isNil(record?.id),

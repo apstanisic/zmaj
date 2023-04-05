@@ -177,10 +177,12 @@ describe("ManyToManyRelationsService", () => {
 					thisSide: {
 						columnName: "ljc",
 						fieldName: "ljc",
+						propertyName: "ljp",
 					},
 					otherSide: {
 						columnName: "rjc",
 						fieldName: "rjc",
+						propertyName: "rjp",
 					},
 					uniqueKey: "cuq",
 					collectionAuthzKey: "AUTHZ_KEY",

@@ -111,6 +111,15 @@ export function expandRelation(
 					key.columnNames.includes(leftFk.fkColumn) &&
 					key.columnNames.includes(rightFk.fkColumn),
 			) ?? onError(3792340)
+		const leftJunctionRel =
+			allRelations.find(
+				(r) => r.tableName === junctionCol.tableName && r.fkName === relation.fkName,
+			) ?? onError(38882)
+
+		const rightJunctionRel =
+			allRelations.find(
+				(r) => r.tableName === junctionCol.tableName && r.fkName === relation.mtmFkName,
+			) ?? onError(839992)
 
 		return {
 			type: "many-to-many",
@@ -137,10 +146,12 @@ export function expandRelation(
 				thisSide: {
 					columnName: junctionLeftField?.columnName,
 					fieldName: junctionLeftField?.fieldName,
+					propertyName: leftJunctionRel.propertyName,
 				},
 				otherSide: {
 					columnName: junctionRightField?.columnName,
 					fieldName: junctionRightField?.fieldName,
+					propertyName: rightJunctionRel.propertyName,
 				},
 			},
 		}

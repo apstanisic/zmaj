@@ -265,8 +265,8 @@ describe("RelationsService", () => {
 				collectionName: colName,
 				tableName: snakeCase(colName),
 				collectionAuthzKey: "test",
-				otherSide: { columnName: "id", fieldName: "id" },
-				thisSide: { columnName: "id", fieldName: "id" },
+				otherSide: { columnName: "id", fieldName: "id", propertyName: "lp" },
+				thisSide: { columnName: "id", fieldName: "id", propertyName: "rp" },
 				uniqueKey: "qwer",
 			})
 
