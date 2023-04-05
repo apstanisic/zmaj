@@ -11,6 +11,7 @@ import {
 	mockCollectionConsts as t,
 	mockCompositeUniqueKeys,
 	mockFkNames,
+	allMockFieldMetadata,
 } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it } from "vitest"
 import { ExpandRelationsService } from "./expand-relations.service"
@@ -23,6 +24,7 @@ const mockData = {
 	columns: allMockColumns,
 	collections: allMockCollectionMetadata,
 	compositeUniqueKeys: Object.values(mockCompositeUniqueKeys),
+	fields: allMockFieldMetadata,
 }
 
 describe("ExpandRelationsService", () => {
@@ -50,6 +52,7 @@ describe("ExpandRelationsService", () => {
 					collections: [],
 					fks: [],
 					compositeUniqueKeys: [],
+					fields: [],
 				}),
 			).toThrow(InternalServerErrorException)
 			//
@@ -62,6 +65,7 @@ describe("ExpandRelationsService", () => {
 					collections: [collection],
 					fks: [],
 					compositeUniqueKeys: [],
+					fields: [],
 				}),
 			).toThrow(InternalServerErrorException)
 		})

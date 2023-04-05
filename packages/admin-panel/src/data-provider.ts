@@ -15,7 +15,7 @@ import {
 	UrlQuerySchema,
 } from "@zmaj-js/common"
 import { DataProvider, RaRecord } from "ra-core"
-import { camel, isEqual, mapValues } from "radash"
+import { isEqual, mapValues } from "radash"
 import { v4 } from "uuid"
 import { z } from "zod"
 import { AdminPanelError } from "./shared/AdminPanelError"

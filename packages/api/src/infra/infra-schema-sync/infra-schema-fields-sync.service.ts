@@ -13,7 +13,7 @@ import {
 	nestByTableAndColumnName,
 	zodCreate,
 } from "@zmaj-js/common"
-import { camel, title } from "radash"
+import { title } from "radash"
 import { InfraConfig } from "../infra.config"
 
 /**

@@ -2,7 +2,7 @@
  * Some missing function from `radash` that exist in `lodash`
  */
 
-import { list, snake, unique } from "radash"
+import { list, snake } from "radash"
 
 /**
  *

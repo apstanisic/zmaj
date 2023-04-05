@@ -1,6 +1,5 @@
 import { expect, test } from "@playwright/test"
 import { RelationCreateDto } from "@zmaj-js/common"
-import { createIdRegex } from "../utils/create-id-regex.js"
 import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
 import { camel } from "radash"
