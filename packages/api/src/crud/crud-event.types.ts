@@ -1,5 +1,5 @@
 import { CrudRequest } from "@api/common/decorators/crud-request.decorator"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { Transaction } from "@zmaj-js/orm"
 import { AuthUser, CollectionDef, IdType, Struct, UrlQuery, UrlQuerySchema } from "@zmaj-js/common"
 import { ReadonlyDeep, SetRequired } from "type-fest"
 import { z, ZodSchema } from "zod"

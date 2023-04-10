@@ -1,20 +1,19 @@
-import { throw500 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RawQueryOptions } from "@api/database/orm-specs/RawQueryOptions"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
-import { TransactionIsolationLevel } from "@api/database/orm-specs/TransactionIsolationLevel"
-import { Injectable } from "@nestjs/common"
-import { Sequelize, literal } from "sequelize"
+import { ModelConfig } from "@orm/config"
+import { OrmRepository } from "@orm/orm-specs/OrmRepository"
+import { RawQueryOptions } from "@orm/orm-specs/RawQueryOptions"
+import { RepoManager } from "@orm/orm-specs/RepoManager"
+import { Transaction } from "@orm/orm-specs/Transaction"
+import { TransactionIsolationLevel } from "@orm/orm-specs/TransactionIsolationLevel"
 import { CollectionDef, Struct } from "@zmaj-js/common"
 import { isString } from "radash"
+import { Sequelize, literal } from "sequelize"
+import { UndefinedModelError } from "../orm-errors"
 import { SequelizeRepository } from "./sequelize.repository"
 import { SequelizeService } from "./sequelize.service"
 
 /**
  * Clearing not implemented????
  */
-@Injectable()
 export class SequelizeRepoManager extends RepoManager {
 	constructor(private sq: SequelizeService) {
 		super()
@@ -26,13 +25,13 @@ export class SequelizeRepoManager extends RepoManager {
 	}
 
 	getRepo<T extends Struct<any> = Struct<unknown>>(
-		col: string | CollectionDef<T>,
+		col: string | ModelConfig<T> | CollectionDef<T>,
 	): OrmRepository<T> {
 		const collection = isString(col) ? col : col.collectionName
 
 		const exist = this.sq.models[collection]
 
-		if (!exist) throw500(73924)
+		if (!exist) throw new UndefinedModelError(collection)
 
 		const repo = this.repositories[collection]
 		if (repo) return repo as OrmRepository<T>

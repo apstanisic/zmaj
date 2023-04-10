@@ -1,6 +1,6 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { Transaction } from "@zmaj-js/orm"
+import { SchemaInfoService } from "@zmaj-js/orm"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionMetadata,

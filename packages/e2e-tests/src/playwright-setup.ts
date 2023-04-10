@@ -35,12 +35,13 @@ async function globalSetup(config: FullConfig): Promise<() => Promise<void>> {
 	)
 
 	const utils = app.get(__testUtils.TestingUtilsService)
+	const utils2 = app.get(__testUtils.BuildTestDbService)
 
 	await utils.createTestAdmin()
 	console.log("Admin user admin@example.com created")
 
 	console.log("Creating test tables...")
-	await utils.createExamplePostsProject()
+	await utils2.createPostsExampleTables()
 	await utils.configureExampleProjectForAdminPanel()
 	console.log("Test tables created")
 

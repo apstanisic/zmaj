@@ -1,4 +1,4 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { buildTestModule } from "@api/testing/build-test-module"
 import {
 	CollectionMetadataCollection,

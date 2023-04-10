@@ -1,4 +1,4 @@
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
+import { AlterSchemaService } from "@zmaj-js/orm"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { ForbiddenException } from "@nestjs/common"
 import { CollectionDef, CollectionCreateDto, CollectionUpdateDto, UUID } from "@zmaj-js/common"

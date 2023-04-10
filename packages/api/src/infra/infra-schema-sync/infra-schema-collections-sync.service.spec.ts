@@ -1,5 +1,5 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
+import { OrmRepository } from "@zmaj-js/orm"
+import { SchemaInfoService } from "@zmaj-js/orm"
 import { InfraService } from "@api/infra/infra.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { CollectionMetadata } from "@zmaj-js/common"

@@ -1,7 +1,7 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
 import { throw500 } from "@api/common/throw-http"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { RepoManager } from "@zmaj-js/orm"
+import { Transaction } from "@zmaj-js/orm"
 import { ForbiddenException, Injectable } from "@nestjs/common"
 import { AuthUser, RelationDef, IdType, isIdType, Struct } from "@zmaj-js/common"
 

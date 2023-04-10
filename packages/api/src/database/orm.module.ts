@@ -1,9 +1,7 @@
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { INFRA_SCHEMA_SYNC_FINISHED } from "@api/infra/infra.consts"
-import { SequelizeRepoManager } from "@api/sequelize/sequelize.repo-manager"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { Global, Module } from "@nestjs/common"
+import { RepoManager, SequelizeRepoManager, SequelizeService } from "@zmaj-js/orm"
 
 @Global()
 @Module({
@@ -22,7 +20,7 @@ import { Global, Module } from "@nestjs/common"
 				state: InfraStateService,
 			) => {
 				// generate models with newly inited state
-				sqService.generateModels(Object.values(state.collections))
+				sqService.generateModelsCms(Object.values(state.collections))
 				return sqRepoManager
 			},
 		},

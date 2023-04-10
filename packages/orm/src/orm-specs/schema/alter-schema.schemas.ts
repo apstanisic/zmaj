@@ -1,7 +1,8 @@
-import { DbFieldSchema } from "@zmaj-js/common"
 import { isString } from "radash"
 import { z } from "zod"
-import { Transaction } from "../orm-specs/Transaction"
+import { Transaction } from "../Transaction"
+import { DbFieldSchema } from "@zmaj-js/common"
+import { columnTypes } from "@orm/column-type"
 
 const SharedSchema = z.object({
 	schema: DbFieldSchema.optional(),
@@ -71,6 +72,7 @@ const ZodColumnDataType = z.enum([
 	"json",
 	"uuid",
 ])
+const ZodColumnType = z.enum(columnTypes)
 
 export const CreateColumnSchema = SharedSchema.extend({
 	columnName: DbFieldSchema,

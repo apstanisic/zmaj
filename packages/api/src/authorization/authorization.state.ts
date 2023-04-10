@@ -1,6 +1,6 @@
 import type { CrudAfterEvent } from "@api/crud/crud-event.types"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { OrmRepository } from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
 import { Injectable, OnModuleInit } from "@nestjs/common"
 import { Cron, CronExpression } from "@nestjs/schedule"
 import {

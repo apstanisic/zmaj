@@ -7,8 +7,8 @@ import type {
 } from "@api/crud/crud-event.types"
 import { CrudService } from "@api/crud/crud.service"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { OrmRepository } from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
 import { Injectable } from "@nestjs/common"
 import {
 	ActivityLog,

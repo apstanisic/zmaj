@@ -1,6 +1,6 @@
 import { CompositeUniqueKey, DbColumn, ForeignKey } from "@zmaj-js/common"
 import { SetRequired } from "type-fest"
-import { Transaction } from "../orm-specs/Transaction"
+import { Transaction } from "../Transaction"
 
 export type SchemaInfoBasicParams = { schema?: string; trx?: Transaction }
 export type TableOnlyParams = { table?: string } & SchemaInfoBasicParams

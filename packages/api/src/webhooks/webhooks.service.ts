@@ -1,6 +1,6 @@
 import type { CrudAfterEvent, CrudFinishEvent } from "@api/crud/crud-event.types"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { RepoManager } from "@zmaj-js/orm"
 import { HttpClient } from "@api/http-client/http-client.service"
 import { Injectable, OnModuleInit } from "@nestjs/common"
 import { Struct, Webhook, WebhookCollection } from "@zmaj-js/common"

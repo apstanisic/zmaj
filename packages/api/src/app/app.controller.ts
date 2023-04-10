@@ -6,7 +6,7 @@ export class AppController {
 	constructor(private config: GlobalConfig) {}
 	@Get("/")
 	async home(): Promise<any> {
-		return { message: "API successfully reached." }
+		return { message: "API successfully reached!" }
 	}
 
 	@Get('/app-info')

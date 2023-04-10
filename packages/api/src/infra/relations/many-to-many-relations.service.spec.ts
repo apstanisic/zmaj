@@ -1,4 +1,4 @@
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
+import { AlterSchemaService } from "@zmaj-js/orm"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException } from "@nestjs/common"

@@ -1,7 +1,7 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
 import { throw400, throw403, throw404, throw500 } from "@api/common/throw-http"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { RepoManager } from "@zmaj-js/orm"
+import { Transaction } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { ForbiddenException, HttpException, Injectable, Logger } from "@nestjs/common"
@@ -105,6 +105,7 @@ export class CrudBaseService<Item extends Struct> {
 
 		// User is trying to filter by unknown property
 		const isUnknownFieldError = error.message.toLowerCase().endsWith("does not exist")
+		if (isUnknownFieldError) console.log(error)
 
 		if (isUnknownFieldError) throw400(901732, emsg.noProperty)
 

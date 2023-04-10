@@ -1,5 +1,5 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { Transaction } from "@zmaj-js/orm"
 import { QueryInterface } from "sequelize"
 import { DbMigrationName } from "@zmaj-js/common"
 

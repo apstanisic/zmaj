@@ -49,6 +49,7 @@
 		"@nestjs/schedule": "^2.2.1",
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/email-templates": "workspace:*",
+		"@zmaj-js/orm": "workspace:*",
 		"@zmaj-js/storage-core": "workspace:*",
 		"@zmaj-js/storage-s3": "workspace:*",
 		"argon2": "^0.30.3",

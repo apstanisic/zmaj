@@ -2,8 +2,8 @@ import { DynamicModule, Module } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
 import { systemCollections } from "@zmaj-js/common"
 import { CliDbModule } from "./bootstrap-cli-db"
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
+import { AlterSchemaService } from "@zmaj-js/orm"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 
 @Module({})
 class CliUninstallZmajModule {

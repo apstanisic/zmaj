@@ -1,31 +1,27 @@
-import { ConfigService } from "@api/config/config.service"
-import { Inject, Injectable } from "@nestjs/common"
 import { ZodDto } from "@zmaj-js/common"
+import { Primitive } from "type-fest"
 import { z } from "zod"
-import { MODULE_OPTIONS_TOKEN } from "./database.module-definition"
 
 const DatabaseConfigSchema = z.object({
-	//   type: z.enum(["postgres", "mysql", "sqlite"]),
 	type: z.enum(["postgres"]).default("postgres"),
 	username: z.string().min(1).max(200),
 	password: z.string().min(1).max(200),
 	host: z.string().min(1).max(500),
 	database: z.string().min(1).max(200),
-	port: z.number().int().gte(1).lte(99999),
+	port: z.coerce.number().int().gte(1).lte(99999),
 	logging: z.boolean().default(false),
-	/**
-	 * Used for sqlite
-	 */
-	// filename: z.string().optional(),
 })
 
 export type DatabaseConfigParams = Partial<z.infer<typeof DatabaseConfigSchema>>
 
-@Injectable()
+type IConfigService = {
+	get<T extends Primitive | Date>(key: string): T | undefined
+}
+
 export class DatabaseConfig extends ZodDto(DatabaseConfigSchema) {
 	constructor(
-		@Inject(MODULE_OPTIONS_TOKEN) params: DatabaseConfigParams,
-		appConfig: ConfigService,
+		params: DatabaseConfigParams,
+		appConfig: IConfigService = { get: (key) => process.env[key] as any },
 	) {
 		const type: any = params.type ?? appConfig.get<string>("DB_TYPE")
 

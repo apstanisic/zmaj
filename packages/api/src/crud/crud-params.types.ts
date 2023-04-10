@@ -1,5 +1,5 @@
 import { CrudRequest } from "@api/common/decorators/crud-request.type"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { Transaction } from "@zmaj-js/orm"
 import { AuthUser, CollectionDef, IdType, Struct, UrlQuery } from "@zmaj-js/common"
 
 type CommonParams<T extends Struct = Struct> = {

@@ -1,5 +1,5 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { RepoManager } from "@zmaj-js/orm"
 import { FactoryProvider } from "@nestjs/common"
 import { CollectionDef, Struct } from "@zmaj-js/common"
 import { vi } from "vitest"

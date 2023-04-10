@@ -1,4 +1,4 @@
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { Transaction } from "@zmaj-js/orm"
 import { IdType } from "@zmaj-js/common"
 import { ZodSchema } from "zod"
 

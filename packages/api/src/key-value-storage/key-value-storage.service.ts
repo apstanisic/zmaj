@@ -1,6 +1,6 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { OrmRepository } from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
+import { Transaction } from "@zmaj-js/orm"
 import { Injectable } from "@nestjs/common"
 import {
 	ignoreErrors,

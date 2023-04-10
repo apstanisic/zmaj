@@ -1,6 +1,6 @@
 import { throw500 } from "@api/common/throw-http"
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { SchemaInfoService } from "@zmaj-js/orm"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {

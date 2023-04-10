@@ -1,5 +1,5 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { SchemaInfoService } from "@zmaj-js/orm"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { InternalServerErrorException } from "@nestjs/common"
 import { TestingModule } from "@nestjs/testing"

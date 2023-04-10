@@ -1,27 +1,26 @@
-import { knexQuery } from "@api/database/knex/knex-query"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
+import { knexQuery } from "@api/database/knex-query"
+import { OrmRepository } from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { INestApplication, InternalServerErrorException } from "@nestjs/common"
-import { DataTypes } from "sequelize"
 import {
-	DbMigration,
-	DbMigrationCollection,
+	CollectionCreateDto,
 	CollectionDef,
 	CollectionMetadata,
 	CollectionMetadataCollection,
-	CollectionCreateDto,
 	CollectionUpdateDto,
+	DbMigration,
+	DbMigrationCollection,
 	throwErr,
 	User,
 } from "@zmaj-js/common"
+import { SchemaInfoService, SequelizeService } from "@zmaj-js/orm"
+import { camel } from "radash"
+import { DataTypes } from "sequelize"
 import supertest from "supertest"
 import { v4 } from "uuid"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { InfraStateService } from "../infra-state/infra-state.service"
-import { camel } from "radash"
 
 const tableName = "test_table_collection_metadata"
 

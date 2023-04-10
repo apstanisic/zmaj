@@ -1,7 +1,7 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
 import { throw400, throw403, throw404 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { OrmRepository } from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {

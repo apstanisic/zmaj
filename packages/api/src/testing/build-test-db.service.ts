@@ -5,25 +5,19 @@ import { MigrationsConfig } from "@api/migrations/migrations.config"
 import { MigrationsService } from "@api/migrations/migrations.service"
 import { MigrationsUmzugStorage } from "@api/migrations/migrations.umzug-storage"
 import { getRequiredColumns } from "@api/migrations/migrations.utils"
-import { SequelizeSchemaInfoService } from "@api/sequelize/sequelize-schema-info.service"
-import { SequelizeRepoManager } from "@api/sequelize/sequelize.repo-manager"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { Injectable } from "@nestjs/common"
 import { rand } from "@ngneat/falso"
 import {
 	ADMIN_ROLE_ID,
 	FileCollection,
 	RoleCollection,
-	systemCollections,
-	times,
 	User,
 	UserCollection,
+	systemCollections,
+	times,
 } from "@zmaj-js/common"
+import { SequelizeRepoManager, SequelizeSchemaInfoService, SequelizeService } from "@zmaj-js/orm"
 import {
-	allMockCollectionDefs,
-	createBlogDemo,
-	eCommerceDemo,
-	mockCompositeUniqueKeyId,
 	TComment,
 	TCommentStub,
 	TPost,
@@ -34,6 +28,10 @@ import {
 	TPostTagStub,
 	TTag,
 	TTagStub,
+	allMockCollectionDefs,
+	createBlogDemo,
+	eCommerceDemo,
+	mockCompositeUniqueKeyId,
 } from "@zmaj-js/test-utils"
 import { draw, pick, random, shuffle, unique } from "radash"
 import { DataTypes, QueryInterface } from "sequelize"
@@ -55,7 +53,7 @@ export class BuildTestDbService {
 	}
 
 	async initSqWithMocks(): Promise<void> {
-		await this.sq.init([...systemCollections, ...allMockCollectionDefs, ...storeCollectionDefs])
+		await this.sq.initCms([...systemCollections, ...allMockCollectionDefs, ...storeCollectionDefs])
 	}
 
 	private exampleProjectTables = ["posts", "comments", "tags", "posts_tags", "posts_info"] as const

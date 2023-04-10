@@ -1,10 +1,11 @@
 import { DatabaseConfig } from "@api/database/database.config"
+import { ConfigService } from "@api/index"
 import {
 	SchemaInfoService,
 	SingleUniqueKey,
 	UniqueKey,
-} from "@api/database/schema/schema-info.service"
-import { ConfigService, systemCollections } from "@api/index"
+} from "@orm/orm-specs/schema/schema-info.service"
+import { systemCollections } from "@zmaj-js/common"
 import { allMockCollectionDefs, mockColumns, mockForeignKeys } from "@zmaj-js/test-utils"
 import { objectify } from "radash"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"

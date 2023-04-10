@@ -1,6 +1,6 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { throw400, throw403 } from "@api/common/throw-http"
-import { knexQuery } from "@api/database/knex/knex-query"
+import { knexQuery } from "@api/database/knex-query"
 import { emsg } from "@api/errors"
 import { Inject, Injectable } from "@nestjs/common"
 import { Sequelize } from "sequelize"

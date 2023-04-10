@@ -1,16 +1,13 @@
 import { ConfigModuleConfig } from "@api/config/config.config"
 import { DatabaseConfig } from "@api/database/database.config"
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
-import { SequelizeAlterSchemaService } from "@api/sequelize/sequelize-alter-schema.service"
-import { SequelizeSchemaInfoService } from "@api/sequelize/sequelize-schema-info.service"
-import { SequelizeRepoManager } from "@api/sequelize/sequelize.repo-manager"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { RepoManager } from "@zmaj-js/orm"
+import { AlterSchemaService } from "@zmaj-js/orm"
+import { SchemaInfoService } from "@zmaj-js/orm"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { getTestEnvValues } from "@api/testing/get-test-env-values"
 import { DbMigration, DbMigrationCollection, systemCollections, uuidRegex } from "@zmaj-js/common"
+import { SequelizeService } from "@zmaj-js/orm"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { ConfigService } from "../config/config.service"
 import { type UserMigration } from "./migrations.types"
@@ -39,10 +36,10 @@ describe("MigrationsService e2e", () => {
 				new ConfigService(new ConfigModuleConfig({ useEnvFile: true, envPath: ".env.test" })),
 			),
 		)
-		await sq.init(systemCollections)
-		schemaInfo = new SequelizeSchemaInfoService(sq)
-		alterSchema = new SequelizeAlterSchemaService(sq, schemaInfo)
-		repoManager = new SequelizeRepoManager(sq)
+		await sq.initCms(systemCollections)
+		schemaInfo = sq.schemaInfo
+		alterSchema = sq.alterSchema
+		repoManager = sq.repoManager
 	})
 	afterAll(async () => {
 		await alterSchema.dropTable({ tableName })

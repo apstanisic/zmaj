@@ -1,4 +1,4 @@
-import { SequelizeService } from "@api/sequelize/sequelize.service"
+import { SequelizeService } from "@zmaj-js/orm"
 import { BuildTestDbService } from "@api/testing/build-test-db.service"
 import { sleep } from "@zmaj-js/common"
 import { execa } from "execa"

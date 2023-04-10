@@ -4,14 +4,13 @@ import { SecurityConfig } from "@api/app/security.config"
 import { AuthenticationModule } from "@api/authentication/authentication.module"
 import { CollectionsEndpointModule } from "@api/collections-endpoint/collections-endpoint.module"
 import { CrudModule } from "@api/crud/crud.module"
+import { OrmModule } from "@api/database/orm.module"
 import { FilesModule } from "@api/files/files.module"
 import { InfraModule } from "@api/infra/infra.module"
 import { KeyValueStorageModule } from "@api/key-value-storage/key-value-storage.module"
 import { MigrationsModule } from "@api/migrations/migrations.module"
-import { OrmModule } from "@api/orm/orm.module"
 import { RuntimeSettingsModule } from "@api/runtime-settings/runtime-settings.module"
 import { SecurityTokensModule } from "@api/security-tokens/security-tokens.module"
-import { SequelizeModule } from "@api/sequelize/sequelize.module"
 import { StorageModule } from "@api/storage/storage.module"
 import { TranslationsModule } from "@api/translations/translations.module"
 import { UsersModule } from "@api/users/users.module"
@@ -82,7 +81,6 @@ export class AppModule {
 				StorageModule.register(params?.storage ?? {}),
 				// //
 				GlobalProvidersModule,
-				SequelizeModule,
 				InfraModule.register(params.infra ?? {}),
 				AuthenticationModule.register(params?.authentication ?? {}),
 				AuthorizationModule.register(params?.authorization ?? {}),

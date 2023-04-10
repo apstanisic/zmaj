@@ -1,4 +1,3 @@
-import { throw400 } from "@api/common/throw-http"
 import {
 	CompositeUnique,
 	RequiredTableAndColumnParams,
@@ -8,9 +7,9 @@ import {
 	TableAndColumnParams,
 	TableOnlyParams,
 	UniqueKey,
-} from "@api/database/schema/schema-info.service"
-import { Injectable } from "@nestjs/common"
+} from "@orm/orm-specs/schema/schema-info.service"
 import { CompositeUniqueKey, DbColumn, ForeignKey, notNil } from "@zmaj-js/common"
+import { TableHasNoPkError } from "../orm-errors"
 import { SequelizeService } from "./sequelize.service"
 
 type PgColumn = {
@@ -49,7 +48,6 @@ type PgFk = {
 	unique: boolean
 }
 
-@Injectable()
 export class SequelizeSchemaInfoService implements SchemaInfoService {
 	constructor(private sq: SequelizeService) {}
 
@@ -204,7 +202,7 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
 			trx: shared?.trx,
 			params: [shared?.schema ?? "public", tableName],
 		})) as any
-		if (result.length === 0) throw400(7842390, "Table does not have identifier column")
+		if (result.length === 0) throw new TableHasNoPkError(tableName)
 		const columnName = result[0].columnName
 		const column = await this.getColumn({ table: tableName, column: columnName, ...shared })
 		return column!

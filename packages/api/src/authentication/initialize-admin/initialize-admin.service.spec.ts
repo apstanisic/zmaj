@@ -1,4 +1,4 @@
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { RepoManager } from "@zmaj-js/orm"
 import { KeyValueStorageService } from "@api/key-value-storage/key-value-storage.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { UsersService } from "@api/users/users.service"

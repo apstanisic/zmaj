@@ -1,11 +1,9 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import {
 	FieldMetadataCollection,
 	CollectionMetadataCollection,
 	RelationMetadataCollection,
-	RelationUpdateDto,
 } from "@zmaj-js/common"
-import { TPost, TComment, TPostInfo } from "@zmaj-js/test-utils"
 
 export async function configureBlogInfra(repoManager: BootstrapRepoManager, trx: any) {
 	const repo = repoManager.getRepo(FieldMetadataCollection)

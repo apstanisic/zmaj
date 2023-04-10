@@ -1,5 +1,4 @@
-import { SequelizeRepoManager } from "@api/sequelize/sequelize.repo-manager"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
+import { SequelizeRepoManager, SequelizeService } from "@zmaj-js/orm"
 import {
 	CollectionMetadata,
 	CollectionMetadataCollection,

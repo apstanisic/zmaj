@@ -1,3 +1,4 @@
+import { ModelConfig } from "@orm/config"
 import { CollectionDef, Struct } from "@zmaj-js/common"
 import { OrmRepository } from "./OrmRepository"
 import { RawQueryOptions } from "./RawQueryOptions"
@@ -12,7 +13,7 @@ export abstract class RepoManager {
 	 * @param tableOrCollection Provide either table name or infra collection
 	 */
 	abstract getRepo<T extends Struct<any> = Struct>(
-		tableOrCollection: string | CollectionDef<T>,
+		tableOrCollection: string | ModelConfig<T> | CollectionDef<T>,
 	): OrmRepository<T>
 
 	// abstract transaction<T>(fn: (em: Transaction) => Promise<T>): Promise<T>

@@ -1,5 +1,5 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { OrmRepository } from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { INestApplication } from "@nestjs/common"
 import { PUBLIC_ROLE_ID, SignUpDto, User, UserCollection } from "@zmaj-js/common"

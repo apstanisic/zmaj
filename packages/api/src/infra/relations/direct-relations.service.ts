@@ -1,8 +1,8 @@
 import { throw400, throw403, throw500 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
+import { OrmRepository } from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
+import { AlterSchemaService } from "@zmaj-js/orm"
+import { SchemaInfoService } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
@@ -20,7 +20,7 @@ import {
 } from "@zmaj-js/common"
 import { Except } from "type-fest"
 import { InfraStateService } from "../infra-state/infra-state.service"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { Transaction } from "@zmaj-js/orm"
 import { v4 } from "uuid"
 import { InfraConfig } from "../infra.config"
 

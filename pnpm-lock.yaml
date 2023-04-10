@@ -362,6 +362,9 @@ importers:
       '@zmaj-js/email-templates':
         specifier: workspace:*
         version: link:../email-templates
+      '@zmaj-js/orm':
+        specifier: workspace:*
+        version: link:../orm
       '@zmaj-js/storage-core':
         specifier: workspace:*
         version: link:../storage-core
@@ -751,6 +754,31 @@ importers:
       import-meta-resolve:
         specifier: ^2.2.2
         version: 2.2.2
+
+  packages/orm:
+    dependencies:
+      '@zmaj-js/common':
+        specifier: workspace:*
+        version: link:../common
+      radash:
+        specifier: ^10.8.1
+        version: 10.8.1
+      sequelize:
+        specifier: ^6.30.0
+        version: 6.30.0(pg-hstore@2.3.4)(pg@8.10.0)
+      type-fest:
+        specifier: ^3.7.2
+        version: 3.7.2
+      uuid:
+        specifier: ^9.0.0
+        version: 9.0.0
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
+    devDependencies:
+      '@zmaj-js/test-utils':
+        specifier: workspace:*
+        version: link:../test-utils
 
   packages/rich-input:
     dependencies:

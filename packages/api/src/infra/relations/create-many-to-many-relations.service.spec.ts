@@ -1,5 +1,5 @@
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
+import { AlterSchemaService } from "@zmaj-js/orm"
+import { SchemaInfoService } from "@zmaj-js/orm"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common"
 import {

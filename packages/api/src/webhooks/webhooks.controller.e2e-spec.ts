@@ -1,4 +1,4 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
+import { OrmRepository } from "@zmaj-js/orm"
 import { HttpClient } from "@api/http-client/http-client.service"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"

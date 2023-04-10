@@ -1,19 +1,17 @@
-import { throw400, throw404, throw500 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RawQueryOptions } from "@api/database/orm-specs/RawQueryOptions"
-import { CreateManyParams } from "@api/database/orm-specs/create/CreateManyParams"
-import { CreateOneParams } from "@api/database/orm-specs/create/CreateOneParams"
-import { DeleteByIdParams } from "@api/database/orm-specs/delete/DeleteByIdParams"
-import { DeleteManyParams } from "@api/database/orm-specs/delete/DeleteManyParams"
-import { CountOptions } from "@api/database/orm-specs/find/CountOptions"
-import { FindAndCountOptions } from "@api/database/orm-specs/find/FindAndCountOptions"
-import { FindByIdOptions } from "@api/database/orm-specs/find/FindByIdOptions"
-import { FindManyOptions } from "@api/database/orm-specs/find/FindManyOptions"
-import { FindOneOptions } from "@api/database/orm-specs/find/FindOneOptions"
-import { ReturnedFields } from "@api/database/orm-specs/find/returned-fields"
-import { UpdateManyOptions } from "@api/database/orm-specs/update/UpdateManyOptions"
-import { UpdateOneOptions } from "@api/database/orm-specs/update/UpdateOneOptions"
-import { emsg } from "@api/errors"
+import { OrmRepository } from "@orm/orm-specs/OrmRepository"
+import { RawQueryOptions } from "@orm/orm-specs/RawQueryOptions"
+import { CreateManyParams } from "@orm/orm-specs/create/CreateManyParams"
+import { CreateOneParams } from "@orm/orm-specs/create/CreateOneParams"
+import { DeleteByIdParams } from "@orm/orm-specs/delete/DeleteByIdParams"
+import { DeleteManyParams } from "@orm/orm-specs/delete/DeleteManyParams"
+import { CountOptions } from "@orm/orm-specs/find/CountOptions"
+import { FindAndCountOptions } from "@orm/orm-specs/find/FindAndCountOptions"
+import { FindByIdOptions } from "@orm/orm-specs/find/FindByIdOptions"
+import { FindManyOptions } from "@orm/orm-specs/find/FindManyOptions"
+import { FindOneOptions } from "@orm/orm-specs/find/FindOneOptions"
+import { ReturnedFields } from "@orm/orm-specs/find/returned-fields"
+import { UpdateManyOptions } from "@orm/orm-specs/update/UpdateManyOptions"
+import { UpdateOneOptions } from "@orm/orm-specs/update/UpdateOneOptions"
 import {
 	Comparison,
 	Fields,
@@ -30,7 +28,6 @@ import {
 	notNil,
 	zodCreate,
 } from "@zmaj-js/common"
-import { inspect } from "node:util"
 import { get, isArray, isEmpty, mapValues, pick, set } from "radash"
 import {
 	ForeignKeyConstraintError,
@@ -41,6 +38,14 @@ import {
 	UniqueConstraintError,
 	WhereOptions,
 } from "sequelize"
+import {
+	FkDeleteError,
+	InternalOrmProblem,
+	NoPropertyError,
+	RecordNotFoundError,
+	UndefinedModelError,
+	UniqueError,
+} from "../orm-errors"
 import { SequelizeService } from "./sequelize.service"
 
 const symbolComparisons: Record<Comparison | "$and" | "$or", symbol> = {
@@ -57,8 +62,11 @@ const symbolComparisons: Record<Comparison | "$and" | "$or", symbol> = {
 	$or: Op.or,
 }
 export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extends OrmRepository<T> {
+	// collectionName: string
 	constructor(private orm: SequelizeService, private collectionName: string) {
+		//private modelConfig: ModelConfig) {
 		super()
+		// this.collectionName = modelConfig.collectionName
 	}
 
 	/**
@@ -92,7 +100,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 		params: FindOneOptions<T, F>,
 	): Promise<ReturnedFields<T, F>> {
 		const item = await this.findOne(params)
-		return item ?? throw404(532125, emsg.recordNotFound)
+		if (!item) throw new RecordNotFoundError(this.model.name)
+		return item
+		// return item ?? throw404(532125, emsg.recordNotFound)
 	}
 
 	/**
@@ -140,8 +150,6 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	): Promise<[ReturnedFields<T, F>[], number]> {
 		const fieldsAndFilter = this.filterAndFields(params.where, params.fields)
 
-		inspect.defaultOptions.depth = null
-
 		const res = await this.model.findAndCountAll({
 			transaction: params.trx as any,
 			limit: params.limit,
@@ -176,7 +184,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	 */
 	async createOne(params: CreateOneParams<T>): Promise<T> {
 		const result = await this.createMany({ data: [params.data], trx: params.trx })
-		if (result.length !== 1) throw500(39534)
+		if (result.length !== 1) throw new InternalOrmProblem(39534) //throw500(39534)
 		return result[0]!
 	}
 
@@ -196,19 +204,10 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 			return created.map((v) => v.get({ plain: true }))
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
-				// const [field = "", value = ""] = getFirstProperty(error.fields) ?? []
-				throw400(
-					738294,
-					emsg.compositeUnique(
-						Object.keys(error.fields),
-						Object.values(error.fields).map((v) => JSON.stringify(v)),
-					),
-				)
+				throw new UniqueError(error, 3012)
 			}
 
-			// console.log({ error })
-
-			throw500({ errorCode: 891200, message: emsg.dbProblem, cause: error })
+			throw new InternalOrmProblem(93100, error)
 		}
 	}
 
@@ -221,7 +220,8 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 			changes: params.changes,
 			where: params.id,
 		})
-		return updated ?? throw404(73824, emsg.recordNotFound)
+		if (!updated) throw new RecordNotFoundError(this.model.name, params.id)
+		return updated
 	}
 
 	/**
@@ -262,7 +262,8 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 			trx: params.trx,
 			where: params.id,
 		})
-		return deleted ?? throw404(34289, emsg.recordNotFound)
+		if (!deleted) throw new RecordNotFoundError(this.model.name, params.id)
+		return deleted
 	}
 
 	/**
@@ -278,7 +279,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 		await this.model
 			.destroy({ where: this.parseFilter(ids).where, transaction: params.trx as any })
 			.catch((e) => {
-				if (e instanceof ForeignKeyConstraintError) throw400(7889523, emsg.cantDeleteHasFk)
+				if (e instanceof ForeignKeyConstraintError) throw new FkDeleteError()
 				throw e
 			})
 
@@ -329,9 +330,12 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	 * and we do not want to keep track
 	 */
 	private get model(): ModelStatic<Model<T, Partial<T>>> {
-		return (
-			this.orm.models[this.collectionName] ?? throw500(19732, emsg.noModel(this.collectionName))
-		)
+		const model = this.orm.models[this.collectionName]
+		if (!model) throw new InternalOrmProblem(3910)
+		return model
+		// return (
+		// 	this.orm.models[this.collectionName] ?? throw500(19732, emsg.noModel(this.collectionName))
+		// )
 	}
 
 	get pk(): string {
@@ -397,7 +401,8 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 		// clone since filter relations will mutate this value
 		fields = structuredClone(fields ?? ({} as F))
 
-		const model = this.orm.models[collection] ?? throw500(378324, emsg.noModel(collection))
+		const model = this.orm.models[collection] // ?? throw500(378324, emsg.noModel(collection))
+		if (!model) throw new UndefinedModelError(collection, 3001)
 		// if fields is empty, get all columns
 		// we need to specify here, since if filter add join, we don't know what fields to fetch
 		// so if it's empty, get all
@@ -429,7 +434,8 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 			}
 
 			// property must be relation, or invalid param
-			const relMeta = model.associations[property] ?? throw400(578932, emsg.noProperty)
+			const relMeta = model.associations[property] // ?? throw400(578932, emsg.noProperty)
+			if (!relMeta) throw new NoPropertyError(property, 1490)
 			// get relation type
 			const relType = relMeta.associationType
 
@@ -508,7 +514,8 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 				} else {
 					const fields = model.getAttributes()
 					const field = fields[key]
-					const columnKey = field?.field ?? throw400(37428, emsg.noProperty)
+					const columnKey = field?.field // ?? throw400(37428, emsg.noProperty)
+					if (!columnKey) throw new NoPropertyError(columnKey)
 					const together = prefix !== "" ? [prefix, columnKey].join(".") : key
 					if (prefix !== "") toAdd.push(together.slice(0, together.lastIndexOf(".")))
 

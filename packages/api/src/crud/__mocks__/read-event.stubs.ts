@@ -1,5 +1,5 @@
 import { CrudRequestStub } from "@api/common/decorators/crud-request.stub"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { Transaction } from "@zmaj-js/orm"
 import { randNumber, randWord } from "@ngneat/falso"
 import { UrlQuerySchema, stub, times } from "@zmaj-js/common"
 import { CollectionDefStub } from "@zmaj-js/test-utils"

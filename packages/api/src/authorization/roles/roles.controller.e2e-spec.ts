@@ -1,5 +1,5 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { OrmRepository } from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"

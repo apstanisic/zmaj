@@ -1,4 +1,4 @@
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { RepoManager } from "@zmaj-js/orm"
 import { KeyValueStorageService } from "@api/key-value-storage/key-value-storage.service"
 import { SettingsKey } from "@api/key-value-storage/key-value.consts"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"

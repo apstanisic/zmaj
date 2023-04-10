@@ -1,4 +1,4 @@
-import { throw400, throw404, throw500 } from "@api/common/throw-http"
+import { Logger } from "@orm/logger.type"
 import {
 	CreateColumnSchema,
 	CreateForeignKeySchema,
@@ -9,10 +9,8 @@ import {
 	DropTableSchema,
 	DropUniqueKeySchema,
 	UpdateColumnSchema,
-} from "@api/database/schema/alter-schema.schemas"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
-import { emsg } from "@api/errors"
-import { Injectable, Logger } from "@nestjs/common"
+} from "@orm/orm-specs/schema/alter-schema.schemas"
+import { SchemaInfoService } from "@orm/orm-specs/schema/schema-info.service"
 import { alphabetical, isEqual } from "radash"
 import {
 	DataType,
@@ -23,13 +21,24 @@ import {
 	UniqueConstraintError,
 } from "sequelize"
 import { z } from "zod"
+import {
+	CantBecomeNonNullableError,
+	CantBecomeUniqueError,
+	InternalOrmProblem,
+	InvalidColumnTypeError,
+	NoColumnError,
+	NoFkToDeleteError,
+	NoUniqueToDropError,
+} from "../orm-errors"
 import { SequelizeService } from "./sequelize.service"
 
-@Injectable()
 export class SequelizeAlterSchemaService {
-	private logger = new Logger(SequelizeAlterSchemaService.name)
 	private qi: QueryInterface
-	constructor(private sq: SequelizeService, private schemaInfo: SchemaInfoService) {
+	constructor(
+		private sq: SequelizeService,
+		private schemaInfo: SchemaInfoService,
+		private logger: Logger = console,
+	) {
 		this.qi = this.sq.orm.getQueryInterface()
 	}
 	async createTable(params: z.input<typeof CreateTableSchema>): Promise<void> {
@@ -68,7 +77,7 @@ export class SequelizeAlterSchemaService {
 				},
 				{ transaction: data?.trx },
 			)
-			.catch((e) => this.handleColumnError(e))
+			.catch((e) => this.handleColumnError(e, data))
 	}
 
 	async updateColumn(params: z.input<typeof UpdateColumnSchema>): Promise<void> {
@@ -80,7 +89,7 @@ export class SequelizeAlterSchemaService {
 			trx: data.trx,
 			schema: data.schema,
 		})
-		if (!col) throw500(889931)
+		if (!col) throw new NoColumnError(params.tableName, params.columnName)
 
 		// type must be provided, so we use existing type, and only pass changes that are not undefined
 		await this.qi
@@ -95,23 +104,25 @@ export class SequelizeAlterSchemaService {
 				},
 				{ transaction: data.trx },
 			)
-			.catch((e) => this.handleColumnError(e))
+			.catch((e) => this.handleColumnError(e, data))
 	}
 
 	/**
 	 * Handle error when creating or updating column.
 	 * It adds custom message when column can't be not null, or can't be unique
 	 */
-	private handleColumnError(error: any): never {
+	private handleColumnError(error: any, params: { columnName: string; tableName: string }): never {
 		if (error instanceof UniqueConstraintError) {
-			throw400(49832423, emsg.cantSetUnique)
+			throw new CantBecomeUniqueError(params.tableName, params.columnName)
+			// throw400(49832423, emsg.cantSetUnique)
 		} else if (error instanceof DatabaseError && error.message.includes("contains null values")) {
-			throw400(8521992, emsg.cantSetNull)
+			throw new CantBecomeNonNullableError(params.tableName, params.columnName)
+			// throw400(8521992, emsg.cantSetNull)
 		}
 
 		this.logger.error(error)
 
-		throw500({ cause: error, errorCode: 5238999 })
+		throw new InternalOrmProblem(90213, error)
 	}
 
 	async dropColumn(params: z.input<typeof DropColumnSchema>): Promise<void> {
@@ -149,7 +160,7 @@ export class SequelizeAlterSchemaService {
 				schema: data.schema,
 				trx: data.trx,
 			})
-			if (!fk) throw404(42000343, emsg.invalidPayload)
+			if (!fk) throw new NoFkToDeleteError(params.fkTable, params.fkColumn) // throw404(42000343, emsg.invalidPayload)
 			keyName = fk.fkName
 		}
 		await this.qi.removeConstraint(data.fkTable, keyName, { transaction: data?.trx })
@@ -185,7 +196,7 @@ export class SequelizeAlterSchemaService {
 					columns,
 				),
 			)
-			if (!toDelete) throw404(30323, emsg.invalidPayload)
+			if (!toDelete) throw new NoUniqueToDropError(data.tableName, data.columnNames) //throw404(30323, emsg.invalidPayload)
 			keyName = toDelete.keyName
 		}
 
@@ -227,7 +238,8 @@ export class SequelizeAlterSchemaService {
 		} else if (type === "uuid") {
 			return DataTypes.UUID
 		} else {
-			throw500(35412932)
+			throw new InvalidColumnTypeError(dataType.value, 19300)
+			// throw500(35412932)
 		}
 	}
 }

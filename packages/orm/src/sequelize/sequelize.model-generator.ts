@@ -1,12 +1,12 @@
-import { throw500 } from "@api/common/throw-http"
-import { Injectable, Logger } from "@nestjs/common"
-import { CollectionDef, ColumnDataType, Struct, getColumnType } from "@zmaj-js/common"
-import { DataType, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
+import { ColumnType } from "@orm/column-type"
+import { ModelConfig } from "@orm/config"
+import { Logger } from "@orm/logger.type"
+import { Struct } from "@zmaj-js/common"
+import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
 import { v4 } from "uuid"
 
-@Injectable()
 export class SequelizeModelsGenerator {
-	logger = new Logger(SequelizeModelsGenerator.name)
+	constructor(private logger: Logger = console) {}
 	removeAllModels(orm: Sequelize): void {
 		// Models in best delete order
 		const toRemove =
@@ -27,7 +27,7 @@ export class SequelizeModelsGenerator {
 	 * @param collections for which we need to generate entities
 	 * @param orm Orm to which to define collection
 	 */
-	generateModels(collections: readonly CollectionDef[], orm: Sequelize): void {
+	generateModels(collections: readonly ModelConfig<any>[], orm: Sequelize): void {
 		this.removeAllModels(orm)
 
 		for (const col of collections) {
@@ -52,7 +52,7 @@ export class SequelizeModelsGenerator {
 		}
 	}
 
-	private generateModelWithFields(col: CollectionDef, orm: Sequelize): void {
+	private generateModelWithFields(col: ModelConfig<Struct>, orm: Sequelize): void {
 		const properties: ModelAttributes = {}
 
 		const fields = Object.values(col.fields)
@@ -65,7 +65,7 @@ export class SequelizeModelsGenerator {
 				// allowNull: true, //field.isNullable,
 				allowNull: ![createdAtField, updatedAtField].includes(field.fieldName),
 				// orm.options.dialect === "sqlite" ? "sqlite" : "postgres",
-				type: this.getType(field.dataType, field.dbRawDataType, "postgres"),
+				type: this.getType(field.dataType, field.fieldName),
 				autoIncrement: field.isAutoIncrement,
 				unique: field.isUnique,
 				primaryKey: field.isPrimaryKey,
@@ -75,12 +75,9 @@ export class SequelizeModelsGenerator {
 			}
 
 			const isUuidPkWithoutDefaultValue =
-				field.isPrimaryKey &&
-				// mysql and sqlite don't have uuid
-				// field.dataType === "uuid" && //
-				// field.dataType !== "int" && //
-				col.pkType !== "auto-increment" &&
-				field.dbDefaultValue === null
+				field.isPrimaryKey && //
+				field.isAutoIncrement !== true &&
+				field.hasDefaultValue !== true
 
 			if (isUuidPkWithoutDefaultValue) {
 				property.defaultValue = v4
@@ -104,83 +101,81 @@ export class SequelizeModelsGenerator {
 		})
 	}
 
-	private attachRelationsToModels(
-		col: CollectionDef,
-		models: Struct<ModelStatic<Model<any>>>,
-	): void {
-		for (const rel of Object.values(col.relations)) {
-			const leftModel = models[rel.collectionName]
-			const rightModel = models[rel.otherSide.collectionName]
+	private attachRelationsToModels(col: ModelConfig, models: Struct<ModelStatic<Model<any>>>): void {
+		for (const [propertyName, rel] of Object.entries(col.relations)) {
+			const leftModel = models[col.collectionName]
+			const rightModel = models[rel.referencedModel]
 			// if collection is disabled, it can infer with relations
 			if (!leftModel || !rightModel) continue
 
 			if (rel.type === "many-to-one") {
 				leftModel.belongsTo(rightModel, {
-					foreignKey: rel.fieldName,
-					as: rel.propertyName,
-					targetKey: rel.otherSide.fieldName,
+					foreignKey: rel.field,
+					as: propertyName,
+					targetKey: rel.referencedField,
 				})
 			} else if (rel.type === "one-to-many") {
 				leftModel.hasMany(rightModel, {
-					foreignKey: rel.otherSide.fieldName,
-					as: rel.propertyName,
+					foreignKey: rel.referencedField,
+					as: propertyName,
 				})
 			} else if (rel.type === "owner-one-to-one") {
 				leftModel.belongsTo(rightModel, {
-					foreignKey: rel.fieldName,
-					as: rel.propertyName,
-					targetKey: rel.otherSide.fieldName,
+					foreignKey: rel.field,
+					as: propertyName,
+					targetKey: rel.referencedField,
 				})
 			} else if (rel.type === "ref-one-to-one") {
 				leftModel.hasOne(rightModel, {
-					foreignKey: rel.otherSide.fieldName,
-					as: rel.propertyName,
+					foreignKey: rel.referencedField,
+					as: propertyName,
 				})
 			} else if (rel.type === "many-to-many") {
 				leftModel.belongsToMany(rightModel, {
-					as: rel.propertyName,
-					through: models[rel.junction.collectionName] ?? rel.junction.collectionName,
-					sourceKey: rel.fieldName,
-					targetKey: rel.otherSide.fieldName,
-					foreignKey: rel.junction.thisSide.fieldName,
-					otherKey: rel.junction.otherSide.fieldName,
+					as: propertyName,
+					through: models[rel.junctionModel] ?? rel.junctionModel,
+					sourceKey: rel.field,
+					targetKey: rel.referencedField,
+					foreignKey: rel.junctionField,
+					otherKey: rel.junctionReferencedField,
 				})
 			}
 		}
 	}
 
 	/** Convert to Sequelize data type */
-	private getType(type: ColumnDataType, rawType: string, dbType: "postgres"): DataType {
-		if (type === "array")
-			if (rawType.endsWith("[]")) {
-				const stripArray = rawType.slice(0, -2)
-				const innerType = getColumnType(stripArray)
-				const subType = this.getType(innerType, stripArray, dbType)
-				return DataTypes.ARRAY(subType as any)
-			}
-		if (type === "boolean") {
-			return DataTypes.BOOLEAN
+	private getType(type: ColumnType, field: string): DataTypes.AbstractDataType {
+		if (type.startsWith("array")) {
+			const withoutArray = type.substring(5) as any
+			return new DataTypes.ARRAY(this.getType(withoutArray, field))
+		} else if (type.startsWith("text_")) {
+			const length = type.substring(5)
+			return DataTypes.STRING(parseInt(length))
+		} else if (type === "text") {
+			return new DataTypes.TEXT()
+		} else if (type === "boolean") {
+			return new DataTypes.BOOLEAN()
 		} else if (type === "date") {
-			return DataTypes.DATEONLY
+			return new DataTypes.DATEONLY()
 		} else if (type === "datetime") {
 			return DataTypes.DATE(3)
 		} else if (type === "float") {
-			return DataTypes.DOUBLE
+			return new DataTypes.DOUBLE()
 		} else if (type === "int") {
-			return DataTypes.INTEGER
+			return new DataTypes.INTEGER()
 		} else if (type === "json") {
-			if (dbType !== "postgres") return DataTypes.JSON
-			return DataTypes.JSONB
-		} else if (type === "long-text") {
-			return DataTypes.TEXT
-		} else if (type === "short-text") {
-			return DataTypes.STRING
+			return new DataTypes.JSONB()
 		} else if (type === "time") {
-			return DataTypes.TIME
+			return new DataTypes.TIME()
 		} else if (type === "uuid") {
-			return DataTypes.UUID
+			return new DataTypes.UUID()
+		} else if ((type as any) === "short-text" || (type as any) === "long-text") {
+			// For transition
+			return new DataTypes.TEXT()
 		} else {
-			throw500(35412932)
+			// fallback to text for now, during migrations (because array handling)
+			return new DataTypes.TEXT()
+			// throw new InvalidColumnTypeError(type, 3098)
 		}
 	}
 }

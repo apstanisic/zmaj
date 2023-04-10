@@ -1,5 +1,5 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
+import { OrmRepository } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"

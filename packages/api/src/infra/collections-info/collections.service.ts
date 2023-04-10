@@ -1,7 +1,5 @@
 import { throw403, throw404 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
+import { OrmRepository } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
@@ -16,6 +14,7 @@ import {
 	UUID,
 	zodCreate,
 } from "@zmaj-js/common"
+import { AlterSchemaService, RepoManager } from "@zmaj-js/orm"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { InfraConfig } from "../infra.config"
 import { OnInfraChangeService } from "../on-infra-change.service"

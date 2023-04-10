@@ -1,5 +1,5 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { OrmRepository } from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
 import { EmailService } from "@api/email/email.service"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { SecurityTokenStub } from "@api/security-tokens/security-token.stub"
