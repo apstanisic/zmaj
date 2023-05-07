@@ -1,4 +1,3 @@
-import { ModelConfig } from "@orm/config"
 import { OrmRepository } from "@orm/orm-specs/OrmRepository"
 import { RawQueryOptions } from "@orm/orm-specs/RawQueryOptions"
 import { RepoManager } from "@orm/orm-specs/RepoManager"
@@ -10,6 +9,7 @@ import { Sequelize, literal } from "sequelize"
 import { UndefinedModelError } from "../orm-errors"
 import { SequelizeRepository } from "./sequelize.repository"
 import { SequelizeService } from "./sequelize.service"
+import { ModelConfig } from "@zmaj-js/orm-common"
 
 /**
  * Clearing not implemented????

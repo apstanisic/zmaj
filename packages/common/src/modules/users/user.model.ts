@@ -1,79 +1,33 @@
-import { EntityRef } from "../crud-types/entity-ref.type"
+import { BaseModel, ModelType } from "@zmaj-js/orm-common"
 import { SetRequired } from "type-fest"
-import { AuthSession } from "../auth-sessions/auth-session.model"
-import { FileInfo } from "../files"
-import { Role } from "../roles/role.model"
+import { AuthSessionModel } from "../auth-sessions/auth-session.model"
+import { FileModel } from "../files"
+import { RoleModel } from "../roles/role.model"
 
-export type User = {
-	/**
-	 * ID
-	 */
-	id: string
-	/**
-	 * Email
-	 */
-	email: string
-	// /**
-	//  * Password
-	//  */
-	// password: string
-	/**
-	 * First name
-	 */
-	firstName: string | null
-	/**
-	 * Last name
-	 */
-	lastName: string | null
-	/**
-	 * Role ID
-	 */
-	roleId: string
-	/**
-	 * OTP token. It's undefined when we can't access it, and null when it's not available
-	 */
-	otpToken?: string | null
-	/**
-	 * Is email confirmed
-	 */
-	confirmedEmail: boolean
-	/**
-	 * When was user account created
-	 */
-	createdAt: Date
-	/**
-	 * @TODO
-	 */
-	// photoUrl: string | null
-	/**
-	 * When does password expires
-	 * @todo This, or account expires, or both?
-	 */
-	// passwordExpiresAt: Date | null
+export class UserModel extends BaseModel {
+	override name = "zmajUsers"
+	override tableName = "zmaj_users"
+	override fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		email: f.text({}),
+		password: f.text({ canRead: false, canUpdate: false }),
+		firstName: f.text({ nullable: true }),
+		lastName: f.text({ nullable: true }),
+		roleId: f.uuid({ hasDefault: true }),
+		otpToken: f.text({ nullable: true, canRead: false }),
+		confirmedEmail: f.boolean({ hasDefault: true }),
+		createdAt: f.createdAt({}),
+		status: f.enumString({
+			enum: ["active", "banned", "hacked", "disabled", "emailUnconfirmed", "invited"],
+			hasDefault: true,
+		}),
+	}))
 
-	/**
-	 * Status of current user's account
-	 */
-	status: "active" | "banned" | "hacked" | "disabled" | "emailUnconfirmed" | "invited"
-
-	/**
-	 * All user login sessions
-	 */
-	authSessions?: EntityRef<AuthSession>[]
-
-	/**
-	 * User's role
-	 */
-	role?: EntityRef<Role>
-
-	/**
-	 * File's that belong to user
-	 */
-	files?: EntityRef<FileInfo>[]
-	/**
-	 * Password is never null, it's string if it's returned, or undefined if we can't access it
-	 */
-	password?: string | undefined
+	role = this.manyToOne(() => RoleModel, { fkField: "roleId" })
+	files = this.oneToMany(() => FileModel, { fkField: "userId" })
+	authSessions = this.oneToMany(() => AuthSessionModel, { fkField: "userId" })
 }
+
+export type User = ModelType<UserModel>
 
 export type UserWithSecret = SetRequired<User, "password" | "otpToken">

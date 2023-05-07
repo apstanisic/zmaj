@@ -1,0 +1,73 @@
+import { Class } from "type-fest"
+import { AllFields, fields } from "./field-builder"
+import { ModelRelationDefinition } from "./ModelRelationDefinition"
+
+/**
+ * Explore auto generating `readonly` for `canUpdate=false` types
+ */
+export abstract class BaseModel {
+	abstract name: string
+	tableName?: string
+	abstract fields: AllFields
+	// abstract config: { tableName?: string; name: string }
+
+	protected buildFields = fields
+
+	protected manyToOne<T extends BaseModel, TThis extends this = this>(
+		modelType: () => Class<T>,
+		options: { fkField: keyof TThis["fields"]; referencedField?: keyof T["fields"] },
+	): ModelRelationDefinition<T, false> {
+		return new ModelRelationDefinition(modelType, {
+			fkField: options.fkField as string,
+			type: "many-to-one",
+			referencedField: options.referencedField as string | undefined,
+		})
+	}
+
+	protected oneToMany<T extends BaseModel, TThis extends this = this>(
+		modelFn: () => Class<T>,
+		options: { fkField: keyof T["fields"]; referencedField?: keyof TThis["fields"] },
+	): ModelRelationDefinition<T, true> {
+		return new ModelRelationDefinition(modelFn, {
+			fkField: options.fkField as string,
+			type: "one-to-many",
+			referencedField: options.referencedField as string | undefined,
+		})
+	}
+
+	protected oneToOneOwner<T extends BaseModel, TThis extends this = this>(
+		modelFn: () => Class<T>,
+		options: { fkField: keyof TThis["fields"]; referencedField?: keyof T["fields"] },
+	): ModelRelationDefinition<T, false> {
+		return new ModelRelationDefinition(modelFn, {
+			type: "owner-one-to-one",
+			fkField: options.fkField as string,
+			referencedField: options.referencedField as string | undefined,
+		})
+	}
+
+	protected oneToOneRef<T extends BaseModel, TThis extends this = this>(
+		modelFn: () => Class<T>,
+		options: { fkField: keyof T["fields"]; referencedField?: keyof TThis["fields"] },
+	): ModelRelationDefinition<T, true> {
+		return new ModelRelationDefinition(modelFn, {
+			type: "ref-one-to-one",
+			fkField: options.fkField as string,
+			referencedField: options.referencedField as string | undefined,
+		})
+	}
+
+	protected manyToMany<T extends BaseModel, TJunction extends BaseModel>(
+		modelFn: () => Class<T>,
+		options: {
+			junctionModel: () => Class<TJunction>
+			junctionFields: [keyof TJunction["fields"], keyof TJunction["fields"]]
+		},
+	): ModelRelationDefinition<T, true> {
+		return new ModelRelationDefinition(modelFn, {
+			type: "many-to-many",
+			junction: options.junctionModel,
+			fields: options.junctionFields as [string, string],
+		})
+	}
+}

@@ -40,7 +40,7 @@ export type ModelConfig<T extends Record<string, any> = Record<string, any>> = {
 	// relations: Record<keyof OnlyRelations<T>, any>
 }
 
-type DirectModel = {
+export type DirectModel = {
 	field: string
 	referencedModel: string
 	referencedField: string
@@ -50,7 +50,7 @@ type DirectModel = {
 	type: "many-to-one" | "one-to-many" | "owner-one-to-one" | "ref-one-to-one"
 }
 
-type M2M = Except<DirectModel, "type"> & {
+export type M2M = Except<DirectModel, "type"> & {
 	type: "many-to-many"
 	junctionModel: string
 	junctionField: string

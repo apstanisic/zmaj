@@ -1,3 +1,4 @@
+import { OnlyFields } from "@zmaj-js/orm-common"
 import { z } from "zod"
 
 /**
@@ -12,5 +13,5 @@ import { z } from "zod"
  * ```
  */
 export const ModelSchema = <T>() => {
-	return <S extends z.ZodType<T, any, any>>(arg: S) => arg
+	return <S extends z.ZodType<OnlyFields<T>, any, any>>(arg: S) => arg
 }

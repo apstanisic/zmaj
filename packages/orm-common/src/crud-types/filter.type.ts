@@ -1,4 +1,3 @@
-import { Struct } from "@common/types/struct.type"
 import { RequireExactlyOne } from "type-fest"
 import { EntityRefVariants } from "./entity-ref-variants.type"
 import { StripEntityRef } from "./strip-entity-ref.type"
@@ -18,7 +17,7 @@ type Comparisons<T> = RequireExactlyOne<{
 	// $like: T
 }>
 
-export type Filter<T = Struct> =
+export type Filter<T = Record<string, any>> =
 	//
 	| {
 			[key in keyof T]?: NonNullable<T[key]> extends EntityRefVariants<infer R>

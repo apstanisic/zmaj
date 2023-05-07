@@ -3,14 +3,6 @@
 	"typescript.tsdk": "node_modules/typescript/lib",
 	// speeds up eslint
 	"eslint.workingDirectories": [{ "pattern": "packages/**/" }],
-	// Use rome formatter for JS/TS since it's a lot faster
-	"[javascript][javascriptreact][typescript][typescriptreact]": {
-		"editor.defaultFormatter": "rome.rome"
-	},
-	// Use prettier formatter for css/html/json/md
-	"[css][html][json][jsonc][markdown][mjml]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
 	// Tailwind uses @apply
 	"css.lint.unknownAtRules": "ignore",
 	// use nestjs icons
@@ -125,5 +117,8 @@
 		"vitest",
 		"Zmaj",
 		"zustand"
-	]
+	],
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }

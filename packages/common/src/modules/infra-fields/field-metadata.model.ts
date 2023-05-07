@@ -1,4 +1,4 @@
-import { EntityRef } from "../crud-types/entity-ref.type"
+import { EntityRef } from "@zmaj-js/orm-common"
 import { CollectionMetadata } from "../infra-collections/collection-metadata.model"
 
 export type FieldMetadata = {

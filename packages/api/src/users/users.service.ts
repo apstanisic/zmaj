@@ -1,7 +1,5 @@
 import { throw400, throw401, throw403, throw500 } from "@api/common/throw-http"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { OrmRepository } from "@zmaj-js/orm"
-import { Transaction } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
@@ -17,6 +15,7 @@ import {
 	UserWithSecret,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, Transaction } from "@zmaj-js/orm"
 import { EncryptionService } from "../encryption/encryption.service"
 
 type IdOrEmailObject = { id: string } | { email: string }
@@ -28,6 +27,10 @@ export class UsersService {
 		private readonly encryptionService: EncryptionService,
 	) {
 		this.repo = this.repoManager.getRepo(UserCollection)
+		// const v2 = this.repoManager.getRepoFromModel(UserModel)
+		//  v2.findWhere({ fields: { role: { users: { id: true } } } }).then(r => {
+		// 	r[0]?.role.users
+		//  })
 	}
 
 	readonly repo: OrmRepository<User>
@@ -45,11 +48,11 @@ export class UsersService {
 		trx?: Transaction,
 	): Promise<UserWithSecret | undefined> {
 		const users = await this.repo.findWhere({ limit: 1, where: filter, includeHidden: true, trx })
-		const user = users[0]
+		const user = users[0] as UserWithSecret | undefined
 
 		if (user && (user.password === undefined || user.otpToken === undefined)) throw500(3784329)
 
-		return user as UserWithSecret | undefined
+		return user
 	}
 
 	/**

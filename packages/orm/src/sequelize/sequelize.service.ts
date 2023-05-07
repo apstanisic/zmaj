@@ -1,4 +1,3 @@
-import { ModelConfig, ModelRelation } from "@orm/config"
 import { Logger } from "@orm/logger.type"
 import { RawQueryOptions } from "@orm/orm-specs/RawQueryOptions"
 import { RepoManager } from "@orm/orm-specs/RepoManager"
@@ -14,6 +13,7 @@ import { SequelizeModelsGenerator } from "./sequelize.model-generator"
 import { SequelizeRepoManager } from "./sequelize.repo-manager"
 import { mapValues } from "radash"
 import { DatabaseConfig } from "@orm/database.config"
+import { ModelConfig, ModelRelation } from "@zmaj-js/orm-common"
 
 const isolationMapper: Record<TransactionIsolationLevel, Transaction.ISOLATION_LEVELS> = {
 	SERIALIZABLE: Transaction.ISOLATION_LEVELS.SERIALIZABLE,

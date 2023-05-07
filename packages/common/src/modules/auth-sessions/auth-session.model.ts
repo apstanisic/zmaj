@@ -1,50 +1,46 @@
-import { EntityRef } from "../crud-types/entity-ref.type"
-import { User } from "../users/user.model"
+import { BaseModel, ModelType, fields } from "@zmaj-js/orm-common"
+import { UserModel } from "../users/user.model"
 
-export type AuthSession = {
-	/**
-	 * ID
-	 */
-	id: string
+export class AuthSessionModel extends BaseModel {
+	override name = "zmajAuthSessions"
+	override tableName = "zmaj_auth_sessions"
+	override fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		createdAt: f.createdAt({}),
 
-	/**
-	 * Created at
-	 */
-	createdAt: Date
+		/**
+		 * User this sessions belongs to
+		 */
+		userId: f.uuid({}),
 
-	/**
-	 * User this sessions belongs to
-	 */
-	userId: string
+		/**
+		 * Refresh token
+		 */
+		refreshToken: f.text({ canRead: false }),
 
-	/**
-	 * Refresh token
-	 */
-	refreshToken?: string
+		/**
+		 * When was this session last used
+		 */
+		lastUsed: f.dateTime({}),
 
-	/**
-	 * When was this session last used
-	 */
-	lastUsed: Date
+		/**
+		 * Until when is this sessions valid
+		 * It can be extended as long as the session does not expire
+		 */
+		validUntil: f.dateTime({}),
 
-	/**
-	 * Until when is this sessions valid
-	 * It can be extended as long as the session does not expire
-	 */
-	validUntil: Date
+		/**
+		 * User agent of user when session is created
+		 */
+		userAgent: f.text({ nullable: true }),
 
-	/**
-	 * User agent of user when session is created
-	 */
-	userAgent: string | null
+		/**
+		 * IP of user when session is created
+		 */
+		ip: f.text({}),
+	}))
 
-	/**
-	 * IP of user when session is created
-	 */
-	ip: string
-
-	/**
-	 * User relation
-	 */
-	user?: EntityRef<User>
+	user = this.manyToOne(() => UserModel, { fkField: "userId" })
 }
+
+export type AuthSession = ModelType<AuthSessionModel>

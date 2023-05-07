@@ -41,11 +41,11 @@
 	"dependencies": {
 		"@ngneat/falso": "^6.4.0",
 		"@zmaj-js/common": "workspace:*",
-		"date-fns": "^2.29.3",
+		"date-fns": "^2.30.0",
 		"flat": "^5.0.2",
 		"qs": "^6.11.1",
 		"radash": "^10.8.1",
-		"type-fest": "^3.7.2",
+		"type-fest": "^3.10.0",
 		"uuid": "^9.0.0",
 		"zod": "^3.21.4"
 	},

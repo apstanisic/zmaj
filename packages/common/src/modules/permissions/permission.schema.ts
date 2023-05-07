@@ -11,7 +11,7 @@ export const PermissionSchema = ModelSchema<Permission>()(
 		resource: z.string().min(1).max(100),
 		id: z.string().uuid().default(v4),
 		createdAt: z.date().default(now),
-		conditions: z.record(z.unknown()).nullable().default(null),
+		conditions: z.record(z.any()).nullable().default(null),
 		fields: z.array(z.string()).nullable().default(null),
 	}),
 )

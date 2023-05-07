@@ -23,6 +23,7 @@ import {
 	PUBLIC_ROLE_ID,
 	Struct,
 	systemPermissions,
+	isStruct,
 } from "@zmaj-js/common"
 import flat from "flat"
 import { isEmpty, isString } from "radash"
@@ -166,7 +167,7 @@ export class AuthorizationService {
 	 */
 	checkSystem<T extends keyof typeof systemPermissions>(
 		resourceKey: T,
-		actionKey: keyof typeof systemPermissions[T]["actions"],
+		actionKey: keyof (typeof systemPermissions)[T]["actions"],
 		params: {
 			user?: AuthUser
 			record?: Struct<any>
@@ -448,11 +449,13 @@ export class AuthorizationService {
 		user,
 		permission,
 	}: {
-		permission: Permission
+		permission: Readonly<Permission>
 		user?: AuthUser
 	}): Struct {
 		const delimiter = FLAT_DELIMITER
-		const flatConditions = flatten<Struct, Struct>(permission.conditions ?? {}, { delimiter })
+		const conditions = permission.conditions ?? {}
+		if (!isStruct(conditions)) throw500(3992)
+		const flatConditions = flatten<Struct, Struct>(conditions, { delimiter })
 
 		for (const [key, value] of Object.entries(flatConditions)) {
 			if (typeof value !== "string") continue

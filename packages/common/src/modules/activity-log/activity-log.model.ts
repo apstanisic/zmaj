@@ -1,7 +1,7 @@
+import { EntityRef } from "@zmaj-js/orm-common"
 import type { Struct } from "../../types"
 import { JsonPatch } from "../../types/json-patch.type"
 import { AuthUser } from "../auth/auth-user"
-import { EntityRef } from "../crud-types/entity-ref.type"
 import type { User } from "../users/user.model"
 
 export type ActivityLog = {

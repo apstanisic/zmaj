@@ -1,7 +1,7 @@
 import { ColumnType } from "@orm/column-type"
-import { ModelConfig } from "@orm/config"
 import { Logger } from "@orm/logger.type"
 import { Struct } from "@zmaj-js/common"
+import { ModelConfig } from "@zmaj-js/orm-common"
 import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
 import { v4 } from "uuid"
 

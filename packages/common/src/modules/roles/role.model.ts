@@ -1,14 +1,21 @@
-import { EntityRef } from "../crud-types/entity-ref.type"
-import { Permission } from "../permissions/permission.model"
-import { User } from "../users/user.model"
+import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { PermissionModel } from "../permissions/permission.model"
+import { UserModel } from "../users/user.model"
 
-export type Role = {
-	id: string
-	name: string
-	description: string | null
-	createdAt: Date
-	requireMfa: boolean
+export class RoleModel extends BaseModel {
+	override name = "zmajRoles"
+	override tableName = "zmaj_roles"
 
-	users?: EntityRef<User>[]
-	permissions?: EntityRef<Permission>[]
+	fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		name: f.text({}),
+		description: f.text({ nullable: true }),
+		requireMfa: f.boolean({ columnName: "require_mfa" }),
+		createdAt: f.createdAt(),
+	}))
+
+	permissions = this.oneToMany(() => PermissionModel, { fkField: "roleId" })
+	users = this.oneToMany(() => UserModel, { fkField: "roleId" })
 }
+
+export type Role = ModelType<RoleModel>

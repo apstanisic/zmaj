@@ -1,19 +1,17 @@
 import type { CrudAfterEvent } from "@api/crud/crud-event.types"
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
 import { Injectable, OnModuleInit } from "@nestjs/common"
 import { Cron, CronExpression } from "@nestjs/schedule"
 import {
 	ADMIN_ROLE_ID,
+	PUBLIC_ROLE_ID,
 	Permission,
 	PermissionCollection,
-	PUBLIC_ROLE_ID,
 	Role,
 	RoleCollection,
 	RoleSchema,
 	zodCreate,
 } from "@zmaj-js/common"
-import { ReadonlyDeep } from "type-fest"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { v4 } from "uuid"
 import { OnCrudEvent } from "../crud/on-crud-event.decorator"
 
@@ -28,10 +26,10 @@ export class AuthorizationState implements OnModuleInit {
 	/** Current version of roles and permissions */
 	cacheVersion = v4()
 	/** All permissions */
-	permissions: ReadonlyDeep<Permission>[] = []
+	permissions: Readonly<Permission>[] = []
 
 	/** All roles */
-	roles: ReadonlyDeep<Role[]> = []
+	roles: Readonly<Role[]> = []
 
 	private rolesRepo: OrmRepository<Role>
 	private permissionsRepo: OrmRepository<Permission>

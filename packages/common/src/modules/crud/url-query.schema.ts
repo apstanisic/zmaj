@@ -1,6 +1,6 @@
 import { DbFieldSchema, zodCastBool, ZodIdType } from "@common/zod/zod-utils"
+import { Fields } from "@zmaj-js/orm-common"
 import { z } from "zod"
-import { Fields } from "../crud-types/fields.type"
 // import { Fields } from "./url-query.types"
 
 /**

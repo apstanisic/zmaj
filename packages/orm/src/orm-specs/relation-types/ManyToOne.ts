@@ -1,3 +1,3 @@
-import { EntityRef } from "@orm/crud-types/entity-ref.type"
+import { EntityRef } from "@zmaj-js/orm-common"
 
 export type ManyToOne<T> = EntityRef<T>
