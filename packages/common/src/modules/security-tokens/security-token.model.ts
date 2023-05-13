@@ -1,29 +1,17 @@
 import { BaseModel, ModelType } from "@zmaj-js/orm-common"
 import { UserModel } from "../users/user.model"
 
-// export type SecurityToken = {
-// 	id: string
-// 	token: string
-// 	validUntil: Date
-// 	usedFor: string
-// 	userId: string
-// 	createdAt: Date
-// 	data: string | null
-// 	// Relations
-// 	user?: EntityRef<User>
-// }
-
-class SecurityTokenModel extends BaseModel {
+export class SecurityTokenModel extends BaseModel {
 	override name = "zmajSecurityToken"
 	override tableName = "zmaj_security_token"
 	fields = this.buildFields((f) => ({
 		id: f.uuid({ isPk: true }),
-		token: f.text({}),
-		validUntil: f.dateTime({}),
-		usedFor: f.text({}),
-		userId: f.uuid({}),
 		createdAt: f.createdAt(),
-		data: f.text({ nullable: true }),
+		token: f.text({ canUpdate: false }),
+		validUntil: f.dateTime({ columnName: "valid_until", canUpdate: false }),
+		usedFor: f.text({ columnName: "user_for", canUpdate: false }),
+		userId: f.uuid({ columnName: "user_id", canUpdate: false }),
+		data: f.text({ nullable: true, canUpdate: false }),
 	}))
 
 	user = this.manyToOne(() => UserModel, { fkField: "userId" })

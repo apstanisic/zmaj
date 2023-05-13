@@ -10,7 +10,7 @@ export const mockConfigService: Provider = {
 			get: vi.fn((key: string) => (key === "SECRET_KEY" ? "qwerty_qwerty_qwerty_123" : undefined)),
 			getAll: vi.fn(() => ({})),
 			getGroups: vi.fn(() => ({})),
-		}) as Record<keyof ConfigService, any>,
+		} as Record<keyof ConfigService, any>),
 }
 
 export const mockGlobalConfig: Provider = {

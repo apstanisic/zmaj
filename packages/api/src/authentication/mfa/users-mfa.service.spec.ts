@@ -135,7 +135,7 @@ describe("UsersMfaService", () => {
 						secret: "1234512345",
 						email: "test@example.com",
 						purpose: "enable-mfa",
-					}) as any,
+					} as any),
 			)
 
 			mfa = module.get(MfaService)

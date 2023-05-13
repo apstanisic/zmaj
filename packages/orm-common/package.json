@@ -40,7 +40,5 @@
 	"dependencies": {
 		"type-fest": "^3.10.0"
 	},
-	"devDependencies": {
-		"@zmaj-js/test-utils": "workspace:*"
-	}
+	"devDependencies": {}
 }

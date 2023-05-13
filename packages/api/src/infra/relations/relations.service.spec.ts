@@ -100,7 +100,7 @@ describe("RelationsService", () => {
 			})
 			service["directRelationsService"].createRelation = vi.fn().mockResolvedValue({ id: 5 })
 			service["mtmService"].createRelation = vi.fn().mockResolvedValue({ id: 3 })
-			service["getRelationFromState"] = vi.fn((id) => ({ full: true, id }) as any)
+			service["getRelationFromState"] = vi.fn((id) => ({ full: true, id } as any))
 			service["ensureFreeProperty"] = vi.fn(() => undefined)
 		})
 
@@ -133,7 +133,7 @@ describe("RelationsService", () => {
 	describe("getRelationFromState", () => {
 		it("should get relation from state", () => {
 			vi.spyOn(infraState, "relations", "get").mockReturnValue(
-				times(10, (i) => ({ id: String(i), full: true }) as any),
+				times(10, (i) => ({ id: String(i), full: true } as any)),
 			)
 			const res = service["getRelationFromState"]("6")
 			expect(res).toEqual({ full: true, id: "6" })

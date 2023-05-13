@@ -23,7 +23,7 @@ describe("MigrationsService", () => {
 		storage = module.get(MigrationsUmzugStorage)
 		sqService = module.get(SequelizeService)
 		sqService.orm ??= {} as any
-		sqService.orm.getQueryInterface ??= vi.fn(() => ({}) as any)
+		sqService.orm.getQueryInterface ??= vi.fn(() => ({} as any))
 		repoManager = module.get(BootstrapRepoManager)
 		repoManager.transaction = vi.fn(async (v) => v.fn("TRX" as any))
 		repoManager.rawQuery = vi.fn(async (v) => [])

@@ -9,7 +9,7 @@ export class AppController {
 		return { message: "API successfully reached!" }
 	}
 
-	@Get('/app-info')
+	@Get("/app-info")
 	async appInfo(): Promise<{ name: string }> {
 		return {
 			name: this.config.name,

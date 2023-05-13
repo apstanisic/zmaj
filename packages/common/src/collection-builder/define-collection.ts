@@ -1,22 +1,21 @@
 import { CollectionDef } from "@common/modules/infra-collections/collection-def.type"
 import { FieldDef } from "@common/modules/infra-fields/field-def.type"
 import { Struct } from "@common/types/struct.type"
-import { Class, ConditionalPick, Except, PartialDeep } from "type-fest"
-import { BuildCollectionOptions, buildCollection } from "./_build-infra-collection"
-import { buildField } from "./_build-field"
-import { buildRelation, RelationBuilderInfo } from "./_build-relation"
 import {
 	BaseModel,
-	ModelRelation,
 	ModelRelationDefinition,
 	ModelType,
 	OnlyFields,
 	OnlyRelations,
 	createModelsStore,
 } from "@zmaj-js/orm-common"
-import { UserModel } from ".."
+import { Class, ConditionalPick, Except } from "type-fest"
+import { UserModel, snakeCase } from ".."
+import { buildField } from "./_build-field"
+import { BuildCollectionOptions, buildCollection } from "./_build-infra-collection"
+import { RelationBuilderInfo, buildRelation } from "./_build-relation"
 
-type FieldParams = Pick<FieldDef, "dataType"> & Partial<FieldDef>
+type FieldParams = Partial<FieldDef>
 type DefineCollectionParams<T extends Struct> = {
 	tableName: string
 	options?: BuildCollectionOptions<T>
@@ -62,21 +61,54 @@ export function DefineCollection<T extends Struct = Struct>(
 
 const models = createModelsStore()
 
-function defineCollection<TModel extends BaseModel>(
+// type RelationKeys<TModel extends BaseModel> = keyof Record<
+// 	keyof ConditionalPick<TModel, ModelRelationDefinition<any, any>>,
+// 	{ label: string }
+// >
+
+export function defineCollection<TModel extends BaseModel>(
 	ModelClass: Class<TModel>,
 	config: {
 		options?: BuildCollectionOptions<ModelType<TModel>>
-		fields?: PartialDeep<Record<keyof TModel["fields"], FieldParams>>
-		relations?: PartialDeep<
+		fields?: Partial<Record<keyof TModel["fields"], FieldParams>>
+		relations?: Partial<
 			Record<keyof ConditionalPick<TModel, ModelRelationDefinition<any, any>>, { label: string }>
 		>
 	},
-) {
-	const created = models.has(ModelClass)
-	if (!created) {
-		models.set(ModelClass, new ModelClass())
+): any {
+	const modelInstance = models.get(ModelClass)
+	const tableName = modelInstance.tableName ?? snakeCase(modelInstance.name)
+	const col = buildCollection<ModelType<TModel>>(tableName, config.options)
+
+	for (const property of Object.keys(modelInstance.fields)) {
+		// ts not working with .entries
+		const additionalConfig = config.fields?.[property as keyof TModel["fields"]]
+		const generated = buildField({
+			tableName,
+			fieldName: property,
+			...additionalConfig,
+			...modelInstance.fields[property],
+		})
+		col.fields[property] = generated
 	}
-	const model = models.get(ModelClass)!
+
+	const relations = modelInstance.getRelations()
+	for (const [property, relationDef] of Object.entries(relations)) {
+		const otherSide = models.get(relationDef.modelFn())
+		// relations['hello']?.options.type === ''
+		// ts not working with .entries
+		const value = config.relations?.[property as never]
+		const generated = buildRelation({
+			type: relationDef.options.type,
+			thisPropertyName: property,
+			// : otherSide.name
+			// ...value,
+			// thisPropertyName: property,
+			// thisTableName: tableName,
+		})
+
+		col.relations[property] = generated
+	}
 }
 
 defineCollection(UserModel, {

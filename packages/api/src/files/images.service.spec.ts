@@ -139,7 +139,7 @@ describe("ImagesService", () => {
 	describe("createImagesFromFile", () => {
 		const getFile = vi.fn().mockImplementation(async () => "SOME_FILE")
 		const upload = vi.fn().mockImplementation(async () => "UPLOADED")
-		const provider = vi.fn().mockImplementation(() => ({ getFile, upload }) as Partial<BaseStorage>)
+		const provider = vi.fn().mockImplementation(() => ({ getFile, upload } as Partial<BaseStorage>))
 
 		beforeEach(() => {
 			storageService.provider = provider
@@ -219,7 +219,7 @@ describe("ImagesService", () => {
 					({
 						pathExists: vi.fn(async () => true),
 						getFile: vi.fn(async () => "my_file" as any),
-					}) as Partial<BaseStorage>,
+					} as Partial<BaseStorage>),
 			)
 			const res = await service.getImage(fileStub, "thumb")
 			expect(res).toEqual("my_file")
@@ -232,7 +232,7 @@ describe("ImagesService", () => {
 					({
 						pathExists: vi.fn(async () => false),
 						getFile: vi.fn(async () => "my_image" as any),
-					}) as Partial<BaseStorage>,
+					} as Partial<BaseStorage>),
 			)
 			const res = await service.getImage(fileStub, "thumb")
 			expect(service.createImagesFromFile).toBeCalledWith(fileStub, ["thumb"])

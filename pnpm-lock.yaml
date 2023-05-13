@@ -791,10 +791,6 @@ importers:
       type-fest:
         specifier: ^3.10.0
         version: 3.10.0(typescript@5.0.4)
-    devDependencies:
-      '@zmaj-js/test-utils':
-        specifier: workspace:*
-        version: link:../test-utils
 
   packages/rich-input:
     dependencies:

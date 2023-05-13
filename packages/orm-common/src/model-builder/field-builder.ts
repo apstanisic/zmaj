@@ -1,7 +1,7 @@
 import { Except, JsonValue } from "type-fest"
 import { ColumnType } from "../column-type"
 
-type UserParams = {
+export type UserParams = {
 	nullable?: boolean
 	canRead?: boolean
 	canUpdate?: boolean
@@ -9,6 +9,14 @@ type UserParams = {
 	hasDefault?: boolean
 	isPk?: boolean
 	columnName?: string
+	/** @internal */
+	isUnique?: boolean
+	/** @internal */
+	isAutoIncrement?: boolean
+	/** @internal */
+	isCreatedAt?: boolean
+	/** @internal */
+	isUpdatedAt?: boolean
 }
 
 type ParamsAndType<TType, TField extends UserParams = UserParams> = TField & {
@@ -16,7 +24,8 @@ type ParamsAndType<TType, TField extends UserParams = UserParams> = TField & {
 	_type: TType
 }
 
-type Field<T extends ParamsAndType<any, UserParams>> = Combine<T>
+export type AllFields = Record<string, ParamsAndType<any>>
+
 type HandleCanCreate<P extends ParamsAndType<any>> = P & {
 	_create: P["canCreate"] extends false
 		? undefined
@@ -84,8 +93,6 @@ export type ExtractUpdateParams<T extends Record<string, ParamsAndType<any, any>
 	[key in keyof T]: T[key]["_update"]
 }
 
-export type AllFields = Record<string, ParamsAndType<{ columnName?: string }, any>>
-
 type CombineAll<TType, TParams extends UserParams> = Combine<ParamsAndType<TType, TParams>>
 /**
  *
@@ -104,7 +111,7 @@ function float<const Params extends UserParams>(params: Params): CombineAll<numb
 }
 
 function text<const Params extends UserParams = UserParams>(
-	params: Params,
+	params: Params & { size?: number },
 ): CombineAll<string, Params> {
 	return build(params, "text")
 }
@@ -152,6 +159,7 @@ function createdAt(params?: Pick<UserParams, "columnName">): CombineAll<
 		readonly canUpdate: false
 		readonly hasDefault: true
 		readonly columnName: string | undefined
+		readonly isCreatedAt: true
 	}
 > {
 	return dateTime({
@@ -159,6 +167,26 @@ function createdAt(params?: Pick<UserParams, "columnName">): CombineAll<
 		canUpdate: false,
 		hasDefault: true,
 		columnName: params?.columnName ?? "created_at",
+		isCreatedAt: true,
+	})
+}
+
+function updatedAt(params?: Pick<UserParams, "columnName">): CombineAll<
+	Date,
+	{
+		readonly canCreate: false
+		readonly canUpdate: false
+		readonly hasDefault: true
+		readonly columnName: string | undefined
+		readonly isUpdatedAt: true
+	}
+> {
+	return dateTime({
+		canCreate: false,
+		canUpdate: false,
+		hasDefault: true,
+		columnName: params?.columnName ?? "created_at",
+		isUpdatedAt: true,
 	})
 }
 

@@ -46,7 +46,7 @@ export class CrudDeleteService<Item extends Struct = Struct> extends CrudBaseSer
 					({
 						original: original as ReadonlyDeep<Item>,
 						id: (original[afterEmit1.collection.pkField] as IdType) ?? throw500(7293892),
-					}) as const,
+					} as const),
 			)
 
 			// if ids are provided, and user can't delete all ids, throw

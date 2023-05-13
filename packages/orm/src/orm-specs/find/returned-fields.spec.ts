@@ -31,7 +31,7 @@ type Post = {
 }
 
 function getType<T>() {
-	return <F extends Fields<T> | undefined>(f: F | undefined): ReturnedFields<T, F> => ({}) as any
+	return <F extends Fields<T> | undefined>(f: F | undefined): ReturnedFields<T, F> => ({} as any)
 }
 
 describe("Fields", () => {

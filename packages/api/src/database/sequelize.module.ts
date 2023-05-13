@@ -14,7 +14,6 @@ import {
 @Global()
 @Module({
 	providers: [
-
 		{
 			provide: SequelizeService,
 			inject: [DatabaseConfig],
@@ -27,26 +26,25 @@ import {
 		},
 		{
 			provide: BootstrapRepoManager,
-			useExisting: SequelizeRepoManager
+			useExisting: SequelizeRepoManager,
 		},
 		{
 			provide: SequelizeRepoManager,
 			inject: [SequelizeService],
-			useFactory: (sq: SequelizeService) => sq.repoManager
+			useFactory: (sq: SequelizeService) => sq.repoManager,
 		},
 		{
 			provide: SequelizeAlterSchemaService,
 			inject: [SequelizeService],
-			useFactory: (sq: SequelizeService) => sq.alterSchema
+			useFactory: (sq: SequelizeService) => sq.alterSchema,
 		},
 		{
 			provide: SequelizeSchemaInfoService,
 			inject: [SequelizeService],
-			useFactory: (sq: SequelizeService) => sq.schemaInfo
+			useFactory: (sq: SequelizeService) => sq.schemaInfo,
 		},
 		{ provide: AlterSchemaService, useExisting: SequelizeAlterSchemaService },
 		{ provide: SchemaInfoService, useExisting: SequelizeSchemaInfoService },
-
 	],
 	exports: [
 		SequelizeService,

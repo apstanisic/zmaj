@@ -24,7 +24,10 @@ test("Show Record", async ({ page }) => {
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 	// await page.locator("text=Posts").first().click()
 
-	await page.getByRole("link", { name: /Posts$/ }).first().click()
+	await page
+		.getByRole("link", { name: /Posts$/ })
+		.first()
+		.click()
 	await expect(page).toHaveURL("http://localhost:7100/admin/#/posts")
 
 	// click on first row, second column (first is checkbox)

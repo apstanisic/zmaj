@@ -3,6 +3,5 @@
 	"trailingComma": "all",
 	"printWidth": 100,
 	"semi": false,
-	"useTabs": true,
-	"editorconfig": false
+	"useTabs": true
 }

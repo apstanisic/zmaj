@@ -34,7 +34,10 @@ test("Invite user", async ({ page, context }) => {
 
 	// go to MailHog gui
 	await page.goto("http://localhost:7310")
-	await page.getByText(/Invitation/).first().click()
+	await page
+		.getByText(/Invitation/)
+		.first()
+		.click()
 
 	// https://playwright.dev/docs/pages#handling-new-pages
 	const pagePromise = context.waitForEvent("page", { timeout: 6000 })

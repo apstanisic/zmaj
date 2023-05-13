@@ -1,8 +1,14 @@
 import { ColumnType } from "@orm/column-type"
 import { Logger } from "@orm/logger.type"
 import { Struct } from "@zmaj-js/common"
-import { ModelConfig } from "@zmaj-js/orm-common"
+import {
+	BaseModel,
+	ModelConfig,
+	convertModelClassToPlain,
+	createModelsStore,
+} from "@zmaj-js/orm-common"
 import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
+import { Class } from "type-fest"
 import { v4 } from "uuid"
 
 export class SequelizeModelsGenerator {
@@ -24,20 +30,23 @@ export class SequelizeModelsGenerator {
 
 	/**
 	 * Take all provided collection info and generate entities
-	 * @param collections for which we need to generate entities
+	 * @param models for which we need to generate entities
 	 * @param orm Orm to which to define collection
 	 */
-	generateModels(collections: readonly ModelConfig<any>[], orm: Sequelize): void {
+	generateModels(models: readonly (Class<BaseModel> | ModelConfig)[], orm: Sequelize): void {
 		this.removeAllModels(orm)
+		const state = createModelsStore()
 
-		for (const col of collections) {
-			if (col.disabled) continue
-			this.generateModelWithFields(col, orm)
+		const modelConfigs = models.map((c) => convertModelClassToPlain(c, state))
+
+		for (const model of modelConfigs) {
+			if (model.disabled) continue
+			this.generateModelWithFields(model, orm)
 		}
 
 		try {
-			for (const col of collections) {
-				this.attachRelationsToModels(col, orm.models)
+			for (const model of modelConfigs) {
+				this.attachRelationsToModels(model, orm.models)
 			}
 		} catch (error) {
 			// if there is problem generating relations, generate normal fields
@@ -45,27 +54,27 @@ export class SequelizeModelsGenerator {
 
 			this.removeAllModels(orm)
 
-			for (const col of collections) {
+			for (const col of modelConfigs) {
 				if (col.disabled) continue
 				this.generateModelWithFields(col, orm)
 			}
 		}
 	}
 
-	private generateModelWithFields(col: ModelConfig<Struct>, orm: Sequelize): void {
+	private generateModelWithFields(col: ModelConfig, orm: Sequelize): void {
 		const properties: ModelAttributes = {}
 
-		const fields = Object.values(col.fields)
+		const fields = Object.entries(col.fields)
 
-		const createdAtField = fields.find((f) => f.isCreatedAt)?.fieldName ?? false
-		const updatedAtField = fields.find((f) => f.isUpdatedAt)?.fieldName ?? false
+		const createdAtField = fields.find(([_, f]) => f.isCreatedAt)?.[0] ?? false
+		const updatedAtField = fields.find(([_, f]) => f.isUpdatedAt)?.[0] ?? false
 
-		fields.forEach((field) => {
+		fields.forEach(([propertyName, field]) => {
 			const property: ModelAttributes[string] = {
 				// allowNull: true, //field.isNullable,
-				allowNull: ![createdAtField, updatedAtField].includes(field.fieldName),
+				allowNull: ![createdAtField, updatedAtField].includes(propertyName),
 				// orm.options.dialect === "sqlite" ? "sqlite" : "postgres",
-				type: this.getType(field.dataType, field.fieldName),
+				type: this.getType(field.dataType),
 				autoIncrement: field.isAutoIncrement,
 				unique: field.isUnique,
 				primaryKey: field.isPrimaryKey,
@@ -88,7 +97,7 @@ export class SequelizeModelsGenerator {
 				property.get = () => undefined
 			}
 
-			properties[field.fieldName] = property
+			properties[propertyName] = property
 		})
 
 		orm.define(col.collectionName, properties, {
@@ -144,38 +153,33 @@ export class SequelizeModelsGenerator {
 	}
 
 	/** Convert to Sequelize data type */
-	private getType(type: ColumnType, field: string): DataTypes.AbstractDataType {
-		if (type.startsWith("array")) {
-			const withoutArray = type.substring(5) as any
-			return new DataTypes.ARRAY(this.getType(withoutArray, field))
-		} else if (type.startsWith("text_")) {
-			const length = type.substring(5)
-			return DataTypes.STRING(parseInt(length))
-		} else if (type === "text") {
-			return new DataTypes.TEXT()
-		} else if (type === "boolean") {
-			return new DataTypes.BOOLEAN()
-		} else if (type === "date") {
-			return new DataTypes.DATEONLY()
-		} else if (type === "datetime") {
-			return DataTypes.DATE(3)
-		} else if (type === "float") {
-			return new DataTypes.DOUBLE()
-		} else if (type === "int") {
-			return new DataTypes.INTEGER()
-		} else if (type === "json") {
-			return new DataTypes.JSONB()
-		} else if (type === "time") {
-			return new DataTypes.TIME()
-		} else if (type === "uuid") {
-			return new DataTypes.UUID()
-		} else if ((type as any) === "short-text" || (type as any) === "long-text") {
-			// For transition
-			return new DataTypes.TEXT()
-		} else {
-			// fallback to text for now, during migrations (because array handling)
-			return new DataTypes.TEXT()
-			// throw new InvalidColumnTypeError(type, 3098)
+	private getType(type: ColumnType): DataTypes.AbstractDataType {
+		switch (type) {
+			case "boolean":
+				return new DataTypes.BOOLEAN()
+			case "text":
+				return new DataTypes.TEXT()
+			case "time":
+				return new DataTypes.TIME()
+			case "date":
+				return new DataTypes.DATEONLY()
+			case "datetime":
+				return new DataTypes.DATE()
+			case "float":
+				return new DataTypes.FLOAT()
+			case "int":
+				return new DataTypes.INTEGER()
+			case "uuid":
+				return new DataTypes.UUID()
+			case "json":
+				return new DataTypes.JSONB()
+			default:
+				if (type.startsWith("array.")) {
+					return new DataTypes.ARRAY(
+						this.getType(type.replace("array.", "") as any), //
+					)
+				}
+				return new DataTypes.TEXT()
 		}
 	}
 }

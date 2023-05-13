@@ -10,7 +10,10 @@ test("Create Record", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
-	await page.getByRole("link", { name: /Posts$/ }).first().click()
+	await page
+		.getByRole("link", { name: /Posts$/ })
+		.first()
+		.click()
 	await expect(page).toHaveURL("http://localhost:7100/admin/#/posts")
 
 	await page.getByRole("button", { name: /Create record/ }).click()

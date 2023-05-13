@@ -34,7 +34,10 @@ test("Attempt magic link sign in with non active account", async ({ page }) => {
 	// go to MailHog gui
 	await page.goto("http://localhost:7310")
 
-	await page.getByText(/Sign-in link/).first().click()
+	await page
+		.getByText(/Sign-in link/)
+		.first()
+		.click()
 
 	const iframe = page.frameLocator("#preview-html")
 	await expect(iframe.locator("body")).toContainText(

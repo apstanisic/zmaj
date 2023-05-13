@@ -1,7 +1,5 @@
 import { Except } from "type-fest"
 import { ColumnType } from "./column-type"
-import { OnlyFields } from "./crud-types/only-fields.type"
-import { OnlyRelations } from "./crud-types/only-relations.type"
 
 export type ModelField = {
 	fieldName: string
@@ -30,13 +28,13 @@ export type ModelField = {
 	hasDefaultValue?: boolean
 }
 
-export type ModelConfig<T extends Record<string, any> = Record<string, any>> = {
+export type ModelConfig = {
 	collectionName: string
 	/** We will use collection name if not provided */
 	tableName?: string
 	disabled?: boolean
-	fields: Record<keyof OnlyFields<T>, ModelField> // | ColumnType>
-	relations: Record<keyof OnlyRelations<T>, ModelRelation>
+	fields: Record<string, ModelField> // | ColumnType>
+	relations: Record<string, ModelRelation>
 	// relations: Record<keyof OnlyRelations<T>, any>
 }
 

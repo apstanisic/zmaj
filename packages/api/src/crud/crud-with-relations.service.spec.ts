@@ -115,7 +115,7 @@ describe("CrudWithRelationsService", () => {
 		let updateWhere: Mock
 		let createMany: Mock
 		let deleteWhere: Mock
-		let params: Parameters<typeof service["handleToManyChange"]>[0]
+		let params: Parameters<(typeof service)["handleToManyChange"]>[0]
 		beforeEach(() => {
 			updateWhere = vi.fn()
 			createMany = vi.fn().mockResolvedValue([{ id: 4 }, { id: 7 }])

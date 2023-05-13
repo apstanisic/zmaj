@@ -34,7 +34,7 @@ export function useIsAllowed(
 export function checkSystem<T extends keyof typeof systemPermissions>(
 	authz: AnyMongoAbility,
 	resourceKey: T,
-	actionKey: keyof typeof systemPermissions[T]["actions"],
+	actionKey: keyof (typeof systemPermissions)[T]["actions"],
 ): boolean {
 	const perm = getSystemPermission(resourceKey, actionKey)
 	return authz.can(perm.action, perm.resource)
@@ -46,7 +46,7 @@ export function checkSystem<T extends keyof typeof systemPermissions>(
  */
 export function useIsAllowedSystem<T extends keyof typeof systemPermissions>(
 	resourceKey: T,
-	actionKey: keyof typeof systemPermissions[T]["actions"],
+	actionKey: keyof (typeof systemPermissions)[T]["actions"],
 ): boolean {
 	const perm = getSystemPermission(resourceKey, actionKey)
 	return useIsAllowed(perm.action, perm.resource)
@@ -57,7 +57,7 @@ export function useIsAllowedSystem<T extends keyof typeof systemPermissions>(
  */
 export function useRedirectForbidden<T extends keyof typeof systemPermissions>(
 	resourceKey: T,
-	actionKey: keyof typeof systemPermissions[T]["actions"],
+	actionKey: keyof (typeof systemPermissions)[T]["actions"],
 ): boolean {
 	const redirect = useRedirect()
 	const perm = getSystemPermission(resourceKey, actionKey)

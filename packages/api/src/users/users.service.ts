@@ -27,6 +27,7 @@ export class UsersService {
 		private readonly encryptionService: EncryptionService,
 	) {
 		this.repo = this.repoManager.getRepo(UserCollection)
+		// this.repo = this.repoManager.getRepo(UserModel)
 		// const v2 = this.repoManager.getRepoFromModel(UserModel)
 		//  v2.findWhere({ fields: { role: { users: { id: true } } } }).then(r => {
 		// 	r[0]?.role.users

@@ -1,3 +1,4 @@
+import { DatabaseConfig } from "@orm/database.config"
 import { Logger } from "@orm/logger.type"
 import { RawQueryOptions } from "@orm/orm-specs/RawQueryOptions"
 import { RepoManager } from "@orm/orm-specs/RepoManager"
@@ -5,15 +6,14 @@ import { TransactionIsolationLevel } from "@orm/orm-specs/TransactionIsolationLe
 import { AlterSchemaService } from "@orm/orm-specs/schema/alter-schema.service"
 import { SchemaInfoService } from "@orm/orm-specs/schema/schema-info.service"
 import { CollectionDef, Struct } from "@zmaj-js/common"
+import { BaseModel, ModelConfig, ModelRelation } from "@zmaj-js/orm-common"
+import { mapValues } from "radash"
 import { ModelStatic, QueryInterface, Sequelize, Transaction } from "sequelize"
-import { WritableDeep } from "type-fest"
+import { Class, WritableDeep } from "type-fest"
 import { SequelizeAlterSchemaService } from "./sequelize-alter-schema.service"
 import { SequelizeSchemaInfoService } from "./sequelize-schema-info.service"
 import { SequelizeModelsGenerator } from "./sequelize.model-generator"
 import { SequelizeRepoManager } from "./sequelize.repo-manager"
-import { mapValues } from "radash"
-import { DatabaseConfig } from "@orm/database.config"
-import { ModelConfig, ModelRelation } from "@zmaj-js/orm-common"
 
 const isolationMapper: Record<TransactionIsolationLevel, Transaction.ISOLATION_LEVELS> = {
 	SERIALIZABLE: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -59,7 +59,7 @@ export class SequelizeService {
 		return this.orm.getQueryInterface()
 	}
 
-	async init(collections: ModelConfig[]): Promise<void> {
+	async init(collections: Class<BaseModel>[]): Promise<void> {
 		this.generateModels(collections)
 		await this.orm.authenticate()
 	}
@@ -69,8 +69,8 @@ export class SequelizeService {
 		await this.orm.authenticate()
 	}
 
-	generateModels(collections: readonly ModelConfig[]): void {
-		this.generator.generateModels(collections, this.orm)
+	generateModels(models: readonly (Class<BaseModel> | ModelConfig)[]): void {
+		this.generator.generateModels(models, this.orm)
 	}
 
 	generateModelsCms(collections: readonly CollectionDef[]): void {

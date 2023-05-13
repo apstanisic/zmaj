@@ -2,7 +2,7 @@ import { systemPermissions, SystemResourcePermissions } from "./system-permissio
 
 export function getSystemPermission<T extends keyof typeof systemPermissions>(
 	resourceKey: T,
-	actionKey: keyof typeof systemPermissions[T]["actions"],
+	actionKey: keyof (typeof systemPermissions)[T]["actions"],
 ): { action: string; resource: string } {
 	// TODO Remove to any when all tooling supports satisfies (tsup)
 	const base: SystemResourcePermissions = systemPermissions[resourceKey] as any

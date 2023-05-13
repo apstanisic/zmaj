@@ -38,7 +38,10 @@ test("Reset password", async ({ page, context }) => {
 	// method will always take at least 1500ms, hardcoded
 	await sleep(2000)
 
-	await page.getByText(/Reset password/).first().click()
+	await page
+		.getByText(/Reset password/)
+		.first()
+		.click()
 
 	// https://playwright.dev/docs/pages#handling-new-pages
 	const pagePromise = context.waitForEvent("page", { timeout: 6000 })

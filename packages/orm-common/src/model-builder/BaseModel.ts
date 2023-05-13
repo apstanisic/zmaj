@@ -1,6 +1,6 @@
 import { Class } from "type-fest"
-import { AllFields, fields } from "./field-builder"
 import { ModelRelationDefinition } from "./ModelRelationDefinition"
+import { AllFields, UserParams, fields } from "./field-builder"
 
 /**
  * Explore auto generating `readonly` for `canUpdate=false` types
@@ -12,6 +12,26 @@ export abstract class BaseModel {
 	// abstract config: { tableName?: string; name: string }
 
 	protected buildFields = fields
+
+	readonly disabled = false
+
+	getRelations(): Record<string, ModelRelationDefinition<any, boolean>> {
+		const toReturn: Record<string, ModelRelationDefinition<any>> = {}
+		for (const [property, value] of Object.entries(this)) {
+			if (value instanceof ModelRelationDefinition) {
+				toReturn[property] = value
+			}
+		}
+		return toReturn
+	}
+
+	getPkField(): string {
+		for (const [property, _field] of Object.entries(this.fields)) {
+			const field = _field as UserParams
+			if (field.isPk) return property
+		}
+		throw new Error("No PK provided")
+	}
 
 	protected manyToOne<T extends BaseModel, TThis extends this = this>(
 		modelType: () => Class<T>,
@@ -70,4 +90,14 @@ export abstract class BaseModel {
 			fields: options.junctionFields as [string, string],
 		})
 	}
+
+	// _forGenerator(): ModelConfig {
+	// 	return {
+	// 		collectionName: this.name,
+	// 		tableName: this.tableName ?? this.name,
+	// 		fields: this.fields,
+	// 		relations: {},
+	// 		disabled: this.disabled,
+	// 	}
+	// }
 }
