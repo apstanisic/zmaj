@@ -1,6 +1,5 @@
 import { ColumnType } from "@orm/column-type"
 import { Logger } from "@orm/logger.type"
-import { Struct } from "@zmaj-js/common"
 import {
 	BaseModel,
 	ModelConfig,
@@ -110,7 +109,10 @@ export class SequelizeModelsGenerator {
 		})
 	}
 
-	private attachRelationsToModels(col: ModelConfig, models: Struct<ModelStatic<Model<any>>>): void {
+	private attachRelationsToModels(
+		col: ModelConfig,
+		models: Record<string, ModelStatic<Model<any>>>,
+	): void {
 		for (const [propertyName, rel] of Object.entries(col.relations)) {
 			const leftModel = models[col.collectionName]
 			const rightModel = models[rel.referencedModel]

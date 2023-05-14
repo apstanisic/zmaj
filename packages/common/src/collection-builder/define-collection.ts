@@ -72,7 +72,10 @@ export function defineCollection<TModel extends BaseModel>(
 		options?: BuildCollectionOptions<ModelType<TModel>>
 		fields?: Partial<Record<keyof TModel["fields"], FieldParams>>
 		relations?: Partial<
-			Record<keyof ConditionalPick<TModel, ModelRelationDefinition<any, any>>, { label: string }>
+			Record<
+				keyof ConditionalPick<TModel, ModelRelationDefinition<any, any>>,
+				{ label?: string; hidden?: boolean; otherPropertyName?: string }
+			>
 		>
 	},
 ): any {

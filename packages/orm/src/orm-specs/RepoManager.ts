@@ -1,4 +1,3 @@
-import { CollectionDef, Struct } from "@zmaj-js/common"
 import { BaseModel, ModelType } from "@zmaj-js/orm-common"
 import { Class } from "type-fest"
 import { OrmRepository } from "./OrmRepository"
@@ -7,14 +6,14 @@ import { Transaction } from "./Transaction"
 import { TransactionIsolationLevel } from "./TransactionIsolationLevel"
 
 export abstract class RepoManager {
-	protected abstract repositories: Struct<OrmRepository<any>>
+	protected abstract repositories: Record<string, OrmRepository<any>>
 
 	/**
 	 * Get ORM repository
 	 * @param tableOrCollection Provide either table name or infra collection
 	 */
-	abstract getRepo<T extends Struct<any> = Struct>(
-		tableOrCollection: string | CollectionDef<T>,
+	abstract getRepo<T extends Record<string, any> = Record<string, any>>(
+		tableOrCollection: string | { collectionName: string },
 	): OrmRepository<T>
 	abstract getRepo<TModel extends BaseModel = BaseModel>(
 		model: Class<TModel>,

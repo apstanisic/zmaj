@@ -14,10 +14,7 @@ import { UpdateManyOptions } from "@orm/orm-specs/update/UpdateManyOptions"
 import { UpdateOneOptions } from "@orm/orm-specs/update/UpdateOneOptions"
 import {
 	Comparison,
-	Fields,
-	Filter,
 	IdArraySchema,
-	IdType,
 	Struct,
 	filterStruct,
 	getFirstKey,
@@ -26,8 +23,8 @@ import {
 	isNil,
 	isStruct,
 	notNil,
-	zodCreate,
 } from "@zmaj-js/common"
+import { Fields, Filter, IdType } from "@zmaj-js/orm-common"
 import { get, isArray, isEmpty, mapValues, pick, set } from "radash"
 import {
 	ForeignKeyConstraintError,
@@ -319,10 +316,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	 * Get only pks from records
 	 */
 	private getIdsFromRows<Id extends IdType = IdType>(rows: Struct[]): Id[] {
-		return zodCreate(
-			IdArraySchema,
-			rows.map((row) => get(row, this.pk) ?? undefined) as any,
-		) as Id[]
+		return IdArraySchema.parse(rows.map((row) => get(row, this.pk) ?? undefined)) as Id[]
 	}
 
 	/**

@@ -6,6 +6,6 @@ import { columnDataTypes } from "./column-data-types"
  */
 export type ColumnDataType = z.infer<typeof ColumnDataTypeSchema>
 
-export type ColumnDataTypeWithArray = ColumnDataType | `${ColumnDataType}-array`
+// export type ColumnDataTypeWithArray = ColumnDataType | `${ColumnDataType}-array`
 
 export const ColumnDataTypeSchema = z.enum(columnDataTypes)

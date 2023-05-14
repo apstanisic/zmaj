@@ -8,7 +8,10 @@ import {
 	TableOnlyParams,
 	UniqueKey,
 } from "@orm/orm-specs/schema/schema-info.service"
-import { CompositeUniqueKey, DbColumn, ForeignKey, notNil } from "@zmaj-js/common"
+import { CompositeUniqueKey } from "@orm/schemas/composite-unique-key.type"
+import { DbColumn } from "@orm/schemas/db-column.type"
+import { ForeignKey } from "@orm/schemas/foreign-key.type"
+import { notNil } from "@zmaj-js/common"
 import { TableHasNoPkError } from "../orm-errors"
 import { SequelizeService } from "./sequelize.service"
 

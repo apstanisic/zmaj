@@ -1,5 +1,5 @@
+import { Fields, IdType } from "@zmaj-js/orm-common"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
-import { Fields, IdType } from "@zmaj-js/common"
 export type FindByIdOptions<T, F extends Fields<T> | undefined> = BaseRepoMethodParams & {
 	/**
 	 * Filter

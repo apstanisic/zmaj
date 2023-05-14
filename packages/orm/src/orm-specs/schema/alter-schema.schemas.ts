@@ -1,17 +1,17 @@
+import { columnTypes } from "@orm/column-type"
+import { DbColumnNameSchema } from "@orm/schemas/db-column-name.schema"
 import { isString } from "radash"
 import { z } from "zod"
 import { Transaction } from "../Transaction"
-import { DbFieldSchema } from "@zmaj-js/common"
-import { columnTypes } from "@orm/column-type"
 
 const SharedSchema = z.object({
-	schema: DbFieldSchema.optional(),
+	schema: DbColumnNameSchema.optional(),
 	trx: z.custom<any | Transaction>().optional(),
 })
 export const CreateUniqueKeySchema = SharedSchema.extend({
-	tableName: DbFieldSchema,
-	indexName: DbFieldSchema.nullish(),
-	columnNames: z.tuple([DbFieldSchema]).rest(DbFieldSchema),
+	tableName: DbColumnNameSchema,
+	indexName: DbColumnNameSchema.nullish(),
+	columnNames: z.tuple([DbColumnNameSchema]).rest(DbColumnNameSchema),
 })
 
 export const DropUniqueKeySchema = CreateUniqueKeySchema
@@ -19,11 +19,11 @@ export const DropUniqueKeySchema = CreateUniqueKeySchema
 const fkOn = ["SET NULL", "CASCADE", "SET DEFAULT", "RESTRICT", "NO ACTION"] as const
 
 export const CreateForeignKeySchema = SharedSchema.extend({
-	fkTable: DbFieldSchema,
-	fkColumn: DbFieldSchema,
-	referencedTable: DbFieldSchema,
-	referencedColumn: DbFieldSchema,
-	indexName: DbFieldSchema.nullish(),
+	fkTable: DbColumnNameSchema,
+	fkColumn: DbColumnNameSchema,
+	referencedTable: DbColumnNameSchema,
+	referencedColumn: DbColumnNameSchema,
+	indexName: DbColumnNameSchema.nullish(),
 	onDelete: z.enum(fkOn).nullable().default(null),
 	onUpdate: z.enum(fkOn).nullable().default(null),
 })
@@ -40,8 +40,8 @@ export const DropForeignKeySchema = CreateForeignKeySchema.pick({
  *
  */
 export const CreateTableSchema = SharedSchema.extend({
-	tableName: DbFieldSchema,
-	pkColumn: DbFieldSchema,
+	tableName: DbColumnNameSchema,
+	pkColumn: DbColumnNameSchema,
 	pkType: z.union([z.literal("uuid"), z.literal("auto-increment")]),
 })
 
@@ -75,8 +75,8 @@ const ZodColumnDataType = z.enum([
 const ZodColumnType = z.enum(columnTypes)
 
 export const CreateColumnSchema = SharedSchema.extend({
-	columnName: DbFieldSchema,
-	tableName: DbFieldSchema,
+	columnName: DbColumnNameSchema,
+	tableName: DbColumnNameSchema,
 	unique: z.boolean().default(false),
 	nullable: z.boolean().default(true),
 	autoIncrement: z.boolean().default(false),

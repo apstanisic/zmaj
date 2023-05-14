@@ -1,4 +1,6 @@
-import { CompositeUniqueKey, DbColumn, ForeignKey } from "@zmaj-js/common"
+import { CompositeUniqueKey } from "@orm/schemas/composite-unique-key.type"
+import { DbColumn } from "@orm/schemas/db-column.type"
+import { ForeignKey } from "@orm/schemas/foreign-key.type"
 import { SetRequired } from "type-fest"
 import { Transaction } from "../Transaction"
 

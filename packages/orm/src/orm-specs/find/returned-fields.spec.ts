@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { EntityRef, Fields } from "@zmaj-js/common"
+import { EntityRef, Fields } from "@zmaj-js/orm-common"
 import { assertType, describe, it } from "vitest"
 import { ReturnedFields } from "./returned-fields"
 

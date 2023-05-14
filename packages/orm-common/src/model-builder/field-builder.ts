@@ -111,7 +111,7 @@ function float<const Params extends UserParams>(params: Params): CombineAll<numb
 }
 
 function text<const Params extends UserParams = UserParams>(
-	params: Params & { size?: number },
+	params: Params,
 ): CombineAll<string, Params> {
 	return build(params, "text")
 }

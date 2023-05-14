@@ -1,4 +1,4 @@
-import { Fields, Filter, IdType } from "@zmaj-js/common"
+import { Fields, Filter, IdType } from "@zmaj-js/orm-common"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
 import { Sort } from "./Sort"
 

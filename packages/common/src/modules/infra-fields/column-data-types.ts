@@ -3,8 +3,9 @@
  */
 export const columnDataTypes = [
 	// string
-	"short-text",
-	"long-text",
+	// "short-text",
+	// "long-text",
+	"text",
 	// number
 	"int",
 	"float",
@@ -16,5 +17,5 @@ export const columnDataTypes = [
 	"boolean",
 	"json",
 	"uuid",
-	"array",
+	"array.text",
 ] as const

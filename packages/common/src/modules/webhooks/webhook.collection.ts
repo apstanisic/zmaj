@@ -1,11 +1,10 @@
-import { DefineCollection } from "@common/collection-builder/define-collection"
+import { defineCollection } from "@common/collection-builder/define-collection"
 import { zodCreate } from "@common/zod"
 import { LayoutConfigSchema } from "../infra-collections/layout/layout-config.schema"
 import { systemPermissions } from "../permissions"
-import { Webhook } from "./webhook.model"
+import { WebhookModel } from "./webhook.model"
 
-export const WebhookCollection = DefineCollection<Webhook>({
-	tableName: "zmaj_webhooks",
+export const WebhookCollection = defineCollection(WebhookModel, {
 	options: {
 		authzKey: systemPermissions.webhooks.resource,
 		displayTemplate: "{name}",
@@ -19,28 +18,12 @@ export const WebhookCollection = DefineCollection<Webhook>({
 			},
 		}),
 	},
-
 	fields: {
-		id: { dataType: "uuid", isPrimaryKey: true, columnName: "id", canUpdate: false },
-		httpMethod: { dataType: "short-text", columnName: "http_method", isNullable: false },
-		name: { dataType: "short-text", columnName: "name", isNullable: false },
-		description: { dataType: "short-text", columnName: "description", isNullable: true },
-		createdAt: {
-			dataType: "datetime",
-			columnName: "created_at",
-			// createDate: true,
-			canUpdate: false,
-		},
-		enabled: { dataType: "boolean", columnName: "enabled", isNullable: false },
-		url: { dataType: "short-text", columnName: "url", componentName: "url", isNullable: false },
+		url: { componentName: "url" },
 		// was array
-		events: { dataType: "array", columnName: "events", dbRawDataType: "character varying[]" },
+		events: { dbRawDataType: "character varying[]" },
 		httpHeaders: {
-			dataType: "json",
-			columnName: "http_headers",
 			componentName: "key-value",
 		},
-		sendData: { dataType: "boolean", columnName: "send_data", isNullable: false },
 	},
-	relations: {},
 })

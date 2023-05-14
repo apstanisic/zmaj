@@ -5,9 +5,7 @@ import { RepoManager } from "@orm/orm-specs/RepoManager"
 import { TransactionIsolationLevel } from "@orm/orm-specs/TransactionIsolationLevel"
 import { AlterSchemaService } from "@orm/orm-specs/schema/alter-schema.service"
 import { SchemaInfoService } from "@orm/orm-specs/schema/schema-info.service"
-import { CollectionDef, Struct } from "@zmaj-js/common"
-import { BaseModel, ModelConfig, ModelRelation } from "@zmaj-js/orm-common"
-import { mapValues } from "radash"
+import { BaseModel, ModelConfig } from "@zmaj-js/orm-common"
 import { ModelStatic, QueryInterface, Sequelize, Transaction } from "sequelize"
 import { Class, WritableDeep } from "type-fest"
 import { SequelizeAlterSchemaService } from "./sequelize-alter-schema.service"
@@ -51,7 +49,7 @@ export class SequelizeService {
 		this.schemaInfo = new SequelizeSchemaInfoService(this)
 		this.alterSchema = new SequelizeAlterSchemaService(this, this.schemaInfo, logger)
 	}
-	get models(): Struct<ModelStatic<any>> {
+	get models(): Record<string, ModelStatic<any>> {
 		return this.orm.models
 	}
 
@@ -64,18 +62,18 @@ export class SequelizeService {
 		await this.orm.authenticate()
 	}
 
-	async initCms(collections: readonly CollectionDef[]): Promise<void> {
-		this.generateModels(collections.map(collectionToModel))
-		await this.orm.authenticate()
-	}
+	// async initCms(collections: readonly CollectionDef[]): Promise<void> {
+	// 	this.generateModels(collections.map(collectionToModel))
+	// 	await this.orm.authenticate()
+	// }
 
 	generateModels(models: readonly (Class<BaseModel> | ModelConfig)[]): void {
 		this.generator.generateModels(models, this.orm)
 	}
 
-	generateModelsCms(collections: readonly CollectionDef[]): void {
-		this.generator.generateModels(collections.map(collectionToModel), this.orm)
-	}
+	// generateModelsCms(collections: readonly CollectionDef[]): void {
+	// 	this.generator.generateModels(collections.map(collectionToModel), this.orm)
+	// }
 
 	async transaction<T>(params: {
 		type?: TransactionIsolationLevel
@@ -110,38 +108,5 @@ export class SequelizeService {
 
 	async onModuleDestroy(): Promise<void> {
 		await this.close()
-	}
-}
-
-function collectionToModel(collection: CollectionDef): ModelConfig {
-	const relations = mapValues(collection.relations, (rel): ModelRelation => {
-		if (rel.type !== "many-to-many") {
-			return {
-				field: rel.fieldName,
-				referencedModel: rel.otherSide.collectionName,
-				referencedField: rel.otherSide.fieldName,
-				type: rel.type,
-				otherPropertyName: rel.otherSide.propertyName,
-			}
-		} else {
-			return {
-				type: "many-to-many",
-				field: rel.fieldName,
-				referencedModel: rel.otherSide.collectionName,
-				referencedField: rel.otherSide.fieldName,
-				otherPropertyName: rel.otherSide.propertyName,
-				junctionModel: rel.junction.collectionName,
-				junctionField: rel.junction.thisSide.fieldName,
-				junctionReferencedField: rel.junction.otherSide.fieldName,
-			}
-		}
-	})
-
-	return {
-		collectionName: collection.collectionName,
-		tableName: collection.tableName,
-		fields: collection.fields,
-		relations,
-		disabled: collection.disabled,
 	}
 }

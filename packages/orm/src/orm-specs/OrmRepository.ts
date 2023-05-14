@@ -1,4 +1,5 @@
-import { Fields, Struct } from "@zmaj-js/common"
+import { Fields } from "@zmaj-js/orm-common"
+import { RawQueryOptions } from "./RawQueryOptions"
 import { CreateManyParams } from "./create/CreateManyParams"
 import { CreateOneParams } from "./create/CreateOneParams"
 import { DeleteByIdParams } from "./delete/DeleteByIdParams"
@@ -9,14 +10,13 @@ import { FindByIdOptions } from "./find/FindByIdOptions"
 import { FindManyOptions } from "./find/FindManyOptions"
 import { FindOneOptions } from "./find/FindOneOptions"
 import { ReturnedFields } from "./find/returned-fields"
-import { RawQueryOptions } from "./RawQueryOptions"
 import { UpdateManyOptions } from "./update/UpdateManyOptions"
 import { UpdateOneOptions } from "./update/UpdateOneOptions"
 
 /**
  * Default fields to true since
  */
-export abstract class OrmRepository<T extends Struct<any> = Record<string, unknown>> {
+export abstract class OrmRepository<T extends Record<string, any> = Record<string, unknown>> {
 	/**
 	 * Execute raw query
 	 * @param params

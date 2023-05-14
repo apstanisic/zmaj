@@ -14,7 +14,7 @@ export class UserModel extends BaseModel {
 		firstName: f.text({ nullable: true }),
 		lastName: f.text({ nullable: true }),
 		roleId: f.uuid({ hasDefault: true }),
-		otpToken: f.text({ nullable: true, canRead: false }),
+		otpToken: f.text({ nullable: true, canRead: false, canUpdate: false }),
 		confirmedEmail: f.boolean({ hasDefault: true }),
 		createdAt: f.createdAt({}),
 		status: f.enumString({

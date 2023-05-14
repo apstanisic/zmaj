@@ -1,4 +1,4 @@
-import { Filter, IdType, OnlyFields } from "@zmaj-js/common"
+import { Filter, IdType, OnlyFields } from "@zmaj-js/orm-common"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
 
 export type UpdateManyOptions<T> = BaseRepoMethodParams & {

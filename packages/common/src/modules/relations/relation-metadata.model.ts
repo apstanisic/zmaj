@@ -1,5 +1,8 @@
-import { EntityRef } from "@zmaj-js/orm-common"
-import { CollectionMetadata } from "../infra-collections/collection-metadata.model"
+import { BaseModel, EntityRef } from "@zmaj-js/orm-common"
+import {
+	CollectionMetadata,
+	CollectionMetadataModel,
+} from "../infra-collections/collection-metadata.model"
 
 /**
  * Relation Metadata
@@ -48,4 +51,24 @@ export type RelationMetadata = {
 	 * Collection this relation belongs to
 	 */
 	collection?: EntityRef<CollectionMetadata>
+}
+
+export class RelationMetadataModel extends BaseModel {
+	override name = "zmajRelationMetadata"
+	override tableName = "zmaj_relation_metadata"
+	override fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		createdAt: f.createdAt({}),
+		tableName: f.text({ canUpdate: false }),
+		fkName: f.text({ canUpdate: false }),
+		propertyName: f.text({}),
+		label: f.text({ nullable: true }),
+		template: f.text({ nullable: true }),
+		mtmFkName: f.text({ nullable: true }),
+		hidden: f.text({ hasDefault: true }),
+	}))
+	collection = this.manyToOne(() => CollectionMetadataModel, {
+		fkField: "tableName",
+		referencedField: "tableName",
+	})
 }

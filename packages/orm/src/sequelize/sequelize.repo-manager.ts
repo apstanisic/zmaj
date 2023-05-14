@@ -3,7 +3,6 @@ import { RawQueryOptions } from "@orm/orm-specs/RawQueryOptions"
 import { RepoManager } from "@orm/orm-specs/RepoManager"
 import { Transaction } from "@orm/orm-specs/Transaction"
 import { TransactionIsolationLevel } from "@orm/orm-specs/TransactionIsolationLevel"
-import { CollectionDef, Struct } from "@zmaj-js/common"
 import { BaseModel, ModelType, createModelsStore } from "@zmaj-js/orm-common"
 import { isFunction, isString } from "radash"
 import { Sequelize, literal } from "sequelize"
@@ -22,17 +21,21 @@ export class SequelizeRepoManager extends RepoManager {
 
 	protected models = createModelsStore()
 
-	protected repositories: Struct<OrmRepository<any>> = {}
+	protected repositories: Record<string, OrmRepository<any>> = {}
 
 	getOrm(): Sequelize {
 		return this.sq.orm
 	}
 
-	getRepo<T extends Struct<any> = Struct<unknown>>(col: string | CollectionDef<T>): OrmRepository<T>
+	getRepo<T extends Record<string, any> = Record<string, unknown>>(
+		col: string | { collectionName: string },
+	): OrmRepository<T>
 	getRepo<TModel extends BaseModel = BaseModel>(
 		model: Class<TModel>,
 	): OrmRepository<ModelType<TModel>>
-	getRepo<T extends Struct>(col: string | CollectionDef<any> | Class<BaseModel>): OrmRepository<T> {
+	getRepo<T extends Record<string, any>>(
+		col: string | { collectionName: string } | Class<BaseModel>,
+	): OrmRepository<T> {
 		const name = isString(col)
 			? col
 			: isFunction(col)

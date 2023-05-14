@@ -1,4 +1,4 @@
-import { OnlyFields } from "@zmaj-js/common"
+import { OnlyFields } from "@zmaj-js/orm-common"
 // maybe return later NULLS_LAST/FIRST
 type SortOptions = "ASC" | "DESC"
 // | "ASC_NULLS_LAST"

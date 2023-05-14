@@ -1,4 +1,4 @@
-import { Fields, StripEntityRef } from "@zmaj-js/common"
+import { Fields, StripEntityRef } from "@zmaj-js/orm-common"
 
 // Check if type is array. Strips null and undefined
 type IsArray<T> = NonNullable<T> extends any[] ? true : false
