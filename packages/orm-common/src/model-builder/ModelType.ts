@@ -49,3 +49,15 @@ export type ModelUpdateType<TModel extends BaseModel> = ToOptional<
 // 		name: f.boolean({ hasDefault: true }),
 // 	}))
 // }
+// export class TPostTagModel extends BaseModel {
+// 	name = "posts_tags"
+// 	fields = this.buildFields((f) => ({
+// 		id: f.int({ isPk: true, hasDefault: true }),
+// 		postId: f.uuid({ columnName: "post_id" }),
+// 		tagId: f.uuid({ columnName: "tag_id" }),
+// 	}))
+// }
+
+// type B = ModelCreateType<TPostTagModel>
+
+// const b: B = { id: null, postId: "", tagId: "" }

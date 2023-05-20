@@ -16,6 +16,7 @@ import {
 	UserCreateDto,
 } from "@zmaj-js/common"
 import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { omit } from "radash"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -110,10 +111,13 @@ describe("PasswordResetController e2e", () => {
 
 		beforeEach(async () => {
 			token = await tokenRepo.createOne({
-				data: SecurityTokenStub({
-					usedFor: "password-reset",
-					userId: user.id,
-				}),
+				data: omit(
+					SecurityTokenStub({
+						usedFor: "password-reset",
+						userId: user.id,
+					}),
+					["createdAt"],
+				),
 			})
 		})
 
@@ -135,11 +139,14 @@ describe("PasswordResetController e2e", () => {
 		let token: SecurityToken
 		beforeEach(async () => {
 			token = await tokenRepo.createOne({
-				data: SecurityTokenStub({
-					usedFor: "password-reset",
-					userId: user.id,
-					validUntil: randFutureDate(),
-				}),
+				data: omit(
+					SecurityTokenStub({
+						usedFor: "password-reset",
+						userId: user.id,
+						validUntil: randFutureDate(),
+					}),
+					["createdAt"],
+				),
 			})
 		})
 

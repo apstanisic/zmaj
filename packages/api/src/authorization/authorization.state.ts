@@ -63,7 +63,7 @@ export class AuthorizationState implements OnModuleInit {
 
 		if (!publicRoleExist) {
 			await this.rolesRepo.createOne({
-				data: zodCreate(RoleSchema, {
+				data: zodCreate(RoleSchema.omit({ createdAt: true }), {
 					name: "Public",
 					description: "Public role",
 					id: PUBLIC_ROLE_ID,
@@ -73,7 +73,7 @@ export class AuthorizationState implements OnModuleInit {
 
 		if (!adminRoleExist) {
 			await this.rolesRepo.createOne({
-				data: zodCreate(RoleSchema, {
+				data: zodCreate(RoleSchema.omit({ createdAt: true }), {
 					name: "Admin",
 					description: "Administrator role",
 					id: ADMIN_ROLE_ID,

@@ -79,8 +79,8 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 			// }
 
 			const toUpdate: UpdateStartEvent<Item>["toUpdate"] = foundRows.map((item) => ({
-				id: (item[collection.pkField as keyof Item] ?? throw500(23486)) as unknown as IdType,
-				original: item,
+				id: (item[collection.pkField as keyof typeof item] ?? throw500(23486)) as unknown as IdType,
+				original: item as Item,
 				changed: omit({ ...structuredClone(item), ...afterEmit1.changes }, [
 					collection.pkField,
 				]) as Partial<Item>,
@@ -105,9 +105,13 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 				)
 
 				// simply return item if there are no changes
-				if (isEmpty(changes)) updated.push(await repo.findById({ trx, id: item.id }))
-
-				updated.push(await repo.updateById({ trx, changes, id: item.id }))
+				if (isEmpty(changes)) {
+					const res = await repo.findById({ trx, id: item.id })
+					updated.push(res as Item)
+				} else {
+					const res = await repo.updateById({ trx, changes, id: item.id })
+					updated.push(res as Item)
+				}
 			}
 			// const updated2 = await Promise.all(
 			// 	afterEmit2.toUpdate.map((item) => {

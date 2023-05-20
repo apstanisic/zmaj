@@ -6,10 +6,13 @@ import {
 	randUserAgent,
 	randUuid,
 } from "@ngneat/falso"
-import { AuthSession, AuthSessionSchema, now, stub } from "@zmaj-js/common"
+import { AuthSession, AuthSessionSchema, StubType, now, stub } from "@zmaj-js/common"
+import { SetRequired } from "type-fest"
 import { v4 } from "uuid"
 
-export const AuthSessionStub = stub<AuthSession>(
+export const AuthSessionStub: StubType<SetRequired<AuthSession, "refreshToken">> = stub<
+	SetRequired<AuthSession, "refreshToken">
+>(
 	() => ({
 		createdAt: now(),
 		id: v4(),

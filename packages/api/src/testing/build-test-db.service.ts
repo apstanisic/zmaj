@@ -38,7 +38,7 @@ import {
 	eCommerceDemo,
 	mockCompositeUniqueKeyId,
 } from "@zmaj-js/test-utils"
-import { draw, pick, random, shuffle, unique } from "radash"
+import { draw, omit, pick, random, shuffle, unique } from "radash"
 import { DataTypes, QueryInterface } from "sequelize"
 import { configureBlogInfra } from "./blog-demo"
 import mockData from "./const-mocks.json"
@@ -328,7 +328,7 @@ export class BuildTestDbService {
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 
 				await roleRepo.createMany({ data: eCommerceDemo.roles, trx })
-				await userRepo.createMany({ data: eCommerceDemo.users, trx })
+				await userRepo.createMany({ data: eCommerceDemo.users.map(omitCreatedAt), trx })
 				await categoryRepo.createMany({ data: eCommerceDemo.categories, trx })
 				await tagRepo.createMany({ data: eCommerceDemo.tags, trx })
 				await productRepo.createMany({
@@ -368,7 +368,7 @@ export class BuildTestDbService {
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 
 				await roleRepo.createMany({ data: data.roles, trx })
-				await userRepo.createMany({ data: data.users, trx })
+				await userRepo.createMany({ data: data.users.map(omitCreatedAt), trx })
 				await tagRepo.createMany({ data: data.tags, trx })
 				await postsRepo.createMany({
 					data: data.posts.map((p) => ({ ...p, coverFileId: draw(images)?.["id"] })),
@@ -380,4 +380,8 @@ export class BuildTestDbService {
 			},
 		})
 	}
+}
+
+const omitCreatedAt = <T extends { createdAt: any }>(data: T): Omit<T, "createdAt"> => {
+	return omit(data, ["createdAt"])
 }

@@ -22,3 +22,5 @@ export function stub<T>(
 		return schema ? schema.parse(res) : res
 	}
 }
+
+export type StubType<T> = (data?: Partial<T>) => T

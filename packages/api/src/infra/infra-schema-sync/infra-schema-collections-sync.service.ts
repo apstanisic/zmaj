@@ -72,7 +72,10 @@ export class InfraSchemaCollectionsSyncService {
 					(v) => collections.every((c) => c.collectionName !== v),
 					{ case: this.config.defaultCase },
 				)
-				return zodCreate(CollectionMetadataSchema, { tableName, collectionName })
+				return zodCreate(CollectionMetadataSchema.omit({ createdAt: true }), {
+					tableName,
+					collectionName,
+				})
 			})
 
 		if (missing.length === 0) return

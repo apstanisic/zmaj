@@ -365,6 +365,9 @@ importers:
       '@zmaj-js/orm':
         specifier: workspace:*
         version: link:../orm
+      '@zmaj-js/orm-common':
+        specifier: workspace:*
+        version: link:../orm-common
       '@zmaj-js/storage-core':
         specifier: workspace:*
         version: link:../storage-core

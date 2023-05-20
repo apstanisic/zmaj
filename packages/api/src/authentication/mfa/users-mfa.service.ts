@@ -50,7 +50,11 @@ export class UsersMfaService {
 		const valid = await this.mfa.checkMfa(secret, code)
 		if (!valid) throw400(84923, emsg.mfaInvalid)
 		const otpToken = await this.mfa.encryptSecret(secret)
-		await this.usersService.repo.updateById({ id: dbUser.id, changes: { otpToken } })
+		await this.usersService.repo.updateById({
+			id: dbUser.id,
+			changes: { otpToken },
+			overrideCanUpdate: true,
+		})
 	}
 
 	async disableOtp(authUser: AuthUser, password: string): Promise<void> {
@@ -61,7 +65,11 @@ export class UsersMfaService {
 		if (!validPassword) throw400(789993, emsg.invalidPassword)
 		const user = await this.usersService.findActiveUser({ id: authUser.userId })
 		if (user.otpToken === null) throw400(789933, emsg.mfaDisabled)
-		await this.usersService.repo.updateById({ id: authUser.userId, changes: { otpToken: null } })
+		await this.usersService.repo.updateById({
+			id: authUser.userId,
+			changes: { otpToken: null },
+			overrideCanUpdate: true,
+		})
 	}
 
 	async hasMfa(user: AuthUser, trx?: Transaction): Promise<boolean> {
