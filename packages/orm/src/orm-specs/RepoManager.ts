@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel } from "@zmaj-js/orm-common"
 import { Class } from "type-fest"
 import { OrmRepository } from "./OrmRepository"
 import { RawQueryOptions } from "./RawQueryOptions"
@@ -12,12 +12,9 @@ export abstract class RepoManager {
 	 * Get ORM repository
 	 * @param tableOrCollection Provide either table name or infra collection
 	 */
-	abstract getRepo<T extends Record<string, any> = Record<string, any>>(
-		tableOrCollection: string | { collectionName: string },
-	): OrmRepository<T>
 	abstract getRepo<TModel extends BaseModel = BaseModel>(
-		model: Class<TModel>,
-	): OrmRepository<ModelType<TModel>>
+		model: Class<TModel> | string,
+	): OrmRepository<TModel>
 
 	// abstract transaction<T>(fn: (em: Transaction) => Promise<T>): Promise<T>
 	abstract transaction<T>(params: {

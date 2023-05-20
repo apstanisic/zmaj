@@ -1,18 +1,18 @@
 import { throw500 } from "@api/common/throw-http"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { OrmRepository } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
 	DbColumn,
 	FieldMetadata,
-	FieldMetadataCollection,
+	FieldMetadataModel,
 	FieldMetadataSchema,
+	ModelCreateType,
 	getFreeValue,
 	nestByTableAndColumnName,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { title } from "radash"
 import { InfraConfig } from "../infra.config"
 
@@ -28,9 +28,9 @@ export class InfraSchemaFieldsSyncService {
 		private bootstrapRepoManager: BootstrapRepoManager,
 		private config: InfraConfig,
 	) {
-		this.repo = this.bootstrapRepoManager.getRepo(FieldMetadataCollection)
+		this.repo = this.bootstrapRepoManager.getRepo(FieldMetadataModel)
 	}
-	repo: OrmRepository<FieldMetadata>
+	repo: OrmRepository<FieldMetadataModel>
 
 	/**
 	 * It will be called after collection info is initialized
@@ -79,7 +79,7 @@ export class InfraSchemaFieldsSyncService {
 	 * Ensure that every column has field metadata
 	 */
 	private async addMissingFields(fields: FieldMetadata[], columns: DbColumn[]): Promise<void> {
-		const missing: FieldMetadata[] = []
+		const missing: ModelCreateType<FieldMetadataModel>[] = []
 
 		const nestedFields = nestByTableAndColumnName(fields)
 
@@ -97,7 +97,7 @@ export class InfraSchemaFieldsSyncService {
 			)
 
 			missing.push(
-				zodCreate(FieldMetadataSchema, {
+				zodCreate(FieldMetadataSchema.omit({ createdAt: true }), {
 					columnName: column.columnName,
 					canUpdate: !column.primaryKey,
 					label: title(column.columnName),

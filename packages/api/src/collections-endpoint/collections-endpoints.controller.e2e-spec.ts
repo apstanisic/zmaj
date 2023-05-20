@@ -1,29 +1,34 @@
-import { OrmRepository } from "@zmaj-js/orm"
-import { SequelizeService } from "@zmaj-js/orm"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
 import { randEmail, randFirstName, randNumber, randPastDate } from "@ngneat/falso"
-import { DataTypes, QueryInterface } from "sequelize"
-import { qsStringify, times, User, uuidRegex } from "@zmaj-js/common"
+import { BaseModel, ModelType, qsStringify, times, User, uuidRegex } from "@zmaj-js/common"
+import { OrmRepository, SequelizeService } from "@zmaj-js/orm"
 import { camel } from "radash"
+import { DataTypes, QueryInterface } from "sequelize"
 import supertest from "supertest"
 import { v4 } from "uuid"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 
-type TestPerson = {
-	id: string
-	name: string
-	email: string
-	birthday: Date | string
-	postsCount: number
+class TestPersonModel extends BaseModel {
+	name = "tp"
+
+	fields = this.buildFields((f) => ({
+		id: f.text({}),
+		name: f.text({}),
+		email: f.text({}),
+		birthday: f.dateTime({}),
+		postsCount: f.int({}),
+	}))
 }
+
+type TestPerson = ModelType<TestPersonModel>
 
 describe("CollectionsEndpoint e2e", () => {
 	let all: TestBundle
 	let app: INestApplication
 	//
-	let repo: OrmRepository<TestPerson>
+	let repo: OrmRepository<TestPersonModel>
 	let qi: QueryInterface
 	//
 	let user: User
@@ -48,7 +53,7 @@ describe("CollectionsEndpoint e2e", () => {
 			})
 		})
 
-		repo = all.repo<TestPerson>(collectionName)
+		repo = all.repo<TestPersonModel>(collectionName)
 	})
 
 	afterAll(async () => {

@@ -1,18 +1,16 @@
 import { GlobalConfig } from "@api/app/global-app.config"
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
-import { Transaction } from "@zmaj-js/orm"
 import { EmailService, SendEmailParams } from "@api/email/email.service"
 import { Injectable } from "@nestjs/common"
 import { Cron, CronExpression } from "@nestjs/schedule"
 import {
-	qsStringify,
 	SecurityToken,
-	SecurityTokenCollection,
+	SecurityTokenModel,
 	SecurityTokenSchema,
 	Struct,
+	qsStringify,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager, Transaction } from "@zmaj-js/orm"
 import { z } from "zod"
 
 export type CreateTokenFormEmailConfirmationParams = {
@@ -44,13 +42,13 @@ export type CreateTokenFormEmailConfirmationParams = {
 
 @Injectable()
 export class SecurityTokensService {
-	private readonly repo: OrmRepository<SecurityToken>
+	private readonly repo: OrmRepository<SecurityTokenModel>
 	constructor(
 		private readonly repoManager: RepoManager,
 		private readonly config: GlobalConfig,
 		private readonly emailService: EmailService,
 	) {
-		this.repo = this.repoManager.getRepo(SecurityTokenCollection)
+		this.repo = this.repoManager.getRepo(SecurityTokenModel)
 	}
 
 	async createTokenWithEmailConfirmation(
@@ -90,7 +88,10 @@ export class SecurityTokensService {
 		params: Pick<z.input<typeof SecurityTokenSchema>, "usedFor" | "validUntil" | "data" | "userId">,
 		trx?: Transaction,
 	): Promise<SecurityToken> {
-		return this.repo.createOne({ trx: trx, data: zodCreate(SecurityTokenSchema, params) })
+		return this.repo.createOne({
+			trx: trx,
+			data: zodCreate(SecurityTokenSchema.omit({ createdAt: true }), params),
+		})
 	}
 
 	async findToken(

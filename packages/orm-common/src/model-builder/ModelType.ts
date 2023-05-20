@@ -2,7 +2,7 @@ import { StripWrapperTypes } from "@orm-common/strip-wrapper-types.type"
 import { ConditionalPick } from "type-fest"
 import { BaseModel } from "./BaseModel"
 import { ModelRelationDefinition } from "./ModelRelationDefinition"
-import { ExtractFields } from "./field-builder"
+import { ExtractCreateParams, ExtractFields, ExtractUpdateParams } from "./field-builder"
 
 type OnlyModelRelations<TModel extends BaseModel> = ConditionalPick<
 	TModel,
@@ -33,3 +33,19 @@ type BaseType<TModel extends BaseModel> = ToOptional<ExtractFields<TModel["field
 	ModelRelations<TModel>
 
 export type ModelType<TModel extends BaseModel> = StripWrapperTypes<BaseType<TModel>>
+
+export type ModelFieldsType<TModel extends BaseModel> = ToOptional<ExtractFields<TModel["fields"]>>
+
+export type ModelCreateType<TModel extends BaseModel> = ToOptional<
+	ExtractCreateParams<TModel["fields"]>
+>
+export type ModelUpdateType<TModel extends BaseModel> = ToOptional<
+	ExtractUpdateParams<TModel["fields"]>
+>
+
+// class TempModel extends BaseModel {
+// 	name = "test"
+// 	fields = this.buildFields((f) => ({
+// 		name: f.boolean({ hasDefault: true }),
+// 	}))
+// }

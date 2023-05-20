@@ -1,7 +1,12 @@
-import { IdType, OnlyFields } from "@zmaj-js/orm-common"
+import { BaseModel, IdType } from "@zmaj-js/orm-common"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
+import { GetUpdateType } from "./GetUpdateType"
 
-export type UpdateOneOptions<T> = BaseRepoMethodParams & {
+export type UpdateOneOptions<
+	TModel extends BaseModel,
+	OverrideCanUpdate extends boolean,
+> = BaseRepoMethodParams & {
 	id: IdType
-	changes: Partial<OnlyFields<T>>
+	changes: GetUpdateType<TModel, OverrideCanUpdate>
+	overrideCanUpdate?: OverrideCanUpdate
 }

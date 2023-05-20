@@ -44,7 +44,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 
 	async findWhere(params: CrudReadParams<Item>): Promise<ResponseWithCount<Item>> {
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection)
+		const repo = this.repoManager.getRepo<Item>(collection)
 		const options = zodCreate(UrlQuerySchema, params.options ?? {})
 
 		const afterEmit1 = await this.emit<ReadBeforeEvent<Item>>(
@@ -132,9 +132,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 	 * @returns field that are string type
 	 */
 	private getQuickFilterFields(collection: CollectionDef): FieldDef[] {
-		return Object.values(collection.fields).filter(
-			(f) => f.dataType === "short-text" || f.dataType === "long-text",
-		)
+		return Object.values(collection.fields).filter((f) => f.dataType === "text")
 	}
 
 	/**

@@ -1,4 +1,4 @@
-import { BaseModel, ModelType, fields } from "@zmaj-js/orm-common"
+import { BaseModel, ModelType } from "@zmaj-js/orm-common"
 import { UserModel } from "../users/user.model"
 
 export class AuthSessionModel extends BaseModel {
@@ -6,6 +6,7 @@ export class AuthSessionModel extends BaseModel {
 	override tableName = "zmaj_auth_sessions"
 	override fields = this.buildFields((f) => ({
 		id: f.uuid({ isPk: true }),
+
 		createdAt: f.createdAt({}),
 
 		/**
@@ -21,13 +22,13 @@ export class AuthSessionModel extends BaseModel {
 		/**
 		 * When was this session last used
 		 */
-		lastUsed: f.dateTime({}),
+		lastUsed: f.dateTime({ columnName: "last_used" }),
 
 		/**
 		 * Until when is this sessions valid
 		 * It can be extended as long as the session does not expire
 		 */
-		validUntil: f.dateTime({}),
+		validUntil: f.dateTime({ columnName: "valid_until" }),
 
 		/**
 		 * User agent of user when session is created

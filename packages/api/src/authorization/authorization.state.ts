@@ -6,8 +6,10 @@ import {
 	PUBLIC_ROLE_ID,
 	Permission,
 	PermissionCollection,
+	PermissionModel,
 	Role,
 	RoleCollection,
+	RoleModel,
 	RoleSchema,
 	zodCreate,
 } from "@zmaj-js/common"
@@ -31,12 +33,12 @@ export class AuthorizationState implements OnModuleInit {
 	/** All roles */
 	roles: Readonly<Role[]> = []
 
-	private rolesRepo: OrmRepository<Role>
-	private permissionsRepo: OrmRepository<Permission>
+	private rolesRepo: OrmRepository<RoleModel>
+	private permissionsRepo: OrmRepository<PermissionModel>
 
 	constructor(private readonly repoManager: RepoManager) {
-		this.rolesRepo = this.repoManager.getRepo(RoleCollection)
-		this.permissionsRepo = this.repoManager.getRepo(PermissionCollection)
+		this.rolesRepo = this.repoManager.getRepo(RoleModel)
+		this.permissionsRepo = this.repoManager.getRepo(PermissionModel)
 	}
 
 	/**

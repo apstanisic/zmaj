@@ -1,16 +1,15 @@
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { Transaction } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionMetadata,
-	CollectionMetadataCollection,
+	CollectionMetadataModel,
 	FieldMetadata,
-	FieldMetadataCollection,
+	FieldMetadataModel,
 	ForeignKey,
 	RelationMetadata,
-	RelationMetadataCollection,
+	RelationMetadataModel,
 } from "@zmaj-js/common"
+import { SchemaInfoService, Transaction } from "@zmaj-js/orm"
 import { alphabetical, unique } from "radash"
 
 @Injectable()
@@ -21,15 +20,15 @@ export class InfraService {
 	) {}
 
 	async getCollectionMetadata(trx?: Transaction): Promise<CollectionMetadata[]> {
-		return this.baseRepoManager.getRepo(CollectionMetadataCollection).findWhere({ trx })
+		return this.baseRepoManager.getRepo(CollectionMetadataModel).findWhere({ trx })
 	}
 
 	async getFieldMetadata(trx?: Transaction): Promise<FieldMetadata[]> {
-		return this.baseRepoManager.getRepo(FieldMetadataCollection).findWhere({ trx })
+		return this.baseRepoManager.getRepo(FieldMetadataModel).findWhere({ trx })
 	}
 
 	async getRelationMetadata(trx?: Transaction): Promise<RelationMetadata[]> {
-		return this.baseRepoManager.getRepo(RelationMetadataCollection).findWhere({ trx })
+		return this.baseRepoManager.getRepo(RelationMetadataModel).findWhere({ trx })
 	}
 
 	// sort fks by table, then by it's name. This prevent having multiple fks

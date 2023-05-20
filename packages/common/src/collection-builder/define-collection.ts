@@ -1,4 +1,3 @@
-import { CollectionDef } from "@common/modules/infra-collections/collection-def.type"
 import { FieldDef } from "@common/modules/infra-fields/field-def.type"
 import { Struct } from "@common/types/struct.type"
 import {
@@ -10,12 +9,12 @@ import {
 	createModelsStore,
 } from "@zmaj-js/orm-common"
 import { Class, ConditionalPick, Except } from "type-fest"
-import { UserModel, snakeCase } from ".."
+import { CollectionDef, ColumnDataType, snakeCase } from ".."
 import { buildField } from "./_build-field"
 import { BuildCollectionOptions, buildCollection } from "./_build-infra-collection"
-import { RelationBuilderInfo, buildRelation } from "./_build-relation"
+import { RelationBuilderInfo } from "./_build-relation"
 
-type FieldParams = Partial<FieldDef>
+type FieldParams = Except<Partial<FieldDef>, "dataType">
 type DefineCollectionParams<T extends Struct> = {
 	tableName: string
 	options?: BuildCollectionOptions<T>
@@ -29,35 +28,35 @@ type DefineCollectionParams<T extends Struct> = {
 /**
  * Define Collection. Used for defining collection in code, for system collections
  */
-export function DefineCollection<T extends Struct = Struct>(
-	params: DefineCollectionParams<T>,
-): CollectionDef<T> {
-	const col = buildCollection<T>(params.tableName, params.options)
-	for (const property of Object.keys(params.fields)) {
-		// ts not working with .entries
-		const value = params.fields[property as keyof OnlyFields<T>]
-		const generated = buildField({
-			tableName: params.tableName,
-			fieldName: String(property),
-			...value,
-		})
-		col.fields[property] = generated
-	}
+// export function DefineCollection<T extends Struct = Struct>(
+// 	params: DefineCollectionParams<T>,
+// ): CollectionDef<T> {
+// 	const col = buildCollection<T>(params.tableName, params.options)
+// 	for (const property of Object.keys(params.fields)) {
+// 		// ts not working with .entries
+// 		const value = params.fields[property as keyof OnlyFields<T>]
+// 		const generated = buildField({
+// 			tableName: params.tableName,
+// 			fieldName: String(property),
+// 			...value,
+// 		})
+// 		col.fields[property] = generated
+// 	}
 
-	for (const property of Object.keys(params.relations)) {
-		// ts not working with .entries
-		const value = params.relations[property as keyof OnlyRelations<T>]
-		const generated = buildRelation({
-			...value,
-			thisPropertyName: property,
-			thisTableName: params.tableName,
-		})
+// 	for (const property of Object.keys(params.relations)) {
+// 		// ts not working with .entries
+// 		const value = params.relations[property as keyof OnlyRelations<T>]
+// 		const generated = buildRelation({
+// 			...value,
+// 			thisPropertyName: property,
+// 			thisTableName: params.tableName,
+// 		})
 
-		col.relations[property] = generated
-	}
+// 		col.relations[property] = generated
+// 	}
 
-	return col
-}
+// 	return col
+// }
 
 const models = createModelsStore()
 
@@ -78,19 +77,20 @@ export function defineCollection<TModel extends BaseModel>(
 			>
 		>
 	},
-): any {
+): CollectionDef<ModelType<TModel>> {
 	const modelInstance = models.get(ModelClass)
 	const tableName = modelInstance.tableName ?? snakeCase(modelInstance.name)
 	const col = buildCollection<ModelType<TModel>>(tableName, config.options)
 
-	for (const property of Object.keys(modelInstance.fields)) {
+	for (const [property, field] of Object.entries(modelInstance.fields)) {
 		// ts not working with .entries
 		const additionalConfig = config.fields?.[property as keyof TModel["fields"]]
 		const generated = buildField({
 			tableName,
 			fieldName: property,
 			...additionalConfig,
-			...modelInstance.fields[property],
+			...field,
+			dataType: field.dataType as ColumnDataType, // TODO FIX THIS
 		})
 		col.fields[property] = generated
 	}
@@ -101,20 +101,16 @@ export function defineCollection<TModel extends BaseModel>(
 		// relations['hello']?.options.type === ''
 		// ts not working with .entries
 		const value = config.relations?.[property as never]
-		const generated = buildRelation({
-			type: relationDef.options.type,
-			thisPropertyName: property,
-			// : otherSide.name
-			// ...value,
-			// thisPropertyName: property,
-			// thisTableName: tableName,
-		})
+		// const generated = buildRelation({
+		// 	type: relationDef.options.type,
+		// 	thisPropertyName: property,
+		// 	// : otherSide.name
+		// 	// ...value,
+		// 	// thisPropertyName: property,
+		// 	// thisTableName: tableName,
+		// })
 
-		col.relations[property] = generated
+		// col.relations[property] = generated
 	}
+	return col
 }
-
-defineCollection(UserModel, {
-	fields: { email: {} },
-	relations: { authSessions: { label: "" } },
-})

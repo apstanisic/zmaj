@@ -1,13 +1,15 @@
 import { ConfigModuleConfig } from "@api/config/config.config"
-import { DatabaseConfig } from "@api/database/database.config"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { RepoManager } from "@zmaj-js/orm"
-import { AlterSchemaService } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { getTestEnvValues } from "@api/testing/get-test-env-values"
-import { DbMigration, DbMigrationCollection, systemCollections, uuidRegex } from "@zmaj-js/common"
-import { SequelizeService } from "@zmaj-js/orm"
+import { DbMigration, DbMigrationModel, systemCollections, uuidRegex } from "@zmaj-js/common"
+import {
+	AlterSchemaService,
+	DatabaseConfig,
+	RepoManager,
+	SchemaInfoService,
+	SequelizeService,
+} from "@zmaj-js/orm"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { ConfigService } from "../config/config.service"
 import { type UserMigration } from "./migrations.types"
@@ -43,7 +45,7 @@ describe("MigrationsService e2e", () => {
 	})
 	afterAll(async () => {
 		await alterSchema.dropTable({ tableName })
-		await repoManager.getRepo(DbMigrationCollection).deleteWhere({ where: {} })
+		await repoManager.getRepo(DbMigrationModel).deleteWhere({ where: {} })
 		await sq.onModuleDestroy()
 	})
 
@@ -62,7 +64,7 @@ describe("MigrationsService e2e", () => {
 			})
 			const migrations = await api
 				.get(RepoManager)
-				.getRepo(DbMigrationCollection)
+				.getRepo(DbMigrationModel)
 				.findWhere({ where: { type: "user" } })
 			await api.close()
 

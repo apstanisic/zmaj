@@ -1,4 +1,7 @@
-import { Fields } from "@zmaj-js/orm-common"
+import { BaseModel, Fields, ModelType } from "@zmaj-js/orm-common"
 import { FindManyOptions } from "./FindManyOptions"
 
-export type FindAndCountOptions<T, F extends Fields<T> | undefined> = FindManyOptions<T, F>
+export type FindAndCountOptions<
+	T extends BaseModel,
+	F extends Fields<ModelType<T>> | undefined,
+> = FindManyOptions<T, F>

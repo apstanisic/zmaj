@@ -9,24 +9,29 @@ import { Injectable } from "@nestjs/common"
 import { rand } from "@ngneat/falso"
 import {
 	ADMIN_ROLE_ID,
-	FileCollection,
-	RoleCollection,
+	FileModel,
+	RoleModel,
 	User,
-	UserCollection,
+	UserModel,
 	systemCollections,
 	times,
 } from "@zmaj-js/common"
-import { SequelizeRepoManager, SequelizeSchemaInfoService, SequelizeService } from "@zmaj-js/orm"
 import {
-	TComment,
+	RepoManager,
+	SequelizeRepoManager,
+	SequelizeSchemaInfoService,
+	SequelizeService,
+} from "@zmaj-js/orm"
+import {
+	TCommentModel,
 	TCommentStub,
-	TPost,
-	TPostInfo,
+	TPostInfoModel,
 	TPostInfoStub,
+	TPostModel,
 	TPostStub,
-	TPostTag,
+	TPostTagModel,
 	TPostTagStub,
-	TTag,
+	TTagModel,
 	TTagStub,
 	allMockCollectionDefs,
 	createBlogDemo,
@@ -44,7 +49,7 @@ type Trx = any // Transaction | SqTrx
 @Injectable()
 export class BuildTestDbService {
 	qi: QueryInterface
-	repoManager: SequelizeRepoManager
+	repoManager: RepoManager
 	schemaInfo: SequelizeSchemaInfoService
 	constructor(private sq: SequelizeService) {
 		this.qi = this.sq.orm.getQueryInterface()
@@ -60,13 +65,13 @@ export class BuildTestDbService {
 
 	async seedRandomData(): Promise<void> {
 		// posts
-		const posts = await this.repoManager.getRepo<TPost>("posts").createMany({
+		const posts = await this.repoManager.getRepo(TPostModel).createMany({
 			data: times(60, () => TPostStub()),
 		})
 		const postIds = posts.map((p) => p.id)
 
 		// tags
-		const tags = await this.repoManager.getRepo<TTag>("tags").createMany({
+		const tags = await this.repoManager.getRepo(TTagModel).createMany({
 			data: unique(
 				times(12, () => TTagStub()),
 				(t) => t.name,
@@ -75,19 +80,19 @@ export class BuildTestDbService {
 		const tagIds = tags.map((p) => p.id)
 
 		// comments
-		const comments = await this.repoManager.getRepo<TComment>("comments").createMany({
+		const comments = await this.repoManager.getRepo(TCommentModel).createMany({
 			data: times(12, () => TCommentStub({ postId: rand(postIds) })),
 		})
 
 		// posts_info
 		const postIdsForPostInfo = shuffle(postIds)
-		const postsInfo = await this.repoManager.getRepo<TPostInfo>("postsInfo").createMany({
+		const postsInfo = await this.repoManager.getRepo(TPostInfoModel).createMany({
 			data: times(25, () => TPostInfoStub({ postId: postIdsForPostInfo.shift() })),
 		})
 
 		// posts_tags
 		// for every post, create between 0 and 8 (inclusive) tag connections
-		const postsTags = await this.repoManager.getRepo<TPostTag>("postsTags").createMany({
+		const postsTags = await this.repoManager.getRepo(TPostTagModel).createMany({
 			data: postIds
 				.map((postId) => {
 					const tIds = shuffle(tagIds)
@@ -98,11 +103,11 @@ export class BuildTestDbService {
 	}
 
 	async seedConstData(): Promise<void> {
-		await this.repoManager.getRepo<TPost>("posts").createMany({ data: mockData.posts as any })
-		await this.repoManager.getRepo<TTag>("tags").createMany({ data: mockData.tags })
-		await this.repoManager.getRepo<TComment>("comments").createMany({ data: mockData.comments })
-		await this.repoManager.getRepo<TPostInfo>("postsInfo").createMany({ data: mockData.postInfo })
-		await this.repoManager.getRepo<TPostTag>("postsTags").createMany({ data: mockData.postsTags })
+		await this.repoManager.getRepo(TPostModel).createMany({ data: mockData.posts as any })
+		await this.repoManager.getRepo(TTagModel).createMany({ data: mockData.tags })
+		await this.repoManager.getRepo(TCommentModel).createMany({ data: mockData.comments })
+		await this.repoManager.getRepo(TPostInfoModel).createMany({ data: mockData.postInfo })
+		await this.repoManager.getRepo(TPostTagModel).createMany({ data: mockData.postsTags })
 	}
 
 	async dropSystemTables(trx?: Trx): Promise<void> {
@@ -283,7 +288,8 @@ export class BuildTestDbService {
 			secretKey: process.env["SECRET_KEY"] ?? throw500(423789423),
 		} as GlobalConfig).hash("password")
 
-		return this.repoManager.getRepo(UserCollection).createOne({
+		const repo = this.repoManager.getRepo<UserModel>(UserModel)
+		return repo.createOne({
 			data: {
 				email: "admin@example.com",
 				password,
@@ -295,8 +301,8 @@ export class BuildTestDbService {
 	}
 
 	async seedECommerceDemo(): Promise<void> {
-		const roleRepo = this.repoManager.getRepo(RoleCollection)
-		const userRepo = this.repoManager.getRepo(UserCollection)
+		const roleRepo = this.repoManager.getRepo(RoleModel)
+		const userRepo = this.repoManager.getRepo(UserModel)
 		const tagRepo = this.repoManager.getRepo("tags")
 		const productRepo = this.repoManager.getRepo("products")
 		const reviewRepo = this.repoManager.getRepo("reviews")
@@ -318,7 +324,7 @@ export class BuildTestDbService {
 				await roleRepo.deleteWhere({ where: { name: { $eq: "Shopper" } } })
 
 				const images = await this.repoManager
-					.getRepo(FileCollection)
+					.getRepo(FileModel)
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 
 				await roleRepo.createMany({ data: eCommerceDemo.roles, trx })
@@ -339,8 +345,8 @@ export class BuildTestDbService {
 	}
 
 	async buildBlogDemo(): Promise<void> {
-		const roleRepo = this.repoManager.getRepo(RoleCollection)
-		const userRepo = this.repoManager.getRepo(UserCollection)
+		const roleRepo = this.repoManager.getRepo(RoleModel)
+		const userRepo = this.repoManager.getRepo(UserModel)
 		const tagRepo = this.repoManager.getRepo("tags")
 		const postsRepo = this.repoManager.getRepo("posts")
 		const commentsRepo = this.repoManager.getRepo("comments")
@@ -358,14 +364,14 @@ export class BuildTestDbService {
 				await roleRepo.deleteWhere({ where: { name: { $nin: ["Admin", "Public"] } } })
 
 				const images = await this.repoManager
-					.getRepo(FileCollection)
+					.getRepo(FileModel)
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 
 				await roleRepo.createMany({ data: data.roles, trx })
 				await userRepo.createMany({ data: data.users, trx })
 				await tagRepo.createMany({ data: data.tags, trx })
 				await postsRepo.createMany({
-					data: data.posts.map((p) => ({ ...p, coverFileId: draw(images)?.id })),
+					data: data.posts.map((p) => ({ ...p, coverFileId: draw(images)?.["id"] })),
 					trx,
 				})
 

@@ -24,7 +24,7 @@ import {
 	isStruct,
 	notNil,
 } from "@zmaj-js/common"
-import { Fields, Filter, IdType } from "@zmaj-js/orm-common"
+import { BaseModel, Fields, Filter, IdType, ModelType } from "@zmaj-js/orm-common"
 import { get, isArray, isEmpty, mapValues, pick, set } from "radash"
 import {
 	ForeignKeyConstraintError,
@@ -58,7 +58,9 @@ const symbolComparisons: Record<Comparison | "$and" | "$or", symbol> = {
 	$and: Op.and,
 	$or: Op.or,
 }
-export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extends OrmRepository<T> {
+export class SequelizeRepository<
+	TModel extends BaseModel = BaseModel,
+> extends OrmRepository<TModel> {
 	// collectionName: string
 	constructor(private orm: SequelizeService, private collectionName: string) {
 		//private modelConfig: ModelConfig) {
@@ -77,9 +79,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async findOne<F extends Fields<T> | undefined = undefined>(
-		params: FindOneOptions<T, F>,
-	): Promise<ReturnedFields<T, F> | undefined> {
+	async findOne<F extends Fields<ModelType<TModel>> | undefined = undefined>(
+		params: FindOneOptions<TModel, F>,
+	): Promise<ReturnedFields<ModelType<TModel>, F> | undefined> {
 		const [item] = await this.findWhere({
 			trx: params.trx,
 			fields: params.fields,
@@ -93,9 +95,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async findOneOrThrow<F extends Fields<T> | undefined = undefined>(
-		params: FindOneOptions<T, F>,
-	): Promise<ReturnedFields<T, F>> {
+	async findOneOrThrow<F extends Fields<ModelType<TModel>> | undefined = undefined>(
+		params: FindOneOptions<TModel, F>,
+	): Promise<ReturnedFields<ModelType<TModel>, F>> {
 		const item = await this.findOne(params)
 		if (!item) throw new RecordNotFoundError(this.model.name)
 		return item
@@ -105,9 +107,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async findById<F extends Fields<T> | undefined = undefined>(
-		params: FindByIdOptions<T, F>,
-	): Promise<ReturnedFields<T, F>> {
+	async findById<F extends Fields<ModelType<TModel>> | undefined = undefined>(
+		params: FindByIdOptions<TModel, F>,
+	): Promise<ReturnedFields<ModelType<TModel>, F>> {
 		const res = await this.findOneOrThrow({
 			fields: params.fields,
 			trx: params.trx,
@@ -119,9 +121,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async findWhere<F extends Fields<T> | undefined = undefined>(
-		params: FindManyOptions<T, F>,
-	): Promise<ReturnedFields<T, F>[]> {
+	async findWhere<F extends Fields<ModelType<TModel>> | undefined = undefined>(
+		params: FindManyOptions<TModel, F>,
+	): Promise<ReturnedFields<ModelType<TModel>, F>[]> {
 		const raw = params.includeHidden === true
 		const filterAndFields = this.filterAndFields(params.where, params.fields)
 
@@ -129,36 +131,36 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 			raw,
 			limit: params.limit,
 			offset: params.offset,
-			order: Object.entries(params.orderBy ?? {}),
+			order: Object.entries(params.orderBy ?? {}) as any,
 			transaction: params.trx as any,
 			...filterAndFields,
 		})
 
-		if (raw) return res as any[] as ReturnedFields<T, F>[]
+		if (raw) return res as any[] as ReturnedFields<ModelType<TModel>, F>[]
 
-		return res.map((r) => r.get({ plain: true })) as ReturnedFields<T, F>[]
+		return res.map((r) => r.get({ plain: true })) as ReturnedFields<ModelType<TModel>, F>[]
 	}
 
 	/**
 	 *
 	 */
-	async findAndCount<F extends Fields<T> | undefined = undefined>(
-		params: FindAndCountOptions<T, F>,
-	): Promise<[ReturnedFields<T, F>[], number]> {
+	async findAndCount<F extends Fields<ModelType<TModel>> | undefined = undefined>(
+		params: FindAndCountOptions<TModel, F>,
+	): Promise<[ReturnedFields<ModelType<TModel>, F>[], number]> {
 		const fieldsAndFilter = this.filterAndFields(params.where, params.fields)
 
 		const res = await this.model.findAndCountAll({
 			transaction: params.trx as any,
 			limit: params.limit,
 			offset: params.offset,
-			order: Object.entries(params.orderBy ?? {}),
+			order: Object.entries(params.orderBy ?? {}) as any,
 			...fieldsAndFilter,
 			// where: this.parseWhere(params.where).where,
 			// include: fieldsAndRelations.include,
 			// attributes: fieldsAndRelations.attributes,
 		})
 		return [
-			res.rows.map((r) => r.get({ plain: true })) as ReturnedFields<T, F>[],
+			res.rows.map((r) => r.get({ plain: true })) as ReturnedFields<ModelType<TModel>, F>[],
 			res.count, //
 		]
 	}
@@ -166,7 +168,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async count(params: CountOptions<T>): Promise<number> {
+	async count(params: CountOptions<ModelType<TModel>>): Promise<number> {
 		const fieldsAndFilter = this.filterAndFields(params.where)
 		const res = await this.model.count({
 			transaction: params.trx as any,
@@ -179,7 +181,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async createOne(params: CreateOneParams<T>): Promise<T> {
+	async createOne<OverrideCanCreate extends boolean>(
+		params: CreateOneParams<TModel, OverrideCanCreate>,
+	): Promise<ModelType<TModel>> {
 		const result = await this.createMany({ data: [params.data], trx: params.trx })
 		if (result.length !== 1) throw new InternalOrmProblem(39534) //throw500(39534)
 		return result[0]!
@@ -188,11 +192,13 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async createMany(params: CreateManyParams<T>): Promise<T[]> {
+	async createMany<OverrideCanCreate extends boolean>(
+		params: CreateManyParams<TModel, OverrideCanCreate>,
+	): Promise<ModelType<TModel>[]> {
 		try {
 			// do not pass null values when creating record, since that replaces default value
 			// idk why sequelize sends it. On update, it should work normally
-			const data = this.getWritableData("create", params.data as Struct[]) //
+			const data = this.getWritableData("create", params.data as any[]) //
 				.map((row) => filterStruct(row, (v) => notNil(v)))
 
 			const created = await this.model.bulkCreate(data as any[], {
@@ -211,7 +217,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async updateById(params: UpdateOneOptions<T>): Promise<T> {
+	async updateById<OverrideCanUpdate extends boolean>(
+		params: UpdateOneOptions<TModel, OverrideCanUpdate>,
+	): Promise<ModelType<TModel>> {
 		const [updated] = await this.updateWhere({
 			trx: params.trx,
 			changes: params.changes,
@@ -224,7 +232,9 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async updateWhere(params: UpdateManyOptions<T>): Promise<T[]> {
+	async updateWhere<OverrideCanUpdate extends boolean>(
+		params: UpdateManyOptions<TModel, OverrideCanUpdate>,
+	): Promise<ModelType<TModel>[]> {
 		const changes = params.overrideCanUpdate
 			? params.changes
 			: this.getWritableData("update", params.changes)
@@ -254,7 +264,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async deleteById(params: DeleteByIdParams): Promise<T> {
+	async deleteById(params: DeleteByIdParams): Promise<ModelType<TModel>> {
 		const [deleted] = await this.deleteWhere({
 			trx: params.trx,
 			where: params.id,
@@ -266,7 +276,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	/**
 	 *
 	 */
-	async deleteWhere(params: DeleteManyParams<T>): Promise<T[]> {
+	async deleteWhere(params: DeleteManyParams<ModelType<TModel>>): Promise<ModelType<TModel>[]> {
 		// return all top level fields
 		const res = await this.findWhere({
 			trx: params.trx,
@@ -280,7 +290,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 				throw e
 			})
 
-		return res as any as T[]
+		return res as any as ModelType<TModel>[]
 	}
 
 	private getWritableData<T extends Struct | Struct[]>(action: "update" | "create", data: T): T {
@@ -323,7 +333,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	 * We do not want to have model reference, since model will change schema is changed,
 	 * and we do not want to keep track
 	 */
-	private get model(): ModelStatic<Model<T, Partial<T>>> {
+	private get model(): ModelStatic<Model<any, any>> {
 		const model = this.orm.models[this.collectionName]
 		if (!model) throw new InternalOrmProblem(3910)
 		return model
@@ -342,8 +352,8 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	}
 
 	private filterAndFields(
-		where?: Filter<T> | IdType[] | IdType,
-		fields?: Fields<T>,
+		where?: Filter<ModelType<TModel>> | IdType[] | IdType,
+		fields?: Fields<ModelType<TModel>>,
 	): Pick<IncludeOptions, "attributes" | "include" | "association" | "through" | "where"> {
 		const whereResult = this.parseFilter(where)
 
@@ -356,14 +366,14 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 		return { where: whereResult.where, ...fieldsAndRelations }
 	}
 
-	private parseFilter(where?: Filter<T> | IdType[] | IdType): {
+	private parseFilter(where?: Filter<ModelType<TModel>> | IdType[] | IdType): {
 		where: WhereOptions<any>
 		toAdd?: string[]
 	} {
 		if (isIdType(where)) {
-			return { where: { [this.pk]: { [Op.eq]: where } } as WhereOptions<T> }
+			return { where: { [this.pk]: { [Op.eq]: where } } as WhereOptions<ModelType<TModel>> }
 		} else if (Array.isArray(where)) {
-			return { where: { [this.pk]: { [Op.in]: where } } as any as WhereOptions<T> }
+			return { where: { [this.pk]: { [Op.in]: where } } as any as WhereOptions<ModelType<TModel>> }
 		} else {
 			return this.parseWhereFilter(where ?? {}, this.model)
 		}
@@ -379,7 +389,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	 * @param params.property Property at which data will be attached (undefined for root)
 	 * @returns Properties that can be provided to sequelize
 	 */
-	private parseFields<F extends Fields<T> | undefined>({
+	private parseFields<F extends Fields<ModelType<TModel>> | undefined>({
 		fields,
 		collection,
 		property,
@@ -479,7 +489,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 	}
 	private parseWhereFilter(
 		where: Struct,
-		model: ModelStatic<Model<T, Partial<T>>>,
+		model: ModelStatic<Model<ModelType<TModel>, Partial<ModelType<TModel>>>>,
 		prefix = "",
 	): { where: WhereOptions; toAdd: string[] } {
 		const cloned: Struct = {}
@@ -507,7 +517,7 @@ export class SequelizeRepository<T extends Struct<any> = Struct<unknown>> extend
 					}
 				} else {
 					const fields = model.getAttributes()
-					const field = fields[key]
+					const field = fields[key as keyof typeof fields]
 					const columnKey = field?.field // ?? throw400(37428, emsg.noProperty)
 					if (!columnKey) throw new NoPropertyError(columnKey)
 					const together = prefix !== "" ? [prefix, columnKey].join(".") : key

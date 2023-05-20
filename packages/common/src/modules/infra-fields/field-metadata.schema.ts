@@ -20,7 +20,7 @@ export const FieldMetadataSchema = ModelSchema<FieldMetadata>()(
 		displayTemplate: z.string().max(1000).nullable().default(null),
 		componentName: z.string().min(1).max(60).nullable().default(null),
 		sortable: z.boolean().default(true),
-		fieldConfig: z.record(z.unknown()).default({}),
+		fieldConfig: z.record(z.any()).default({}),
 		isCreatedAt: z.boolean().default(false),
 		isUpdatedAt: z.boolean().default(false),
 	}),

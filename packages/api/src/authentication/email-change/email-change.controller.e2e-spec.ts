@@ -1,5 +1,3 @@
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
 import { EmailService } from "@api/email/email.service"
 import { SecurityTokenStub } from "@api/security-tokens/security-token.stub"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
@@ -9,14 +7,15 @@ import {
 	ADMIN_ROLE_ID,
 	ChangeEmailDto,
 	qsStringify,
-	SecurityToken,
-	SecurityTokenCollection,
+	SecurityTokenModel,
 	User,
-	UserCollection,
 	UserCreateDto,
+	UserModel,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { UserStub } from "@zmaj-js/test-utils"
 import { addMinutes } from "date-fns"
+import { omit } from "radash"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -24,15 +23,15 @@ describe("EmailChangeController e2e", () => {
 	let app: INestApplication
 	let emailService: EmailService
 	//
-	let userRepo: OrmRepository<User>
-	let tokenRepo: OrmRepository<SecurityToken>
+	let userRepo: OrmRepository<UserModel>
+	let tokenRepo: OrmRepository<SecurityTokenModel>
 	//
 	let user: User
 	//
 	beforeAll(async () => {
 		app = await getE2ETestModule()
-		userRepo = app.get(RepoManager).getRepo(UserCollection)
-		tokenRepo = app.get(RepoManager).getRepo(SecurityTokenCollection)
+		userRepo = app.get(RepoManager).getRepo(UserModel)
+		tokenRepo = app.get(RepoManager).getRepo(SecurityTokenModel)
 
 		emailService = app.get(EmailService)
 		emailService.sendEmail = vi.fn()
@@ -107,7 +106,7 @@ describe("EmailChangeController e2e", () => {
 				data: newEmail,
 				validUntil: addMinutes(new Date(), 30),
 			})
-			const token = await tokenRepo.createOne({ data: tokenStub })
+			const token = await tokenRepo.createOne({ data: omit(tokenStub, ["createdAt"]) })
 
 			const query = qsStringify({ userId: user.id, token: token.token })
 			const res = await supertest(app.getHttpServer()).get(

@@ -1,5 +1,3 @@
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
 import { EmailService } from "@api/email/email.service"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { SecurityTokenStub } from "@api/security-tokens/security-token.stub"
@@ -13,10 +11,11 @@ import {
 	PasswordResetDto,
 	qsStringify,
 	SecurityToken,
-	SecurityTokenCollection,
+	SecurityTokenModel,
 	User,
 	UserCreateDto,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -35,7 +34,7 @@ describe("PasswordResetController e2e", () => {
 	let encService: EncryptionService
 	let usersService: UsersService
 	//
-	let tokenRepo: OrmRepository<SecurityToken>
+	let tokenRepo: OrmRepository<SecurityTokenModel>
 	//
 	let user: User
 	//
@@ -51,7 +50,7 @@ describe("PasswordResetController e2e", () => {
 		//
 		usersService = app.get(UsersService)
 		//
-		tokenRepo = app.get(RepoManager).getRepo(SecurityTokenCollection)
+		tokenRepo = app.get(RepoManager).getRepo(SecurityTokenModel)
 	})
 
 	afterAll(async () => {

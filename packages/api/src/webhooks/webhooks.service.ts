@@ -1,9 +1,9 @@
 import type { CrudAfterEvent, CrudFinishEvent } from "@api/crud/crud-event.types"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
-import { RepoManager } from "@zmaj-js/orm"
 import { HttpClient } from "@api/http-client/http-client.service"
 import { Injectable, OnModuleInit } from "@nestjs/common"
-import { Struct, Webhook, WebhookCollection } from "@zmaj-js/common"
+import { Struct, Webhook, WebhookCollection, WebhookModel } from "@zmaj-js/common"
+import { RepoManager } from "@zmaj-js/orm"
 
 /**
  * Webhooks CRUD service
@@ -20,7 +20,7 @@ export class WebhooksService implements OnModuleInit {
 		private readonly repoManager: RepoManager, //
 	) {}
 
-	private repo = this.repoManager.getRepo(WebhookCollection)
+	private repo = this.repoManager.getRepo(WebhookModel)
 
 	/**
 	 * Get all webhooks on app startup
@@ -61,7 +61,7 @@ export class WebhooksService implements OnModuleInit {
 						: {},
 					method: webhook.httpMethod,
 					url: webhook.url,
-					headers: webhook.httpHeaders ?? {},
+					headers: (webhook.httpHeaders ?? {}) as Struct<string>,
 					// Cancel after 5 seconds
 					timeout: 5000,
 				})

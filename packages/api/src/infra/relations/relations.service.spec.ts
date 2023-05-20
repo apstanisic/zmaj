@@ -1,16 +1,15 @@
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException, NotFoundException } from "@nestjs/common"
 import {
-	RelationCreateDto,
+	CollectionDef,
 	JunctionRelation,
+	RelationCreateDto,
 	RelationDef,
+	UUID,
 	snakeCase,
 	times,
-	UUID,
-	CollectionDef,
 } from "@zmaj-js/common"
 import { CollectionDefStub, RelationDefStub } from "@zmaj-js/test-utils"
-import { WritableDeep } from "type-fest"
 import { v4 } from "uuid"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraStateService } from "../infra-state/infra-state.service"
@@ -176,7 +175,7 @@ describe("RelationsService", () => {
 	 */
 	describe("deleteRelation", () => {
 		const id = "123" as UUID
-		let relation: WritableDeep<RelationDef>
+		let relation: RelationDef
 
 		beforeEach(() => {
 			relation = RelationDefStub()

@@ -1,15 +1,14 @@
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { OrmRepository } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
 	CollectionMetadata,
-	CollectionMetadataCollection,
+	CollectionMetadataModel,
 	CollectionMetadataSchema,
 	getFreeValue,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { InfraConfig } from "../infra.config"
 
 @Injectable()
@@ -21,9 +20,9 @@ export class InfraSchemaCollectionsSyncService {
 		private bootstrapRepoManager: BootstrapRepoManager,
 		private config: InfraConfig,
 	) {
-		this.repo = this.bootstrapRepoManager.getRepo(CollectionMetadataCollection)
+		this.repo = this.bootstrapRepoManager.getRepo(CollectionMetadataModel)
 	}
-	repo: OrmRepository<CollectionMetadata>
+	repo: OrmRepository<CollectionMetadataModel>
 
 	/**
 	 * Sync fields and collection with database columns and tables

@@ -1,27 +1,23 @@
 import { throw400, throw403, throw404 } from "@api/common/throw-http"
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
-import { CreateColumnSchema } from "@api/database/schema/alter-schema.schemas"
-import { AlterSchemaService } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
-	FieldMetadata,
-	FieldMetadataCollection,
 	FieldCreateDto,
+	FieldMetadata,
+	FieldMetadataModel,
 	FieldMetadataSchema,
 	FieldUpdateDto,
-	isNil,
 	UUID,
-	zodCreate,
-	isBoolean,
 	getFreeValue,
+	isBoolean,
+	isNil,
+	zodCreate,
 } from "@zmaj-js/common"
+import { AlterSchemaService, OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { isString, title } from "radash"
-import { z } from "zod"
 import { InfraStateService } from "../infra-state/infra-state.service"
-import { OnInfraChangeService } from "../on-infra-change.service"
 import { InfraConfig } from "../infra.config"
+import { OnInfraChangeService } from "../on-infra-change.service"
 
 @Injectable()
 export class FieldsService {
@@ -32,10 +28,10 @@ export class FieldsService {
 		private readonly alterSchema: AlterSchemaService,
 		private readonly config: InfraConfig,
 	) {
-		this.repo = this.repoManager.getRepo(FieldMetadataCollection)
+		this.repo = this.repoManager.getRepo(FieldMetadataModel)
 	}
 
-	readonly repo: OrmRepository<FieldMetadata>
+	readonly repo: OrmRepository<FieldMetadataModel>
 
 	async createField(data: FieldCreateDto): Promise<FieldMetadata> {
 		const collection =
@@ -56,7 +52,7 @@ export class FieldsService {
 				{ case: this.config.defaultCase },
 			)
 
-		const toCreate = zodCreate(FieldMetadataSchema, {
+		const toCreate = zodCreate(FieldMetadataSchema.omit({ createdAt: true }), {
 			...data,
 			label: data.label ?? title(data.columnName),
 			description: data.description,
@@ -148,7 +144,7 @@ export class FieldsService {
 	 */
 	private getDefaultValue(
 		value?: string | null | unknown,
-	): z.infer<typeof CreateColumnSchema>["defaultValue"] {
+	): Parameters<AlterSchemaService["createColumn"]>[0]["defaultValue"] {
 		if (isNil(value)) return null
 		// do nothing for numbers...
 		if (!isString(value)) return { type: "normal", value: JSON.stringify(value) }

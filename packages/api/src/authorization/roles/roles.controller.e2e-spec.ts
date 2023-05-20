@@ -1,31 +1,30 @@
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
 import {
 	qsStringify,
 	Role,
-	RoleCollection,
 	RoleCreateDto,
+	RoleModel,
 	RoleSchema,
 	times,
 	User,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 
 describe("RoleController e2e", () => {
 	let all: TestBundle
 	let app: INestApplication
-	let repo: OrmRepository<Role>
+	let repo: OrmRepository<RoleModel>
 	let user: User
 	//
 	beforeAll(async () => {
 		all = await getE2ETestModuleExpanded()
 		app = all.app
-		repo = app.get(RepoManager).getRepo(RoleCollection)
+		repo = app.get(RepoManager).getRepo(RoleModel)
 		user = await all.createUser()
 	})
 	afterAll(async () => {
@@ -41,7 +40,9 @@ describe("RoleController e2e", () => {
 		beforeEach(async () => {
 			await repo.deleteWhere({ where: { name: { $like: "test_get_role_xx_%" } } })
 			await repo.createMany({
-				data: times(15, (i) => zodCreate(RoleSchema, { name: `test_get_role_xx_${i}` })),
+				data: times(15, (i) =>
+					zodCreate(RoleSchema.omit({ createdAt: true }), { name: `test_get_role_xx_${i}` }),
+				),
 			})
 		})
 		afterEach(async () => {
@@ -69,7 +70,9 @@ describe("RoleController e2e", () => {
 		let role: Role
 		beforeEach(async () => {
 			await repo.deleteWhere({ where: { name: "test_get_id" } })
-			role = await repo.createOne({ data: zodCreate(RoleSchema, { name: "test_get_id" }) })
+			role = await repo.createOne({
+				data: zodCreate(RoleSchema.omit({ createdAt: true }), { name: "test_get_id" }),
+			})
 		})
 		afterEach(async () => {
 			await repo.deleteWhere({ where: { name: "test_get_id" } })
@@ -113,8 +116,11 @@ describe("RoleController e2e", () => {
 		let role: Role
 		beforeEach(async () => {
 			await repo.deleteWhere({ where: { name: "test_update_role" } })
-			role = zodCreate(RoleSchema, { name: "test_update_role", description: "og_desc" })
-			await repo.createOne({ data: role })
+			const roleDto = zodCreate(RoleSchema.omit({ createdAt: true }), {
+				name: "test_update_role",
+				description: "og_desc",
+			})
+			role = await repo.createOne({ data: roleDto })
 		})
 		afterEach(async () => {
 			await repo.deleteWhere({ where: { name: "test_update_role" } })
@@ -143,7 +149,9 @@ describe("RoleController e2e", () => {
 		})
 
 		it("should delete role", async () => {
-			const role = await repo.createOne({ data: zodCreate(RoleSchema, { name: "test_delete_id" }) })
+			const role = await repo.createOne({
+				data: zodCreate(RoleSchema.omit({ createdAt: true }), { name: "test_delete_id" }),
+			})
 			const res = await supertest(app.getHttpServer())
 				.delete(`/api/system/roles/${role.id}`)
 				.auth(user.email, "password")

@@ -1,21 +1,21 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
 import { throw400, throw500 } from "@api/common/throw-http"
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { ForbiddenException, Injectable } from "@nestjs/common"
 import {
 	AuthUser,
 	IdType,
+	Struct,
 	Translation,
-	TranslationCollection,
 	TranslationCreateDto,
+	TranslationModel,
 	TranslationSchema,
 	TranslationUpdateDto,
 	UUID,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 
 type CommonParams = {
 	language: string
@@ -37,13 +37,13 @@ type OneItemParams = CommonParams & {
  */
 @Injectable()
 export class TranslationsService {
-	repo: OrmRepository<Translation>
+	repo: OrmRepository<TranslationModel>
 	constructor(
 		private readonly repoManager: RepoManager,
 		private readonly infraState: InfraStateService,
 		private readonly authz: AuthorizationService,
 	) {
-		this.repo = this.repoManager.getRepo(TranslationCollection)
+		this.repo = this.repoManager.getRepo(TranslationModel)
 	}
 
 	/**
@@ -53,7 +53,7 @@ export class TranslationsService {
 		const collection =
 			this.infraState.getCollection(data.collectionId) ?? throw400(94723, emsg.notFound())
 
-		const collectionRepo = this.repoManager.getRepo(collection)
+		const collectionRepo = this.repoManager.getRepo(collection.collectionName)
 
 		const item = await collectionRepo.findById({ id: data.itemId })
 
@@ -70,7 +70,7 @@ export class TranslationsService {
 		if (!allowed) throw new ForbiddenException("3972342")
 
 		const saved = await this.repo.createOne({
-			data: zodCreate(TranslationSchema, data),
+			data: zodCreate(TranslationSchema.omit({ createdAt: true }), data),
 		})
 		return saved
 	}
@@ -88,7 +88,7 @@ export class TranslationsService {
 			Object.values(this.infraState.collections).find((c) => c.id === translation.collectionId) ??
 			throw500(89342)
 
-		const collectionRepo = this.repoManager.getRepo(collection)
+		const collectionRepo = this.repoManager.getRepo(collection.collectionName)
 
 		const originalItem = await collectionRepo.findById({ id: translation.itemId })
 
@@ -108,7 +108,7 @@ export class TranslationsService {
 
 		const allowedTranslation = this.authz.pickAllowedData({
 			resource: collection,
-			record: updated.translations,
+			record: updated.translations as Struct,
 			user,
 		})
 		return {

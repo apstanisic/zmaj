@@ -4,34 +4,33 @@ import { throw403, throw404, throw500 } from "@api/common/throw-http"
 import { CrudCreateService } from "@api/crud/crud-create.service"
 import type { CrudFinishEvent } from "@api/crud/crud-event.types"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
-import { RepoManager } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
-import { SequelizeService } from "@zmaj-js/orm"
 import { StorageService } from "@api/storage/storage.service"
 import { HttpException, Injectable, Logger } from "@nestjs/common"
-import { Model } from "sequelize"
 import {
 	AuthUser,
 	FileCollection,
-	fileExtensionRegex,
 	FileInfo,
+	FileModel,
 	FileSchema,
+	fileExtensionRegex,
 	throwErr,
 	zodCreate,
 	type UUID,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager, SequelizeService } from "@zmaj-js/orm"
 import { FileUploadDisabledError, StorageError } from "@zmaj-js/storage-core"
 import { format } from "date-fns"
 import path from "path"
+import { Model } from "sequelize"
 import { Readable } from "stream"
 import { v4 } from "uuid"
 import { ImagesService } from "./images.service"
-import { OrmRepository } from "@zmaj-js/orm"
 
 @Injectable()
 export class FilesService {
 	logger = new Logger(FilesService.name)
-	repo: OrmRepository<FileInfo>
+	repo: OrmRepository<FileModel>
 	constructor(
 		public readonly crudCreate: CrudCreateService<FileInfo>,
 		private readonly storageService: StorageService,
@@ -40,7 +39,7 @@ export class FilesService {
 		private readonly imagesService: ImagesService,
 		private readonly sqService: SequelizeService,
 	) {
-		this.repo = this.repoManager.getRepo(FileCollection)
+		this.repo = this.repoManager.getRepo(FileModel)
 	}
 
 	/**

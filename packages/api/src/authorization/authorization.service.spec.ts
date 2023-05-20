@@ -6,25 +6,26 @@ import { ForbiddenException, InternalServerErrorException } from "@nestjs/common
 import { rand } from "@ngneat/falso"
 import {
 	ADMIN_ROLE_ID,
-	asMock,
 	AuthUser,
-	camelCaseKeys,
-	DefineCollection,
+	BaseModel,
 	EntityRef,
-	Permission,
 	PUBLIC_ROLE_ID,
+	Permission,
+	asMock,
+	camelCaseKeys,
+	defineCollection,
 	times,
 } from "@zmaj-js/common"
 import {
 	AuthUserStub,
 	CollectionDefStub,
-	mockCollectionDefs,
 	TComment,
 	TCommentStub,
 	TPost,
 	TPostInfo,
 	TPostInfoStub,
 	TPostStub,
+	mockCollectionDefs,
 } from "@zmaj-js/test-utils"
 import { addDays, differenceInHours } from "date-fns"
 import { pick } from "radash"
@@ -77,12 +78,15 @@ describe("AuthorizationService", () => {
 		})
 
 		it("should get resource name infra collection", () => {
-			const col = DefineCollection({
-				tableName: "world",
-				fields: {},
-				relations: {},
-				options: { authzKey: "test.me" },
-			})
+			const col = defineCollection(
+				class WorldModel extends BaseModel {
+					name = "world"
+					fields = this.buildFields((f) => ({}))
+				},
+				{
+					options: { authzKey: "test.me" },
+				},
+			)
 			const name = service["getResourceName"](col)
 			expect(name).toEqual("test.me")
 		})

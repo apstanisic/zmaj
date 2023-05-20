@@ -7,16 +7,16 @@ import type {
 } from "@api/crud/crud-event.types"
 import { CrudService } from "@api/crud/crud.service"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
 import { Injectable } from "@nestjs/common"
 import {
 	ActivityLog,
-	ActivityLogCollection,
+	ActivityLogModel,
 	ActivityLogSchema,
+	ModelCreateType,
 	Struct,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import jsonPatch, { Operation } from "fast-json-patch"
 import { ActivityLogConfig } from "./activity-log.config"
 
@@ -25,13 +25,13 @@ import { ActivityLogConfig } from "./activity-log.config"
  */
 @Injectable()
 export class ActivityLogService {
-	repo: OrmRepository<ActivityLog>
+	repo: OrmRepository<ActivityLogModel>
 	constructor(
 		public readonly crud: CrudService<ActivityLog>,
 		private readonly repoManager: RepoManager, // private readonly config: AppConfigService,
 		private readonly config: ActivityLogConfig,
 	) {
-		this.repo = this.repoManager.getRepo(ActivityLogCollection)
+		this.repo = this.repoManager.getRepo(ActivityLogModel)
 	}
 
 	/**
@@ -93,7 +93,7 @@ export class ActivityLogService {
 	 */
 	private generateLogs(
 		event: UpdateFinishEvent | DeleteFinishEvent | CreateFinishEvent,
-	): readonly ActivityLog[] {
+	): ModelCreateType<ActivityLogModel>[] {
 		return event.result.map((item) => {
 			const id = item[event.collection.pkField] ?? throw500(3242301)
 
@@ -107,7 +107,7 @@ export class ActivityLogService {
 			}
 			const embeddedUserInfo = event.user?.stripJwtData() ?? null
 
-			return zodCreate(ActivityLogSchema, {
+			return zodCreate(ActivityLogSchema.omit({ createdAt: true }), {
 				action: event.action,
 				ip: event.req.ip,
 				userAgent: event.req.userAgent,

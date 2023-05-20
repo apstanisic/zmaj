@@ -1,38 +1,17 @@
-import { DefineCollection } from "@common/collection-builder/define-collection"
+import { defineCollection } from "@common/collection-builder/define-collection"
 import { zodCreate } from "@common/zod"
 import { LayoutConfigSchema } from "../infra-collections"
 import { systemPermissions } from "../permissions"
-import { Role } from "./role.model"
+import { RoleModel } from "./role.model"
 
-export const RoleCollection = DefineCollection<Role>({
-	tableName: "zmaj_roles",
-	fields: {
-		id: { dataType: "uuid", columnName: "id", isPrimaryKey: true },
-		name: { dataType: "short-text", columnName: "name", isNullable: false },
-		description: { dataType: "long-text", columnName: "description" },
-		requireMfa: { dataType: "boolean", isNullable: false },
-		createdAt: {
-			dataType: "datetime",
-			columnName: "created_at",
-			canUpdate: false,
-			canCreate: false,
-		},
-	},
+export const RoleCollection = defineCollection(RoleModel, {
 	relations: {
 		permissions: {
-			thisColumnName: "id",
 			label: "Permissions",
-			otherTableName: "zmaj_permissions",
-			otherColumnName: "role_id",
-			type: "one-to-many",
 			otherPropertyName: "role",
 		},
 		users: {
-			thisColumnName: "id",
 			label: "Users",
-			otherTableName: "zmaj_users",
-			otherColumnName: "role_id",
-			type: "one-to-many",
 			otherPropertyName: "role",
 		},
 	},

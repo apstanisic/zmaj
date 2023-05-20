@@ -1,6 +1,9 @@
-import { Fields, IdType } from "@zmaj-js/orm-common"
+import { BaseModel, Fields, IdType, ModelType } from "@zmaj-js/orm-common"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
-export type FindByIdOptions<T, F extends Fields<T> | undefined> = BaseRepoMethodParams & {
+export type FindByIdOptions<
+	T extends BaseModel,
+	F extends Fields<ModelType<T>> | undefined,
+> = BaseRepoMethodParams & {
 	/**
 	 * Filter
 	 */
@@ -9,5 +12,5 @@ export type FindByIdOptions<T, F extends Fields<T> | undefined> = BaseRepoMethod
 	/**
 	 * Fields that user wants
 	 */
-	fields?: F extends undefined ? Fields<T> : F
+	fields?: F extends undefined ? Fields<ModelType<T>> : F
 }

@@ -1,4 +1,3 @@
-import { OrmRepository } from "@zmaj-js/orm"
 import { HttpClient } from "@api/http-client/http-client.service"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
@@ -8,22 +7,24 @@ import {
 	times,
 	User,
 	Webhook,
-	WebhookCollection,
 	WebhookCreateDto,
+	WebhookModel,
 	WebhookUpdateDto,
 } from "@zmaj-js/common"
+import { OrmRepository } from "@zmaj-js/orm"
+import { WebhookStub } from "@zmaj-js/test-utils"
+import { omit } from "radash"
 import supertest from "supertest"
 import { v4 } from "uuid"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { WebhooksService } from "./webhooks.service"
-import { WebhookStub } from "@zmaj-js/test-utils"
 
 describe("WebhooksController e2e", () => {
 	let all: TestBundle
 	let app: INestApplication
 	//
 	let webhookService: WebhooksService
-	let webhooksRepo: OrmRepository<Webhook>
+	let webhooksRepo: OrmRepository<WebhookModel>
 	//
 	let httpClient: HttpClient
 	//
@@ -36,7 +37,7 @@ describe("WebhooksController e2e", () => {
 		webhookService = app.get(WebhooksService)
 		httpClient = app.get(HttpClient)
 		//
-		webhooksRepo = all.repo(WebhookCollection)
+		webhooksRepo = all.repo(WebhookModel)
 	})
 
 	afterAll(async () => {
@@ -211,7 +212,7 @@ describe("WebhooksController e2e", () => {
 				url: "http://example.com",
 				sendData: false,
 			})
-			await webhooksRepo.createOne({ data: webhook })
+			await webhooksRepo.createOne({ data: omit(webhook, ["createdAt"]) })
 			await webhookService.onModuleInit()
 		})
 

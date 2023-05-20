@@ -30,9 +30,11 @@ type HandleCanCreate<P extends ParamsAndType<any>> = P & {
 	_create: P["canCreate"] extends false
 		? undefined
 		: P["hasDefault"] extends true
-		? P["_type"] | undefined
+		? P["_type"] | undefined | null
 		: P["isPk"] extends true
-		? P["_type"] | undefined
+		? P["_type"] | undefined | null
+		: P["nullable"] extends true
+		? P["_type"] | undefined | null
 		: P["_type"]
 }
 
@@ -137,7 +139,13 @@ function dateTime<const Params extends UserParams>(params: Params): CombineAll<D
 }
 
 function json<const Params extends UserParams>(params: Params): CombineAll<JsonValue, Params> {
-	return build(params, "datetime")
+	return build(params, "json")
+}
+
+function jsonDirty<const Params extends UserParams>(
+	params: Params,
+): CombineAll<Record<string, unknown>, Params> {
+	return build(params, "json")
 }
 
 // for now only for strings
@@ -200,7 +208,9 @@ export const db = {
 	date,
 	dateTime,
 	json,
+	jsonDirty,
 	createdAt,
+	updatedAt,
 	enumString,
 	array,
 }

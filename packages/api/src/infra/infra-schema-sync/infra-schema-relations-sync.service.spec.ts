@@ -1,18 +1,17 @@
-import { OrmRepository } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { buildTestModule } from "@api/testing/build-test-module"
-import { RelationMetadata } from "@zmaj-js/common"
+import { RelationMetadata, RelationMetadataModel } from "@zmaj-js/common"
+import { OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import {
+	ForeignKeyStub,
+	RelationMetadataStub,
 	allMockCollectionMetadata,
 	allMockFieldMetadata,
 	allMockForeignKeys,
 	allMockRelationMetadata,
-	ForeignKeyStub,
 	mockFkNames,
-	RelationMetadataStub,
 	mockCollectionConsts as t,
 } from "@zmaj-js/test-utils"
-import { beforeEach, describe, expect, it, Mock, vi } from "vitest"
+import { Mock, beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraService } from "../infra.service"
 import { InfraSchemaRelationsSyncService } from "./infra-schema-relations-sync.service"
 
@@ -20,7 +19,7 @@ describe("InfraSchemaRelationsSyncService", () => {
 	let service: InfraSchemaRelationsSyncService
 	let infraS: InfraService
 	let schemaS: SchemaInfoService
-	let repo: OrmRepository<RelationMetadata>
+	let repo: OrmRepository<RelationMetadataModel>
 
 	let state: Awaited<ReturnType<InfraSchemaRelationsSyncService["getFreshState"]>>
 

@@ -1,20 +1,17 @@
 import { knexQuery } from "@api/database/knex-query"
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { INestApplication, InternalServerErrorException } from "@nestjs/common"
 import {
 	CollectionCreateDto,
 	CollectionDef,
 	CollectionMetadata,
-	CollectionMetadataCollection,
+	CollectionMetadataModel,
 	CollectionUpdateDto,
-	DbMigration,
-	DbMigrationCollection,
+	DbMigrationModel,
 	throwErr,
 	User,
 } from "@zmaj-js/common"
-import { SchemaInfoService, SequelizeService } from "@zmaj-js/orm"
+import { OrmRepository, RepoManager, SchemaInfoService, SequelizeService } from "@zmaj-js/orm"
 import { camel } from "radash"
 import { DataTypes } from "sequelize"
 import supertest from "supertest"
@@ -31,8 +28,8 @@ describe("CollectionsController e2e", () => {
 	let infraStateService: InfraStateService
 	let repoManager: RepoManager
 	//
-	let migrationsRepo: OrmRepository<DbMigration>
-	let collectionsRepo: OrmRepository<CollectionMetadata>
+	let migrationsRepo: OrmRepository<DbMigrationModel>
+	let collectionsRepo: OrmRepository<CollectionMetadataModel>
 	//
 	let user: User
 	let collection: CollectionDef
@@ -48,8 +45,8 @@ describe("CollectionsController e2e", () => {
 
 		infraStateService = app.get(InfraStateService)
 
-		migrationsRepo = all.repo(DbMigrationCollection)
-		collectionsRepo = all.repo(CollectionMetadataCollection)
+		migrationsRepo = all.repo(DbMigrationModel)
+		collectionsRepo = all.repo(CollectionMetadataModel)
 
 		user = await all.createUser()
 	})

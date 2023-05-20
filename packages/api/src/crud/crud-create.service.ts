@@ -8,9 +8,9 @@ import type {
 } from "@api/crud/crud-event.types"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
-import { castArray, Struct } from "@zmaj-js/common"
+import { Struct, castArray } from "@zmaj-js/common"
 import { isEmpty, omit } from "radash"
-import { Except, PartialDeep } from "type-fest"
+import { Except } from "type-fest"
 import { CrudBaseService } from "./crud-base.service"
 
 /**
@@ -27,7 +27,7 @@ export class CrudCreateService<Item extends Struct = Struct> extends CrudBaseSer
 	async createOne(
 		dto: Struct,
 		params: Except<CrudCreateParams<Item>, "dto">,
-	): Promise<PartialDeep<Item>> {
+	): Promise<Partial<Item>> {
 		const created = await this.createMany({ ...params, dto: [dto] })
 		// await this.createMany({ collection: "posts", dto: { hello: "world" } } })
 		return created.at(0) ?? throw500(7023678)
@@ -36,9 +36,9 @@ export class CrudCreateService<Item extends Struct = Struct> extends CrudBaseSer
 	/**
 	 * Create many items
 	 */
-	async createMany(params: CrudCreateParams<Item>): Promise<PartialDeep<Item>[]> {
+	async createMany(params: CrudCreateParams<Item>): Promise<Partial<Item>[]> {
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection)
+		const repo = this.repoManager.getRepo(collection.collectionName)
 
 		// If table only has Primary key, don't allow creating items
 		// Common error when user tests after creating table
@@ -90,7 +90,7 @@ export class CrudCreateService<Item extends Struct = Struct> extends CrudBaseSer
 			const createdRecords = await repo.createMany({ trx: em, data: afterEmit2.dto as any[] })
 
 			const afterEmit3 = await this.emit<CreateFinishEvent<Item>>(
-				{ ...afterEmit2, result: createdRecords, type: "finish" }, //
+				{ ...afterEmit2, result: createdRecords as Item[], type: "finish" }, //
 			)
 
 			return this.omitTrx(afterEmit3)
@@ -101,6 +101,6 @@ export class CrudCreateService<Item extends Struct = Struct> extends CrudBaseSer
 			{ ...afterEmit3, trx: params.trx, type: "after" }, //
 		)
 
-		return this.getAllowedData(afterEmit4)
+		return this.getAllowedData(afterEmit4) as Partial<Item>[]
 	}
 }

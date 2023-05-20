@@ -1,10 +1,6 @@
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { buildTestModule } from "@api/testing/build-test-module"
-import {
-	CollectionMetadataCollection,
-	FieldMetadataCollection,
-	RelationMetadataCollection,
-} from "@zmaj-js/common"
+import { CollectionMetadataModel, FieldMetadataModel, RelationMetadataModel } from "@zmaj-js/common"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraService } from "./infra.service"
 
@@ -16,9 +12,9 @@ describe("InfraService", () => {
 		service = module.get(InfraService)
 
 		bootRepoManager = module.get(BootstrapRepoManager)
-		bootRepoManager.getRepo(CollectionMetadataCollection).findWhere = vi.fn(async () => [1 as any])
-		bootRepoManager.getRepo(FieldMetadataCollection).findWhere = vi.fn(async () => [2 as any])
-		bootRepoManager.getRepo(RelationMetadataCollection).findWhere = vi.fn(async () => [3 as any])
+		bootRepoManager.getRepo(CollectionMetadataModel).findWhere = vi.fn(async () => [1 as any])
+		bootRepoManager.getRepo(FieldMetadataModel).findWhere = vi.fn(async () => [2 as any])
+		bootRepoManager.getRepo(RelationMetadataModel).findWhere = vi.fn(async () => [3 as any])
 	})
 
 	describe("getCollectionMetadata", () => {

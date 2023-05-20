@@ -15,8 +15,8 @@ export const ActivityLogSchema = ModelSchema<ActivityLog>()(
 		userId: z.string().uuid().nullable().default(null),
 		userAgent: z.string().max(200).nullable().default(null),
 		changes: z.array(z.any()).nullable().default(null),
-		additionalInfo: z.record(z.unknown()).nullable().default(null),
-		previousData: z.record(z.unknown()).nullable().default(null),
+		additionalInfo: z.record(z.any()).nullable().default(null),
+		previousData: z.record(z.any()).nullable().default(null),
 		ip: z.string(), //.refine((v) => isIP(v) !== 0, { message: "Invalid IP" }), // todo
 		itemId: z.string().min(1).max(60).nullish().default(null), //todo
 		embeddedUserInfo: AuthUserSchema.pick({ userId: true, roleId: true, email: true })

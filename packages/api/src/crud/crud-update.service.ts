@@ -8,7 +8,7 @@ import type {
 } from "@api/crud/crud-event.types"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
-import { filterStruct, IdType, Struct } from "@zmaj-js/common"
+import { IdType, Struct, filterStruct } from "@zmaj-js/common"
 import { isEmpty, isEqual, omit } from "radash"
 import { Except } from "type-fest"
 import { CrudBaseService } from "./crud-base.service"
@@ -37,7 +37,7 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 	 */
 	async updateWhere(params: CrudUpdateParams<Item>): Promise<Partial<Item>[]> {
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection)
+		const repo = this.repoManager.getRepo(collection.collectionName)
 
 		// emit first hook
 		const afterEmit1 = await this.emit<UpdateBeforeEvent<Item>>(

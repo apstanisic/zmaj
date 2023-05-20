@@ -1,4 +1,4 @@
-import { RoleCollection } from "@zmaj-js/common"
+import { RoleModel } from "@zmaj-js/common"
 import { DataTypes } from "sequelize"
 import { createSystemMigration } from "../create-system-migration"
 import { getRequiredColumns } from "../migrations.utils"
@@ -14,24 +14,26 @@ export const CreateRolesTable = createSystemMigration({
 				...getRequiredColumns(),
 				name: { type: DataTypes.STRING(200), allowNull: false, unique: true },
 				description: { type: DataTypes.STRING(500) },
-				require_mfa: { type: DataTypes.BOOLEAN },
+				require_mfa: { type: DataTypes.BOOLEAN, defaultValue: false },
 			},
 			{ transaction: trx },
 		)
 		await qi.addIndex(table, ["created_at"], { transaction: trx })
 
-		await repoManager.getRepo(RoleCollection).createMany({
+		await repoManager.getRepo(RoleModel).createMany({
 			trx: trx as any,
 			data: [
 				{
 					description: "Administrator",
 					id: "2ab853b2-a1a9-4ab7-a82b-a9f0005e4114",
 					name: "Admin",
+					requireMfa: false,
 				},
 				{
 					description: "Public role",
 					id: "534c05a3-f087-455d-bfeb-5b36c4d58c48",
 					name: "Public",
+					requireMfa: false,
 				},
 			],
 		})

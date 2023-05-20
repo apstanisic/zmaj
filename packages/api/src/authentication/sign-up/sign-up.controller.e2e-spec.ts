@@ -1,18 +1,17 @@
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { INestApplication } from "@nestjs/common"
-import { PUBLIC_ROLE_ID, SignUpDto, User, UserCollection } from "@zmaj-js/common"
+import { PUBLIC_ROLE_ID, SignUpDto, UserModel } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest"
 
 describe("ProfileController e2e", () => {
 	let app: INestApplication
-	let userRepo: OrmRepository<User>
+	let userRepo: OrmRepository<UserModel>
 
 	beforeAll(async () => {
 		app = await getE2ETestModule({ authentication: { allowBasicAuth: true, allowSignUp: true } })
-		userRepo = app.get(RepoManager).getRepo(UserCollection)
+		userRepo = app.get(RepoManager).getRepo(UserModel)
 	})
 
 	afterAll(async () => {

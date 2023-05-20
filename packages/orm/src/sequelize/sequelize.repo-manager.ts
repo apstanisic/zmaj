@@ -3,8 +3,8 @@ import { RawQueryOptions } from "@orm/orm-specs/RawQueryOptions"
 import { RepoManager } from "@orm/orm-specs/RepoManager"
 import { Transaction } from "@orm/orm-specs/Transaction"
 import { TransactionIsolationLevel } from "@orm/orm-specs/TransactionIsolationLevel"
-import { BaseModel, ModelType, createModelsStore } from "@zmaj-js/orm-common"
-import { isFunction, isString } from "radash"
+import { BaseModel, createModelsStore } from "@zmaj-js/orm-common"
+import { isString } from "radash"
 import { Sequelize, literal } from "sequelize"
 import { Class } from "type-fest"
 import { UndefinedModelError } from "../orm-errors"
@@ -27,20 +27,10 @@ export class SequelizeRepoManager extends RepoManager {
 		return this.sq.orm
 	}
 
-	getRepo<T extends Record<string, any> = Record<string, unknown>>(
-		col: string | { collectionName: string },
-	): OrmRepository<T>
 	getRepo<TModel extends BaseModel = BaseModel>(
-		model: Class<TModel>,
-	): OrmRepository<ModelType<TModel>>
-	getRepo<T extends Record<string, any>>(
-		col: string | { collectionName: string } | Class<BaseModel>,
-	): OrmRepository<T> {
-		const name = isString(col)
-			? col
-			: isFunction(col)
-			? this.models.get(col).name
-			: col.collectionName
+		model: Class<BaseModel> | string,
+	): OrmRepository<TModel> {
+		const name = isString(model) ? model : this.models.get(model).name
 		// const name = model
 
 		// const collection = isString(col) ? col : col.collectionName
@@ -50,11 +40,11 @@ export class SequelizeRepoManager extends RepoManager {
 		if (!exist) throw new UndefinedModelError(name)
 
 		const repo = this.repositories[name]
-		if (repo) return repo as OrmRepository<T>
+		if (repo) return repo as OrmRepository<TModel>
 
-		const created = new SequelizeRepository<T>(this.sq, name)
+		const created = new SequelizeRepository<TModel>(this.sq, name)
 		this.repositories[name] = created as OrmRepository<any>
-		return created as OrmRepository<T>
+		return created as OrmRepository<TModel>
 	}
 
 	/**

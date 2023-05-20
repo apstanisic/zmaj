@@ -1,4 +1,4 @@
-import { Fields, Filter, IdType } from "@zmaj-js/orm-common"
+import { BaseModel, Fields, Filter, IdType, ModelType } from "@zmaj-js/orm-common"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
 import { Sort } from "./Sort"
 /**
@@ -6,7 +6,10 @@ import { Sort } from "./Sort"
  * and typescript can in that case infer 2nd. So we can get full type safety without having
  * to specify types
  */
-export type FindManyOptions<T, F extends Fields<T> | undefined> = BaseRepoMethodParams & {
+export type FindManyOptions<
+	TModel extends BaseModel,
+	F extends Fields<ModelType<TModel>> | undefined,
+> = BaseRepoMethodParams & {
 	/**
 	 * Limit
 	 */
@@ -19,17 +22,17 @@ export type FindManyOptions<T, F extends Fields<T> | undefined> = BaseRepoMethod
 	 * Order By
 	 */
 	// orderBy?: QueryOrderMap<T>
-	orderBy?: Sort<T>
+	orderBy?: Sort<TModel>
 
 	/**
 	 * Where part. User can provide array of ids
 	 */
-	where?: Filter<T> | IdType[] | IdType
+	where?: Filter<ModelType<TModel>> | IdType[] | IdType
 
 	/**
 	 * Fields and relations that we need to get
 	 */
-	fields?: F extends undefined ? Fields<T> : F
+	fields?: F extends undefined ? Fields<ModelType<TModel>> : F
 	/**
 	 * @internal
 	 * TODO

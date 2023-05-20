@@ -1,8 +1,12 @@
-import { Filter, IdType, OnlyFields } from "@zmaj-js/orm-common"
+import { BaseModel, Filter, IdType, ModelType } from "@zmaj-js/orm-common"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
+import { GetUpdateType } from "./GetUpdateType"
 
-export type UpdateManyOptions<T> = BaseRepoMethodParams & {
-	where: Filter<T> | IdType[] | IdType
-	changes: Partial<OnlyFields<T>>
-	overrideCanUpdate?: boolean
+export type UpdateManyOptions<
+	TModel extends BaseModel,
+	OverrideCanUpdate extends boolean,
+> = BaseRepoMethodParams & {
+	where: Filter<ModelType<TModel>> | IdType[] | IdType
+	changes: GetUpdateType<TModel, OverrideCanUpdate>
+	overrideCanUpdate?: OverrideCanUpdate
 }

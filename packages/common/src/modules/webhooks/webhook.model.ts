@@ -1,25 +1,24 @@
-import { Struct } from "@common/types"
-import { BaseModel } from "@zmaj-js/orm-common"
+import { BaseModel, ModelType } from "@zmaj-js/orm-common"
 
-export type Webhook = {
-	url: string
-	name: string
-	createdAt: Date
-	httpMethod: "POST" | "GET" | "PUT" | "PATCH" | "DELETE"
-	id: string
-	description: string | null
-	// // It's possible to have hook, but not be used currently
-	enabled: boolean
-	// /** Http headers that will be sent with request */
-	httpHeaders: Struct<string> | null
-	// /**
-	//  * Should we send data with a request (newData property on activity log)
-	//  * Data will only be sent on post request
-	//  */
-	sendData: boolean
-	// /** Can be empty, it's possible that it does not react on any event */
-	events: readonly string[]
-}
+// export type Webhook = {
+// 	url: string
+// 	name: string
+// 	createdAt: Date
+// 	httpMethod: "POST" | "GET" | "PUT" | "PATCH" | "DELETE"
+// 	id: string
+// 	description: string | null
+// 	// // It's possible to have hook, but not be used currently
+// 	enabled: boolean
+// 	// /** Http headers that will be sent with request */
+// 	httpHeaders: Struct<string> | null
+// 	// /**
+// 	//  * Should we send data with a request (newData property on activity log)
+// 	//  * Data will only be sent on post request
+// 	//  */
+// 	sendData: boolean
+// 	// /** Can be empty, it's possible that it does not react on any event */
+// 	events: readonly string[]
+// }
 
 export class WebhookModel extends BaseModel {
 	override name = "zmajWebhooks"
@@ -42,3 +41,5 @@ export class WebhookModel extends BaseModel {
 		sendData: f.boolean({}),
 	}))
 }
+
+export type Webhook = ModelType<WebhookModel>

@@ -1,24 +1,21 @@
 import { throw400 } from "@api/common/throw-http"
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
-import { AlterSchemaService } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { Injectable } from "@nestjs/common"
 import {
-	RelationMetadata,
-	RelationMetadataCollection,
-	RelationCreateDto,
 	JunctionRelation,
+	RelationCreateDto,
 	RelationDef,
+	RelationMetadata,
+	RelationMetadataModel,
 } from "@zmaj-js/common"
+import { AlterSchemaService, OrmRepository, RepoManager, SchemaInfoService } from "@zmaj-js/orm"
 import { alphabetical, isEqual } from "radash"
 import { CreateManyToManyRelationsService } from "./create-many-to-many-relations.service"
 
 @Injectable()
 export class ManyToManyRelationsService {
-	private repo: OrmRepository<RelationMetadata>
+	private repo: OrmRepository<RelationMetadataModel>
 	constructor(
 		private createMtmService: CreateManyToManyRelationsService, //
 		private infraState: InfraStateService,
@@ -26,7 +23,7 @@ export class ManyToManyRelationsService {
 		private repoManager: RepoManager,
 		private schemaInfo: SchemaInfoService,
 	) {
-		this.repo = this.repoManager.getRepo(RelationMetadataCollection)
+		this.repo = this.repoManager.getRepo(RelationMetadataModel)
 	}
 
 	async createRelation(dto: RelationCreateDto): Promise<RelationMetadata> {

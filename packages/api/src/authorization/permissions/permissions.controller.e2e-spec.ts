@@ -1,26 +1,25 @@
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
-import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
+import { TestBundle, getE2ETestModuleExpanded } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
 import {
-	Permission,
-	PermissionCollection,
-	PermissionCreateDto,
-	PermissionSchema,
 	PUBLIC_ROLE_ID,
+	Permission,
+	PermissionCreateDto,
+	PermissionModel,
+	PermissionSchema,
+	User,
 	qsStringify,
 	times,
-	User,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 
 describe("PermissionController e2e", () => {
 	let all: TestBundle
 	let app: INestApplication
-	let repo: OrmRepository<Permission>
+	let repo: OrmRepository<PermissionModel>
 
 	let user: User
 
@@ -28,7 +27,7 @@ describe("PermissionController e2e", () => {
 	beforeAll(async () => {
 		all = await getE2ETestModuleExpanded()
 		app = all.app
-		repo = app.get(RepoManager).getRepo(PermissionCollection)
+		repo = app.get(RepoManager).getRepo(PermissionModel)
 
 		user = await all.createUser()
 	})
@@ -67,7 +66,7 @@ describe("PermissionController e2e", () => {
 		let permission: Permission
 		beforeEach(async () => {
 			permission = await repo.createOne({
-				data: zodCreate(PermissionSchema, {
+				data: zodCreate(PermissionSchema.omit({ createdAt: true }), {
 					roleId: PUBLIC_ROLE_ID,
 					action: "read",
 					resource: "super_resource_get",
@@ -93,7 +92,7 @@ describe("PermissionController e2e", () => {
 			await repo.deleteWhere({ where: { resource: { $like: "get_many_test_%" } } })
 			await repo.createMany({
 				data: times(15, (i) =>
-					zodCreate(PermissionSchema, {
+					zodCreate(PermissionSchema.omit({ createdAt: true }), {
 						action: "read",
 						roleId: PUBLIC_ROLE_ID,
 						resource: `get_many_test_${i}`,
@@ -128,7 +127,7 @@ describe("PermissionController e2e", () => {
 		beforeEach(async () => {
 			await repo.deleteWhere({ where: { resource: "super_resource_delete" } })
 			permission = await repo.createOne({
-				data: zodCreate(PermissionSchema, {
+				data: zodCreate(PermissionSchema.omit({ createdAt: true }), {
 					roleId: PUBLIC_ROLE_ID,
 					action: "read",
 					resource: "super_resource_delete",
@@ -158,7 +157,7 @@ describe("PermissionController e2e", () => {
 		beforeEach(async () => {
 			await repo.deleteWhere({ where: { resource: "super_resource_put" } })
 			permission = await repo.createOne({
-				data: zodCreate(PermissionSchema, {
+				data: zodCreate(PermissionSchema.omit({ createdAt: true }), {
 					roleId: PUBLIC_ROLE_ID,
 					action: "read",
 					resource: "super_resource_put",

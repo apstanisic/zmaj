@@ -28,7 +28,7 @@ export class CrudDeleteService<Item extends Struct = Struct> extends CrudBaseSer
 	async deleteWhere(params: CrudDeleteParams<Item>): Promise<Partial<Item>[]> {
 		const { trx } = params
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection)
+		const repo = this.repoManager.getRepo<Item>(collection)
 
 		const afterEmit1 = await this.emit<DeleteBeforeEvent<Item>>(
 			{ ...params, collection, action: "delete", type: "before" }, //

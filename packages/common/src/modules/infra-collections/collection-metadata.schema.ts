@@ -14,6 +14,6 @@ export const CollectionMetadataSchema = ModelSchema<CollectionMetadata>()(
 		disabled: z.boolean().default(false),
 		hidden: z.boolean().default(false),
 		displayTemplate: z.string().nullable().default(null),
-		layoutConfig: z.record(z.unknown()).default({}),
+		layoutConfig: z.record(z.any()).default({}),
 	}),
 )

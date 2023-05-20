@@ -1,25 +1,21 @@
-import { OrmRepository } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
-import { SequelizeService } from "@zmaj-js/orm"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
-import { DataTypes } from "sequelize"
 import {
 	DbColumn,
-	DbMigration,
-	DbMigrationCollection,
+	DbMigrationModel,
 	ForeignKey,
 	RelationCreateDto,
 	RelationDef,
-	RelationMetadata,
-	RelationMetadataCollection,
+	RelationMetadataModel,
 	RelationUpdateDto,
 	throwErr,
 	User,
 	UUID,
 } from "@zmaj-js/common"
+import { OrmRepository, SchemaInfoService, SequelizeService } from "@zmaj-js/orm"
 import { camel } from "radash"
+import { DataTypes } from "sequelize"
 import supertest from "supertest"
 import { PartialDeep } from "type-fest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
@@ -40,8 +36,8 @@ describe("RelationController e2e", () => {
 	let infraStateService: InfraStateService
 	let relationsService: RelationsService
 	//
-	let migrationsRepo: OrmRepository<DbMigration>
-	let relationsRepo: OrmRepository<RelationMetadata>
+	let migrationsRepo: OrmRepository<DbMigrationModel>
+	let relationsRepo: OrmRepository<RelationMetadataModel>
 	//
 	let user: User
 	//
@@ -56,8 +52,8 @@ describe("RelationController e2e", () => {
 		infraStateService = app.get(InfraStateService)
 		relationsService = app.get(RelationsService)
 
-		migrationsRepo = all.repo(DbMigrationCollection)
-		relationsRepo = all.repo(RelationMetadataCollection)
+		migrationsRepo = all.repo(DbMigrationModel)
+		relationsRepo = all.repo(RelationMetadataModel)
 	})
 
 	afterAll(async () => {

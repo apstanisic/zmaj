@@ -1,14 +1,14 @@
 export {
 	ADMIN_ROLE_ID,
 	AuthUser,
-	DefineCollection,
 	LayoutConfigSchema,
 	PUBLIC_ROLE_ID,
+	ZodDto,
+	defineCollection,
 	qsParse,
 	qsStringify,
 	systemCollections,
 	systemPermissions,
-	ZodDto,
 	type AuthSession,
 	type AuthUserType,
 	type CollectionDef,
@@ -22,6 +22,7 @@ export {
 	type ZodDtoClass,
 	type ZodDtoInput,
 } from "@zmaj-js/common"
+export * from "@zmaj-js/orm"
 export { BaseStorage, LocalStorageConfig } from "@zmaj-js/storage-core"
 export type { ProviderConfig as StorageProviderConfig } from "@zmaj-js/storage-core"
 export { S3StorageConfig } from "@zmaj-js/storage-s3"
@@ -68,7 +69,6 @@ export { MigrationsService } from "./migrations/migrations.service"
 export { predefinedApiConfigs } from "./predefined-configs-const"
 export { buildApi, runApi, type ZmajApplication } from "./run-app"
 export { RuntimeSettingsService } from "./runtime-settings/runtime-settings.service"
-export * from "@zmaj-js/orm"
 export { StorageService } from "./storage/storage.service"
 //
 export { __testUtils } from "./testing/test-utils-export"

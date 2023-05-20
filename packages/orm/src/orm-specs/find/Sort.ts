@@ -1,4 +1,4 @@
-import { OnlyFields } from "@zmaj-js/orm-common"
+import { BaseModel } from "@zmaj-js/orm-common"
 // maybe return later NULLS_LAST/FIRST
 type SortOptions = "ASC" | "DESC"
 // | "ASC_NULLS_LAST"
@@ -6,4 +6,4 @@ type SortOptions = "ASC" | "DESC"
 // | "DESC_NULLS_LAST"
 // | "DESC_NULLS_FIRST"
 
-export type Sort<T> = Partial<Record<keyof OnlyFields<T>, SortOptions>>
+export type Sort<TModel extends BaseModel> = Partial<Record<keyof TModel["fields"], SortOptions>>

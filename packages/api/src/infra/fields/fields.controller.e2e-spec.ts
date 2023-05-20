@@ -1,24 +1,19 @@
 import { knexQuery } from "@api/database/knex-query"
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
-import { SequelizeService } from "@zmaj-js/orm"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { INestApplication } from "@nestjs/common"
-import { DataTypes } from "sequelize"
 import {
-	DbMigration,
-	DbMigrationCollection,
 	CollectionDef,
-	FieldDef,
-	FieldMetadata,
-	FieldMetadataCollection,
+	DbMigrationModel,
 	FieldCreateDto,
+	FieldDef,
+	FieldMetadataModel,
 	FieldUpdateDto,
 	throwErr,
 	User,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager, SchemaInfoService, SequelizeService } from "@zmaj-js/orm"
 import { camel } from "radash"
+import { DataTypes } from "sequelize"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { InfraStateService } from "../infra-state/infra-state.service"
@@ -31,8 +26,8 @@ describe("RelationController e2e", () => {
 	let repoManager: RepoManager
 	let sqService: SequelizeService
 	//
-	let migrationsRepo: OrmRepository<DbMigration>
-	let fieldsRepo: OrmRepository<FieldMetadata>
+	let migrationsRepo: OrmRepository<DbMigrationModel>
+	let fieldsRepo: OrmRepository<FieldMetadataModel>
 	//
 	let user: User
 	let collection: CollectionDef
@@ -52,8 +47,8 @@ describe("RelationController e2e", () => {
 
 		infraStateService = app.get(InfraStateService)
 
-		migrationsRepo = all.repo(DbMigrationCollection)
-		fieldsRepo = all.repo(FieldMetadataCollection)
+		migrationsRepo = all.repo(DbMigrationModel)
+		fieldsRepo = all.repo(FieldMetadataModel)
 	})
 
 	afterAll(async () => {

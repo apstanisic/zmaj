@@ -20,7 +20,10 @@ type Comparisons<T> = RequireExactlyOne<{
 export type Filter<T = Record<string, any>> =
 	//
 	| {
-			[key in keyof T]?: NonNullable<T[key]> extends EntityRefVariants<infer R>
+			// DIRTY FIX FOR DATE
+			[key in keyof T]?: NonNullable<T[key]> extends Date
+				? T[key] | Comparisons<T[key]> | null
+				: NonNullable<T[key]> extends EntityRefVariants<infer R>
 				? Filter<StripEntityRef<R>>
 				: T[key] | Comparisons<T[key]> | null
 	  }

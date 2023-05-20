@@ -1,16 +1,16 @@
 import { CrudRequestStub } from "@api/common/decorators/crud-request.stub"
-import { OrmRepository } from "@zmaj-js/orm"
 import { StorageService } from "@api/storage/storage.service"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { INestApplication } from "@nestjs/common"
 import {
 	AuthUser,
-	FileCollection,
 	FileInfo,
+	FileModel,
 	STORAGE_PROVIDER_HEADER,
 	User,
 	uuidRegex,
 } from "@zmaj-js/common"
+import { OrmRepository } from "@zmaj-js/orm"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 import { PassThrough, Readable } from "node:stream"
@@ -23,7 +23,7 @@ const providerName = "minio_test"
 describe("FilesContentController e2e", () => {
 	let all: TestBundle
 	let app: INestApplication
-	let filesRepo: OrmRepository<FileInfo>
+	let filesRepo: OrmRepository<FileModel>
 	let storageService: StorageService
 	let filesService: FilesService
 
@@ -38,7 +38,7 @@ describe("FilesContentController e2e", () => {
 			files: { generateCommonImageSizes: true, imageSizes: [{ name: "test", fit: "inside" }] },
 		})
 		app = all.app
-		filesRepo = all.repo(FileCollection)
+		filesRepo = all.repo(FileModel)
 		storageService = app.get(StorageService)
 		filesService = app.get(FilesService)
 		user = await all.createUser()

@@ -1,7 +1,5 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
 import { throw400, throw403, throw404, throw500 } from "@api/common/throw-http"
-import { RepoManager } from "@zmaj-js/orm"
-import { Transaction } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { ForbiddenException, HttpException, Injectable, Logger } from "@nestjs/common"
@@ -9,13 +7,14 @@ import { EventEmitter2 } from "@nestjs/event-emitter"
 import {
 	CollectionDef,
 	Filter,
+	Struct,
 	isError,
 	isIdType,
 	isNil,
 	isStruct,
 	notNil,
-	Struct,
 } from "@zmaj-js/common"
+import { RepoManager, Transaction } from "@zmaj-js/orm"
 import { isEmpty, omit } from "radash"
 import { PartialDeep } from "type-fest"
 import {
@@ -26,7 +25,7 @@ import {
 	ReadBeforeEvent,
 } from "./crud-event.types"
 import { CrudConfig } from "./crud.config"
-import { getCrudEmitKey, GetEmitKeyParams } from "./get-crud-emit-key"
+import { GetEmitKeyParams, getCrudEmitKey } from "./get-crud-emit-key"
 
 /**
  * Base CRUD service that provides basic functionality to extending services
@@ -143,7 +142,9 @@ export class CrudBaseService<Item extends Struct> {
 		}
 		const queryFilter = this.filterToWhere(event.filter, event.collection)
 
-		return { $and: [queryFilter, authzFilter].filter(notNil).filter((v) => !isEmpty(v)) }
+		return {
+			$and: [queryFilter, authzFilter].filter(notNil).filter((v): v is Filter => !isEmpty(v)),
+		}
 	}
 
 	protected getAllowedData(event: CrudAfterEvent<Item>): PartialDeep<Item>[] {

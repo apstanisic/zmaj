@@ -60,7 +60,7 @@ import { LayoutConfig } from "./layout/layout-config.type"
 
 export type CollectionDef<T extends Struct = Struct> = Except<
 	CollectionMetadata,
-	"fields" | "relations" | "layoutConfig"
+	"colFields" | "relations" | "layoutConfig"
 > & {
 	/**
 	 * Collection name (camel cased table: super_users => superUsers)

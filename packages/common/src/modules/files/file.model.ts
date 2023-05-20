@@ -26,7 +26,7 @@ export class FileModel extends BaseModel {
 		 * It is possible for file to not have extension, then it's null //it's then empty string
 		 * It should not contain leading dot `"."`
 		 */
-		extension: f.text({ nullable: true }),
+		extension: f.text({ nullable: true, canUpdate: false }),
 
 		/**
 		 * Use as alt text in browser
@@ -48,23 +48,23 @@ export class FileModel extends BaseModel {
 		/**
 		 * Mime type (image/png, text/plain)
 		 */
-		mimeType: f.text({}),
+		mimeType: f.text({ canUpdate: false }),
 
 		/**
 		 * File size in bytes
 		 */
-		fileSize: f.int({}),
+		fileSize: f.int({ canUpdate: false }),
 
 		/**
 		 * Path where file is stored. This is provider specific.
 		 * It's not public url, it's path for provider service to access
 		 */
-		uri: f.text({}),
+		uri: f.text({ canUpdate: false }),
 
 		/**
 		 * Storage name that is used. config for storage is in .env
 		 */
-		storageProvider: f.text({}),
+		storageProvider: f.text({ canUpdate: false }),
 	}))
 
 	user = this.manyToOne(() => UserModel, { fkField: "userId" })

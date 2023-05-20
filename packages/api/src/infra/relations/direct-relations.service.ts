@@ -1,33 +1,34 @@
 import { throw400, throw403, throw500 } from "@api/common/throw-http"
-import { OrmRepository } from "@zmaj-js/orm"
-import { RepoManager } from "@zmaj-js/orm"
-import { AlterSchemaService } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
 	DirectRelationCreateDto2,
 	DirectRelationCreateDto3,
-	FieldMetadata,
-	FieldMetadataCollection,
+	FieldMetadataModel,
 	FieldMetadataSchema,
 	RelationCreateDto,
 	RelationDef,
 	RelationMetadata,
-	RelationMetadataCollection,
+	RelationMetadataModel,
 	RelationMetadataSchema,
 	zodCreate,
 } from "@zmaj-js/common"
+import {
+	AlterSchemaService,
+	OrmRepository,
+	RepoManager,
+	SchemaInfoService,
+	Transaction,
+} from "@zmaj-js/orm"
 import { Except } from "type-fest"
-import { InfraStateService } from "../infra-state/infra-state.service"
-import { Transaction } from "@zmaj-js/orm"
 import { v4 } from "uuid"
+import { InfraStateService } from "../infra-state/infra-state.service"
 import { InfraConfig } from "../infra.config"
 
 @Injectable()
 export class DirectRelationService {
-	private repo: OrmRepository<RelationMetadata>
-	private fieldsRepo: OrmRepository<FieldMetadata>
+	private repo: OrmRepository<RelationMetadataModel>
+	private fieldsRepo: OrmRepository<FieldMetadataModel>
 	constructor(
 		private readonly repoManager: RepoManager,
 		private readonly alterSchema: AlterSchemaService,
@@ -35,8 +36,8 @@ export class DirectRelationService {
 		private readonly infraState: InfraStateService,
 		private readonly config: InfraConfig,
 	) {
-		this.repo = this.repoManager.getRepo(RelationMetadataCollection)
-		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataCollection)
+		this.repo = this.repoManager.getRepo(RelationMetadataModel)
+		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataModel)
 	}
 
 	async getFreeFkName(table: string, column: string, trx?: Transaction): Promise<string> {
@@ -144,7 +145,7 @@ export class DirectRelationService {
 
 				const fkField = await this.fieldsRepo.createOne({
 					trx,
-					data: zodCreate(FieldMetadataSchema, {
+					data: zodCreate(FieldMetadataSchema.omit({ createdAt: true }), {
 						columnName: dto.left.column,
 						tableName: dto.left.table,
 						fieldName: this.config.toCase(dto.left.column),
@@ -155,7 +156,7 @@ export class DirectRelationService {
 				// this relation should be returned to user, since he/she requested it from this side
 				const rel1 = await this.repo.createOne({
 					trx,
-					data: zodCreate(RelationMetadataSchema, {
+					data: zodCreate(RelationMetadataSchema.omit({ createdAt: true }), {
 						fkName: dto.fkName,
 						label: dto.left.label,
 						propertyName: dto.left.propertyName,
@@ -169,7 +170,7 @@ export class DirectRelationService {
 				if (!dto.right.table.startsWith("zmaj")) {
 					rel2 = await this.repo.createOne({
 						trx,
-						data: zodCreate(RelationMetadataSchema, {
+						data: zodCreate(RelationMetadataSchema.omit({ createdAt: true }), {
 							fkName: dto.fkName,
 							label: dto.right.label,
 							propertyName: dto.right.propertyName,
