@@ -1,4 +1,4 @@
-import { BaseModel } from "@zmaj-js/common"
+import { BaseModel } from "@zmaj-js/orm-common"
 
 export class TPostModel extends BaseModel {
 	name = "posts"
@@ -42,6 +42,6 @@ export class TPostInfoModel extends BaseModel {
 	fields = this.buildFields((f) => ({
 		id: f.uuid({ isPk: true }),
 		postId: f.uuid({ columnName: "post_id" }),
-		additionalInfo: f.jsonDirty({}),
+		additionalInfo: f.custom<Record<string, any>>()({}),
 	}))
 }

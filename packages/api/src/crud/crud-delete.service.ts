@@ -8,7 +8,8 @@ import type {
 } from "@api/crud/crud-event.types"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
-import { Filter, IdType, Struct } from "@zmaj-js/common"
+import { Struct } from "@zmaj-js/common"
+import { Filter, IdType } from "@zmaj-js/orm"
 import { Except, ReadonlyDeep } from "type-fest"
 import { CrudBaseService } from "./crud-base.service"
 

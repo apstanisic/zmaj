@@ -16,7 +16,7 @@ function isRightVersion(version?: 1 | 2 | 3 | 4 | 5 | number, message = "Invalid
 export const UuidComponents = DefineCrudField({
 	name: "uuid",
 	Input: UuidInputField,
-	availableFor: ["short-text", "long-text", "uuid"],
+	availableFor: ["text", "uuid"],
 	validate: ({ field, value }) => {
 		const valid = uuidRegex.test(value)
 		if (!valid) return "Invalid UUID"

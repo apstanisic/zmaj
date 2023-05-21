@@ -3,7 +3,7 @@ import { BaseModel } from "./model-builder/BaseModel"
 
 type ModelsState<TModel extends BaseModel = BaseModel> = {
 	models: Map<Class<BaseModel>, TModel>
-	get: (model: Class<TModel>) => TModel
+	getModel: (model: Class<TModel>) => TModel
 	clear: () => void
 }
 
@@ -12,7 +12,7 @@ export function createModelsStore<TModel extends BaseModel = BaseModel>(): Model
 
 	return {
 		models: allModels,
-		get: (Model: Class<BaseModel>): TModel => {
+		getModel: (Model: Class<BaseModel>): TModel => {
 			if (allModels.has(Model)) {
 				return allModels.get(Model)!
 			} else {

@@ -1,3 +1,4 @@
+import { mixedColDef } from "@api/collection-to-model-config"
 import { ConfigModuleConfig } from "@api/config/config.config"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
@@ -38,7 +39,7 @@ describe("MigrationsService e2e", () => {
 				new ConfigService(new ConfigModuleConfig({ useEnvFile: true, envPath: ".env.test" })),
 			),
 		)
-		await sq.initCms(systemCollections)
+		await sq.init(mixedColDef([...systemCollections]))
 		schemaInfo = sq.schemaInfo
 		alterSchema = sq.alterSchema
 		repoManager = sq.repoManager

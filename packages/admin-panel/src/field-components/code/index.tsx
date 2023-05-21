@@ -9,7 +9,7 @@ export const CodeComponents = DefineCrudField({
 	Input: CodeInputField,
 	SmallInput: TextInputField,
 	Show: CodeShowField,
-	availableFor: ["long-text"],
+	availableFor: ["text"],
 	InputFieldConfig: CodeFieldConfigInput,
 	ShowFieldConfig: CodeFieldConfigShow,
 })

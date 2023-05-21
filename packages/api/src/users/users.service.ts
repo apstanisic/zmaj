@@ -4,7 +4,6 @@ import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
 	AuthUser,
-	Filter,
 	Struct,
 	User,
 	UserCreateDto,
@@ -15,7 +14,7 @@ import {
 	UserWithSecret,
 	zodCreate,
 } from "@zmaj-js/common"
-import { OrmRepository, Transaction } from "@zmaj-js/orm"
+import { Filter, OrmRepository, Transaction } from "@zmaj-js/orm"
 import { omit } from "radash"
 import { EncryptionService } from "../encryption/encryption.service"
 

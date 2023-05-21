@@ -1,4 +1,5 @@
 import { GlobalConfig } from "@api/app/global-app.config"
+import { mixedColDef } from "@api/collection-to-model-config"
 import { throw500 } from "@api/common/throw-http"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { MigrationsConfig } from "@api/migrations/migrations.config"
@@ -58,7 +59,9 @@ export class BuildTestDbService {
 	}
 
 	async initSqWithMocks(): Promise<void> {
-		await this.sq.initCms([...systemCollections, ...allMockCollectionDefs, ...storeCollectionDefs])
+		await this.sq.init(
+			mixedColDef([...systemCollections, ...allMockCollectionDefs, ...storeCollectionDefs]),
+		)
 	}
 
 	private exampleProjectTables = ["posts", "comments", "tags", "posts_tags", "posts_info"] as const
@@ -66,7 +69,7 @@ export class BuildTestDbService {
 	async seedRandomData(): Promise<void> {
 		// posts
 		const posts = await this.repoManager.getRepo(TPostModel).createMany({
-			data: times(60, () => TPostStub()),
+			data: times(60, () => omitCreatedAt(TPostStub())),
 		})
 		const postIds = posts.map((p) => p.id)
 
@@ -327,7 +330,10 @@ export class BuildTestDbService {
 					.getRepo(FileModel)
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 
-				await roleRepo.createMany({ data: eCommerceDemo.roles, trx })
+				await roleRepo.createMany({
+					data: eCommerceDemo.roles.map(omitCreatedAt),
+					trx,
+				})
 				await userRepo.createMany({ data: eCommerceDemo.users.map(omitCreatedAt), trx })
 				await categoryRepo.createMany({ data: eCommerceDemo.categories, trx })
 				await tagRepo.createMany({ data: eCommerceDemo.tags, trx })
@@ -367,7 +373,7 @@ export class BuildTestDbService {
 					.getRepo(FileModel)
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 
-				await roleRepo.createMany({ data: data.roles, trx })
+				await roleRepo.createMany({ data: data.roles.map(omitCreatedAt), trx })
 				await userRepo.createMany({ data: data.users.map(omitCreatedAt), trx })
 				await tagRepo.createMany({ data: data.tags, trx })
 				await postsRepo.createMany({

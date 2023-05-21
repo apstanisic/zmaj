@@ -7,14 +7,14 @@ export function expandModelRelations<TModel extends BaseModel = BaseModel>(
 	modelClass: Class<TModel>,
 	modelsState: ReturnType<typeof createModelsStore>,
 ): ModelConfig["relations"] {
-	const model = modelsState.get(modelClass)
+	const model = modelsState.getModel(modelClass)
 	const relations = model.getRelations()
 
 	const expanded: ModelConfig["relations"] = {}
 
 	for (const [property, relation] of Object.entries(relations)) {
 		const type = relation.options.type
-		const otherSide = modelsState.get(relation.modelFn())
+		const otherSide = modelsState.getModel(relation.modelFn())
 
 		if (type === "many-to-one" || type === "owner-one-to-one") {
 			expanded[property] = {
@@ -58,29 +58,27 @@ export function convertModelClassToPlain(
 	models: ReturnType<typeof createModelsStore>,
 ): ModelConfig {
 	if (typeof ModelClass === "object") return ModelClass
-	const model = structuredClone(models.get(ModelClass))
-	const fields = Object.entries(model.fields).map(([fieldName, field]): [string, ModelField] => {
-		return [
+	const model = structuredClone(models.getModel(ModelClass))
+	const fields = Object.entries(model.fields).map(([fieldName, field]): [string, ModelField] => [
+		fieldName,
+		{
 			fieldName,
-			{
-				fieldName,
-				dataType: field.dataType,
-				canCreate: field.canCreate,
-				canUpdate: field.canUpdate,
-				canRead: field.canRead,
-				columnName: field.columnName,
-				hasDefaultValue: field.hasDefault,
-				isAutoIncrement: field.isAutoIncrement,
-				isNullable: field.nullable,
-				isPrimaryKey: field.isPk,
-				isCreatedAt: field.isCreatedAt,
-				isUnique: field.isUnique,
-				isUpdatedAt: field.isUpdatedAt,
-			},
-		]
-	})
+			dataType: field.dataType,
+			canCreate: field.canCreate,
+			canUpdate: field.canUpdate,
+			canRead: field.canRead,
+			columnName: field.columnName,
+			hasDefaultValue: field.hasDefault,
+			isAutoIncrement: field.isAutoIncrement,
+			isNullable: field.nullable,
+			isPrimaryKey: field.isPk,
+			isCreatedAt: field.isCreatedAt,
+			isUnique: field.isUnique,
+			isUpdatedAt: field.isUpdatedAt,
+		},
+	])
 	return {
-		collectionName: model.name,
+		name: model.name,
 		tableName: model.tableName ?? model.name,
 		fields: Object.fromEntries(fields),
 		relations: expandModelRelations(ModelClass, models),

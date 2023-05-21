@@ -1,16 +1,14 @@
 import {
-	BaseModel,
 	CollectionDef,
 	CollectionMetadata,
 	CollectionMetadataModel,
 	FieldMetadata,
 	FieldMetadataModel,
-	ModelType,
 	RelationMetadata,
 	RelationMetadataModel,
 	defineCollection,
 } from "@zmaj-js/common"
-import { SequelizeRepoManager, SequelizeService } from "@zmaj-js/orm"
+import { BaseModel, ModelType, SequelizeRepoManager, SequelizeService } from "@zmaj-js/orm"
 import { DataTypes, QueryInterface } from "sequelize"
 
 export async function eCommerceSchema(qi: QueryInterface, transaction: any): Promise<void> {

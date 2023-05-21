@@ -5,7 +5,7 @@ import { DropdownInputField } from "./DropdownInputField"
 export const DropdownComponents = DefineCrudField({
 	name: "dropdown",
 	Input: DropdownInputField,
-	availableFor: ["short-text", "long-text"],
+	availableFor: ["text"],
 	InputFieldConfig: DropdownInputConfig,
 	ShowFieldConfig: DropdownShowConfig,
 	validate: ({ field, value }) => {

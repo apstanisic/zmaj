@@ -1,4 +1,4 @@
-import { EntityRef } from "@zmaj-js/common"
+import { EntityRef } from "@zmaj-js/orm-common"
 import {
 	TCommentStub,
 	TPostInfoStub,

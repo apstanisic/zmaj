@@ -11,5 +11,5 @@ export const TextareaComponents = DefineCrudField({
 	availableComparisons: allComparisons,
 	InputFieldConfig: createTextFieldConfigInput("long-text"),
 	ShowFieldConfig: createTextFieldConfigShow("long-text"),
-	availableFor: ["long-text"],
+	availableFor: ["text"],
 })

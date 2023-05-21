@@ -1,8 +1,9 @@
-import { CollectionDef } from "@zmaj-js/common"
+import { BaseModel, CollectionDef } from "@zmaj-js/common"
 import { ModelConfig, ModelRelation } from "@zmaj-js/orm"
 import { mapValues } from "radash"
+import { Class } from "type-fest"
 
-function collectionToModel(collection: CollectionDef): ModelConfig {
+export function collectionToModel(collection: CollectionDef): ModelConfig {
 	const relations = mapValues(collection.relations, (rel): ModelRelation => {
 		if (rel.type !== "many-to-many") {
 			return {
@@ -27,10 +28,30 @@ function collectionToModel(collection: CollectionDef): ModelConfig {
 	})
 
 	return {
-		collectionName: collection.collectionName,
+		name: collection.collectionName,
 		tableName: collection.tableName,
 		fields: collection.fields,
 		relations,
 		disabled: collection.disabled,
 	}
 }
+
+export function mixedColDef(
+	collections: (CollectionDef | ModelConfig | Class<BaseModel>)[],
+): (ModelConfig | Class<BaseModel>)[] {
+	return collections.map((c) => ("collectionName" in c ? collectionToModel(c) : c))
+}
+
+// export function modelToModelConfig(
+// 	ModelClass: Class<BaseModel>,
+// 	store: ReturnType<typeof createModelsStore>,
+// ): ModelConfig {
+// 	const model = store.get(ModelClass)
+// 	return {
+// 		collectionName: model.name,
+// 		tableName: model.tableName ?? snakeCase(model.name),
+// 		fields: mapValues(model.fields, (v, f) => ({ ...v, fieldName: f })),
+// 		relations: {},
+// 		disabled: false,
+// 	}
+// }

@@ -14,5 +14,5 @@ export const UrlComponents = DefineCrudField({
 	SmallInput: UrlInputField,
 	InputFieldConfig: createTextFieldConfigInput("url"),
 	ShowFieldConfig: createTextFieldConfigShow("url"),
-	availableFor: ["short-text", "long-text"],
+	availableFor: ["text"],
 })

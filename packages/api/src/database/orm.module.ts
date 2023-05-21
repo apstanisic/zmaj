@@ -1,3 +1,4 @@
+import { mixedColDef } from "@api/collection-to-model-config"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { INFRA_SCHEMA_SYNC_FINISHED } from "@api/infra/infra.consts"
 import { Global, Module } from "@nestjs/common"
@@ -20,7 +21,7 @@ import { RepoManager, SequelizeRepoManager, SequelizeService } from "@zmaj-js/or
 				state: InfraStateService,
 			) => {
 				// generate models with newly inited state
-				sqService.generateModelsCms(Object.values(state.collections))
+				sqService.generateModels(mixedColDef(Object.values(state.collections)))
 				return sqRepoManager
 			},
 		},

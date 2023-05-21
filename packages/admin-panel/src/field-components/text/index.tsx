@@ -7,7 +7,7 @@ export const ShortTextComponents = DefineCrudField({
 	name: "short-text",
 	Input: TextInputField,
 	availableComparisons: allComparisons,
-	availableFor: ["short-text", "long-text"],
+	availableFor: ["text"],
 	InputFieldConfig: createTextFieldConfigInput("short-text"),
 	ShowFieldConfig: createTextFieldConfigShow("short-text"),
 })

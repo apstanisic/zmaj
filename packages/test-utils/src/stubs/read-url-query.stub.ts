@@ -1,5 +1,6 @@
 import { randBoolean, randNumber, randPhrase, randWord } from "@ngneat/falso"
-import { Filter, Struct, UrlQuery, UrlQuerySchema, stub, times } from "@zmaj-js/common"
+import { Struct, UrlQuery, UrlQuerySchema, stub, times } from "@zmaj-js/common"
+import { Filter } from "@zmaj-js/orm-common"
 
 export const ReadUrlQueryStub = stub<UrlQuery>(
 	() => ({

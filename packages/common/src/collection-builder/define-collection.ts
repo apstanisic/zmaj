@@ -78,7 +78,7 @@ export function defineCollection<TModel extends BaseModel>(
 		>
 	},
 ): CollectionDef<ModelType<TModel>> {
-	const modelInstance = models.get(ModelClass)
+	const modelInstance = models.getModel(ModelClass)
 	const tableName = modelInstance.tableName ?? snakeCase(modelInstance.name)
 	const col = buildCollection<ModelType<TModel>>(tableName, config.options)
 
@@ -91,16 +91,17 @@ export function defineCollection<TModel extends BaseModel>(
 			...additionalConfig,
 			...field,
 			dataType: field.dataType as ColumnDataType, // TODO FIX THIS
+			isPrimaryKey: field.isPk,
 		})
 		col.fields[property] = generated
 	}
 
 	const relations = modelInstance.getRelations()
 	for (const [property, relationDef] of Object.entries(relations)) {
-		const otherSide = models.get(relationDef.modelFn())
+		// const otherSide = models.getModel(relationDef.modelFn())
 		// relations['hello']?.options.type === ''
 		// ts not working with .entries
-		const value = config.relations?.[property as never]
+		// const value = config.relations?.[property as never]
 		// const generated = buildRelation({
 		// 	type: relationDef.options.type,
 		// 	thisPropertyName: property,
@@ -109,7 +110,6 @@ export function defineCollection<TModel extends BaseModel>(
 		// 	// thisPropertyName: property,
 		// 	// thisTableName: tableName,
 		// })
-
 		// col.relations[property] = generated
 	}
 	return col

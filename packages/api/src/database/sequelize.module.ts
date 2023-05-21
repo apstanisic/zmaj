@@ -1,3 +1,4 @@
+import { mixedColDef } from "@api/collection-to-model-config"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { Global, Logger, Module } from "@nestjs/common"
 import { systemCollections } from "@zmaj-js/common"
@@ -20,7 +21,7 @@ import {
 			useFactory: async (config: DatabaseConfig) => {
 				const sqService = new SequelizeService(config, new Logger(SequelizeService.name))
 				// we are initializing connection here
-				await sqService.initCms(systemCollections)
+				await sqService.init(mixedColDef([...systemCollections]))
 				return sqService
 			},
 		},

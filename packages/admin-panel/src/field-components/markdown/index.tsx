@@ -10,5 +10,5 @@ export const MarkdownComponents = DefineCrudField({
 	Show: MarkdownShowField,
 	SmallInput: TextInputField,
 	availableComparisons: allComparisons,
-	availableFor: ["long-text"],
+	availableFor: ["text"],
 })

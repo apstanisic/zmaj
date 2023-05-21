@@ -142,10 +142,14 @@ function json<const Params extends UserParams>(params: Params): CombineAll<JsonV
 	return build(params, "json")
 }
 
-function jsonDirty<const Params extends UserParams>(
-	params: Params,
-): CombineAll<Record<string, unknown>, Params> {
-	return build(params, "json")
+/**
+ * We need inner function, since TS does not support providing default generic value:
+ * https://github.com/microsoft/TypeScript/pull/26349
+ */
+function custom<T>() {
+	return function <const Params extends UserParams>(params: Params): CombineAll<T, Params> {
+		return build(params, "json")
+	}
 }
 
 // for now only for strings
@@ -208,9 +212,9 @@ export const db = {
 	date,
 	dateTime,
 	json,
-	jsonDirty,
 	createdAt,
 	updatedAt,
 	enumString,
 	array,
+	custom,
 }

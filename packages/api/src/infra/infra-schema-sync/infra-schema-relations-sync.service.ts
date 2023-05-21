@@ -3,7 +3,6 @@ import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
-	ModelCreateType,
 	RelationDef,
 	RelationMetadata,
 	RelationMetadataModel,
@@ -11,7 +10,7 @@ import {
 	getFreeValue,
 	zodCreate,
 } from "@zmaj-js/common"
-import { OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
+import { ModelCreateType, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { title, unique } from "radash"
 import { InitialDbState } from "../infra-state/InitialDbState"
 

@@ -7,12 +7,11 @@ import {
 	FieldMetadata,
 	FieldMetadataModel,
 	FieldMetadataSchema,
-	ModelCreateType,
 	getFreeValue,
 	nestByTableAndColumnName,
 	zodCreate,
 } from "@zmaj-js/common"
-import { OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
+import { ModelCreateType, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { title } from "radash"
 import { InfraConfig } from "../infra.config"
 

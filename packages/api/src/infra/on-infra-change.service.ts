@@ -1,5 +1,6 @@
-import { SequelizeService } from "@zmaj-js/orm"
+import { mixedColDef } from "@api/collection-to-model-config"
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common"
+import { SequelizeService } from "@zmaj-js/orm"
 import type PQueue from "p-queue"
 import { InfraSchemaSyncService } from "./infra-schema-sync/infra-schema-sync.service"
 import { InfraStateService } from "./infra-state/infra-state.service"
@@ -29,7 +30,7 @@ export class OnInfraChangeService implements OnModuleDestroy, OnModuleInit {
 	async syncAppAndDb(): Promise<void> {
 		await this.infraSchemaSync.sync()
 		await this.infraState.initializeState()
-		this.sequelizeService.generateModelsCms(Object.values(this.infraState.collections))
+		this.sequelizeService.generateModels(mixedColDef(Object.values(this.infraState.collections)))
 	}
 
 	async executeChange<T>(fn: () => Promise<T>): Promise<T> {

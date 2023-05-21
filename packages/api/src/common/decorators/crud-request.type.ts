@@ -1,4 +1,5 @@
-import { AuthUser, CollectionDef, IdType, Struct } from "@zmaj-js/common"
+import { AuthUser, CollectionDef, Struct } from "@zmaj-js/common"
+import { IdType } from "@zmaj-js/orm"
 
 export type CrudRequest = {
 	/** IP */

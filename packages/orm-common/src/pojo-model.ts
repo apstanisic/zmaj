@@ -1,7 +1,8 @@
 import { Except } from "type-fest"
 import { ColumnType } from "./column-type"
 
-export type ModelField = {
+export type PojoModelField = {
+	/* This is the same as key in fields object */
 	fieldName: string
 	dataType: ColumnType
 	/** We will use field name if not provided */
@@ -28,17 +29,7 @@ export type ModelField = {
 	hasDefaultValue?: boolean
 }
 
-export type ModelConfig = {
-	name: string
-	/** We will use collection name if not provided */
-	tableName?: string
-	disabled?: boolean
-	fields: Record<string, ModelField> // | ColumnType>
-	relations: Record<string, ModelRelation>
-	// relations: Record<keyof OnlyRelations<T>, any>
-}
-
-export type DirectModel = {
+export type PojoModelDirectRelation = {
 	field: string
 	referencedModel: string
 	referencedField: string
@@ -48,11 +39,20 @@ export type DirectModel = {
 	type: "many-to-one" | "one-to-many" | "owner-one-to-one" | "ref-one-to-one"
 }
 
-export type M2M = Except<DirectModel, "type"> & {
+export type PojoModelJunctionRelation = Except<PojoModelDirectRelation, "type"> & {
 	type: "many-to-many"
 	junctionModel: string
 	junctionField: string
 	junctionReferencedField: string
 }
 
-export type ModelRelation = DirectModel | M2M
+export type PojoModelRelation = PojoModelDirectRelation | PojoModelJunctionRelation
+
+export type PojoModel = {
+	name: string
+	/** We will use name **/
+	tableName?: string
+	disabled?: boolean
+	fields: Record<string, PojoModelField>
+	relations: Record<string, PojoModelRelation>
+}

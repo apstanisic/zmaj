@@ -1,4 +1,5 @@
-import { CreateDto, EntityRef, ToManyChange } from "@zmaj-js/common"
+import { ToManyChange } from "@zmaj-js/common"
+import { CreateDto, EntityRef } from "@zmaj-js/orm-common"
 
 export type IsToManyOrmRelation<T> = EntityRef<T>[] | readonly EntityRef<T>[]
 

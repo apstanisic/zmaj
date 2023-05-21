@@ -57,7 +57,7 @@ export class SequelizeService {
 		return this.orm.getQueryInterface()
 	}
 
-	async init(collections: Class<BaseModel>[]): Promise<void> {
+	async init(collections: (Class<BaseModel> | ModelConfig)[]): Promise<void> {
 		this.generateModels(collections)
 		await this.orm.authenticate()
 	}

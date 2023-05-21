@@ -1,6 +1,6 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { Table } from "@admin-panel/ui/Table"
-import { ActivityLog, ignoreErrors, isNil } from "@zmaj-js/common"
+import { ActivityLog, Struct, ignoreErrors, isNil } from "@zmaj-js/common"
 import { clsx } from "clsx"
 import { applyPatch } from "fast-json-patch"
 import { isDate, mapValues, unique } from "radash"
@@ -10,7 +10,7 @@ export const ActivityLogChanges = memo(() => {
 	const record = useRecord<ActivityLog>()
 
 	const previous = useMemo(
-		() => mapValues(record?.previousData ?? {}, (v) => (isDate(v) ? v.toJSON() : v)),
+		() => mapValues((record?.previousData ?? {}) as Struct, (v) => (isDate(v) ? v.toJSON() : v)),
 		[record?.previousData],
 	)
 	const current = useMemo(

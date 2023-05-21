@@ -1,5 +1,6 @@
 import { sdkThrow } from "@client-sdk/errors/error-utils"
-import { Data, Filter, IdType, qsStringify, Struct, UrlQuery } from "@zmaj-js/common"
+import { Data, qsStringify, Struct, UrlQuery } from "@zmaj-js/common"
+import { Filter, IdType } from "@zmaj-js/orm-common"
 import { AxiosInstance } from "axios"
 import { Except } from "type-fest"
 import { ClientDto } from "./client-dto.type"

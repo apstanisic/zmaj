@@ -41,7 +41,7 @@
 		"@nestjs/serve-static": "^3.0.1",
 		"@zmaj-js/admin-panel": "workspace:*",
 		"@zmaj-js/api": "workspace:*",
-		"import-meta-resolve": "^2.2.2"
+		"import-meta-resolve": "^3.0.0"
 	},
 	"description": "Zmaj is a library to make managing your database easier"
 }

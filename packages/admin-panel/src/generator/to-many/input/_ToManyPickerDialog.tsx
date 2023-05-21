@@ -1,5 +1,5 @@
 import { Dialog } from "@admin-panel/ui/Dialog"
-import { IdType } from "@zmaj-js/common"
+import { IdType } from "@zmaj-js/orm-common"
 import { memo, useCallback } from "react"
 import { useToManyInputContext } from "../../../context/to-many-input-context"
 import { ChoicesPicker } from "../../../shared/choices/ChoicesPicker"

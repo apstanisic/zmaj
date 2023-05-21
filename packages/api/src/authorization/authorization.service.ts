@@ -13,18 +13,18 @@ import {
 	ADMIN_ROLE_ID,
 	AllowedAction,
 	AuthUser,
-	Fields,
-	FLAT_DELIMITER,
 	CollectionDef,
+	FLAT_DELIMITER,
+	PUBLIC_ROLE_ID,
+	Permission,
+	Struct,
 	getSystemPermission,
 	isNil,
 	isPrimitiveDbValue,
-	Permission,
-	PUBLIC_ROLE_ID,
-	Struct,
-	systemPermissions,
 	isStruct,
+	systemPermissions,
 } from "@zmaj-js/common"
+import { Fields } from "@zmaj-js/orm"
 import flat from "flat"
 import { isEmpty, isString } from "radash"
 import { PartialDeep } from "type-fest"

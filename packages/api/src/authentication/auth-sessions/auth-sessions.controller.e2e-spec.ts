@@ -89,7 +89,7 @@ describe("AuthSessionsController e2e", () => {
 	describe("GET /auth/sessions/:id", () => {
 		it("should get session by id", async () => {
 			const session = await sessionRepo.createOne({
-				data: AuthSessionStub({ userId: user.id, userAgent: userAgentStub }),
+				data: omit(AuthSessionStub({ userId: user.id, userAgent: userAgentStub }), ["createdAt"]),
 			})
 
 			const res = await supertest(app.getHttpServer())
@@ -117,7 +117,7 @@ describe("AuthSessionsController e2e", () => {
 	describe("DELETE /auth/sessions/:id", () => {
 		it("should remove session by ID", async () => {
 			const session = await sessionRepo.createOne({
-				data: AuthSessionStub({ userId: user.id, userAgent: userAgentStub }),
+				data: omit(AuthSessionStub({ userId: user.id, userAgent: userAgentStub }), ["createdAt"]),
 			})
 
 			const res = await supertest(app.getHttpServer())

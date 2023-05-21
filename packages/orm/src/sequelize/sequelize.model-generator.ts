@@ -40,6 +40,8 @@ export class SequelizeModelsGenerator {
 
 		for (const model of modelConfigs) {
 			if (model.disabled) continue
+			console.log(model)
+
 			this.generateModelWithFields(model, orm)
 		}
 
@@ -99,7 +101,7 @@ export class SequelizeModelsGenerator {
 			properties[propertyName] = property
 		})
 
-		orm.define(col.collectionName, properties, {
+		orm.define(col.name, properties, {
 			freezeTableName: true,
 			tableName: col.tableName,
 			timestamps: true,
@@ -114,7 +116,7 @@ export class SequelizeModelsGenerator {
 		models: Record<string, ModelStatic<Model<any>>>,
 	): void {
 		for (const [propertyName, rel] of Object.entries(col.relations)) {
-			const leftModel = models[col.collectionName]
+			const leftModel = models[col.name]
 			const rightModel = models[rel.referencedModel]
 			// if collection is disabled, it can infer with relations
 			if (!leftModel || !rightModel) continue
