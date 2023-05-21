@@ -1,5 +1,4 @@
 import { Class } from "type-fest"
-import { ModelConfig } from "."
 import { createModelsStore } from "./create-models-store"
 import { BaseModel } from "./model-builder/BaseModel"
 import { PojoModel, PojoModelField, PojoModelRelation } from "./pojo-model"
@@ -7,7 +6,7 @@ import { PojoModel, PojoModelField, PojoModelRelation } from "./pojo-model"
 export function convertModelFromClassToPojo(
 	ModelClass: Class<BaseModel> | PojoModel,
 	store: ReturnType<typeof createModelsStore>,
-): ModelConfig {
+): PojoModel {
 	if (typeof ModelClass === "object") return ModelClass
 	const model = structuredClone(store.getModel(ModelClass))
 
@@ -23,7 +22,7 @@ export function convertModelFromClassToPojo(
 function convertAllModelRelationsFromClassToPojo(
 	modelClass: Class<BaseModel>,
 	store: ReturnType<typeof createModelsStore>,
-): ModelConfig["relations"] {
+): PojoModel["relations"] {
 	const model = store.getModel(modelClass)
 	const relations = model.getRelations()
 

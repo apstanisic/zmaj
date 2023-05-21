@@ -98,6 +98,9 @@ export function defineCollection<TModel extends BaseModel>(
 
 	const relations = modelInstance.getRelations()
 	for (const [property, relationDef] of Object.entries(relations)) {
+		// We have to extract all data that is provided as RelationDef so admin panel can
+		// generate fields
+		throw new Error("You need to fix me ")
 		// const otherSide = models.getModel(relationDef.modelFn())
 		// relations['hello']?.options.type === ''
 		// ts not working with .entries

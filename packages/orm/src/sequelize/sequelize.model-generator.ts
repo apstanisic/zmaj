@@ -2,7 +2,7 @@ import { ColumnType } from "@orm/column-type"
 import { Logger } from "@orm/logger.type"
 import {
 	BaseModel,
-	ModelConfig,
+	PojoModel,
 	convertModelFromClassToPojo,
 	createModelsStore,
 } from "@zmaj-js/orm-common"
@@ -32,7 +32,7 @@ export class SequelizeModelsGenerator {
 	 * @param models for which we need to generate entities
 	 * @param orm Orm to which to define collection
 	 */
-	generateModels(models: readonly (Class<BaseModel> | ModelConfig)[], orm: Sequelize): void {
+	generateModels(models: readonly (Class<BaseModel> | PojoModel)[], orm: Sequelize): void {
 		this.removeAllModels(orm)
 		const state = createModelsStore()
 
@@ -40,8 +40,6 @@ export class SequelizeModelsGenerator {
 
 		for (const model of modelConfigs) {
 			if (model.disabled) continue
-			console.log(model)
-
 			this.generateModelWithFields(model, orm)
 		}
 
@@ -62,7 +60,7 @@ export class SequelizeModelsGenerator {
 		}
 	}
 
-	private generateModelWithFields(col: ModelConfig, orm: Sequelize): void {
+	private generateModelWithFields(col: PojoModel, orm: Sequelize): void {
 		const properties: ModelAttributes = {}
 
 		const fields = Object.entries(col.fields)
@@ -112,7 +110,7 @@ export class SequelizeModelsGenerator {
 	}
 
 	private attachRelationsToModels(
-		col: ModelConfig,
+		col: PojoModel,
 		models: Record<string, ModelStatic<Model<any>>>,
 	): void {
 		for (const [propertyName, rel] of Object.entries(col.relations)) {
