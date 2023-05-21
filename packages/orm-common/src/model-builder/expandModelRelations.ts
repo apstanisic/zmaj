@@ -5,6 +5,9 @@ import { ModelRelationDefinition } from "./ModelRelationDefinition"
 
 type Struct<T> = Record<string, T>
 
+/**
+ * @deprecated Do I need this
+ */
 export function expandModelRelations(
 	modelClasses: Class<BaseModel>[],
 	createdModels: Record<string, BaseModel> = {},

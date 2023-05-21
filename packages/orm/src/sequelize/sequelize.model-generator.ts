@@ -3,7 +3,7 @@ import { Logger } from "@orm/logger.type"
 import {
 	BaseModel,
 	ModelConfig,
-	convertModelClassToPlain,
+	convertModelFromClassToPojo,
 	createModelsStore,
 } from "@zmaj-js/orm-common"
 import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
@@ -36,7 +36,7 @@ export class SequelizeModelsGenerator {
 		this.removeAllModels(orm)
 		const state = createModelsStore()
 
-		const modelConfigs = models.map((c) => convertModelClassToPlain(c, state))
+		const modelConfigs = models.map((model) => convertModelFromClassToPojo(model, state))
 
 		for (const model of modelConfigs) {
 			if (model.disabled) continue

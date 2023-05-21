@@ -1,9 +1,10 @@
 import { Controller, Get } from "@nestjs/common"
 import { GlobalConfig } from "./global-app.config"
 
-@Controller("")
+@Controller()
 export class AppController {
 	constructor(private config: GlobalConfig) {}
+
 	@Get("/")
 	async home(): Promise<any> {
 		return { message: "API successfully reached!" }

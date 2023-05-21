@@ -2,8 +2,8 @@ import { BaseModel, ModelType } from "@zmaj-js/orm-common"
 import { UserModel } from "../users/user.model"
 
 export class SecurityTokenModel extends BaseModel {
-	override name = "zmajSecurityToken"
-	override tableName = "zmaj_security_token"
+	override name = "zmajSecurityTokens"
+	override tableName = "zmaj_security_tokens"
 	fields = this.buildFields((f) => ({
 		id: f.uuid({ isPk: true }),
 		createdAt: f.createdAt(),
