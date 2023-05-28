@@ -6,7 +6,11 @@ type IsArray<T> = NonNullable<T> extends any[] ? true : false
 // Make type array is `Is` is `true`
 type MakeArrayIf<Is extends boolean, T> = Is extends true ? T[] : T
 
-export type ReturnedFields<T, F extends Fields<T> | undefined> = F extends undefined
+export type ReturnedFields<
+	T,
+	F extends Fields<T> | undefined,
+	IncludeHidden extends boolean = false,
+> = F extends undefined
 	? T
 	: {
 			[key in keyof Required<T>]: NonNullable<F>[key] extends true // if true, simply return required type

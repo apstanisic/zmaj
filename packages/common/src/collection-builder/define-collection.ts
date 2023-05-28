@@ -101,6 +101,7 @@ export function defineCollection<TModel extends BaseModel>(
 		// We have to extract all data that is provided as RelationDef so admin panel can
 		// generate fields
 		throw new Error("You need to fix me ")
+		// ALSO FOR CAN_READ, ADD ADDITIONAL PROPERTY THAT WILL NOT BE MODIFIED IF CAN_READ is false
 		// const otherSide = models.getModel(relationDef.modelFn())
 		// relations['hello']?.options.type === ''
 		// ts not working with .entries

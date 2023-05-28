@@ -47,7 +47,13 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 */
 	abstract findWhere<F extends Fields<ModelType<TModel>> | undefined = undefined>(
 		params: FindManyOptions<TModel, F>,
-	): Promise<ReturnedFields<ModelType<TModel>, F>[]>
+	): Promise<
+		ReturnedFields<
+			ModelType<TModel>,
+			F,
+			FindManyOptions<TModel, F>["includeHidden"] extends true ? true : false
+		>[]
+	>
 
 	/**
 	 * Find record with ID or throw
