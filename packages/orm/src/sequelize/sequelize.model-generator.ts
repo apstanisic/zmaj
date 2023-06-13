@@ -40,7 +40,7 @@ export class SequelizeModelsGenerator {
 
 		for (const model of modelConfigs) {
 			if (model.disabled) continue
-			this.generateModelWithFields(model, orm)
+			this.generateModelAndFields(model, orm)
 		}
 
 		try {
@@ -55,12 +55,12 @@ export class SequelizeModelsGenerator {
 
 			for (const col of modelConfigs) {
 				if (col.disabled) continue
-				this.generateModelWithFields(col, orm)
+				this.generateModelAndFields(col, orm)
 			}
 		}
 	}
 
-	private generateModelWithFields(col: PojoModel, orm: Sequelize): void {
+	private generateModelAndFields(col: PojoModel, orm: Sequelize): void {
 		const properties: ModelAttributes = {}
 
 		const fields = Object.entries(col.fields)

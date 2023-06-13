@@ -9,6 +9,7 @@ import {
 	createModelsStore,
 } from "@zmaj-js/orm-common"
 import { Class, ConditionalPick, Except } from "type-fest"
+import { v4 } from "uuid"
 import { CollectionDef, ColumnDataType, snakeCase } from ".."
 import { buildField } from "./_build-field"
 import { BuildCollectionOptions, buildCollection } from "./_build-infra-collection"
@@ -97,10 +98,59 @@ export function defineCollection<TModel extends BaseModel>(
 	}
 
 	const relations = modelInstance.getRelations()
-	for (const [property, relationDef] of Object.entries(relations)) {
+	for (const [property, rel] of Object.entries(relations)) {
+		// FIXME: WHY IS THIS UNDEFINED
+		const otherModelClass = rel.modelFn()
+		console.log({ tableName, property, otherModelClass, aa: rel.modelFn, all: rel })
+
+		const otherSideModel = models.getModel(otherModelClass)
+		if (rel.options.type === "many-to-many") {
+			//
+		} else if (rel.options.type === "many-to-one" || rel.options.type === "owner-one-to-one") {
+			//
+			const columnName =
+				modelInstance.fields[rel.options.fkField]?.columnName ?? rel.options.fkField
+			//
+			const otherField = rel.options.referencedField ?? otherSideModel.getPkField()
+			const otherColumnName = modelInstance.fields[otherField]?.columnName ?? otherField
+			//
+			const relConfig =
+				config.relations?.[property as keyof NonNullable<(typeof config)["relations"]>] ?? {}
+
+			col.relations[property] = {
+				type: rel.options.type,
+				propertyName: property,
+				collectionName: modelInstance.name,
+				tableName,
+				fieldName: rel.options.fkField,
+				columnName,
+				id: v4(),
+				otherSide: {
+					collectionName: otherSideModel.name,
+					tableName: otherSideModel.tableName ?? otherSideModel.name,
+					fieldName: otherField,
+					columnName: otherColumnName,
+				},
+				relation: {
+					createdAt: new Date(),
+					template: null,
+					label: null,
+					id: v4(),
+					mtmFkName: null,
+					propertyName: property,
+					tableName,
+					fkName: `fk_${tableName}_${property}`,
+					hidden: false,
+					...relConfig,
+				},
+			}
+			//
+		} else {
+			//
+		}
+
 		// We have to extract all data that is provided as RelationDef so admin panel can
 		// generate fields
-		throw new Error("You need to fix me ")
 		// ALSO FOR CAN_READ, ADD ADDITIONAL PROPERTY THAT WILL NOT BE MODIFIED IF CAN_READ is false
 		// const otherSide = models.getModel(relationDef.modelFn())
 		// relations['hello']?.options.type === ''
@@ -116,5 +166,29 @@ export function defineCollection<TModel extends BaseModel>(
 		// })
 		// col.relations[property] = generated
 	}
+	// throw new Error("You need to fix me ")
 	return col
 }
+
+/**
+ *
+ * class UserModel extends BaseModel {}
+ *
+ * defineCollection(UserModel)
+ *
+ * From DB
+ *
+ * =>
+ *
+ * PojoModel
+ *
+ * CollectionDef
+ *
+ *
+ *
+ *
+ */
+
+/**
+ * What does defineCollection do. It converts UserModel to CollectionDef
+ */

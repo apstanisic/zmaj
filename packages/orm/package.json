@@ -41,8 +41,8 @@
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/orm-common": "workspace:*",
 		"radash": "^10.8.1",
-		"sequelize": "^6.31.1",
-		"type-fest": "^3.11.0",
+		"sequelize": "^6.32.0",
+		"type-fest": "^3.11.1",
 		"uuid": "^9.0.0",
 		"zod": "^3.21.4"
 	},

@@ -8,7 +8,8 @@ export const defaultTsupConfig: Options = {
 	silent: false,
 	shims: true,
 	outDir: "./dist",
-	target: "node18",
+	target: "node",
+
 	// do not remove previous `dist`, since it messes with vscode intellisense
 	// that is done on with "prebuild", only when building
 	clean: false,

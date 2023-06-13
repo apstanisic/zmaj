@@ -1,5 +1,5 @@
-import { BaseModel, CollectionDef } from "@zmaj-js/common"
-import { ModelConfig, ModelRelation } from "@zmaj-js/orm"
+import { CollectionDef } from "@zmaj-js/common"
+import { BaseModel, ModelConfig, ModelRelation } from "@zmaj-js/orm"
 import { mapValues } from "radash"
 import { Class } from "type-fest"
 
