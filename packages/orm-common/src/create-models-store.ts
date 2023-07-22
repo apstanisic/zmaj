@@ -13,7 +13,7 @@ export function createModelsStore<TModel extends BaseModel = BaseModel>(): Model
 	return {
 		models: allModels,
 		getModel: (Model: Class<BaseModel>): TModel => {
-			if (Model === undefined) throw new Error("Provided model is undefined")
+			if (Model === undefined) throw new Error("Provided model is undefined!")
 			if (allModels.has(Model)) {
 				return allModels.get(Model)!
 			} else {

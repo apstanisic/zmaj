@@ -8,7 +8,7 @@ export function convertModelFromClassToPojo(
 	store: ReturnType<typeof createModelsStore>,
 ): PojoModel {
 	if (typeof ModelClass === "object") return ModelClass
-	const model = structuredClone(store.getModel(ModelClass))
+	const model = store.getModel(ModelClass)
 
 	return {
 		name: model.name,

@@ -1,6 +1,6 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { title } from "radash"
-import { memo } from "react"
+import { ReactNode, memo } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useFieldContext } from "../../context/field-context"
 import { InputFieldProps } from "../../field-components/types/InputFieldProps"
@@ -8,7 +8,7 @@ import { DefaultInputField } from "./DefaultInputField"
 
 type ManualInputFieldProps = Partial<InputFieldProps> & {
 	source: string
-	Component?: (props: InputFieldProps) => JSX.Element | null
+	Component?: (props: InputFieldProps) => ReactNode
 	// passProps?:
 }
 

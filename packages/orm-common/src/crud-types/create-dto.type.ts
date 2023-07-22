@@ -1,4 +1,4 @@
-import { OnlyFields } from ".."
+import { OnlyFields } from "./only-fields.type"
 
 /**
  * See in future how to improve so that required fields are provided.

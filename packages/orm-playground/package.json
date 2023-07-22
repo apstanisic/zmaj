@@ -3,6 +3,7 @@
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
 	"type": "module",
+	"private": true,
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -13,7 +14,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
-	"name": "@zmaj-js/orm-common",
+	"name": "@zmaj-js/orm-playground",
 	"version": "0.2.2",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -38,7 +39,10 @@
 		"dev": "tsup --config ../../tsup.config.ts --watch"
 	},
 	"dependencies": {
-		"radash": "^10.8.1",
-		"type-fest": "^3.11.1"
+		"@zmaj-js/common": "workspace:*",
+		"@zmaj-js/orm": "workspace:*"
+	},
+	"devDependencies": {
+		"@zmaj-js/test-utils": "workspace:*"
 	}
 }

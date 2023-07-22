@@ -1,5 +1,8 @@
+import { CollectionDef } from "@common/modules/infra-collections/collection-def.type"
+import { ColumnDataType } from "@common/modules/infra-fields/column-data-type.schema"
 import { FieldDef } from "@common/modules/infra-fields/field-def.type"
 import { Struct } from "@common/types/struct.type"
+import { snakeCase } from "@common/utils/lodash"
 import {
 	BaseModel,
 	ModelRelationDefinition,
@@ -10,7 +13,6 @@ import {
 } from "@zmaj-js/orm-common"
 import { Class, ConditionalPick, Except } from "type-fest"
 import { v4 } from "uuid"
-import { CollectionDef, ColumnDataType, snakeCase } from ".."
 import { buildField } from "./_build-field"
 import { BuildCollectionOptions, buildCollection } from "./_build-infra-collection"
 import { RelationBuilderInfo } from "./_build-relation"
@@ -59,7 +61,8 @@ type DefineCollectionParams<T extends Struct> = {
 // 	return col
 // }
 
-const models = createModelsStore()
+let models = createModelsStore()
+// const models = createModelsStore()
 
 // type RelationKeys<TModel extends BaseModel> = keyof Record<
 // 	keyof ConditionalPick<TModel, ModelRelationDefinition<any, any>>,
@@ -79,6 +82,7 @@ export function defineCollection<TModel extends BaseModel>(
 		>
 	},
 ): CollectionDef<ModelType<TModel>> {
+	models ??= createModelsStore()
 	const modelInstance = models.getModel(ModelClass)
 	const tableName = modelInstance.tableName ?? snakeCase(modelInstance.name)
 	const col = buildCollection<ModelType<TModel>>(tableName, config.options)
@@ -97,7 +101,11 @@ export function defineCollection<TModel extends BaseModel>(
 		col.fields[property] = generated
 	}
 
+	const a = 2 + 2 == 4
+	if (a) return col
+
 	const relations = modelInstance.getRelations()
+
 	for (const [property, rel] of Object.entries(relations)) {
 		// FIXME: WHY IS THIS UNDEFINED
 		const otherModelClass = rel.modelFn()

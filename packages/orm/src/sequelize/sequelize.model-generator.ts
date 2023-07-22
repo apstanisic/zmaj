@@ -6,6 +6,7 @@ import {
 	convertModelFromClassToPojo,
 	createModelsStore,
 } from "@zmaj-js/orm-common"
+import { snake } from "radash"
 import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
 import { Class } from "type-fest"
 import { v4 } from "uuid"
@@ -77,7 +78,7 @@ export class SequelizeModelsGenerator {
 				autoIncrement: field.isAutoIncrement,
 				unique: field.isUnique,
 				primaryKey: field.isPrimaryKey,
-				field: field.columnName,
+				field: snake(propertyName), // field.columnName, TODO FIXME!!!!!!!!!!!
 				// i'm abusing comment property to notify repository if record can be updated
 				comment: `CAN_CREATE=${field.canCreate};CAN_UPDATE=${field.canUpdate}`,
 			}

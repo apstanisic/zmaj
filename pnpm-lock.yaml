@@ -798,9 +798,25 @@ importers:
 
   packages/orm-common:
     dependencies:
+      radash:
+        specifier: ^10.8.1
+        version: 10.8.1
       type-fest:
         specifier: ^3.11.1
         version: 3.11.1
+
+  packages/orm-playground:
+    dependencies:
+      '@zmaj-js/common':
+        specifier: workspace:*
+        version: link:../common
+      '@zmaj-js/orm':
+        specifier: workspace:*
+        version: link:../orm
+    devDependencies:
+      '@zmaj-js/test-utils':
+        specifier: workspace:*
+        version: link:../test-utils
 
   packages/rich-input:
     dependencies:
