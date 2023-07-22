@@ -1,5 +1,10 @@
-import { UserModel, systemModels } from "@zmaj-js/common"
 import { DatabaseConfig, SequelizeService } from "@zmaj-js/orm"
+import { inspect } from "node:util"
+import { CommentModel, PostInfoModel, PostModel, PostTagModel, TagModel } from "./example-models"
+inspect.defaultOptions.depth = null
+function falsy(): boolean {
+	return false
+}
 
 const service = new SequelizeService(
 	new DatabaseConfig({
@@ -14,25 +19,46 @@ const service = new SequelizeService(
 async function run() {
 	console.log("here")
 
-	await service.init([...systemModels])
-	console.log("here!!")
-	const userRepo = service.repoManager.getRepo(UserModel)
-	const user = await userRepo.findOne({
+	await service.init([PostModel, TagModel, CommentModel, PostTagModel, PostInfoModel])
+	const postRepo = service.repoManager.getRepo(PostModel)
+	const commentsRepo = service.repoManager.getRepo(CommentModel)
+	const result = await postRepo.findWhere({
+		limit: 2,
 		where: {
-			email: { $ne: "hello@world.test" },
-			lastName: { $nin: ["John", "Smith"] },
+			title: { $ne: "Hello World!" },
+			body: { $nin: ["John", "Smith"] },
 		},
 		fields: {
-			email: true,
-			id: true,
-			files: {
-				id: true,
-				fileSize: true,
-				name: true,
-			},
+			likes: true,
+			comments: { postId: true, body: true },
+			tags: { name: true },
+			title: true,
+			info: { additionalInfo: true },
 		},
 	})
-	console.log({ user })
+	const post1 = result[0]!
+	if (falsy()) {
+		post1.title.at
+		// @ts-expect-error
+		post1.body.at
+	}
+	console.log({ user: result })
+
+	const comment = await commentsRepo.findOneOrThrow({
+		fields: {
+			post: { title: true },
+			id: true,
+			postId: true,
+		},
+	})
+	console.log({ res2: comment })
+	if (falsy()) {
+		comment.post.title.at
+		// @ts-expect-error
+		comment.post.body.at
+	}
+
+	await service.onModuleDestroy()
 }
 
 run()
