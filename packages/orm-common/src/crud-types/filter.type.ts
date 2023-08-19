@@ -1,6 +1,5 @@
-import { RequireExactlyOne } from "type-fest"
-import { EntityRefVariants } from "./entity-ref-variants.type"
-import { StripEntityRef } from "./strip-entity-ref.type"
+import { RequireExactlyOne, Simplify } from "type-fest"
+import { BaseModel, ModelType, ModelVariant } from ".."
 
 type Comparisons<T> = RequireExactlyOne<{
 	$eq: T
@@ -17,17 +16,27 @@ type Comparisons<T> = RequireExactlyOne<{
 	// $like: T
 }>
 
-export type Filter<T = Record<string, any>> =
-	//
+export type Filter<T extends ModelType<BaseModel>> = Simplify<
 	| {
-			// DIRTY FIX FOR DATE
-			[key in keyof T]?: NonNullable<T[key]> extends Date
-				? T[key] | Comparisons<T[key]> | null
-				: NonNullable<T[key]> extends EntityRefVariants<infer R>
-				? Filter<StripEntityRef<R>>
+			[key in keyof T]?: NonNullable<T[key]> extends ModelVariant<infer R>
+				? Filter<ModelType<R>>
 				: T[key] | Comparisons<T[key]> | null
 	  }
 	| RequireExactlyOne<{ $and: Filter<T>[]; $or: Filter<T>[] }>
+>
+
+// export type Filter<T = Record<string, any>> =
+// 	//
+// 	| {
+// 			// DIRTY FIX FOR DATE
+// 			[key in keyof T]?: NonNullable<T[key]> extends Date
+// 				? T[key] | Comparisons<T[key]> | null
+// 				: NonNullable<T[key]> extends EntityRefVariants<infer R>
+// 				? Filter<StripEntityRef<R>>
+// 				: T[key] | Comparisons<T[key]> | null
+// 	  }
+// 	| RequireExactlyOne<{ $and: Filter<T>[]; $or: Filter<T>[] }>
+
 // | ({
 // 		[key in keyof OnlyFields<T>]?: T[key] | Comparisons<T[key]>
 //   } & {

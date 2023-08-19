@@ -1,43 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import { CommentModel, PostModel } from "@orm-common/example-models"
 import { EmptyObject } from "type-fest"
 import { assertType, describe, it } from "vitest"
-import { EntityRef } from "./entity-ref.type"
+import { BaseModel, ModelType } from ".."
 import { Filter } from "./filter.type"
 
-type Comment = {
-	id: number
-	meta: {
-		device: string
-	}
-	post?: EntityRef<Post>
-}
-
-type Tag = {
-	id: string
-	name: string
-}
-
-type Owner = {
-	id: string
-	name: string
-	posts?: EntityRef<Post>[]
-}
-
-type Post = {
-	id: string
-	title: string
-	owner?: EntityRef<Owner>
-	comments?: EntityRef<Comment>[]
-	tags?: readonly EntityRef<Tag>[]
-}
-
-function getType<T>() {
-	return <F extends Filter<T>>(f: F): F => f
+function getType<T extends BaseModel>() {
+	return <F extends Filter<ModelType<T>>>(f: F): F => f
 }
 
 describe("Fields", () => {
 	it("should return nothing on empty object", () => {
-		const type = getType<Post>()({})
+		const type = getType<PostModel>()({})
 		assertType<EmptyObject>(type)
 
 		// @ts-expect-error
@@ -45,61 +19,61 @@ describe("Fields", () => {
 	})
 
 	it("should require correct value for filtering ", () => {
-		getType<Post>()({ id: "hello" })
+		getType<PostModel>()({ id: "hello" })
 		// @ts-expect-error
-		getType<Post>()({ id: false })
+		getType<PostModel>()({ id: false })
 	})
 
 	it("should allow undefined everywhere", () => {
-		getType<Post>()({ id: undefined })
-		getType<Post>()({ tags: undefined })
+		getType<PostModel>()({ id: undefined })
+		getType<PostModel>()({ tags: undefined })
 	})
 
 	it("should allow null for simple values", () => {
-		getType<Post>()({ id: null })
+		getType<PostModel>()({ id: null })
 		// @ts-expect-error
-		getType<Post>()({ tags: null })
+		getType<PostModel>()({ tags: null })
 	})
 
 	it("should allow nesting filter", () => {
-		getType<Post>()({
-			owner: {
+		getType<PostModel>()({
+			writer: {
 				name: "Hello",
 			},
 		})
 	})
 
 	it("should allow nesting filter for array", () => {
-		getType<Post>()({
+		getType<PostModel>()({
 			comments: {
-				id: 5,
+				id: "5",
 			},
 		})
 	})
 
 	it("should allow $and & $or", () => {
-		getType<Post>()({ $and: [{ id: "qwe" }, { title: "req" }] })
-		getType<Post>()({ $or: [] })
+		getType<PostModel>()({ $and: [{ id: "qwe" }, { title: "req" }] })
+		getType<PostModel>()({ $or: [] })
 	})
 
 	it("should forbid both $or and $and", () => {
 		// @ts-expect-error
-		getType<Post>()({ $and: [{ id: "qwe" }], $or: [{ id: "qwe" }] })
+		getType<PostModel>()({ $and: [{ id: "qwe" }], $or: [{ id: "qwe" }] })
 	})
 
 	// Explore `Exact`
 	// it("should forbid unknown keys", () => {
 	// 	// @ts-expect-error
-	// 	getType<Post>()({ id: "hello", hello: "test" })
+	// 	getType<PostModel>()({ id: "hello", hello: "test" })
 	// })
 
 	// it("should forbid mixing normal & $and", () => {
 	// 	// @ts-expect-error
-	// 	getType<Post>()({ id: "hello", $and: [{ id: "qwe" }] })
+	// 	getType<PostModel>()({ id: "hello", $and: [{ id: "qwe" }] })
 	// })
 
 	it("should allow deep nesting", () => {
-		getType<Post>()({
+		getType<PostModel>()({
 			$and: [
 				{ id: "qwe" },
 				{ $or: [{ title: "My" }] },
@@ -114,32 +88,32 @@ describe("Fields", () => {
 
 	it("should require comparison if object", () => {
 		// @ts-expect-error
-		getType<Post>()({ title: {} })
+		getType<PostModel>()({ title: {} })
 
-		getType<Post>()({ title: { $gt: "Hello" } })
+		getType<PostModel>()({ title: { $gt: "Hello" } })
 		// @ts-expect-error
-		getType<Post>()({ title: { $gt: 5 } })
+		getType<PostModel>()({ title: { $gt: 5 } })
 	})
 
 	it("should require string for $like", () => {
 		// @ts-expect-error
-		getType<Comment>()({ id: { $like: 5 } })
+		getType<CommentModel>()({ id: { $like: 5 } })
 
-		getType<Comment>()({ id: { $like: "Hello" } })
+		getType<CommentModel>()({ id: { $like: "Hello" } })
 	})
 
 	it("should require array for $in and $nin", () => {
 		// @ts-expect-error
-		getType<Comment>()({ id: { $in: 5 } })
+		getType<CommentModel>()({ id: { $in: "5" } })
 		// @ts-expect-error
-		getType<Comment>()({ id: { $nin: 5 } })
+		getType<CommentModel>()({ id: { $nin: "5" } })
 
 		// @ts-expect-error
-		getType<Comment>()({ id: { $in: ["hello"] } })
+		getType<CommentModel>()({ id: { $in: [5] } })
 		// @ts-expect-error
-		getType<Comment>()({ id: { $nin: ["hello"] } })
+		getType<CommentModel>()({ id: { $nin: [5] } })
 
-		getType<Comment>()({ id: { $in: [5] } })
-		getType<Comment>()({ id: { $nin: [5] } })
+		getType<CommentModel>()({ id: { $in: ["5"] } })
+		getType<CommentModel>()({ id: { $nin: ["5"] } })
 	})
 })

@@ -1,7 +1,6 @@
 import { BaseModel, Fields, ModelType } from "@zmaj-js/orm-common"
 import { RawQueryOptions } from "./RawQueryOptions"
-import { CreateManyParams } from "./create/CreateManyParams"
-import { CreateOneParams } from "./create/CreateOneParams"
+import { CreateParams } from "./create/CreateParams"
 import { DeleteByIdParams } from "./delete/DeleteByIdParams"
 import { DeleteManyParams } from "./delete/DeleteManyParams"
 import { CountOptions } from "./find/CountOptions"
@@ -31,7 +30,7 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 */
 	abstract findOne<F extends Fields<ModelType<TModel>> | undefined = undefined>(
 		params: FindOneOptions<TModel, F>,
-	): Promise<ReturnedFields<ModelType<TModel>, F> | undefined>
+	): Promise<ReturnedFields<TModel, F> | undefined>
 
 	/**
 	 * Find one record, or throw
@@ -39,7 +38,7 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 */
 	abstract findOneOrThrow<F extends Fields<ModelType<TModel>> | undefined = undefined>(
 		params: FindOneOptions<TModel, F>,
-	): Promise<ReturnedFields<ModelType<TModel>, F>>
+	): Promise<ReturnedFields<TModel, F>>
 
 	/**
 	 * Find with filter
@@ -49,7 +48,7 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 		params: FindManyOptions<TModel, F>,
 	): Promise<
 		ReturnedFields<
-			ModelType<TModel>,
+			TModel,
 			F,
 			FindManyOptions<TModel, F>["includeHidden"] extends true ? true : false
 		>[]
@@ -61,14 +60,14 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 */
 	abstract findById<F extends Fields<ModelType<TModel>> | undefined = undefined>(
 		params: FindByIdOptions<TModel, F>,
-	): Promise<ReturnedFields<ModelType<TModel>, F>>
+	): Promise<ReturnedFields<TModel, F>>
 	/**
 	 *
 	 * @param params
 	 */
 	abstract findAndCount<F extends Fields<ModelType<TModel>> | undefined = undefined>(
 		params: FindAndCountOptions<TModel, F>,
-	): Promise<[ReturnedFields<ModelType<TModel>, F>[], number]>
+	): Promise<[ReturnedFields<TModel, F>[], number]>
 	/**
 	 *
 	 * @param params
@@ -79,14 +78,14 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 * @param params
 	 */
 	abstract createOne<OverrideCanCreate extends boolean = false>(
-		params: CreateOneParams<TModel, OverrideCanCreate>,
+		params: CreateParams<TModel, OverrideCanCreate, "one">,
 	): Promise<ModelType<TModel>>
 	/**
 	 *
 	 * @param params
 	 */
 	abstract createMany<OverrideCanCreate extends boolean = false>(
-		params: CreateManyParams<TModel, OverrideCanCreate>,
+		params: CreateParams<TModel, OverrideCanCreate, "many">,
 	): Promise<ModelType<TModel>[]>
 	/**
 	 *
@@ -107,10 +106,10 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 * Delete by Id
 	 * @param params
 	 */
-	abstract deleteById(params: DeleteByIdParams): Promise<ModelType<TModel>>
+	abstract deleteById(params: DeleteByIdParams<TModel>): Promise<ModelType<TModel>>
 	/**
 	 * Delete where
 	 * @param params
 	 */
-	abstract deleteWhere(params: DeleteManyParams<ModelType<TModel>>): Promise<ModelType<TModel>[]>
+	abstract deleteWhere(params: DeleteManyParams<TModel>): Promise<ModelType<TModel>[]>
 }

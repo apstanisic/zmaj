@@ -1,5 +1,4 @@
-import { StripWrapperTypes } from "@orm-common/strip-wrapper-types.type"
-import { ConditionalPick } from "type-fest"
+import { ConditionalPick, Opaque } from "type-fest"
 import { BaseModel } from "./BaseModel"
 import { ModelRelationDefinition } from "./ModelRelationDefinition"
 import { ExtractCreateParams, ExtractFields, ExtractUpdateParams } from "./field-builder"
@@ -32,7 +31,7 @@ type ToOptional<T> = Partial<Pick<T, UndefinedProperties<T>>> &
 type BaseType<TModel extends BaseModel> = ToOptional<ExtractFields<TModel["fields"]>> &
 	ModelRelations<TModel>
 
-export type ModelType<TModel extends BaseModel> = StripWrapperTypes<BaseType<TModel>>
+export type ModelType<TModel extends BaseModel> = Opaque<BaseType<TModel>>
 
 export type ModelFieldsType<TModel extends BaseModel> = ToOptional<ExtractFields<TModel["fields"]>>
 

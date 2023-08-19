@@ -1,9 +1,10 @@
-import { Filter, IdType } from "@zmaj-js/orm-common"
+import { BaseModel } from "@zmaj-js/orm-common"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
+import { Where } from "../where.type"
 
-export type DeleteManyParams<T> = BaseRepoMethodParams & {
+export type DeleteManyParams<TModel extends BaseModel> = BaseRepoMethodParams & {
 	/**
 	 * Filter to delete files
 	 */
-	where: Filter<T> | IdType[] | IdType
+	where: Where<TModel>
 }

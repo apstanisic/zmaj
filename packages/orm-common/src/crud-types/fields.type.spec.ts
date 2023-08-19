@@ -1,43 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import { PostModel } from "@orm-common/example-models"
 import { EmptyObject } from "type-fest"
 import { assertType, describe, it } from "vitest"
-import { EntityRef } from "./entity-ref.type"
+import { BaseModel, ModelType } from ".."
 import { Fields } from "./fields.type"
 
-type Comment = {
-	id: number
-	meta: {
-		device: string
-	}
-	post?: EntityRef<Post>
-}
-
-type Tag = {
-	id: string
-	name: string
-}
-
-type Owner = {
-	id: string
-	name: string
-	posts?: EntityRef<Post>[]
-}
-
-type Post = {
-	id: string
-	title: string
-	owner?: EntityRef<Owner>
-	comments?: EntityRef<Comment>[]
-	tags?: readonly EntityRef<Tag>[]
-}
-
-function getType<T>() {
-	return <F extends Fields<T>>(f: F): F => f
+function getType<T extends BaseModel>() {
+	return <F extends Fields<ModelType<T>>>(f: F): F => f
 }
 
 describe("Fields", () => {
 	it("should return nothing on empty object", () => {
-		const type = getType<Post>()({})
+		const type = getType<PostModel>()({})
 		assertType<EmptyObject>(type)
 
 		// @ts-expect-error
@@ -45,7 +19,7 @@ describe("Fields", () => {
 	})
 
 	it("should return only specified fields", () => {
-		const type = getType<Post>()({ id: true })
+		const type = getType<PostModel>()({ id: true })
 		assertType<{ id: true }>(type)
 
 		// @ts-expect-error
@@ -55,26 +29,26 @@ describe("Fields", () => {
 	})
 
 	it("should set true to relation", () => {
-		const type = getType<Post>()({ owner: true })
-		assertType<{ owner: true }>(type)
+		const type = getType<PostModel>()({ writer: true })
+		assertType<{ writer: true }>(type)
 
 		// @ts-expect-error
-		assertType<{ owner: EmptyObject }>(type)
+		assertType<{ writer: EmptyObject }>(type)
 	})
 
 	it("should allow getting partial relation", () => {
-		const type = getType<Post>()({ owner: { id: true } })
-		assertType<{ owner: { id: true } }>(type)
+		const type = getType<PostModel>()({ writer: { id: true } })
+		assertType<{ writer: { id: true } }>(type)
 
 		// @ts-expect-error
-		assertType<{ owner: { id: true; name: true } }>(type)
+		assertType<{ writer: { id: true; name: true } }>(type)
 		// @ts-expect-error
-		assertType<{ owner: { id: true; posts: true } }>(type)
+		assertType<{ writer: { id: true; posts: true } }>(type)
 	})
 
 	it("should allow getting partial relation for array", () => {
-		const type = getType<Post>()({ comments: { meta: true } })
-		assertType<{ comments: { meta: true } }>(type)
+		const type = getType<PostModel>()({ comments: { body: true } })
+		assertType<{ comments: { body: true } }>(type)
 
 		// @ts-expect-error
 		assertType<{ comments: { id: true } }>(type)
@@ -83,7 +57,7 @@ describe("Fields", () => {
 	})
 
 	it("should allow getting partial relation for readonly array", () => {
-		const type = getType<Post>()({ tags: { name: true } })
+		const type = getType<PostModel>()({ tags: { name: true } })
 		assertType<{ tags: { name: true } }>(type)
 
 		// @ts-expect-error
@@ -95,6 +69,6 @@ describe("Fields", () => {
 	// TODO FIX
 	// it("should not care if value is object", () => {
 	// 	// @ts-expect-error
-	// 	const type = getType<Post>()({ comments: { meta: {} } })
+	// 	const type = getType<PostModel>()({ comments: { meta: {} } })
 	// })
 })

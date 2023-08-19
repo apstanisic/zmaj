@@ -2,9 +2,7 @@ import { DatabaseConfig, SequelizeService } from "@zmaj-js/orm"
 import { inspect } from "node:util"
 import { CommentModel, PostInfoModel, PostModel, PostTagModel, TagModel } from "./example-models"
 inspect.defaultOptions.depth = null
-function falsy(): boolean {
-	return false
-}
+const falsy: boolean = false
 
 const service = new SequelizeService(
 	new DatabaseConfig({
@@ -37,7 +35,7 @@ async function run() {
 		},
 	})
 	const post1 = result[0]!
-	if (falsy()) {
+	if (falsy) {
 		post1.title.at
 		// @ts-expect-error
 		post1.body.at
@@ -52,7 +50,7 @@ async function run() {
 		},
 	})
 	console.log({ res2: comment })
-	if (falsy()) {
+	if (falsy) {
 		comment.post.title.at
 		// @ts-expect-error
 		comment.post.body.at

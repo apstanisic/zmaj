@@ -9,3 +9,8 @@ export type EntityRefVariants<T> =
 	| ModelType<BaseModel>
 	| ModelType<BaseModel>[] //
 	| readonly ModelType<BaseModel>[]
+
+export type ModelVariant<T extends BaseModel> =
+	| ModelType<T>
+	| ModelType<T>[] //
+	| readonly ModelType<T>[]

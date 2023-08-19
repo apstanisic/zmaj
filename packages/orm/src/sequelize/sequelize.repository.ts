@@ -1,7 +1,5 @@
 import { OrmRepository } from "@orm/orm-specs/OrmRepository"
 import { RawQueryOptions } from "@orm/orm-specs/RawQueryOptions"
-import { CreateManyParams } from "@orm/orm-specs/create/CreateManyParams"
-import { CreateOneParams } from "@orm/orm-specs/create/CreateOneParams"
 import { DeleteByIdParams } from "@orm/orm-specs/delete/DeleteByIdParams"
 import { DeleteManyParams } from "@orm/orm-specs/delete/DeleteManyParams"
 import { CountOptions } from "@orm/orm-specs/find/CountOptions"
@@ -35,6 +33,7 @@ import {
 	UniqueConstraintError,
 	WhereOptions,
 } from "sequelize"
+import { CreateParams } from ".."
 import {
 	FkDeleteError,
 	InternalOrmProblem,
@@ -182,7 +181,7 @@ export class SequelizeRepository<
 	 *
 	 */
 	async createOne<OverrideCanCreate extends boolean>(
-		params: CreateOneParams<TModel, OverrideCanCreate>,
+		params: CreateParams<TModel, OverrideCanCreate, "one">,
 	): Promise<ModelType<TModel>> {
 		const result = await this.createMany({ data: [params.data], trx: params.trx })
 		if (result.length !== 1) throw new InternalOrmProblem(39534) //throw500(39534)
@@ -193,7 +192,7 @@ export class SequelizeRepository<
 	 *
 	 */
 	async createMany<OverrideCanCreate extends boolean>(
-		params: CreateManyParams<TModel, OverrideCanCreate>,
+		params: CreateParams<TModel, OverrideCanCreate, "many">,
 	): Promise<ModelType<TModel>[]> {
 		try {
 			// do not pass null values when creating record, since that replaces default value
@@ -264,7 +263,7 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async deleteById(params: DeleteByIdParams): Promise<ModelType<TModel>> {
+	async deleteById(params: DeleteByIdParams<TModel>): Promise<ModelType<TModel>> {
 		const [deleted] = await this.deleteWhere({
 			trx: params.trx,
 			where: params.id,
@@ -276,7 +275,7 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async deleteWhere(params: DeleteManyParams<ModelType<TModel>>): Promise<ModelType<TModel>[]> {
+	async deleteWhere(params: DeleteManyParams<TModel>): Promise<ModelType<TModel>[]> {
 		// return all top level fields
 		const res = await this.findWhere({
 			trx: params.trx,

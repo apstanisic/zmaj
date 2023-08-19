@@ -27,7 +27,8 @@
 		"allowUnreachableCode": true,
 		//
 		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"types": ["vitest/importMeta"]
 	},
 	"exclude": ["packages/*/build", "packages/*/dist"]
 }
