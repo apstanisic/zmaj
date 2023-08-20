@@ -72,6 +72,7 @@ export class PostInfoModel extends BaseModel {
 		id: f.uuid({ isPk: true }),
 		postId: f.uuid({ columnName: "post_id" }),
 		additionalInfo: f.custom<Record<string, any>>()({}),
+		hiddenField: f.text({ canRead: false }),
 	}))
 	post = this.oneToOneOwner(() => PostModel, { fkField: "postId" })
 }

@@ -1,4 +1,4 @@
-import { PostModel } from "@orm-engine/example-models"
+import { PostInfoModel, PostModel } from "@orm-engine/example-models"
 import { assertType, it } from "vitest"
 import { BaseModel } from "../base-model"
 import { Base } from "../utils/base.type"
@@ -69,5 +69,12 @@ if (import.meta.vitest) {
 			title: string
 			writerId: string
 		}>(val)
+	})
+
+	it("should respect canRead", () => {
+		const val = {} as ExtractReadFields<PostInfoModel>
+		// @ts-expect-error
+		assertType<string>(val.hiddenField)
+		assertType<string | undefined>(val.hiddenField)
 	})
 }

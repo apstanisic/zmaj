@@ -122,16 +122,18 @@ describe("Fields", () => {
 	})
 
 	describe("one to many", async () => {
-		const result = await postRepo.findOneOrThrow({
+		const post = await postRepo.findOneOrThrow({
 			fields: {
 				comments: {
 					id: true,
 				},
 			},
 		})
+
 		it("should return array if specified", () => {
-			assertType<unknown[]>(result.comments)
+			assertType<unknown[]>(post.comments)
 		})
+
 		it("should not return array if not specified", async () => {
 			const result = await postRepo.findOneOrThrow({
 				fields: {
@@ -146,20 +148,45 @@ describe("Fields", () => {
 		})
 
 		it("should return selected fields", () => {
-			const comment = result.comments[0]!
+			const comment = post.comments[0]!
 
 			assertType<string>(comment.id)
+			// @ts-expect-error
 			assertType<string>(comment.postId)
 		})
 
 		it("should not return not specified fields", () => {
-			// @ts-expect-error
-			assertType<string>(result.post.id)
-			// @ts-expect-error
-			assertType<string>(result.post.body)
+			const comment = post.comments[0]!
 
-			assertType<string | undefined>(result.post.id)
-			assertType<string | undefined>(result.post.body)
+			assertType<string>(comment.id)
+			// @ts-expect-error
+			assertType<string>(comment.postId)
+
+			// @ts-expect-error
+			assertType<string>(comment.body)
 		})
+	})
+
+	it("should allow override with includeHidden", async () => {
+		const res = await postInfoRepo.findOneOrThrow({
+			fields: {
+				id: true,
+				hiddenField: true,
+			},
+		})
+		assertType<{ id: string; hiddenField?: string }>(res)
+		// @ts-expect-error
+		assertType<string>(res.hiddenField)
+
+		const res2 = await postInfoRepo.findWhere({
+			includeHidden: true,
+			fields: {
+				id: true,
+				hiddenField: true,
+			},
+		})
+
+		const res2Item = res2[0]!
+		assertType<string>(res2Item.hiddenField)
 	})
 })

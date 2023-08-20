@@ -5,6 +5,7 @@ import { ModelType } from "../model/types/extract-model-types"
 import { ModelVariant } from "./model-variant.type"
 
 // It does not work without 2 NonNullable
+// TODO Disable passing fields that user cannot read (unless includeHidden is passed)
 export type SelectFields<T extends BaseModel> = {
 	[key in keyof ModelType<T>]?: NonNullable<NonNullable<ModelType<T>>[key]> extends ModelVariant<
 		infer TRelation extends BaseModel
