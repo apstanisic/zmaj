@@ -13,8 +13,14 @@ export type ExtractReadFields<T extends BaseModel> = Base<{
 export type ExtractCreateFields<T extends BaseModel> = Base<{
 	[key in keyof T["fields"]]: T["fields"][key]["_create"]
 }>
+export type ExtractCreateFieldsOverride<T extends BaseModel> = Base<{
+	[key in keyof T["fields"]]: T["fields"][key]["_createOverride"]
+}>
 export type ExtractUpdateFields<T extends BaseModel> = Base<{
 	[key in keyof T["fields"]]: T["fields"][key]["_update"]
+}>
+export type ExtractUpdateFieldsOverride<T extends BaseModel> = Base<{
+	[key in keyof T["fields"]]: T["fields"][key]["_updateOverride"]
 }>
 
 /**

@@ -9,6 +9,7 @@ import { BaseModel } from "@orm-engine/model/base-model"
 import { ModelType } from "@orm-engine/model/types/extract-model-types"
 import { Base } from "@orm-engine/model/utils/base.type"
 import { EmptyObject, UnwrapOpaque } from "type-fest"
+import { tag } from "type-fest/source/opaque"
 import { assertType, it } from "vitest"
 import { ModelVariant } from "./model-variant.type"
 import { SelectFields } from "./select-fields.type"
@@ -25,22 +26,25 @@ export type ReturnedFields<
 	TModel extends BaseModel,
 	TFields extends SelectFields<TModel> | undefined,
 	TIncludeHidden extends boolean = false,
-> = Base<
-	TFields extends undefined | EmptyObject
-		? UnwrapOpaque<ModelType<TModel, ShowHidden<TIncludeHidden>>>
-		: UnwrapOpaque<{
-				[key in keyof Required<ModelType<TModel>>]: NonNullable<TFields>[key] extends true // if true, simply return required type
-					? ModelType<TModel, ShowHidden<TIncludeHidden>>[key]
-					: NonNullable<TFields>[key] extends object // if select object, pick fields
-					? // keep type array if it's array relation
-					  NonNullable<ModelType<TModel>[key]> extends ModelVariant<infer R extends BaseModel>
-						? MakeArrayIf<
-								IsArray<NonNullable<ModelType<TModel, ShowHidden<TIncludeHidden>>[key]>>,
-								ReturnedFields<R, NonNullable<TFields>[key]>
-						  >
-						: NonNullable<ModelType<TModel, ShowHidden<TIncludeHidden>>[key]>
-					: ModelType<TModel, ShowHidden<TIncludeHidden>>[key] | undefined // otherwise return current type but make in optional
-		  }>
+> = Omit<
+	Base<
+		TFields extends undefined | EmptyObject
+			? UnwrapOpaque<ModelType<TModel, ShowHidden<TIncludeHidden>>>
+			: UnwrapOpaque<{
+					[key in keyof Required<ModelType<TModel>>]: NonNullable<TFields>[key] extends true // if true, simply return required type
+						? ModelType<TModel, ShowHidden<TIncludeHidden>>[key]
+						: NonNullable<TFields>[key] extends object // if select object, pick fields
+						? // keep type array if it's array relation
+						  NonNullable<ModelType<TModel>[key]> extends ModelVariant<infer R extends BaseModel>
+							? MakeArrayIf<
+									IsArray<NonNullable<ModelType<TModel, ShowHidden<TIncludeHidden>>[key]>>,
+									ReturnedFields<R, NonNullable<TFields>[key]>
+							  >
+							: NonNullable<ModelType<TModel, ShowHidden<TIncludeHidden>>[key]>
+						: ModelType<TModel, ShowHidden<TIncludeHidden>>[key] | undefined // otherwise return current type but make in optional
+			  }>
+	>,
+	typeof tag // temp workaround for Opaque until i figure out why it's not working
 >
 
 if (import.meta.vitest) {
@@ -73,6 +77,10 @@ if (import.meta.vitest) {
 		)
 	})
 
+	it("should unwrap when undefined", () => {
+		const val = {} as ReturnedFields<PostInfoModel, undefined>
+	})
+
 	it("should allow to return hidden", () => {
 		const val = {} as ReturnedFields<PostInfoModel, { hiddenField: true; id: true }>
 		// @ts-expect-error
@@ -95,9 +103,3 @@ if (import.meta.vitest) {
 		assertType<{ body: string; tags: { name: string }[] }>(val)
 	})
 }
-
-// type b = CreateFieldResult<string, {
-//     readonly canRead: false;
-// }>
-
-// type C = b["_read"]

@@ -178,7 +178,7 @@ describe("Fields", () => {
 		// @ts-expect-error
 		assertType<string>(res.hiddenField)
 
-		const res2 = await postInfoRepo.findWhere({
+		const res2 = await postInfoRepo.findOneOrThrow({
 			includeHidden: true,
 			fields: {
 				id: true,
@@ -186,7 +186,27 @@ describe("Fields", () => {
 			},
 		})
 
-		const res2Item = res2[0]!
-		assertType<string>(res2Item.hiddenField)
+		assertType<string>(res2.hiddenField)
+	})
+
+	describe("create", () => {
+		it("should require some fields", () => {
+			postRepo.createOne({
+				// @ts-expect-error
+				data: {},
+			})
+		})
+
+		it("should override can create", () => {
+			postRepo.createOne({
+				// @ts-expect-error
+				data: { createdAt: new Date(), body: "hello", likes: 5, title: "", writerId: "uuid" },
+			})
+
+			postRepo.createOne({
+				overrideCanCreate: true,
+				data: { createdAt: new Date(), body: "hello", likes: 5, title: "", writerId: "uuid" },
+			})
+		})
 	})
 })

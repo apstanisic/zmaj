@@ -1,7 +1,7 @@
 import { SelectFields } from "@orm-engine/crud/select-fields.type"
 import { BaseModel } from "@orm-engine/model/base-model"
-import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
 import { RepoWhere } from "../repo-where.type"
+import { BaseFindOptions } from "./BaseFindOptions"
 import { Sort } from "./Sort"
 /**
  * Both fields are required, but since we are using repo, repo will provide first param,
@@ -10,8 +10,9 @@ import { Sort } from "./Sort"
  */
 export type FindManyOptions<
 	TModel extends BaseModel,
-	F extends SelectFields<TModel> | undefined,
-> = BaseRepoMethodParams & {
+	TFields extends SelectFields<TModel> | undefined,
+	TIncludeHidden extends boolean,
+> = BaseFindOptions<TModel, TFields, TIncludeHidden> & {
 	/**
 	 * Limit
 	 */
@@ -30,14 +31,4 @@ export type FindManyOptions<
 	 * Where part. User can provide array of ids
 	 */
 	where?: RepoWhere<TModel>
-
-	/**
-	 * Fields and relations that we need to get
-	 */
-	fields?: F extends undefined ? SelectFields<TModel> : F
-	/**
-	 * @internal
-	 * TODO
-	 */
-	includeHidden?: boolean
 }

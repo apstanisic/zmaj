@@ -1,7 +1,7 @@
 import { BaseModel } from "@orm-engine/model/base-model"
 import {
 	ExtractCreateFields,
-	ExtractFields,
+	ExtractCreateFieldsOverride,
 } from "@orm-engine/model/types/extract-model-fields.types"
 
 /**
@@ -18,4 +18,6 @@ import {
 export type GetCreateType<
 	TModel extends BaseModel,
 	TOverrideCanCreate extends boolean,
-> = TOverrideCanCreate extends true ? Partial<ExtractFields<TModel>> : ExtractCreateFields<TModel>
+> = TOverrideCanCreate extends true
+	? ExtractCreateFieldsOverride<TModel>
+	: ExtractCreateFields<TModel>

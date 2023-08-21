@@ -3,6 +3,7 @@ import { BaseModel } from "@orm-engine/model/base-model"
 import { FindManyOptions } from "./FindManyOptions"
 
 export type FindAndCountOptions<
-	T extends BaseModel,
-	F extends SelectFields<T> | undefined,
-> = FindManyOptions<T, F>
+	TModel extends BaseModel,
+	TFields extends SelectFields<TModel> | undefined,
+	TIncludeHidden extends boolean,
+> = FindManyOptions<TModel, TFields, TIncludeHidden>

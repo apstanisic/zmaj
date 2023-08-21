@@ -29,46 +29,55 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 * Find one record
 	 * @param params
 	 */
-	abstract findOne<F extends SelectFields<TModel> | undefined = undefined>(
-		params: FindOneOptions<TModel, F>,
-	): Promise<ReturnedFields<TModel, F> | undefined>
+	abstract findOne<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindOneOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden> | undefined>
 
 	/**
 	 * Find one record, or throw
 	 * @param params
 	 */
-	abstract findOneOrThrow<F extends SelectFields<TModel> | undefined = undefined>(
-		params: FindOneOptions<TModel, F>,
-	): Promise<ReturnedFields<TModel, F>>
+	abstract findOneOrThrow<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindOneOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden>>
 
 	/**
 	 * Find with filter
 	 * @param params
 	 */
-	abstract findWhere<F extends SelectFields<TModel> | undefined = undefined>(
-		params: FindManyOptions<TModel, F>,
-	): Promise<
-		ReturnedFields<
-			TModel,
-			F,
-			FindManyOptions<TModel, F>["includeHidden"] extends true ? true : false
-		>[]
-	>
+	abstract findWhere<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindManyOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden>[]>
 
 	/**
 	 * Find record with ID or throw
 	 * @param params
 	 */
-	abstract findById<F extends SelectFields<TModel> | undefined = undefined>(
-		params: FindByIdOptions<TModel, F>,
-	): Promise<ReturnedFields<TModel, F>>
+	abstract findById<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindByIdOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden>>
 	/**
 	 *
 	 * @param params
 	 */
-	abstract findAndCount<F extends SelectFields<TModel> | undefined = undefined>(
-		params: FindAndCountOptions<TModel, F>,
-	): Promise<[ReturnedFields<TModel, F>[], number]>
+	abstract findAndCount<
+		F extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindAndCountOptions<TModel, F, TIncludeHidden>,
+	): Promise<[ReturnedFields<TModel, F, TIncludeHidden>[], number]>
 	/**
 	 *
 	 * @param params
