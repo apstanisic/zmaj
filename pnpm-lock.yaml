@@ -827,6 +827,34 @@ importers:
         specifier: workspace:*
         version: link:../test-utils
 
+  packages/orm-sq:
+    dependencies:
+      '@zmaj-js/common':
+        specifier: workspace:*
+        version: link:../common
+      '@zmaj-js/orm-engine':
+        specifier: workspace:*
+        version: link:../orm-engine
+      radash:
+        specifier: ^10.8.1
+        version: 10.8.1
+      sequelize:
+        specifier: ^6.32.0
+        version: 6.32.0(pg-hstore@2.3.4)(pg@8.11.0)
+      type-fest:
+        specifier: ^3.11.1
+        version: 3.11.1
+      uuid:
+        specifier: ^9.0.0
+        version: 9.0.0
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
+    devDependencies:
+      '@zmaj-js/test-utils':
+        specifier: workspace:*
+        version: link:../test-utils
+
   packages/rich-input:
     dependencies:
       '@tiptap/extension-bold':
@@ -4977,7 +5005,7 @@ packages:
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
-      semver: 7.4.0
+      semver: 7.5.1
       tar: 6.1.13
     transitivePeerDependencies:
       - encoding
@@ -13224,7 +13252,7 @@ packages:
       jws: 3.2.2
       lodash: 4.17.21
       ms: 2.1.3
-      semver: 7.4.0
+      semver: 7.5.1
     dev: false
 
   /jsx-ast-utils@3.3.3:
@@ -17717,14 +17745,6 @@ packages:
     dependencies:
       lru-cache: 6.0.0
     dev: true
-
-  /semver@7.4.0:
-    resolution: {integrity: sha512-RgOxM8Mw+7Zus0+zcLEUn8+JfoLpj/huFTItQy2hsM4khuC1HYRDp0cU482Ewn/Fcy6bCjufD8vAj7voC66KQw==}
-    engines: {node: '>=10'}
-    hasBin: true
-    dependencies:
-      lru-cache: 6.0.0
-    dev: false
 
   /semver@7.5.0:
     resolution: {integrity: sha512-+XC0AD/R7Q2mPSRuy2Id0+CGTZ98+8f+KvwirxOKIEyid+XSx6HbC63p+O4IndTHuX5Z+JxQ0TghCkO5Cg/2HA==}

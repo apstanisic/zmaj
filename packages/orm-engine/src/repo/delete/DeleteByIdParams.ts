@@ -1,5 +1,6 @@
-import { BaseModel, IdType } from "@zmaj-js/orm-common"
+import { BaseModel } from "@orm-engine/model/base-model"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
+import { IdType } from "../id-type.type"
 
 /**
  * TODO: Add support to extract PK type

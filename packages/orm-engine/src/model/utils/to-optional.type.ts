@@ -4,5 +4,5 @@ type UndefinedProperties<T> = {
 }[keyof T]
 
 // Convert from `val | undefined` to `?: val | undefined`
-type ToOptional<T> = Partial<Pick<T, UndefinedProperties<T>>> &
+export type ToOptional<T> = Partial<Pick<T, UndefinedProperties<T>>> &
 	Pick<T, Exclude<keyof T, UndefinedProperties<T>>>

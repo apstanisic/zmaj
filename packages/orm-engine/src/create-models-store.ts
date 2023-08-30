@@ -1,5 +1,5 @@
 import { Class } from "type-fest"
-import { BaseModel } from "./model-builder/BaseModel"
+import { BaseModel } from "./model/base-model"
 
 type ModelsState<TModel extends BaseModel = BaseModel> = {
 	models: Map<Class<BaseModel>, TModel>

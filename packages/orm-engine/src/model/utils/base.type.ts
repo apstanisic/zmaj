@@ -1,4 +1,5 @@
 import { Simplify } from "type-fest"
+import { ToOptional } from "./to-optional.type"
 
 /**
  * This is base type that should be used most of the time,

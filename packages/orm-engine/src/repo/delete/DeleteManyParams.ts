@@ -1,4 +1,4 @@
-import { BaseModel } from "@zmaj-js/orm-common"
+import { BaseModel } from "@orm-engine/model/base-model"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
 import { RepoWhere } from "../repo-where.type"
 

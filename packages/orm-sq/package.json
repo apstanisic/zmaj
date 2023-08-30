@@ -13,7 +13,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
-	"name": "@zmaj-js/orm-engine",
+	"name": "@zmaj-js/orm-sq",
 	"version": "0.2.2",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -32,13 +32,21 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/orm-engine",
+		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/orm-sq",
 		"tsc": "tsc",
 		"build": "tsup --config ../../tsup.config.ts",
 		"dev": "tsup --config ../../tsup.config.ts --watch"
 	},
 	"dependencies": {
+		"@zmaj-js/common": "workspace:*",
+		"@zmaj-js/orm-engine": "workspace:*",
 		"radash": "^10.8.1",
-		"type-fest": "^3.11.1"
+		"sequelize": "^6.32.0",
+		"type-fest": "^3.11.1",
+		"uuid": "^9.0.0",
+		"zod": "^3.21.4"
+	},
+	"devDependencies": {
+		"@zmaj-js/test-utils": "workspace:*"
 	}
 }

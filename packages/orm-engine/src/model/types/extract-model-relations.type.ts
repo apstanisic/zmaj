@@ -28,7 +28,7 @@ if (import.meta.vitest) {
 		assertType<{
 			comments?: ModelType<CommentModel>[]
 			tags?: ModelType<TagModel>[]
-			info?: ModelType<PostInfoModel>[]
+			info?: ModelType<PostInfoModel>
 			writer?: ModelType<WriterModel>
 		}>(postType)
 

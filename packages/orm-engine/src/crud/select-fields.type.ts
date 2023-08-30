@@ -15,7 +15,7 @@ export type SelectFields<T extends BaseModel> = {
 	>
 		? SelectFields<TRelation> | true
 		: true
-} & All
+} // & All
 
 if (import.meta.vitest) {
 	//
