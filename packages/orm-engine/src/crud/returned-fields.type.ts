@@ -22,6 +22,8 @@ type MakeArrayIf<Is extends boolean, T> = Is extends true ? T[] : T
 
 type ShowHidden<T extends boolean> = T extends true ? "default" : "read"
 
+// Maybe split this into fields section + relations. This way we can check fields part without
+// messing with TS for relations
 export type ReturnedFields<
 	TModel extends BaseModel,
 	TFields extends SelectFields<TModel> | undefined,

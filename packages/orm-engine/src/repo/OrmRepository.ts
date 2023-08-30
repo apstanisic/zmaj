@@ -5,10 +5,13 @@ import { CreateParams } from "./create/CreateParams"
 import { DeleteByIdParams } from "./delete/DeleteByIdParams"
 import { DeleteManyParams } from "./delete/DeleteManyParams"
 import { CountOptions } from "./find/CountOptions"
+import { CursorPaginationResponse } from "./find/CursorPaginationResponse"
 import { FindAndCountOptions } from "./find/FindAndCountOptions"
 import { FindByIdOptions } from "./find/FindByIdOptions"
+import { FindManyCursor } from "./find/FindManyCursor"
 import { FindManyOptions } from "./find/FindManyOptions"
 import { FindOneOptions } from "./find/FindOneOptions"
+import { PaginatedResponse } from "./find/PaginationResponse"
 import { RawQueryOptions } from "./raw-query-options.type"
 import { UpdateManyOptions } from "./update/UpdateManyOptions"
 import { UpdateOneOptions } from "./update/UpdateOneOptions"
@@ -124,4 +127,18 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	abstract deleteWhere(
 		params: DeleteManyParams<TModel>,
 	): Promise<ReturnedFields<TModel, undefined>[]>
+
+	abstract paginate<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindManyOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<PaginatedResponse<ReturnedFields<TModel, TFields, TIncludeHidden>>>
+
+	abstract cursor<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindManyCursor<TModel, TFields, TIncludeHidden>,
+	): Promise<CursorPaginationResponse<ReturnedFields<TModel, TFields, TIncludeHidden>>>
 }
