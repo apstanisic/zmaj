@@ -5,12 +5,12 @@ import {
 	RepoManager,
 	Transaction,
 	TransactionIsolationLevel,
+	UndefinedModelError,
 	createModelsStore,
 } from "@zmaj-js/orm-engine"
 import { isString } from "radash"
 import { Sequelize, literal } from "sequelize"
 import { Class } from "type-fest"
-import { UndefinedModelError } from "../orm-errors"
 import { SequelizeRepository } from "./sq.repository"
 import { SequelizeService } from "./sq.service"
 

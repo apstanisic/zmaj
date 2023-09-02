@@ -1,5 +1,5 @@
 import { JsonValue } from "type-fest"
-import { ColumnType } from "./db-column-type"
+import { ColumnDataType } from "./column-data-type"
 import { CreateFieldParamsAndType } from "./types/create-field-params-and-type.type"
 import { CreateFieldParams } from "./types/create-field-params.type"
 import { CreateFieldResult } from "./types/create-field-result.type"
@@ -15,7 +15,7 @@ const defaultValues = {
 
 function innerBuild<const TParams extends CreateFieldParams>(
 	params: TParams,
-	columnType: ColumnType,
+	columnType: ColumnDataType,
 	// ): CreateFieldParamsAndType<any, TParams> {
 ): any {
 	const data: CreateFieldParamsAndType<any, TParams> = {

@@ -1,4 +1,4 @@
-import { ColumnType } from "../db-column-type"
+import { ColumnDataType } from "../column-data-type"
 import { CreateFieldParams } from "./create-field-params.type"
 
 /**
@@ -15,6 +15,6 @@ export type CreateFieldParamsAndType<
 	TType,
 	TCreateFieldParams extends CreateFieldParams = CreateFieldParams,
 > = TCreateFieldParams & {
-	dataType: ColumnType
+	dataType: ColumnDataType
 	_type: TType
 }

@@ -13,7 +13,7 @@ import { ModelStatic, QueryInterface, Sequelize, Transaction } from "sequelize"
 import { Class, WritableDeep } from "type-fest"
 import { SequelizeAlterSchemaService } from "./sequelize-alter-schema.service"
 import { SequelizeSchemaInfoService } from "./sequelize-schema-info.service"
-import { SequelizeModelsGenerator } from "./sequelize.model-generator"
+import { SequelizeModelsGenerator } from "./sq.model-generator"
 import { SequelizeRepoManager } from "./sq.repo-manager"
 
 const isolationMapper: Record<TransactionIsolationLevel, Transaction.ISOLATION_LEVELS> = {

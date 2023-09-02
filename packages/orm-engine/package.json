@@ -38,7 +38,6 @@
 		"dev": "tsup --config ../../tsup.config.ts --watch"
 	},
 	"dependencies": {
-		"radash": "^10.8.1",
 		"type-fest": "^3.11.1"
 	}
 }

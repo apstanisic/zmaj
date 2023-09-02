@@ -1,5 +1,5 @@
 import { Except, JsonValue } from "type-fest"
-import { ColumnType } from "./db-column-type"
+import { ColumnDataType } from "./column-data-type"
 
 export type UserParams = {
 	nullable?: boolean
@@ -20,7 +20,7 @@ export type UserParams = {
 }
 
 type ParamsAndType<TType, TField extends UserParams = UserParams> = TField & {
-	dataType: ColumnType
+	dataType: ColumnDataType
 	_type: TType
 }
 
@@ -65,7 +65,7 @@ const base = {
 
 function build<const TParams extends UserParams>(
 	params: TParams,
-	columnType: ColumnType,
+	columnType: ColumnDataType,
 	// ): ParamsAndType<any, TParams> {
 ): any {
 	const data: ParamsAndType<any, TParams> = {

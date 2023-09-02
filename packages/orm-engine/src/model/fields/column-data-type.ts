@@ -30,6 +30,6 @@ export const arrayDataTypes = [
 
 export const columnTypes = [...baseDataTypes, ...arrayDataTypes] as const
 
-export type ColumnType = (typeof columnTypes)[number]
+export type ColumnDataType = (typeof columnTypes)[number]
 export type ArrayColumnType = (typeof arrayDataTypes)[number]
 export type BaseColumnType = (typeof baseDataTypes)[number]
