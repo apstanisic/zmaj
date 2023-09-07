@@ -102,6 +102,8 @@ describe("should return object left contain fk and know fk is not null", () => {
 
 	it("should work on o2o", () => {
 		const val = {} as ReturnedFields<Comment, { post: true }, false>
+		// ITS UNDEFINED BECAUSE RELATION IS BY DEFAULT?
+		// I CAN'T SIMPLY RETURN TYPE IF TYPE IS RELATION
 
 		expectTypeOf<{ post: ModelType<Post> }>(val)
 		// @ts-expect-error

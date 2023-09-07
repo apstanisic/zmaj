@@ -27,7 +27,7 @@ export type ReturnedFields<
 			? UnwrapOpaque<ModelTypeWithHidden<TModel, TIncludeHidden>>
 			: UnwrapOpaque<{
 					[key in keyof Required<ModelType<TModel>>]: NonNullable<TFields>[key] extends true // if true, simply return required type
-						? ModelTypeWithHidden<TModel, TIncludeHidden>
+						? ModelTypeWithHidden<TModel, TIncludeHidden>[key]
 						: NonNullable<TFields>[key] extends object // if select object, pick fields
 						? // keep type array if it's array relation
 						  NonNullable<ModelType<TModel>[key]> extends ModelVariant<infer R extends BaseModel>
