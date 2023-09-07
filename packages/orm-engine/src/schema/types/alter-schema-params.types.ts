@@ -1,5 +1,5 @@
 import { Transaction } from "@orm-engine/repo/transaction.type"
-import { ColumnType } from "./column-types"
+import { ColumnDataType } from "../.."
 
 type SharedParams = {
 	schema?: string
@@ -107,7 +107,7 @@ export type DropTableParams = SharedParams & { tableName: string; noCascade?: bo
 // ])
 // const ZodColumnType = z.enum(columnTypes)
 
-type DefaultValueType = { type: "raw"; value: string } | { type: "normal"; value: string }
+type DefaultValueType = { type: "raw"; value?: any } | { type: "normal"; value: string }
 
 export type CreateColumnParams = SharedParams & {
 	columnName: string
@@ -116,7 +116,7 @@ export type CreateColumnParams = SharedParams & {
 	nullable?: boolean
 	autoIncrement?: boolean
 	index?: boolean
-	dataType: { type: "general"; value: ColumnType } | { type: "specific"; value: string }
+	dataType: { type: "general"; value: ColumnDataType } | { type: "specific"; value: string }
 	defaultValue?: DefaultValueType
 }
 

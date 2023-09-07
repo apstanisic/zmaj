@@ -1,4 +1,4 @@
-import { BaseModel } from "@zmaj-js/orm"
+import { BaseModel } from "@zmaj-js/orm-engine"
 
 export class PostModel extends BaseModel {
 	name = "posts"

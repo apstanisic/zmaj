@@ -31,8 +31,10 @@ export type CrudFilter<T extends BaseModel> = Simplify<
 	| RequireExactlyOne<{ $and: CrudFilter<T>[]; $or: CrudFilter<T>[] }>
 >
 
+/**
+ * Testing
+ */
 if (import.meta.vitest) {
-	//
 	it("should work with simple filter", () => {
 		assertType<CrudFilter<PostModel>>({
 			body: "hello",

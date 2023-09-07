@@ -1,9 +1,10 @@
 import { Class } from "type-fest"
 import { BaseModel } from "./model/base-model"
 
-type ModelsState<TModel extends BaseModel = BaseModel> = {
+export type ModelsState<TModel extends BaseModel = BaseModel> = {
 	models: Map<Class<BaseModel>, TModel>
 	getModel: (model: Class<TModel>) => TModel
+	getAll: () => TModel[]
 	clear: () => void
 	set: (model: Class<TModel>[]) => void
 }
@@ -30,6 +31,9 @@ export function createModelsStore<TModel extends BaseModel = BaseModel>(): Model
 		},
 		getModel: (Model: Class<BaseModel>): TModel => {
 			return add(Model)
+		},
+		getAll: () => {
+			return Array.from(allModels.values())
 		},
 		clear: (): void => {
 			allModels.clear()

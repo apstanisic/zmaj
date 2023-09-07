@@ -13,21 +13,31 @@ import {
 import {
 	BaseModel,
 	CountOptions,
+	CreateParams,
+	CrudFilter,
+	CursorPaginationResponse,
 	DeleteByIdParams,
 	DeleteManyParams,
-	Fields,
-	Filter,
 	FindAndCountOptions,
 	FindByIdOptions,
+	FindManyCursor,
 	FindManyOptions,
 	FindOneOptions,
+	FkDeleteError,
 	IdType,
-	ModelType,
+	InternalOrmProblem,
+	NoPropertyError,
 	OrmRepository,
+	PaginatedResponse,
 	RawQueryOptions,
+	RecordNotFoundError,
 	ReturnedFields,
+	SelectFields,
+	UndefinedModelError,
+	UniqueError,
 	UpdateManyOptions,
 	UpdateOneOptions,
+	ZmajOrmError,
 } from "@zmaj-js/orm-engine"
 import { get, isArray, isEmpty, mapValues, pick, set } from "radash"
 import {
@@ -39,15 +49,6 @@ import {
 	UniqueConstraintError,
 	WhereOptions,
 } from "sequelize"
-import { CreateParams } from ".."
-import {
-	FkDeleteError,
-	InternalOrmProblem,
-	NoPropertyError,
-	RecordNotFoundError,
-	UndefinedModelError,
-	UniqueError,
-} from "../orm-errors"
 import { SequelizeService } from "./sq.service"
 
 const symbolComparisons: Record<Comparison | "$and" | "$or", symbol> = {
@@ -84,15 +85,19 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async findOne<F extends Fields<ModelType<TModel>> | undefined = undefined>(
-		params: FindOneOptions<TModel, F>,
-	): Promise<ReturnedFields<ModelType<TModel>, F> | undefined> {
+	async findOne<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindOneOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden> | undefined> {
 		const [item] = await this.findWhere({
 			trx: params.trx,
 			fields: params.fields,
 			orderBy: params.orderBy,
 			where: params.where,
 			limit: 1,
+			includeHidden: params.includeHidden,
 		})
 		return item
 	}
@@ -100,9 +105,12 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async findOneOrThrow<F extends Fields<ModelType<TModel>> | undefined = undefined>(
-		params: FindOneOptions<TModel, F>,
-	): Promise<ReturnedFields<ModelType<TModel>, F>> {
+	async findOneOrThrow<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindOneOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden>> {
 		const item = await this.findOne(params)
 		if (!item) throw new RecordNotFoundError(this.model.name)
 		return item
@@ -112,13 +120,17 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async findById<F extends Fields<ModelType<TModel>> | undefined = undefined>(
-		params: FindByIdOptions<TModel, F>,
-	): Promise<ReturnedFields<ModelType<TModel>, F>> {
+	async findById<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindByIdOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden>> {
 		const res = await this.findOneOrThrow({
 			fields: params.fields,
 			trx: params.trx,
 			where: params.id,
+			includeHidden: params.includeHidden,
 		})
 		return res
 	}
@@ -126,9 +138,12 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async findWhere<F extends Fields<ModelType<TModel>> | undefined = undefined>(
-		params: FindManyOptions<TModel, F>,
-	): Promise<ReturnedFields<ModelType<TModel>, F>[]> {
+	async findWhere<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindManyOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden>[]> {
 		const raw = params.includeHidden === true
 		const filterAndFields = this.filterAndFields(params.where, params.fields)
 
@@ -141,17 +156,24 @@ export class SequelizeRepository<
 			...filterAndFields,
 		})
 
-		if (raw) return res as any[] as ReturnedFields<ModelType<TModel>, F>[]
+		if (raw) return res as any[] as ReturnedFields<TModel, TFields, TIncludeHidden>[]
 
-		return res.map((r) => r.get({ plain: true })) as ReturnedFields<ModelType<TModel>, F>[]
+		return res.map((r) => r.get({ plain: true })) as ReturnedFields<
+			TModel,
+			TFields,
+			TIncludeHidden
+		>[]
 	}
 
 	/**
 	 *
 	 */
-	async findAndCount<F extends Fields<ModelType<TModel>> | undefined = undefined>(
-		params: FindAndCountOptions<TModel, F>,
-	): Promise<[ReturnedFields<ModelType<TModel>, F>[], number]> {
+	async findAndCount<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindAndCountOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<[ReturnedFields<TModel, TFields, TIncludeHidden>[], number]> {
 		const fieldsAndFilter = this.filterAndFields(params.where, params.fields)
 
 		const res = await this.model.findAndCountAll({
@@ -165,15 +187,37 @@ export class SequelizeRepository<
 			// attributes: fieldsAndRelations.attributes,
 		})
 		return [
-			res.rows.map((r) => r.get({ plain: true })) as ReturnedFields<ModelType<TModel>, F>[],
+			res.rows.map((r) => r.get({ plain: true })) as ReturnedFields<
+				TModel,
+				TFields,
+				TIncludeHidden
+			>[],
 			res.count, //
 		]
+	}
+
+	paginate<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindManyOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<PaginatedResponse<ReturnedFields<TModel, TFields, TIncludeHidden>>> {
+		throw new ZmajOrmError("Not implemented")
+	}
+
+	cursor<
+		TFields extends SelectFields<TModel> | undefined = undefined,
+		TIncludeHidden extends boolean = false,
+	>(
+		params: FindManyCursor<TModel, TFields, TIncludeHidden>,
+	): Promise<CursorPaginationResponse<ReturnedFields<TModel, TFields, TIncludeHidden>>> {
+		throw new ZmajOrmError("Not implemented")
 	}
 
 	/**
 	 *
 	 */
-	async count(params: CountOptions<ModelType<TModel>>): Promise<number> {
+	async count(params: CountOptions<TModel>): Promise<number> {
 		const fieldsAndFilter = this.filterAndFields(params.where)
 		const res = await this.model.count({
 			transaction: params.trx as any,
@@ -188,7 +232,7 @@ export class SequelizeRepository<
 	 */
 	async createOne<OverrideCanCreate extends boolean>(
 		params: CreateParams<TModel, OverrideCanCreate, "one">,
-	): Promise<ModelType<TModel>> {
+	): Promise<ReturnedFields<TModel, undefined>> {
 		const result = await this.createMany({ data: [params.data], trx: params.trx })
 		if (result.length !== 1) throw new InternalOrmProblem(39534) //throw500(39534)
 		return result[0]!
@@ -199,7 +243,7 @@ export class SequelizeRepository<
 	 */
 	async createMany<OverrideCanCreate extends boolean>(
 		params: CreateParams<TModel, OverrideCanCreate, "many">,
-	): Promise<ModelType<TModel>[]> {
+	): Promise<ReturnedFields<TModel, undefined>[]> {
 		try {
 			// do not pass null values when creating record, since that replaces default value
 			// idk why sequelize sends it. On update, it should work normally
@@ -224,7 +268,7 @@ export class SequelizeRepository<
 	 */
 	async updateById<OverrideCanUpdate extends boolean>(
 		params: UpdateOneOptions<TModel, OverrideCanUpdate>,
-	): Promise<ModelType<TModel>> {
+	): Promise<ReturnedFields<TModel, undefined>> {
 		const [updated] = await this.updateWhere({
 			trx: params.trx,
 			changes: params.changes,
@@ -239,7 +283,7 @@ export class SequelizeRepository<
 	 */
 	async updateWhere<OverrideCanUpdate extends boolean>(
 		params: UpdateManyOptions<TModel, OverrideCanUpdate>,
-	): Promise<ModelType<TModel>[]> {
+	): Promise<ReturnedFields<TModel, undefined>[]> {
 		const changes = params.overrideCanUpdate
 			? params.changes
 			: this.getWritableData("update", params.changes)
@@ -269,7 +313,7 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async deleteById(params: DeleteByIdParams<TModel>): Promise<ModelType<TModel>> {
+	async deleteById(params: DeleteByIdParams<TModel>): Promise<ReturnedFields<TModel, undefined>> {
 		const [deleted] = await this.deleteWhere({
 			trx: params.trx,
 			where: params.id,
@@ -281,7 +325,9 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async deleteWhere(params: DeleteManyParams<TModel>): Promise<ModelType<TModel>[]> {
+	async deleteWhere(
+		params: DeleteManyParams<TModel>,
+	): Promise<ReturnedFields<TModel, undefined>[]> {
 		// return all top level fields
 		const res = await this.findWhere({
 			trx: params.trx,
@@ -295,7 +341,7 @@ export class SequelizeRepository<
 				throw e
 			})
 
-		return res as any as ModelType<TModel>[]
+		return res as any as ReturnedFields<TModel, undefined>[]
 	}
 
 	private getWritableData<T extends Struct | Struct[]>(action: "update" | "create", data: T): T {
@@ -357,8 +403,8 @@ export class SequelizeRepository<
 	}
 
 	private filterAndFields(
-		where?: Filter<ModelType<TModel>> | IdType[] | IdType,
-		fields?: Fields<ModelType<TModel>>,
+		where?: CrudFilter<TModel> | IdType[] | IdType,
+		fields?: SelectFields<TModel>,
 	): Pick<IncludeOptions, "attributes" | "include" | "association" | "through" | "where"> {
 		const whereResult = this.parseFilter(where)
 
@@ -371,14 +417,14 @@ export class SequelizeRepository<
 		return { where: whereResult.where, ...fieldsAndRelations }
 	}
 
-	private parseFilter(where?: Filter<ModelType<TModel>> | IdType[] | IdType): {
+	private parseFilter(where?: CrudFilter<TModel> | IdType[] | IdType): {
 		where: WhereOptions<any>
 		toAdd?: string[]
 	} {
 		if (isIdType(where)) {
-			return { where: { [this.pk]: { [Op.eq]: where } } as WhereOptions<ModelType<TModel>> }
+			return { where: { [this.pk]: { [Op.eq]: where } } as WhereOptions<TModel> }
 		} else if (Array.isArray(where)) {
-			return { where: { [this.pk]: { [Op.in]: where } } as any as WhereOptions<ModelType<TModel>> }
+			return { where: { [this.pk]: { [Op.in]: where } } as any as WhereOptions<TModel> }
 		} else {
 			return this.parseWhereFilter(where ?? {}, this.model)
 		}
@@ -394,7 +440,7 @@ export class SequelizeRepository<
 	 * @param params.property Property at which data will be attached (undefined for root)
 	 * @returns Properties that can be provided to sequelize
 	 */
-	private parseFields<F extends Fields<ModelType<TModel>> | undefined>({
+	private parseFields<F extends SelectFields<TModel> | undefined>({
 		fields,
 		collection,
 		property,
@@ -494,7 +540,7 @@ export class SequelizeRepository<
 	}
 	private parseWhereFilter(
 		where: Struct,
-		model: ModelStatic<Model<ModelType<TModel>, Partial<ModelType<TModel>>>>,
+		model: ModelStatic<Model<TModel, Partial<TModel>>>,
 		prefix = "",
 	): { where: WhereOptions; toAdd: string[] } {
 		const cloned: Struct = {}

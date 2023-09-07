@@ -76,11 +76,11 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 * @param params
 	 */
 	abstract findAndCount<
-		F extends SelectFields<TModel> | undefined = undefined,
+		TFields extends SelectFields<TModel> | undefined = undefined,
 		TIncludeHidden extends boolean = false,
 	>(
-		params: FindAndCountOptions<TModel, F, TIncludeHidden>,
-	): Promise<[ReturnedFields<TModel, F, TIncludeHidden>[], number]>
+		params: FindAndCountOptions<TModel, TFields, TIncludeHidden>,
+	): Promise<[ReturnedFields<TModel, TFields, TIncludeHidden>[], number]>
 	/**
 	 *
 	 * @param params

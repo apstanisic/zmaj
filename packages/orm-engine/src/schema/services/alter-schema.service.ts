@@ -8,9 +8,9 @@ import {
 	DropTableParams,
 	DropUniqueKeyParams,
 	UpdateColumnParams,
-} from "./alter-schema.schemas"
+} from "../types/alter-schema-params.types"
 
-export abstract class AlterParamsService {
+export abstract class AlterSchemaService {
 	abstract createTable(params: CreateTableParams): Promise<void>
 
 	abstract dropTable(params: DropTableParams): Promise<void>

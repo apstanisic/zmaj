@@ -1,25 +1,26 @@
-import { DatabaseConfig, SequelizeService } from "@zmaj-js/orm"
+import { Orm } from "@zmaj-js/orm-engine"
+import { sqOrmProvider } from "@zmaj-js/orm-sq"
 import { inspect } from "node:util"
 import { CommentModel, PostInfoModel, PostModel, PostTagModel, TagModel } from "./example-models"
 inspect.defaultOptions.depth = null
 const falsy: boolean = false
 
-const service = new SequelizeService(
-	new DatabaseConfig({
-		database: "dev_database",
-		host: "localhost",
-		password: "db_password",
-		username: "db_user",
-		port: 5432,
-	}),
-)
-
 async function run() {
-	console.log("here")
+	const orm = new Orm({
+		models: [PostModel, TagModel, CommentModel, PostTagModel, PostInfoModel],
+		config: {
+			database: "dev_database",
+			host: "localhost",
+			password: "db_password",
+			username: "db_user",
+			port: 5432,
+		},
+		provider: sqOrmProvider,
+	})
 
-	await service.init([PostModel, TagModel, CommentModel, PostTagModel, PostInfoModel])
-	const postRepo = service.repoManager.getRepo(PostModel)
-	const commentsRepo = service.repoManager.getRepo(CommentModel)
+	await orm.init()
+	const postRepo = orm.repoManager.getRepo(PostModel)
+	const commentsRepo = orm.repoManager.getRepo(CommentModel)
 	const result = await postRepo.findWhere({
 		limit: 2,
 		where: {
@@ -44,19 +45,20 @@ async function run() {
 
 	const comment = await commentsRepo.findOneOrThrow({
 		fields: {
-			post: { title: true },
+			post: { title: true, tags: { id: true, name: true, posts: { likes: true } } },
 			id: true,
 			postId: true,
 		},
 	})
 	console.log({ res2: comment })
+	comment.post.tags[0]?.posts[0]?.likes
 	if (falsy) {
 		comment.post.title.at
 		// @ts-expect-error
 		comment.post.body.at
 	}
 
-	await service.onModuleDestroy()
+	await orm.destroy()
 }
 
 run()

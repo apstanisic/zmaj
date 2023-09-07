@@ -4,9 +4,9 @@ import { CreateFieldParamsAndType } from "./create-field-params-and-type.type"
 /**
  * This should be called before update, read, and create types
  */
-export type HandleNullableFieldType<P extends CreateFieldParamsAndType<any>> = Except<
-	P,
+export type HandleNullableFieldType<TParams extends CreateFieldParamsAndType<any>> = Except<
+	TParams,
 	"_type"
 > & {
-	_type: P["nullable"] extends true ? P["_type"] | null : P["_type"]
+	_type: TParams["nullable"] extends true ? TParams["_type"] | null : TParams["_type"]
 }

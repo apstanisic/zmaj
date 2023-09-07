@@ -1,18 +1,18 @@
-import { DatabaseConfig } from "@orm/database.config"
-import { Logger } from "@orm/logger.type"
-import { AlterSchemaService } from "@orm/orm-specs/schema/alter-schema.service"
-import { SchemaInfoService } from "@orm/orm-specs/schema/schema-info.service"
-import { ModelConfig } from "@zmaj-js/orm-common"
 import {
+	AlterSchemaService,
 	BaseModel,
+	DatabaseConfig,
+	Logger,
+	ModelsState,
 	RawQueryOptions,
 	RepoManager,
+	SchemaInfoService,
 	TransactionIsolationLevel,
 } from "@zmaj-js/orm-engine"
 import { ModelStatic, QueryInterface, Sequelize, Transaction } from "sequelize"
-import { Class, WritableDeep } from "type-fest"
-import { SequelizeAlterSchemaService } from "./sequelize-alter-schema.service"
-import { SequelizeSchemaInfoService } from "./sequelize-schema-info.service"
+import { WritableDeep } from "type-fest"
+import { SequelizeAlterSchemaService } from "./schema/sq-alter-schema.service"
+import { SequelizeSchemaInfoService } from "./schema/sq-schema-info.service"
 import { SequelizeModelsGenerator } from "./sq.model-generator"
 import { SequelizeRepoManager } from "./sq.repo-manager"
 
@@ -30,7 +30,11 @@ export class SequelizeService {
 	readonly alterSchema: AlterSchemaService
 	private generator: SequelizeModelsGenerator
 
-	constructor(private dbConfig: DatabaseConfig, logger: Logger = console) {
+	constructor(
+		private dbConfig: DatabaseConfig,
+		logger: Logger = console,
+		private modelsStore: ModelsState,
+	) {
 		this.orm = new Sequelize({
 			dialect: this.dbConfig.type ?? "postgres",
 			// storage: this.dbConfig.filename,
@@ -47,8 +51,8 @@ export class SequelizeService {
 				timestamps: false,
 			},
 		})
-		this.generator = new SequelizeModelsGenerator(logger)
-		this.repoManager = new SequelizeRepoManager(this)
+		this.generator = new SequelizeModelsGenerator(modelsStore, logger)
+		this.repoManager = new SequelizeRepoManager(this, modelsStore)
 		this.schemaInfo = new SequelizeSchemaInfoService(this)
 		this.alterSchema = new SequelizeAlterSchemaService(this, this.schemaInfo, logger)
 	}
@@ -60,23 +64,16 @@ export class SequelizeService {
 		return this.orm.getQueryInterface()
 	}
 
-	async init(collections: (Class<BaseModel> | ModelConfig)[]): Promise<void> {
-		this.generateModels(collections)
+	// async init(collections: (Class<BaseModel> | ModelConfig)[]): Promise<void> {
+	async init(): Promise<void> {
+		this.generateModels(this.modelsStore.getAll())
 		await this.orm.authenticate()
 	}
 
-	// async initCms(collections: readonly CollectionDef[]): Promise<void> {
-	// 	this.generateModels(collections.map(collectionToModel))
-	// 	await this.orm.authenticate()
-	// }
-
-	generateModels(models: readonly (Class<BaseModel> | ModelConfig)[]): void {
+	// generateModels(models: readonly (Class<BaseModel> | ModelConfig)[]): void {
+	generateModels(models: BaseModel[]): void {
 		this.generator.generateModels(models, this.orm)
 	}
-
-	// generateModelsCms(collections: readonly CollectionDef[]): void {
-	// 	this.generator.generateModels(collections.map(collectionToModel), this.orm)
-	// }
 
 	async transaction<T>(params: {
 		type?: TransactionIsolationLevel

@@ -1,18 +1,18 @@
-import { Logger } from "@orm/logger.type"
+// import { convertModelFromClassToPojo, createModelsStore } from "@zmaj-js/orm-common"
 import {
 	BaseModel,
+	ColumnDataType,
+	Logger,
+	ModelsState,
 	PojoModel,
-	convertModelFromClassToPojo,
-	createModelsStore,
-} from "@zmaj-js/orm-common"
-import { ColumnDataType } from "@zmaj-js/orm-engine"
+	baseModelToPojoModel,
+} from "@zmaj-js/orm-engine"
 import { snake } from "radash"
 import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
-import { Class } from "type-fest"
 import { v4 } from "uuid"
 
 export class SequelizeModelsGenerator {
-	constructor(private logger: Logger = console) {}
+	constructor(private state: ModelsState, private logger: Logger = console) {}
 	removeAllModels(orm: Sequelize): void {
 		// Models in best delete order
 		const toRemove =
@@ -33,11 +33,11 @@ export class SequelizeModelsGenerator {
 	 * @param models for which we need to generate entities
 	 * @param orm Orm to which to define collection
 	 */
-	generateModels(models: readonly (Class<BaseModel> | PojoModel)[], orm: Sequelize): void {
+	generateModels(models: readonly (BaseModel | PojoModel)[], orm: Sequelize): void {
 		this.removeAllModels(orm)
-		const state = createModelsStore()
 
-		const modelConfigs = models.map((model) => convertModelFromClassToPojo(model, state))
+		// const models = this.state.getAll()
+		const modelConfigs = models.map((model) => baseModelToPojoModel(model, this.state))
 
 		for (const model of modelConfigs) {
 			if (model.disabled) continue

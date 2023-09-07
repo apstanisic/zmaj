@@ -1,12 +1,12 @@
 import {
 	BaseModel,
+	ModelsState,
 	OrmRepository,
 	RawQueryOptions,
 	RepoManager,
 	Transaction,
 	TransactionIsolationLevel,
 	UndefinedModelError,
-	createModelsStore,
 } from "@zmaj-js/orm-engine"
 import { isString } from "radash"
 import { Sequelize, literal } from "sequelize"
@@ -18,11 +18,11 @@ import { SequelizeService } from "./sq.service"
  * Clearing not implemented????
  */
 export class SequelizeRepoManager extends RepoManager {
-	constructor(private sq: SequelizeService) {
+	constructor(private sq: SequelizeService, protected models: ModelsState) {
 		super()
 	}
 
-	protected models = createModelsStore()
+	// protected models = createModelsStore()
 
 	protected repositories: Record<string, OrmRepository<any>> = {}
 
