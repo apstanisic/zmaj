@@ -18,9 +18,25 @@ export type ManyToManyParams = {
 	junction: () => Class<BaseModel>
 	fields: [string, string]
 }
+// export class ModelRelationDefinition<
+// 	T extends BaseModel,
+// 	_IsToManyRelation extends boolean = false,
+// > {
+// 	constructor(
+// 		modelFn: () => Class<T>,
+// 		params: ManyToOneParams | OneToManyParams | ManyToManyParams,
+// 	) {
+// 		this.options = params
+// 		this.modelFn = modelFn
+// 	}
+// 	options: ManyToOneParams | OneToManyParams | ManyToManyParams
+// 	modelFn: () => Class<T>
+
+// }
 export class ModelRelationDefinition<
 	T extends BaseModel,
 	_IsToManyRelation extends boolean = false,
+	TColumnName = undefined,
 > {
 	constructor(
 		modelFn: () => Class<T>,

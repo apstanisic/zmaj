@@ -35,10 +35,14 @@ export abstract class BaseModel {
 		throw new Error("No PK provided")
 	}
 
-	protected manyToOne<T extends BaseModel, TThis extends this = this>(
+	protected manyToOne<
+		T extends BaseModel,
+		TThis extends this = this,
+		TColumnName extends keyof TThis["fields"] = string,
+	>(
 		modelType: () => Class<T>,
-		options: { fkField: keyof TThis["fields"]; referencedField?: keyof T["fields"] },
-	): ModelRelationDefinition<T, false> {
+		options: { fkField: TColumnName; referencedField?: keyof T["fields"] },
+	): ModelRelationDefinition<T, false, TColumnName> {
 		return new ModelRelationDefinition(modelType, {
 			fkField: options.fkField as string,
 			type: "many-to-one",
@@ -57,10 +61,17 @@ export abstract class BaseModel {
 		})
 	}
 
-	protected oneToOneOwner<T extends BaseModel, TThis extends this = this>(
+	/**
+	 * Foreign key is located in current model
+	 */
+	protected oneToOneOwner<
+		T extends BaseModel,
+		TThis extends this = this,
+		TColumnName extends keyof TThis["fields"] = string,
+	>(
 		modelFn: () => Class<T>,
-		options: { fkField: keyof TThis["fields"]; referencedField?: keyof T["fields"] },
-	): ModelRelationDefinition<T, false> {
+		options: { fkField: TColumnName; referencedField?: keyof T["fields"] },
+	): ModelRelationDefinition<T, false, TColumnName> {
 		return new ModelRelationDefinition(modelFn, {
 			type: "owner-one-to-one",
 			fkField: options.fkField as string,
@@ -68,6 +79,9 @@ export abstract class BaseModel {
 		})
 	}
 
+	/**
+	 * Foreign key is located in referenced model
+	 */
 	protected oneToOneRef<T extends BaseModel, TThis extends this = this>(
 		modelFn: () => Class<T>,
 		options: { fkField: keyof T["fields"]; referencedField?: keyof TThis["fields"] },

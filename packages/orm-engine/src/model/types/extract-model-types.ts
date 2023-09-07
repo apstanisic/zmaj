@@ -14,3 +14,8 @@ export type ModelType<
 	: Opaque<BaseType<TModel>, TModel>
 
 export type ModelReadType<TModel extends BaseModel> = Opaque<BaseReadType<TModel>, TModel>
+
+export type ModelTypeWithHidden<
+	TModel extends BaseModel,
+	TShowHidden extends boolean = true,
+> = TShowHidden extends true ? Opaque<BaseType<TModel>, TModel> : ModelReadType<TModel>

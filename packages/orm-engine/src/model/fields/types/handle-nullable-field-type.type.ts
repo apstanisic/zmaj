@@ -9,4 +9,5 @@ export type HandleNullableFieldType<TParams extends CreateFieldParamsAndType<any
 	"_type"
 > & {
 	_type: TParams["nullable"] extends true ? TParams["_type"] | null : TParams["_type"]
+	_nullable: TParams["nullable"] extends true ? true : false
 }

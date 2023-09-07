@@ -20,9 +20,9 @@ async function run() {
 
 	await orm.init()
 	const postRepo = orm.repoManager.getRepo(PostModel)
+	const postInfoRepo = orm.repoManager.getRepo(PostInfoModel)
 	const commentsRepo = orm.repoManager.getRepo(CommentModel)
-	const result = await postRepo.findWhere({
-		limit: 2,
+	const post1 = await postRepo.findOneOrThrow({
 		where: {
 			title: { $ne: "Hello World!" },
 			body: { $nin: ["John", "Smith"] },
@@ -35,13 +35,15 @@ async function run() {
 			info: { additionalInfo: true },
 		},
 	})
-	const post1 = result[0]!
+	// @ts-expect-error Should be undefined, cause we can't be certain that it exist
+	post1.info.additionalInfo
+	// const post1 = result[0]!
 	if (falsy) {
 		post1.title.at
 		// @ts-expect-error
 		post1.body.at
 	}
-	console.log({ user: result })
+	// console.log({ user: result })
 
 	const comment = await commentsRepo.findOneOrThrow({
 		fields: {
@@ -56,6 +58,17 @@ async function run() {
 		comment.post.title.at
 		// @ts-expect-error
 		comment.post.body.at
+	}
+
+	const res = await postInfoRepo.findOneOrThrow({
+		fields: {
+			post: { body: true },
+			id: true,
+		},
+	})
+	if (falsy) {
+		// @ts-expect-error
+		res.post.body
 	}
 
 	await orm.destroy()
