@@ -5,7 +5,7 @@ import { CommentModel, PostInfoModel, PostModel, PostTagModel, TagModel } from "
 inspect.defaultOptions.depth = null
 const falsy: boolean = false
 
-async function run() {
+async function run(): Promise<void> {
 	const orm = new Orm({
 		models: [PostModel, TagModel, CommentModel, PostTagModel, PostInfoModel],
 		config: {

@@ -42,7 +42,7 @@ export abstract class BaseModel {
 	>(
 		modelType: () => Class<T>,
 		options: { fkField: TColumnName; referencedField?: keyof T["fields"] },
-	): ModelRelationDefinition<T, false, TColumnName> {
+	): ModelRelationDefinition<T, false, TColumnName, "many-to-one"> {
 		return new ModelRelationDefinition(modelType, {
 			fkField: options.fkField as string,
 			type: "many-to-one",
@@ -53,7 +53,7 @@ export abstract class BaseModel {
 	protected oneToMany<T extends BaseModel, TThis extends this = this>(
 		modelFn: () => Class<T>,
 		options: { fkField: keyof T["fields"]; referencedField?: keyof TThis["fields"] },
-	): ModelRelationDefinition<T, true> {
+	): ModelRelationDefinition<T, true, undefined, "one-to-many"> {
 		return new ModelRelationDefinition(modelFn, {
 			fkField: options.fkField as string,
 			type: "one-to-many",
@@ -71,7 +71,7 @@ export abstract class BaseModel {
 	>(
 		modelFn: () => Class<T>,
 		options: { fkField: TColumnName; referencedField?: keyof T["fields"] },
-	): ModelRelationDefinition<T, false, TColumnName> {
+	): ModelRelationDefinition<T, false, TColumnName, "owner-one-to-one"> {
 		return new ModelRelationDefinition(modelFn, {
 			type: "owner-one-to-one",
 			fkField: options.fkField as string,
@@ -85,7 +85,7 @@ export abstract class BaseModel {
 	protected oneToOneRef<T extends BaseModel, TThis extends this = this>(
 		modelFn: () => Class<T>,
 		options: { fkField: keyof T["fields"]; referencedField?: keyof TThis["fields"] },
-	): ModelRelationDefinition<T, false> {
+	): ModelRelationDefinition<T, false, undefined, "ref-one-to-one"> {
 		return new ModelRelationDefinition(modelFn, {
 			type: "ref-one-to-one",
 			fkField: options.fkField as string,
@@ -99,7 +99,7 @@ export abstract class BaseModel {
 			junctionModel: () => Class<TJunction>
 			junctionFields: [keyof TJunction["fields"], keyof TJunction["fields"]]
 		},
-	): ModelRelationDefinition<T, true> {
+	): ModelRelationDefinition<T, true, undefined, "many-to-many"> {
 		return new ModelRelationDefinition(modelFn, {
 			type: "many-to-many",
 			junction: options.junctionModel,

@@ -93,3 +93,5 @@ pnpm-publish-summary.json
 
 # SWC or someone who uses swc created this folder
 /.swc
+
+/tmp

@@ -138,7 +138,7 @@ describe("should return object left contain fk and know fk is not null", () => {
 	})
 })
 
-describe("should return selected fields", () => {
+describe("should return selected normal fields", () => {
 	class Post extends BaseModel {
 		name = "posts"
 		fields = this.buildFields((f) => ({
@@ -170,5 +170,44 @@ describe("should return selected fields", () => {
 		expectTypeOf<string | null>(val.email)
 		// @ts-expect-error
 		expectTypeOf<undefined>(val.email)
+	})
+})
+
+it("should work deep", () => {
+	const emptyPost = {
+		title: undefined,
+		writer: undefined,
+		body: undefined,
+		comments: undefined,
+		createdAt: undefined,
+		id: undefined,
+		info: undefined,
+		likes: undefined,
+		tags: undefined,
+		writerId: undefined,
+	}
+
+	expectTypeOf<ReturnedFields<PostModel, { title: true; writer: { name: true } }, false>>({
+		...emptyPost,
+		title: "string",
+		writer: { name: "hello", id: undefined, posts: undefined },
+	})
+
+	expectTypeOf<ReturnedFields<PostModel, { title: true; writer: true }, false>>({
+		...emptyPost,
+		title: "string",
+		writer: { name: "hello", id: "id", posts: undefined },
+	})
+
+	expectTypeOf<ReturnedFields<PostModel, { title: true; tags: { posts: { id: true } } }, false>>({
+		...emptyPost,
+		title: "string",
+		tags: [{ id: undefined, name: undefined, posts: [{ ...emptyPost, id: "test" }] }],
+	})
+
+	expectTypeOf<ReturnedFields<PostModel, { title: true; comments: true }, false>>({
+		...emptyPost,
+		title: "string",
+		comments: [{ body: "", id: "", post: undefined, postId: "" }],
 	})
 })

@@ -12,3 +12,5 @@ export type IsFieldInRelationNullable<TKey, TModel extends BaseModel> = TKey ext
 			: never
 		: never
 	: never
+
+export type IsRefOneToOne<TRelType> = TRelType extends "ref-one-to-one" ? undefined : never
