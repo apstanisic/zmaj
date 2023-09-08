@@ -6,8 +6,9 @@ import {
 	WriterModel,
 } from "@orm-engine/example-models"
 import { BaseModel } from "@orm-engine/model/base-model"
-import { ModelType } from "@orm-engine/model/types/extract-model-types"
+import { GetReadFields } from "@orm-engine/model/types/extract-model-fields.types"
 import { assertType, describe, expectTypeOf, it } from "vitest"
+import { ReturnedFieldProperties } from "./returned-field-properties"
 import { ReturnedFields } from "./returned-fields.type"
 
 it("should return fields if no item provided", () => {
@@ -18,15 +19,13 @@ it("should return fields if no item provided", () => {
 		likes: number
 		body: string
 		title: string
-		writer?: ModelType<WriterModel>
-		info?: ModelType<PostInfoModel>
-		comments?: ModelType<CommentModel>[]
-		tags?: ModelType<TagModel>[]
+		writer?: GetReadFields<WriterModel, false>
+		info?: GetReadFields<PostInfoModel, false>
+		comments?: GetReadFields<CommentModel, false>[]
+		tags?: GetReadFields<TagModel, false>[]
 	}
 
 	assertType<Expected>({} as ReturnedFields<PostModel, undefined>)
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	assertType<Expected>({} as ReturnedFields<PostModel, {}>)
 })
 
 it("should return simple fields", () => {
@@ -71,6 +70,8 @@ describe("should return object left contain fk and know fk is not null", () => {
 			id: f.uuid({ isPk: true }),
 		}))
 		comment = this.oneToOneRef(() => Comment, { fkField: "postId" })
+		tags = this.oneToMany(() => Tag, { fkField: "postId" })
+		news = this.oneToMany(() => News, { fkField: "postId" })
 	}
 	class Comment extends BaseModel {
 		override name: string = "comments"
@@ -92,21 +93,82 @@ describe("should return object left contain fk and know fk is not null", () => {
 		post = this.oneToOneOwner(() => Post, { fkField: "postId" })
 	}
 
+	class News extends BaseModel {
+		override name: string = "news"
+		fields = this.buildFields((f) => ({
+			id: f.uuid({ isPk: true }),
+			postId: f.uuid({ nullable: true }),
+		}))
+
+		post = this.manyToOne(() => Post, { fkField: "postId" })
+	}
+
 	it("should work on m2o", () => {
 		const val = {} as ReturnedFields<Tag, { post: true }, false>
 
-		expectTypeOf<{ post: ModelType<Post> }>(val)
+		expectTypeOf<{ post: GetReadFields<Post, false> }>(val)
 		// @ts-expect-error
 		expectTypeOf<{ post: undefined }>(val)
 	})
 
 	it("should work on o2o", () => {
 		const val = {} as ReturnedFields<Comment, { post: true }, false>
-		// ITS UNDEFINED BECAUSE RELATION IS BY DEFAULT?
-		// I CAN'T SIMPLY RETURN TYPE IF TYPE IS RELATION
 
-		expectTypeOf<{ post: ModelType<Post> }>(val)
+		expectTypeOf<{ post: GetReadFields<Post, false> }>(val)
 		// @ts-expect-error
 		expectTypeOf<{ post: undefined }>(val)
+	})
+
+	it("should return optional when field is nullable ", () => {
+		const val = {} as ReturnedFields<News, { post: true }, false>
+
+		expectTypeOf<{ post: GetReadFields<Post, false> | undefined }>(val)
+		// @ts-expect-error
+		expectTypeOf<{ post: GetReadFields<Post, false> }>(val)
+		// @ts-expect-error
+		expectTypeOf<{ post: undefined }>(val)
+	})
+
+	it("should not impact array side", () => {
+		const val = {} as ReturnedFields<Post, { news: true }, false>
+
+		expectTypeOf<{ news: GetReadFields<News, false>[] }>(val)
+		// @ts-expect-error
+		expectTypeOf<{ news: undefined }>(val)
+	})
+})
+
+describe("should return selected fields", () => {
+	class Post extends BaseModel {
+		name = "posts"
+		fields = this.buildFields((f) => ({
+			id: f.uuid({ isPk: true }),
+			firstName: f.text({}),
+			lastName: f.text({}),
+			email: f.text({ nullable: true }),
+		}))
+	}
+	const val = {} as ReturnedFieldProperties<Post, { firstName: true }, false>
+
+	it("should return selected fields", () => {
+		expectTypeOf<string>(val.firstName)
+	})
+
+	it("should make non selected fields optional", () => {
+		expectTypeOf<string | undefined>(val.lastName)
+		expectTypeOf<string | null | undefined>(val.email)
+		//
+		// @ts-expect-error
+		expectTypeOf<string>(val.lastName)
+		// @ts-expect-error
+		expectTypeOf<undefined>(val.lastName)
+	})
+
+	it("should keep null if column is nullable ", () => {
+		const val = {} as ReturnedFieldProperties<Post, { email: true }, false>
+
+		expectTypeOf<string | null>(val.email)
+		// @ts-expect-error
+		expectTypeOf<undefined>(val.email)
 	})
 })

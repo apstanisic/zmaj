@@ -10,6 +10,10 @@ export type ExtractFields<T extends BaseModel> = Base<{
 export type ExtractReadFields<T extends BaseModel> = Base<{
 	[key in keyof T["fields"]]: T["fields"][key]["_read"]
 }>
+
+export type ExtractReadFieldsOverride<T extends BaseModel> = Base<{
+	[key in keyof T["fields"]]: T["fields"][key]["_readOverride"]
+}>
 export type ExtractCreateFields<T extends BaseModel> = Base<{
 	[key in keyof T["fields"]]: T["fields"][key]["_create"]
 }>
@@ -23,6 +27,11 @@ export type ExtractUpdateFieldsOverride<T extends BaseModel> = Base<{
 	[key in keyof T["fields"]]: T["fields"][key]["_updateOverride"]
 }>
 
+export type GetReadFields<TModel extends BaseModel, TAddHidden extends boolean> = Base<{
+	[key in keyof TModel["fields"]]: TAddHidden extends true
+		? TModel["fields"][key]["_readOverride"]
+		: TModel["fields"][key]["_read"]
+}>
 /**
  *
  * TESTS

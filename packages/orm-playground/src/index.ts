@@ -39,7 +39,7 @@ async function run() {
 	post1.info.additionalInfo
 	// const post1 = result[0]!
 	if (falsy) {
-		post1.title.at
+		post1.title
 		// @ts-expect-error
 		post1.body.at
 	}
@@ -62,12 +62,11 @@ async function run() {
 
 	const res = await postInfoRepo.findOneOrThrow({
 		fields: {
-			post: { body: true },
+			post: true,
 			id: true,
 		},
 	})
 	if (falsy) {
-		// @ts-expect-error
 		res.post.body
 	}
 

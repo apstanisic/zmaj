@@ -1,5 +1,6 @@
-import { Opaque } from "type-fest"
+import { ConditionalPick, Opaque } from "type-fest"
 import { BaseModel } from "../base-model"
+import { ModelRelationDefinition } from "../relations/relation-metadata"
 import { ExtractFields, ExtractReadFields } from "./extract-model-fields.types"
 import { ExtractRelations } from "./extract-model-relations.type"
 
@@ -12,6 +13,10 @@ export type ModelType<
 > = TRead extends "read"
 	? ModelReadType<TModel> //
 	: Opaque<BaseType<TModel>, TModel>
+
+export type ModelFields<TModel extends BaseModel> =
+	| keyof TModel["fields"]
+	| keyof ConditionalPick<TModel, ModelRelationDefinition<any>>
 
 export type ModelReadType<TModel extends BaseModel> = Opaque<BaseReadType<TModel>, TModel>
 
