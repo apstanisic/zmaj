@@ -1,21 +1,34 @@
+import { ModelRelationDefinition } from "@orm-engine/model/relations/relation-metadata"
+import { Simplify } from "type-fest"
 import { assertType, it } from "vitest"
 import { CommentModel, PostModel } from "../example-models"
 import { BaseModel } from "../model/base-model"
-import { ModelType } from "../model/types/extract-model-types"
-import { ModelVariant } from "./model-variant.type"
+import { ModelProperties } from "../model/types/extract-model-types"
 
 type All = { $fields?: true }
 // It does not work without 2 NonNullable
 // TODO Disable passing fields that user cannot read (unless includeHidden is passed)
 // $fields is special key that means get me all fields. It is useful if we need to get some relation
 // we do not have to specify all fields
-export type SelectFields<T extends BaseModel> = {
-	[key in keyof ModelType<T>]?: NonNullable<NonNullable<ModelType<T>>[key]> extends ModelVariant<
-		infer TRelation extends BaseModel
-	>
-		? SelectFields<TRelation> | true
-		: true
-} // & All
+// export type SelectFieldsOld<T extends BaseModel> = {
+// 	[key in keyof ModelType<T>]?: NonNullable<NonNullable<ModelType<T>>[key]> extends ModelVariant<
+// 		infer TRelation extends BaseModel
+// 	>
+// 		? SelectFieldsOld<TRelation> | true
+// 		: true
+// } // & All
+
+export type SelectFields<TModel extends BaseModel> = Simplify<
+	{
+		[key in ModelProperties<TModel>]?: key extends keyof TModel["fields"]
+			? true
+			: key extends keyof TModel
+			? TModel[key] extends ModelRelationDefinition<infer TInnerModel>
+				? true | SelectFields<TInnerModel>
+				: never
+			: never
+	} & All
+>
 
 if (import.meta.vitest) {
 	//

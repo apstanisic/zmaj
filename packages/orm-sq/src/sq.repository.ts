@@ -283,14 +283,14 @@ export class SequelizeRepository<
 	 */
 	async updateWhere<OverrideCanUpdate extends boolean>(
 		params: UpdateManyOptions<TModel, OverrideCanUpdate>,
-	): Promise<ReturnedFields<TModel, undefined>[]> {
+	): Promise<ReturnedFields<TModel, undefined, false>[]> {
 		const changes = params.overrideCanUpdate
 			? params.changes
 			: this.getWritableData("update", params.changes)
 
 		// do nothing if no change is passed
 		if (Object.keys(changes).length === 0) {
-			return this.findWhere({ where: params.where, trx: params.trx })
+			return this.findWhere<undefined>({ where: params.where, trx: params.trx, fields: undefined })
 		}
 
 		const rows = await this.findWhere({
@@ -307,7 +307,7 @@ export class SequelizeRepository<
 			where: this.parseFilter(ids).where,
 			// fields: this.getNonReadonlyFields("update", params.overrideCanUpdate),
 		})
-		return this.findWhere({ where: ids, trx: params.trx })
+		return this.findWhere<undefined>({ where: ids, trx: params.trx })
 	}
 
 	/**
@@ -461,7 +461,7 @@ export class SequelizeRepository<
 		// if fields is empty, get all columns
 		// we need to specify here, since if filter add join, we don't know what fields to fetch
 		// so if it's empty, get all
-		if (isEmpty(fields)) {
+		if (isEmpty(fields) || fields?.$fields) {
 			// `getAttributes` returns column property as key, and it's data.
 			// we are simply taking all property names and settings them to true
 			fields = mapValues(model.getAttributes(), (v) => true) as F

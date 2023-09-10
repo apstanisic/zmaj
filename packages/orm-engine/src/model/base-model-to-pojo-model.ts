@@ -2,6 +2,9 @@ import { ModelsState } from "@orm-engine/create-models-store"
 import { BaseModel } from "./base-model"
 import { PojoModel, PojoModelField, PojoModelRelation } from "./pojo-model"
 
+/**
+ * This converts BaseModel class to plain object model, that will be consumed by underlying engine
+ */
 export function baseModelToPojoModel(
 	ModelClass: BaseModel | PojoModel,
 	store: ModelsState,

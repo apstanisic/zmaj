@@ -11,6 +11,19 @@ import { assertType, describe, expectTypeOf, it } from "vitest"
 import { ReturnedFieldProperties } from "./returned-field-properties"
 import { ReturnedFields } from "./returned-fields.type"
 
+const emptyPost = {
+	title: undefined,
+	writer: undefined,
+	body: undefined,
+	comments: undefined,
+	createdAt: undefined,
+	id: undefined,
+	info: undefined,
+	likes: undefined,
+	tags: undefined,
+	writerId: undefined,
+}
+
 it("should return fields if no item provided", () => {
 	type Expected = {
 		id: string
@@ -174,19 +187,6 @@ describe("should return selected normal fields", () => {
 })
 
 it("should work deep", () => {
-	const emptyPost = {
-		title: undefined,
-		writer: undefined,
-		body: undefined,
-		comments: undefined,
-		createdAt: undefined,
-		id: undefined,
-		info: undefined,
-		likes: undefined,
-		tags: undefined,
-		writerId: undefined,
-	}
-
 	expectTypeOf<ReturnedFields<PostModel, { title: true; writer: { name: true } }, false>>({
 		...emptyPost,
 		title: "string",
@@ -209,5 +209,50 @@ it("should work deep", () => {
 		...emptyPost,
 		title: "string",
 		comments: [{ body: "", id: "", post: undefined, postId: "" }],
+	})
+})
+
+it("should allow to pass $fields to get every readable field", () => {
+	expectTypeOf<ReturnedFields<PostModel, { $fields: true }, false>>({
+		...emptyPost,
+		title: "string",
+		body: "string",
+		createdAt: new Date(),
+		id: "",
+		likes: 5,
+		writer: undefined,
+		comments: undefined,
+		info: undefined,
+		tags: undefined,
+		writerId: "",
+	})
+
+	expectTypeOf<ReturnedFields<PostModel, { $fields: true; writer: true }, false>>({
+		...emptyPost,
+		title: "string",
+		body: "string",
+		createdAt: new Date(),
+		id: "",
+		likes: 5,
+		writer: { id: "", name: "", posts: undefined },
+		comments: undefined,
+		info: undefined,
+		tags: undefined,
+		writerId: "",
+	})
+})
+
+it("should respect hidden with $fields", () => {
+	class Post extends BaseModel {
+		name = "posts"
+		fields = this.buildFields((f) => ({
+			id: f.uuid({ isPk: true }),
+			name: f.text({ canRead: false }),
+		}))
+	}
+
+	expectTypeOf<ReturnedFields<Post, { $fields: true }, false>>({
+		id: "",
+		name: undefined,
 	})
 })

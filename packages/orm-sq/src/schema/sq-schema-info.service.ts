@@ -3,13 +3,20 @@ import {
 	CompositeUniqueKey,
 	DbColumn,
 	ForeignKey,
-	RequiredTableAndColumnParams,
-	SchemaInfoBasicParams,
+	GetColumnParams,
+	GetColumnsParams,
+	GetCompositeUniqueKeysParams,
+	GetForeignKeyParams,
+	GetForeignKeysParams,
+	GetPrimaryKeyParams,
+	GetSingleUniqueKeysParams,
+	GetTableNamesParams,
+	GetUniqueKeysParams,
+	HasColumnParams,
+	HasTableParams,
 	SchemaInfoService,
 	SingleUniqueKey,
-	TableAndColumnParams,
 	TableHasNoPkError,
-	TableOnlyParams,
 	UniqueKey,
 } from "@zmaj-js/orm-engine"
 import { SequelizeService } from "../sq.service"
@@ -54,7 +61,8 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
 	constructor(private sq: SequelizeService) {}
 
 	// https://stackoverflow.com/a/24089729
-	async hasTable(table: string, other?: SchemaInfoBasicParams): Promise<boolean> {
+	async hasTable(params: HasTableParams): Promise<boolean> {
+		const { table, ...other } = params
 		const query = `
 		select
 		  count(pt.tablename) = 1 as "exists"
@@ -71,7 +79,8 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
 		})) as any
 		return result[0].exists
 	}
-	async hasColumn(table: string, column: string, other?: SchemaInfoBasicParams): Promise<boolean> {
+	async hasColumn(params: HasColumnParams): Promise<boolean> {
+		const { table, column, ...other } = params
 		/* cSpell:disable */
 		const query = `
         select
@@ -100,7 +109,7 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
 
 		return result[0].exists
 	}
-	async getTableNames(shared?: SchemaInfoBasicParams): Promise<string[]> {
+	async getTableNames(params?: GetTableNamesParams): Promise<string[]> {
 		const pgNative = `
         select
             pt.tablename as "tableName"
@@ -112,14 +121,14 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
         `
 
 		const result: [{ tableName: string }] = (await this.sq.rawQuery(pgNative, {
-			params: [shared?.schema ?? "public"],
-			trx: shared?.trx,
+			params: [params?.schema ?? "public"],
+			trx: params?.trx,
 		})) as any
 
 		return result.map((r) => r.tableName)
 	}
 
-	async getColumns(options?: TableAndColumnParams): Promise<Readonly<DbColumn>[]> {
+	async getColumns(params?: GetColumnsParams): Promise<Readonly<DbColumn>[]> {
 		/* cSpell:disable */
 		const query = `
         select
@@ -150,18 +159,18 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
             not a.attisdropped -- no dropped (dead) columns
             and a.attnum > 0 -- no system columns
             and pc.relnamespace = $schema_name :: regnamespace
-            ${options?.table ? "and a.attrelid = $table_name::regclass" : ""}
-            ${options?.column ? "and a.attname = $column_name" : ""}
+            ${params?.table ? "and a.attrelid = $table_name::regclass" : ""}
+            ${params?.column ? "and a.attname = $column_name" : ""}
             ;
             `
 		/* cSpell:enable */
 		const result: PgColumn[] = (await this.sq.rawQuery(query, {
 			params: {
-				schema_name: options?.schema ?? "public", //
-				table_name: options?.table,
-				column_name: options?.column,
+				schema_name: params?.schema ?? "public", //
+				table_name: params?.table,
+				column_name: params?.column,
 			},
-			trx: options?.trx,
+			trx: params?.trx,
 		})) as any
 
 		return result.map((v) => ({
@@ -178,12 +187,13 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
 		}))
 	}
 
-	async getColumn(options: RequiredTableAndColumnParams): Promise<Readonly<DbColumn> | undefined> {
+	async getColumn(options: GetColumnParams): Promise<Readonly<DbColumn> | undefined> {
 		const columns = await this.getColumns(options)
 		return columns[0]
 	}
 
-	async getPrimaryKey(tableName: string, shared?: SchemaInfoBasicParams): Promise<DbColumn> {
+	async getPrimaryKey(params: GetPrimaryKeyParams): Promise<DbColumn> {
+		const { table: tableName, ...shared } = params
 		/* cSpell:disable */
 		const query = `
         select
@@ -210,7 +220,7 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
 		return column!
 	}
 
-	async getForeignKeys(options?: TableAndColumnParams): Promise<ForeignKey[]> {
+	async getForeignKeys(options?: GetForeignKeysParams): Promise<ForeignKey[]> {
 		/* cSpell:disable */
 		// "la" is where fk is located, "ra" is where fk points to
 		// "c" is where info about fk is located
@@ -274,24 +284,24 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
 			fkColumnUnique: v.unique,
 		}))
 	}
-	async getForeignKey(options: RequiredTableAndColumnParams): Promise<ForeignKey | undefined> {
+	async getForeignKey(options: GetForeignKeyParams): Promise<ForeignKey | undefined> {
 		const res = await this.getForeignKeys(options)
 		return res[0]
 	}
 
-	async getSingleUniqueKeys(options?: TableOnlyParams): Promise<SingleUniqueKey[]> {
+	async getSingleUniqueKeys(options?: GetSingleUniqueKeysParams): Promise<SingleUniqueKey[]> {
 		const result = await this.getUniqueKeys({ ...options, type: "single" })
 		return result.map(({ columnNames, ...rest }) => ({ ...rest, columnName: columnNames[0] }))
 	}
 
-	async getCompositeUniqueKeys(options?: TableOnlyParams): Promise<CompositeUniqueKey[]> {
+	async getCompositeUniqueKeys(
+		options?: GetCompositeUniqueKeysParams,
+	): Promise<CompositeUniqueKey[]> {
 		const result = await this.getUniqueKeys({ ...options, type: "composite" })
 		return result as CompositeUniqueKey[]
 	}
 
-	async getUniqueKeys(
-		shared?: TableOnlyParams & { type?: "all" | "single" | "composite" },
-	): Promise<Readonly<UniqueKey>[]> {
+	async getUniqueKeys(shared?: GetUniqueKeysParams): Promise<Readonly<UniqueKey>[]> {
 		let filterByIsComposite: string
 		if (shared?.type === "single") {
 			filterByIsComposite = "and cardinality(uc.conkey) = 1"

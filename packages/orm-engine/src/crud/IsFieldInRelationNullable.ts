@@ -1,5 +1,6 @@
 import { BaseModel } from "@orm-engine/model/base-model"
 import { ModelRelationDefinition } from "@orm-engine/model/relations/relation-metadata"
+import { RelationType } from "@orm-engine/model/relations/relation.type"
 
 export type IsFieldInRelationNullable<TKey, TModel extends BaseModel> = TKey extends keyof TModel
 	? TModel[TKey] extends ModelRelationDefinition<any, any, infer FKey>
@@ -13,4 +14,6 @@ export type IsFieldInRelationNullable<TKey, TModel extends BaseModel> = TKey ext
 		: never
 	: never
 
-export type IsRefOneToOne<TRelType> = TRelType extends "ref-one-to-one" ? undefined : never
+export type IsRefOneToOne<TRelType extends RelationType> = TRelType extends "ref-one-to-one"
+	? undefined
+	: never

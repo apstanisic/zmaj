@@ -50,7 +50,7 @@ export type PojoModelRelation = PojoModelDirectRelation | PojoModelJunctionRelat
 
 export type PojoModel = {
 	name: string
-	/** We will use name **/
+	/** We will use name as tableName if tableName is undefined **/
 	tableName?: string
 	disabled?: boolean
 	fields: Record<string, PojoModelField>

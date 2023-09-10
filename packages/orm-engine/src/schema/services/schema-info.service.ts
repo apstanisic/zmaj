@@ -1,37 +1,42 @@
 import { DbColumn } from "../types/db-column.type"
 import { ForeignKey } from "../types/foreign-key.type"
 import {
-	RequiredTableAndColumnParams,
-	SchemaInfoBasicParams,
-	TableAndColumnParams,
-	TableOnlyParams,
+	GetColumnParams,
+	GetColumnsParams,
+	GetCompositeUniqueKeysParams,
+	GetForeignKeyParams,
+	GetForeignKeysParams,
+	GetPrimaryKeyParams,
+	GetSingleUniqueKeysParams,
+	GetTableNamesParams,
+	GetUniqueKeysParams,
+	HasColumnParams,
+	HasTableParams,
 } from "../types/schema-info-params.types"
 import { CompositeUniqueKey, SingleUniqueKey, UniqueKey } from "../types/unique-key.types"
 
 export abstract class SchemaInfoService {
-	abstract hasTable(table: string, other?: SchemaInfoBasicParams): Promise<boolean>
+	abstract hasTable(params: HasTableParams): Promise<boolean>
 
-	abstract hasColumn(table: string, column: string, other?: SchemaInfoBasicParams): Promise<boolean>
+	abstract hasColumn(params: HasColumnParams): Promise<boolean>
 
-	abstract getPrimaryKey(tableName: string, shared?: SchemaInfoBasicParams): Promise<DbColumn>
+	abstract getPrimaryKey(params: GetPrimaryKeyParams): Promise<DbColumn>
 
-	abstract getTableNames(shared?: SchemaInfoBasicParams): Promise<string[]>
+	abstract getTableNames(params?: GetTableNamesParams): Promise<string[]>
 
-	abstract getColumns(options?: TableAndColumnParams): Promise<DbColumn[]>
+	abstract getColumns(params?: GetColumnsParams): Promise<DbColumn[]>
 
-	abstract getColumn(
-		options?: RequiredTableAndColumnParams,
-	): Promise<Readonly<DbColumn> | undefined>
+	abstract getColumn(params: GetColumnParams): Promise<Readonly<DbColumn> | undefined>
 
-	abstract getForeignKeys(options?: TableAndColumnParams): Promise<ForeignKey[]>
+	abstract getForeignKeys(params?: GetForeignKeysParams): Promise<ForeignKey[]>
 
-	abstract getForeignKey(options: RequiredTableAndColumnParams): Promise<ForeignKey | undefined>
+	abstract getForeignKey(params: GetForeignKeyParams): Promise<ForeignKey | undefined>
 
-	abstract getSingleUniqueKeys(options?: TableOnlyParams): Promise<SingleUniqueKey[]>
+	abstract getSingleUniqueKeys(params?: GetSingleUniqueKeysParams): Promise<SingleUniqueKey[]>
 
-	abstract getCompositeUniqueKeys(options?: TableOnlyParams): Promise<CompositeUniqueKey[]>
+	abstract getCompositeUniqueKeys(
+		params?: GetCompositeUniqueKeysParams,
+	): Promise<CompositeUniqueKey[]>
 
-	abstract getUniqueKeys(
-		options?: TableOnlyParams & { type?: "all" | "single" | "composite" },
-	): Promise<UniqueKey[]>
+	abstract getUniqueKeys(params?: GetUniqueKeysParams): Promise<UniqueKey[]>
 }

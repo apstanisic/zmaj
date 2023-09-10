@@ -1,4 +1,4 @@
-import { Transaction } from "./transaction.type"
+import { Transaction } from "./transaction/transaction.type"
 
 /**
  * All repository methods should contain this type

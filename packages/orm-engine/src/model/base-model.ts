@@ -11,7 +11,6 @@ export abstract class BaseModel {
 	abstract name: string
 	tableName?: string
 	abstract fields: AllFieldsInModel
-	// abstract config: { tableName?: string; name: string }
 
 	protected buildFields = createFieldBuilder
 

@@ -1,7 +1,7 @@
 import { BaseModel } from "@orm-engine/model/base-model"
+import { GetUpdateFields } from "@orm-engine/model/types/extract-model-fields.types"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
-import { RepoWhere } from "../repo-where.type"
-import { GetUpdateType } from "./GetUpdateType"
+import { RepoFilter } from "../filter/repo-filter.type"
 
 /**
  * Props that are passed to update many method
@@ -10,7 +10,7 @@ export type UpdateManyOptions<
 	TModel extends BaseModel,
 	OverrideCanUpdate extends boolean,
 > = BaseRepoMethodParams & {
-	where: RepoWhere<TModel>
-	changes: GetUpdateType<TModel, OverrideCanUpdate>
+	where: RepoFilter<TModel>
+	changes: GetUpdateFields<TModel, OverrideCanUpdate>
 	overrideCanUpdate?: OverrideCanUpdate
 }

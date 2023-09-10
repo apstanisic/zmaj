@@ -1,6 +1,6 @@
 import { BaseModel } from "@orm-engine/model/base-model"
+import { GetCreateFields } from "@orm-engine/model/types/extract-model-fields.types"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
-import { GetCreateType } from "./GetCreateType"
 
 /**
  * This is needed params in repo's create method
@@ -17,8 +17,8 @@ export type CreateParams<
 	 * Data that needs to be provided to create item
 	 */
 	data: TType extends "one"
-		? GetCreateType<TModel, TOverrideCanCreate>
-		: GetCreateType<TModel, TOverrideCanCreate>[]
+		? GetCreateFields<TModel, TOverrideCanCreate>
+		: GetCreateFields<TModel, TOverrideCanCreate>[]
 
 	overrideCanCreate?: TOverrideCanCreate
 }

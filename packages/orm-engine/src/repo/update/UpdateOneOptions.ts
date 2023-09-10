@@ -1,7 +1,7 @@
 import { BaseModel } from "@orm-engine/model/base-model"
+import { GetUpdateFields } from "@orm-engine/model/types/extract-model-fields.types"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
 import { IdType } from "../id-type.type"
-import { GetUpdateType } from "./GetUpdateType"
 
 /**
  * Props that are passed to update one method
@@ -11,6 +11,6 @@ export type UpdateOneOptions<
 	OverrideCanUpdate extends boolean,
 > = BaseRepoMethodParams & {
 	id: IdType
-	changes: GetUpdateType<TModel, OverrideCanUpdate>
+	changes: GetUpdateFields<TModel, OverrideCanUpdate>
 	overrideCanUpdate?: OverrideCanUpdate
 }

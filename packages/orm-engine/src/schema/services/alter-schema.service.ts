@@ -20,9 +20,9 @@ export abstract class AlterSchemaService {
 
 	abstract dropColumn(params: DropColumnParams): Promise<void>
 
-	abstract createFk(params: CreateForeignKeyParams): Promise<void>
+	abstract createForeignKey(params: CreateForeignKeyParams): Promise<void>
 
-	abstract dropFk(params: DropForeignKeyParams): Promise<void>
+	abstract dropForeignKey(params: DropForeignKeyParams): Promise<void>
 
 	abstract createUniqueKey(params: CreateUniqueKeyParams): Promise<void>
 

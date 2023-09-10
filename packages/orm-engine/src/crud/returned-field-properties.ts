@@ -20,7 +20,12 @@ export type HandleReturnField<
 	TFields extends SelectFields<TModel> | undefined,
 	TAddHidden extends boolean,
 	TKey,
-> = TKey extends keyof GetReadFields<TModel, TAddHidden>
+	T$Fields extends boolean,
+> = T$Fields extends true
+	? TKey extends keyof GetReadFields<TModel, TAddHidden>
+		? GetReadFields<TModel, TAddHidden>[TKey]
+		: never
+	: TKey extends keyof GetReadFields<TModel, TAddHidden>
 	? TKey extends keyof NonNullable<TFields>
 		? NonNullable<TFields>[TKey] extends true
 			? GetReadFields<TModel, TAddHidden>[TKey]

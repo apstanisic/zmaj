@@ -1,6 +1,6 @@
 import { BaseModel } from "@orm-engine/model/base-model"
 import { ModelRelationDefinition } from "@orm-engine/model/relations/relation-metadata"
-import { ModelFields } from "@orm-engine/model/types/extract-model-types"
+import { ModelProperties } from "@orm-engine/model/types/extract-model-types"
 import { Simplify } from "type-fest"
 import { IsFieldInRelationNullable, IsRefOneToOne } from "./IsFieldInRelationNullable"
 import { SubRelation } from "./ReturnedArrayRelationProperties"
@@ -13,8 +13,14 @@ export type ReturnedFields<
 	TIncludeHidden extends boolean = false,
 > = Simplify<{
 	// If field, return field.
-	[key in ModelFields<TModel>]: key extends keyof TModel["fields"]
-		? HandleReturnField<TModel, TFields, TIncludeHidden, key>
+	[key in ModelProperties<TModel>]: key extends keyof TModel["fields"]
+		? HandleReturnField<
+				TModel,
+				TFields,
+				TIncludeHidden,
+				key,
+				NonNullable<TFields>["$fields"] extends true ? true : false
+		  >
 		: key extends keyof TModel
 		? TModel[key] extends ModelRelationDefinition<infer TInner, infer TArray, any, infer TRelType>
 			? key extends keyof TFields

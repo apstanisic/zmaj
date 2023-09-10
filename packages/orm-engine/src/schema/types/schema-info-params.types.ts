@@ -1,7 +1,26 @@
 import { Transaction } from "@orm-engine/repo/transaction.type"
-import { SetRequired } from "type-fest"
+import { Except } from "type-fest"
 
-export type SchemaInfoBasicParams = { schema?: string; trx?: Transaction }
-export type TableOnlyParams = { table?: string } & SchemaInfoBasicParams
-export type TableAndColumnParams = { table?: string; column?: string } & SchemaInfoBasicParams
-export type RequiredTableAndColumnParams = SetRequired<TableAndColumnParams, "column" | "table">
+type SchemaInfoCommonParams = { schema?: string; trx?: Transaction }
+
+type Table = { table: string }
+type Column = { column: string }
+
+//
+export type HasTableParams = SchemaInfoCommonParams & Table
+export type HasColumnParams = SchemaInfoCommonParams & Table & Column
+//
+export type GetPrimaryKeyParams = SchemaInfoCommonParams & Table
+//
+export type GetTableNamesParams = SchemaInfoCommonParams
+//
+export type GetColumnsParams = SchemaInfoCommonParams & Partial<Table> & Partial<Column>
+export type GetColumnParams = SchemaInfoCommonParams & Table & Column
+//
+export type GetForeignKeysParams = SchemaInfoCommonParams & Partial<Table> & Partial<Column>
+export type GetForeignKeyParams = SchemaInfoCommonParams & Table & Column
+//
+export type GetUniqueKeysParams = SchemaInfoCommonParams &
+	Partial<Table> & { type?: "all" | "single" | "composite" }
+export type GetSingleUniqueKeysParams = Except<GetUniqueKeysParams, "type">
+export type GetCompositeUniqueKeysParams = Except<GetUniqueKeysParams, "type">

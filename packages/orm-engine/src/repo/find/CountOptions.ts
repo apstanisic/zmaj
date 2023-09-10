@@ -1,7 +1,7 @@
 import { BaseModel } from "@orm-engine/model/base-model"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
-import { RepoWhere } from "../repo-where.type"
+import { RepoFilter } from "../filter/repo-filter.type"
 
 export type CountOptions<TModel extends BaseModel> = BaseRepoMethodParams & {
-	where?: RepoWhere<TModel>
+	where?: RepoFilter<TModel>
 }

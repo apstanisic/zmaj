@@ -1,4 +1,5 @@
 import {
+	AlterSchemaService,
 	CantBecomeNonNullableError,
 	CantBecomeUniqueError,
 	CreateColumnParams,
@@ -40,7 +41,7 @@ import {
 	UpdateColumnSchema,
 } from "./alter-schema.zod"
 
-export class SequelizeAlterSchemaService {
+export class SequelizeAlterSchemaService implements AlterSchemaService {
 	private qi: QueryInterface
 	constructor(
 		private sq: SequelizeService,
@@ -138,7 +139,7 @@ export class SequelizeAlterSchemaService {
 		await this.qi.removeColumn(data.tableName, data.columnName, { transaction: data?.trx })
 	}
 
-	async createFk(params: CreateForeignKeyParams): Promise<void> {
+	async createForeignKey(params: CreateForeignKeyParams): Promise<void> {
 		const data = CreateForeignKeySchema.parse(params)
 		// const indexName = data.indexName ?? `${data.fkTable}_${data.fkColumn}_foreign`
 
@@ -156,7 +157,7 @@ export class SequelizeAlterSchemaService {
 		})
 	}
 
-	async dropFk(params: DropForeignKeyParams): Promise<void> {
+	async dropForeignKey(params: DropForeignKeyParams): Promise<void> {
 		const data = DropForeignKeySchema.parse(params)
 		let keyName: string
 		if (data.indexName) {
