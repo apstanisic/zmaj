@@ -8,7 +8,7 @@ import { BuildFieldParamsAndType } from "./build-field-params-and-type.type"
  * This should be called before update, read, and create types, since this modifies base `_type`,
  * on top of which other types are built
  */
-export type HandleNullableFieldType<TParams extends BuildFieldParamsAndType<any>> = Except<
+export type BuildFieldAddNullable<TParams extends BuildFieldParamsAndType<any>> = Except<
 	TParams,
 	"_type"
 > & {

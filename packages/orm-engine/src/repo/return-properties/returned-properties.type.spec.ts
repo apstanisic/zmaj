@@ -6,7 +6,7 @@ import {
 	WriterModel,
 } from "@orm-engine/example-models"
 import { BaseModel } from "@orm-engine/model/base-model"
-import { GetReadFields } from "@orm-engine/model/types/extract-model-fields.types"
+import { GetReadFields } from "@orm-engine/model/types/get-model-fields.types"
 import { assertType, describe, expectTypeOf, it } from "vitest"
 import { ReturnedFieldProperties } from "./returned-field-properties"
 import { ReturnedProperties } from "./returned-properties.type"

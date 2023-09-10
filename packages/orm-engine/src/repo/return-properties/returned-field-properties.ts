@@ -1,5 +1,5 @@
 import { BaseModel } from "@orm-engine/model/base-model"
-import { GetReadFields } from "@orm-engine/model/types/extract-model-fields.types"
+import { GetReadFields } from "@orm-engine/model/types/get-model-fields.types"
 import { Base } from "@orm-engine/model/utils/base.type"
 import { SelectProperties } from "../select-properties/select-properties.type"
 

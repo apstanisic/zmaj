@@ -3,7 +3,7 @@ import { BuildFieldParamsAndType } from "./build-field-params-and-type.type"
 /**
  * Extract type for create params
  */
-export type HandleCreateFieldType<TCreateParams extends BuildFieldParamsAndType<any>> =
+export type BuildFieldAddCreate<TCreateParams extends BuildFieldParamsAndType<any>> =
 	TCreateParams & {
 		_create: TCreateParams["canCreate"] extends false ? undefined : GetType<TCreateParams>
 		_createOverride: GetType<TCreateParams>

@@ -1,5 +1,5 @@
 import { BaseModel } from "@orm-engine/model/base-model"
-import { GetCreateFields } from "@orm-engine/model/types/extract-model-fields.types"
+import { GetCreateFields } from "@orm-engine/model/types/get-model-fields.types"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
 
 /**

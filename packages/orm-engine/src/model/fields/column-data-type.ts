@@ -28,8 +28,8 @@ export const arrayDataTypes = [
 	"array.uuid",
 ] as const
 
-export const columnTypes = [...baseDataTypes, ...arrayDataTypes] as const
+const columnTypes = [...baseDataTypes, ...arrayDataTypes] as const
 
 export type ColumnDataType = (typeof columnTypes)[number]
-export type ArrayColumnType = (typeof arrayDataTypes)[number]
-export type BaseColumnType = (typeof baseDataTypes)[number]
+// type ArrayColumnType = (typeof arrayDataTypes)[number]
+// type BaseColumnType = (typeof baseDataTypes)[number]

@@ -1,7 +1,7 @@
 import { BaseModel } from "@orm-engine/model/base-model"
 import { RelationBuilderResult } from "@orm-engine/model/relations/relation-builder-result"
-import { GetModelFields } from "@orm-engine/model/types/extract-model-fields.types"
-import { ModelPropertyKeys } from "@orm-engine/model/types/ModelPropertyKeys"
+import { GetModelFields } from "@orm-engine/model/types/get-model-fields.types"
+import { ModelPropertyKeys } from "@orm-engine/model/types/model-property-keys"
 import { RequireExactlyOne, Simplify } from "type-fest"
 
 type Comparisons<T> = RequireExactlyOne<{
@@ -16,7 +16,6 @@ type Comparisons<T> = RequireExactlyOne<{
 	// non mongo but has support in sql
 	// like is only possible for string
 	$like: string
-	// $like: T
 }>
 
 export type RepoFilterWhere<TModel extends BaseModel> = Simplify<

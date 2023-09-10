@@ -1,5 +1,5 @@
 import { BaseModel } from "@orm-engine/model/base-model"
-import { GetModelFields } from "@orm-engine/model/types/extract-model-fields.types"
+import { GetModelFields } from "@orm-engine/model/types/get-model-fields.types"
 
 // maybe return later NULLS_LAST/FIRST
 type SortOptions = "ASC" | "DESC"

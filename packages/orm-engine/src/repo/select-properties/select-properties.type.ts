@@ -1,5 +1,5 @@
 import { RelationBuilderResult } from "@orm-engine/model/relations/relation-builder-result"
-import { ModelPropertyKeys } from "@orm-engine/model/types/ModelPropertyKeys"
+import { ModelPropertyKeys } from "@orm-engine/model/types/model-property-keys"
 import { Simplify } from "type-fest"
 import { assertType, it } from "vitest"
 import { CommentModel, PostModel } from "../../example-models"

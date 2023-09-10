@@ -1,6 +1,6 @@
 import { BaseModel } from "@orm-engine/model/base-model"
 import { RelationBuilderResult } from "@orm-engine/model/relations/relation-builder-result"
-import { ModelPropertyKeys } from "@orm-engine/model/types/ModelPropertyKeys"
+import { ModelPropertyKeys } from "@orm-engine/model/types/model-property-keys"
 import { AddOptionalToRefOneToOne } from "@orm-engine/repo/return-properties/add-optional-to-ref-one-to-one.type"
 import { Simplify } from "type-fest"
 import { SelectProperties } from "../select-properties/select-properties.type"

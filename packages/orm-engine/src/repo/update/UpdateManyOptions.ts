@@ -1,5 +1,5 @@
 import { BaseModel } from "@orm-engine/model/base-model"
-import { GetUpdateFields } from "@orm-engine/model/types/extract-model-fields.types"
+import { GetUpdateFields } from "@orm-engine/model/types/get-model-fields.types"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
 import { RepoFilter } from "../filter/repo-filter.type"
 
