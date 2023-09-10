@@ -33,7 +33,7 @@ function convertAllModelRelationsFromClassToPojo(
 
 	for (const [property, relation] of Object.entries(relations)) {
 		const type = relation.options.type
-		const otherSide = store.getModel(relation.modelFn())
+		const otherSide = store.getOne(relation.modelFn())
 
 		if (type === "many-to-one" || type === "owner-one-to-one") {
 			expanded[property] = {
@@ -50,7 +50,7 @@ function convertAllModelRelationsFromClassToPojo(
 				referencedModel: otherSide.name,
 			}
 		} else if (type === "many-to-many") {
-			const junctionModel = store.getModel(relation.options.junction())
+			const junctionModel = store.getOne(relation.options.junction())
 			expanded[property] = {
 				type,
 				field: model.getPkField(),

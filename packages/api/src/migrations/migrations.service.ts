@@ -1,22 +1,21 @@
+import { throw500 } from "@api/common/throw-http"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { SchemaInfoService } from "@zmaj-js/orm"
-import { SequelizeService } from "@zmaj-js/orm"
 import { Injectable, Logger } from "@nestjs/common"
 import { DbMigrationCollection } from "@zmaj-js/common"
+import { SchemaInfoService } from "@zmaj-js/orm"
 import { isString } from "radash"
 import { MigrationError, Umzug } from "umzug"
+import { MigrationsConfig } from "./migrations.config"
 import {
 	MigrationDefinition,
 	MigrationFn,
+	MigrationRunnerContext,
 	SystemMigration,
 	UserMigration,
-	MigrationRunnerContext,
 } from "./migrations.types"
-import { MigrationsConfig } from "./migrations.config"
 import { MigrationsUmzugStorage } from "./migrations.umzug-storage"
-import { systemMigrations } from "./system-migrations/mod"
 import { CreateMigrationsTable } from "./system-migrations/000_migrations"
-import { throw500 } from "@api/common/throw-http"
+import { systemMigrations } from "./system-migrations/mod"
 
 /**
  */

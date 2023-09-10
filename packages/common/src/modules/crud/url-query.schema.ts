@@ -1,8 +1,8 @@
 import { DbFieldSchema, zodCastBool, ZodIdType } from "@common/zod/zod-utils"
 import { z } from "zod"
 
-type Fields = {
-	[key: string]: true | Fields
+export type UrlFields = {
+	[key: string]: true | UrlFields
 }
 /**
  * Schema that fields property must fulfill
@@ -20,7 +20,7 @@ type Fields = {
  * ```
  *
  */
-export const UrlFieldsSchema: z.ZodType<Fields> = z.lazy(() =>
+export const UrlFieldsSchema: z.ZodType<UrlFields> = z.lazy(() =>
 	z.record(
 		z.string(),
 		z.union([

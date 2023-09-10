@@ -50,6 +50,7 @@
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/email-templates": "workspace:*",
 		"@zmaj-js/orm": "workspace:*",
+		"@zmaj-js/orm-sq": "workspace:*",
 		"@zmaj-js/storage-core": "workspace:*",
 		"@zmaj-js/storage-s3": "workspace:*",
 		"argon2": "^0.30.3",

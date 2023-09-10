@@ -1,60 +1,50 @@
-import { mixedColDef } from "@api/collection-to-model-config"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { Global, Logger, Module } from "@nestjs/common"
-import { systemCollections } from "@zmaj-js/common"
+import { Global, Module } from "@nestjs/common"
+import { systemModels } from "@zmaj-js/common"
+import { AlterSchemaService, Orm, SchemaInfoService } from "@zmaj-js/orm"
 import {
-	AlterSchemaService,
-	DatabaseConfig,
-	SchemaInfoService,
 	SequelizeAlterSchemaService,
 	SequelizeRepoManager,
 	SequelizeSchemaInfoService,
 	SequelizeService,
-} from "@zmaj-js/orm"
+	sqOrmEngine,
+} from "@zmaj-js/orm-sq"
+import { DatabaseConfig } from "./database.config"
 
 @Global()
 @Module({
 	providers: [
 		{
-			provide: SequelizeService,
+			provide: Orm,
 			inject: [DatabaseConfig],
 			useFactory: async (config: DatabaseConfig) => {
-				const sqService = new SequelizeService(config, new Logger(SequelizeService.name))
-				// we are initializing connection here
-				await sqService.init(mixedColDef([...systemCollections]))
-				return sqService
+				const orm = new Orm({ config, engine: sqOrmEngine, models: [...systemModels] })
+				await orm.init()
 			},
 		},
 		{
-			provide: BootstrapRepoManager,
-			useExisting: SequelizeRepoManager,
+			provide: SequelizeService,
+			inject: [Orm],
+			useFactory: async (orm: Orm) => {
+				return orm.engine.engineProvider as SequelizeService
+			},
 		},
 		{
 			provide: SequelizeRepoManager,
-			inject: [SequelizeService],
-			useFactory: (sq: SequelizeService) => sq.repoManager,
+			inject: [Orm],
+			useFactory: (orm: Orm) => orm.repoManager,
 		},
 		{
 			provide: SequelizeAlterSchemaService,
-			inject: [SequelizeService],
-			useFactory: (sq: SequelizeService) => sq.alterSchema,
+			inject: [Orm],
+			useFactory: (orm: Orm) => orm.alterSchema,
 		},
 		{
 			provide: SequelizeSchemaInfoService,
-			inject: [SequelizeService],
-			useFactory: (sq: SequelizeService) => sq.schemaInfo,
+			inject: [Orm],
+			useFactory: (orm: Orm) => orm.schemaInfo,
 		},
-		{ provide: AlterSchemaService, useExisting: SequelizeAlterSchemaService },
-		{ provide: SchemaInfoService, useExisting: SequelizeSchemaInfoService },
 	],
-	exports: [
-		SequelizeService,
-		SequelizeRepoManager,
-		BootstrapRepoManager,
-		SequelizeSchemaInfoService,
-		SequelizeAlterSchemaService,
-		AlterSchemaService,
-		SchemaInfoService,
-	],
+	exports: [BootstrapRepoManager, AlterSchemaService, SchemaInfoService],
 })
 export class SequelizeModule {}

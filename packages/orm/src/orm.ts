@@ -18,7 +18,7 @@ export class Orm {
 	readonly schemaInfo: SchemaInfoService
 	readonly repoManager: RepoManager
 	readonly models: ModelsState
-	private readonly engine: OrmEngine
+	public readonly engine: OrmEngine
 
 	constructor(params: OrmParams) {
 		this.models = createModelsStore()

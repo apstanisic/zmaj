@@ -2,26 +2,19 @@ import { mixedColDef } from "@api/collection-to-model-config"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { INFRA_SCHEMA_SYNC_FINISHED } from "@api/infra/infra.consts"
 import { Global, Module } from "@nestjs/common"
-import { RepoManager, SequelizeRepoManager, SequelizeService } from "@zmaj-js/orm"
+import { Orm, RepoManager } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 
 @Global()
 @Module({
 	providers: [
 		{
 			provide: RepoManager,
-			inject: [
-				SequelizeRepoManager,
-				SequelizeService,
-				InfraStateService,
-				INFRA_SCHEMA_SYNC_FINISHED,
-			],
-			useFactory: async (
-				sqRepoManager: SequelizeRepoManager,
-				sqService: SequelizeService,
-				state: InfraStateService,
-			) => {
+			inject: [Orm, InfraStateService, INFRA_SCHEMA_SYNC_FINISHED],
+			useFactory: async (orm: Orm, state: InfraStateService) => {
+				const sq = orm.engine.engineProvider as SequelizeService
 				// generate models with newly inited state
-				sqService.generateModels(mixedColDef(Object.values(state.collections)))
+				sq.updateModels(mixedColDef(Object.values(state.collections)))
 				return sqRepoManager
 			},
 		},

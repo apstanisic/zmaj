@@ -1,41 +1,52 @@
 import { Class } from "type-fest"
 import { BaseModel } from "./model/base-model"
+import { PojoModel } from "./model/pojo-model"
 
-export type ModelsState<TModel extends BaseModel = BaseModel> = {
-	models: Map<Class<BaseModel>, TModel>
-	getModel: (model: Class<TModel>) => TModel
-	getAll: () => TModel[]
-	clear: () => void
-	set: (model: Class<TModel>[]) => void
+type ModelParam = Class<BaseModel> | PojoModel
+
+export type ModelsState = {
+	models: Map<string, ModelParam>
+	addMany: (model: ModelParam[]) => void
+	getOne: (model: ModelParam) => ModelParam
+	getAll: () => ModelParam[]
+	removeAll: () => void
 }
 
-export function createModelsStore<TModel extends BaseModel = BaseModel>(): ModelsState<TModel> {
-	const allModels = new Map()
+export function createModelsStore(models: ModelParam[] = []): ModelsState {
+	const allModels = new Map<string, BaseModel | PojoModel>()
 
-	function add(Model: Class<BaseModel>): TModel {
+	function modelName(model: ModelParam): string {
+		return typeof model === "function" ? model.name : model.name
+	}
+
+	function add(Model: ModelParam): void {
 		if (Model === undefined) throw new Error("Provided model is undefined!")
-		if (allModels.has(Model)) {
-			return allModels.get(Model)!
-		} else {
-			allModels.set(Model, new Model())
-			return allModels.get(Model)!
-		}
+		const name = modelName(Model)
+		if (allModels.has(name)) return
+
+		allModels.set(name, typeof Model === "function" ? new Model() : Model)
+	}
+
+	for (const model of models) {
+		add(model)
 	}
 
 	return {
 		models: allModels,
-		set: (models: Class<BaseModel>[]): void => {
+		setup: (models: ModelParam[]): void => {},
+		addMany: (models: ModelParam[]): void => {
 			for (const Model of models) {
 				add(Model)
 			}
 		},
-		getModel: (Model: Class<BaseModel>): TModel => {
-			return add(Model)
+		getOne: (Model: ModelParam): ModelParam => {
+			add(Model)
+			return allModels.get(modelName(Model))
 		},
 		getAll: () => {
 			return Array.from(allModels.values())
 		},
-		clear: (): void => {
+		removeAll: (): void => {
 			allModels.clear()
 		},
 	}

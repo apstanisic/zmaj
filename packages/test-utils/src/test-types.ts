@@ -1,4 +1,3 @@
-import { EntityRef } from "@zmaj-js/orm-common"
 import {
 	TCommentStub,
 	TPostInfoStub,
@@ -8,24 +7,24 @@ import {
 } from "./stubs/fake-data.stubs.js"
 
 export type TPost = ReturnType<typeof TPostStub> & {
-	comments?: EntityRef<TComment>[]
-	tags?: EntityRef<TTag>[]
-	postInfo?: EntityRef<TPostInfo> | null
+	comments?: TComment[]
+	tags?: TTag[]
+	postInfo?: TPostInfo | null
 }
 
 export type TComment = ReturnType<typeof TCommentStub> & {
-	post?: EntityRef<TPost>
+	post?: TPost
 }
 
 export type TTag = ReturnType<typeof TTagStub> & {
-	posts?: EntityRef<TPost>[]
+	posts?: TPost[]
 }
 
 export type TPostInfo = ReturnType<typeof TPostInfoStub> & {
-	post?: EntityRef<TPost>
+	post?: TPost
 }
 
 export type TPostTag = ReturnType<typeof TPostTagStub> & {
-	post?: EntityRef<TPost>
-	tag?: EntityRef<TTag>
+	post?: TPost
+	tag?: TTag
 }

@@ -4,13 +4,14 @@ import {
 	DatabaseConfig,
 	ModelsState,
 	OrmLogger,
+	PojoModel,
 	RawQueryOptions,
 	RepoManager,
 	SchemaInfoService,
 	TransactionIsolationLevel,
 } from "@zmaj-js/orm"
 import { ModelStatic, QueryInterface, Sequelize, Transaction } from "sequelize"
-import { WritableDeep } from "type-fest"
+import { Class, WritableDeep } from "type-fest"
 import { SequelizeAlterSchemaService } from "./schema/sq-alter-schema.service"
 import { SequelizeSchemaInfoService } from "./schema/sq-schema-info.service"
 import { SequelizeModelsGenerator } from "./sq.model-generator"
@@ -71,8 +72,10 @@ export class SequelizeService {
 	}
 
 	// generateModels(models: readonly (Class<BaseModel> | ModelConfig)[]): void {
-	generateModels(models: BaseModel[]): void {
-		this.generator.generateModels(models, this.orm)
+	generateModels(models: (Class<BaseModel> | PojoModel)[]): void {
+		this.modelsStore.clear()
+		this.modelsStore.set(models)
+		this.generator.generateModels(this.modelsStore.getAll(), this.orm)
 	}
 
 	async transaction<T>(params: {

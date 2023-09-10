@@ -1,7 +1,7 @@
 import { Global, Module } from "@nestjs/common"
-import { DatabaseConfig, DatabaseConfigParams } from "@zmaj-js/orm"
-import { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } from "./database.module-definition"
 import { ConfigService } from "../config/config.service"
+import { DatabaseConfig, DatabaseConfigParams } from "./database.config"
+import { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } from "./database.module-definition"
 import { SequelizeModule } from "./sequelize.module"
 
 /**
