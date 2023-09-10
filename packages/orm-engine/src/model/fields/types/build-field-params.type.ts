@@ -1,7 +1,7 @@
 /**
  * This are params that user can pass to configure field
  */
-export type CreateFieldParams = {
+export type BuildFieldParams = {
 	nullable?: boolean
 	canRead?: boolean
 	canUpdate?: boolean

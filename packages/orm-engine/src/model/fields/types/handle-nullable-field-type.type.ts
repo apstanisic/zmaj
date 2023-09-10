@@ -1,10 +1,14 @@
 import { Except } from "type-fest"
-import { CreateFieldParamsAndType } from "./create-field-params-and-type.type"
+import { BuildFieldParamsAndType } from "./build-field-params-and-type.type"
 
 /**
- * This should be called before update, read, and create types
+ * If field is nullable,
+ * we will add null to default type. Plus, we add special _nullable, where we can access
+ * if field is nullable as boolean.
+ * This should be called before update, read, and create types, since this modifies base `_type`,
+ * on top of which other types are built
  */
-export type HandleNullableFieldType<TParams extends CreateFieldParamsAndType<any>> = Except<
+export type HandleNullableFieldType<TParams extends BuildFieldParamsAndType<any>> = Except<
 	TParams,
 	"_type"
 > & {

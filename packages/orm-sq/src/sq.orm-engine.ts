@@ -1,7 +1,7 @@
-import { OrmProvider } from "@zmaj-js/orm-engine"
+import { createOrmEngine } from "@zmaj-js/orm-engine"
 import { SequelizeService } from "./sq.service"
 
-export const sqOrmProvider: OrmProvider = (params) => {
+export const sqOrmEngine = createOrmEngine((params) => {
 	const sq = new SequelizeService(params.config, console, params.models)
 	const schemaInfo = sq.schemaInfo
 	const alterSchema = sq.alterSchema
@@ -13,4 +13,4 @@ export const sqOrmProvider: OrmProvider = (params) => {
 		init: async () => sq.init(),
 		destroy: async () => sq.onModuleDestroy(),
 	}
-}
+})

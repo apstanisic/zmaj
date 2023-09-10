@@ -38,8 +38,24 @@ describe("CrudFilter", () => {
 				$or: [{ body: "Hello" }, { id: { $ne: "test" } }],
 			},
 			info: {
-				post: { $and: [{ likes: { $gte: 5 } }] },
+				post: { $and: [{ likes: { $gte: 5 } }, {}] },
 			},
+		})
+	})
+
+	it("should require at least 2 items in $and/$or ", () => {
+		// @ts-expect-error
+		assertType<RepoFilterWhere<PostModel>>({ $and: [] })
+		// @ts-expect-error
+		assertType<RepoFilterWhere<PostModel>>({ $and: [{}] })
+		assertType<RepoFilterWhere<PostModel>>({ $and: [{}, {}] })
+	})
+
+	it("should not allow both $and and $or", () => {
+		assertType<RepoFilterWhere<PostModel>>({
+			$and: [{}, {}],
+			// @ts-expect-error
+			$or: [{}, {}],
 		})
 	})
 

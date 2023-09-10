@@ -1,7 +1,8 @@
 import { BaseModel } from "@orm-engine/model/base-model"
-import { ModelType } from "@orm-engine/model/types/extract-model-types"
+import { RelationBuilderResult } from "@orm-engine/model/relations/relation-builder-result"
+import { GetModelFields } from "@orm-engine/model/types/extract-model-fields.types"
+import { ModelPropertyKeys } from "@orm-engine/model/types/ModelPropertyKeys"
 import { RequireExactlyOne, Simplify } from "type-fest"
-import { ModelVariant } from "../../crud/model-variant.type"
 
 type Comparisons<T> = RequireExactlyOne<{
 	$eq: T
@@ -18,13 +19,18 @@ type Comparisons<T> = RequireExactlyOne<{
 	// $like: T
 }>
 
-export type RepoFilterWhere<T extends BaseModel> = Simplify<
+export type RepoFilterWhere<TModel extends BaseModel> = Simplify<
 	| {
-			[key in keyof ModelType<T>]?: NonNullable<
-				NonNullable<ModelType<T>>[key]
-			> extends ModelVariant<infer R extends BaseModel>
-				? RepoFilterWhere<R>
-				: NonNullable<ModelType<T>>[key] | Comparisons<NonNullable<ModelType<T>>[key]> | null
+			[key in ModelPropertyKeys<TModel>]?: key extends keyof GetModelFields<TModel>
+				? GetModelFields<TModel>[key] | Comparisons<GetModelFields<TModel>[key]>
+				: key extends keyof TModel
+				? TModel[key] extends RelationBuilderResult<infer TInner, any, any>
+					? RepoFilterWhere<TInner>
+					: never
+				: never
 	  }
-	| RequireExactlyOne<{ $and: RepoFilterWhere<T>[]; $or: RepoFilterWhere<T>[] }>
+	| RequireExactlyOne<{
+			$and: [RepoFilterWhere<TModel>, RepoFilterWhere<TModel>, ...RepoFilterWhere<TModel>[]]
+			$or: [RepoFilterWhere<TModel>, RepoFilterWhere<TModel>, ...RepoFilterWhere<TModel>[]] //
+	  }>
 >

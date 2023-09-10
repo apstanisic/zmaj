@@ -1,14 +1,14 @@
 import { PostInfoModel, PostModel } from "@orm-engine/example-models"
 import { assertType, it } from "vitest"
 import {
-	ExtractFields,
 	GetCreateFields,
+	GetModelFields,
 	GetReadFields,
 	GetUpdateFields,
-} from "./extract-model-fields.types"
+} from "./get-model-fields.types"
 
 it("should extract types", () => {
-	const val = {} as ExtractFields<PostModel>
+	const val = {} as GetModelFields<PostModel>
 	assertType<{
 		id: string
 		body: string

@@ -1,8 +1,9 @@
 import { Class } from "type-fest"
 import { createFieldBuilder } from "./fields/create-field"
 import { AllFieldsInModel } from "./fields/types/all-fields-in-model.type"
-import { CreateFieldParams } from "./fields/types/create-field-params.type"
-import { ModelRelationDefinition } from "./relations/relation-metadata"
+import { BuildFieldParams } from "./fields/types/build-field-params.type"
+import { RelationBuilderResult } from "./relations/relation-builder-result"
+import { RelationType } from "./relations/relation-type.types"
 
 /**
  * Explore auto generating `readonly` for `canUpdate=false` types
@@ -16,10 +17,10 @@ export abstract class BaseModel {
 
 	readonly disabled = false
 
-	getRelations(): Record<string, ModelRelationDefinition<any, boolean>> {
-		const toReturn: Record<string, ModelRelationDefinition<any>> = {}
+	getRelations(): Record<string, RelationBuilderResult<any, RelationType, undefined>> {
+		const toReturn: Record<string, RelationBuilderResult<any, RelationType, undefined>> = {}
 		for (const [property, value] of Object.entries(this)) {
-			if (value instanceof ModelRelationDefinition) {
+			if (value instanceof RelationBuilderResult) {
 				toReturn[property] = value
 			}
 		}
@@ -28,7 +29,7 @@ export abstract class BaseModel {
 
 	getPkField(): string {
 		for (const [property, _field] of Object.entries(this.fields)) {
-			const field = _field as CreateFieldParams
+			const field = _field as BuildFieldParams
 			if (field.isPk) return property
 		}
 		throw new Error("No PK provided")
@@ -37,13 +38,13 @@ export abstract class BaseModel {
 	protected manyToOne<
 		T extends BaseModel,
 		TThis extends this = this,
-		TColumnName extends keyof TThis["fields"] = string,
+		TColumnName extends keyof TThis["fields"] = keyof TThis["fields"],
 	>(
 		modelType: () => Class<T>,
 		options: { fkField: TColumnName; referencedField?: keyof T["fields"] },
-	): ModelRelationDefinition<T, false, TColumnName, "many-to-one"> {
-		return new ModelRelationDefinition(modelType, {
-			fkField: options.fkField as string,
+	): RelationBuilderResult<T, "many-to-one", TColumnName> {
+		return new RelationBuilderResult(modelType, {
+			fkField: options.fkField,
 			type: "many-to-one",
 			referencedField: options.referencedField as string | undefined,
 		})
@@ -52,8 +53,8 @@ export abstract class BaseModel {
 	protected oneToMany<T extends BaseModel, TThis extends this = this>(
 		modelFn: () => Class<T>,
 		options: { fkField: keyof T["fields"]; referencedField?: keyof TThis["fields"] },
-	): ModelRelationDefinition<T, true, undefined, "one-to-many"> {
-		return new ModelRelationDefinition(modelFn, {
+	): RelationBuilderResult<T, "one-to-many", string> {
+		return new RelationBuilderResult(modelFn, {
 			fkField: options.fkField as string,
 			type: "one-to-many",
 			referencedField: options.referencedField as string | undefined,
@@ -66,14 +67,14 @@ export abstract class BaseModel {
 	protected oneToOneOwner<
 		T extends BaseModel,
 		TThis extends this = this,
-		TColumnName extends keyof TThis["fields"] = string,
+		TColumnName extends keyof TThis["fields"] = keyof TThis["fields"],
 	>(
 		modelFn: () => Class<T>,
 		options: { fkField: TColumnName; referencedField?: keyof T["fields"] },
-	): ModelRelationDefinition<T, false, TColumnName, "owner-one-to-one"> {
-		return new ModelRelationDefinition(modelFn, {
+	): RelationBuilderResult<T, "owner-one-to-one", TColumnName> {
+		return new RelationBuilderResult(modelFn, {
 			type: "owner-one-to-one",
-			fkField: options.fkField as string,
+			fkField: options.fkField,
 			referencedField: options.referencedField as string | undefined,
 		})
 	}
@@ -84,8 +85,8 @@ export abstract class BaseModel {
 	protected oneToOneRef<T extends BaseModel, TThis extends this = this>(
 		modelFn: () => Class<T>,
 		options: { fkField: keyof T["fields"]; referencedField?: keyof TThis["fields"] },
-	): ModelRelationDefinition<T, false, undefined, "ref-one-to-one"> {
-		return new ModelRelationDefinition(modelFn, {
+	): RelationBuilderResult<T, "ref-one-to-one", string> {
+		return new RelationBuilderResult(modelFn, {
 			type: "ref-one-to-one",
 			fkField: options.fkField as string,
 			referencedField: options.referencedField as string | undefined,
@@ -98,8 +99,8 @@ export abstract class BaseModel {
 			junctionModel: () => Class<TJunction>
 			junctionFields: [keyof TJunction["fields"], keyof TJunction["fields"]]
 		},
-	): ModelRelationDefinition<T, true, undefined, "many-to-many"> {
-		return new ModelRelationDefinition(modelFn, {
+	): RelationBuilderResult<T, "many-to-many", undefined> {
+		return new RelationBuilderResult(modelFn, {
 			type: "many-to-many",
 			junction: options.junctionModel,
 			fields: options.junctionFields as [string, string],

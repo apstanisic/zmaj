@@ -1,5 +1,5 @@
 import { ColumnDataType } from "../column-data-type"
-import { CreateFieldParams } from "./create-field-params.type"
+import { BuildFieldParams } from "./build-field-params.type"
 
 /**
  * This is all params that user passed when creating field, plus type that is extracted
@@ -11,9 +11,9 @@ import { CreateFieldParams } from "./create-field-params.type"
  * {...params } + dataType: "text", _type: number
  *
  */
-export type CreateFieldParamsAndType<
+export type BuildFieldParamsAndType<
 	TType,
-	TCreateFieldParams extends CreateFieldParams = CreateFieldParams,
+	TCreateFieldParams extends BuildFieldParams = BuildFieldParams,
 > = TCreateFieldParams & {
 	dataType: ColumnDataType
 	_type: TType

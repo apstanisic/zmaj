@@ -1,8 +1,8 @@
 import { JsonValue } from "type-fest"
 import { ColumnDataType } from "./column-data-type"
-import { CreateFieldParamsAndType } from "./types/create-field-params-and-type.type"
-import { CreateFieldParams } from "./types/create-field-params.type"
-import { CreateFieldResult } from "./types/create-field-result.type"
+import { BuildFieldParamsAndType } from "./types/build-field-params-and-type.type"
+import { BuildFieldParams } from "./types/build-field-params.type"
+import { BuildFieldResult } from "./types/build-field-result.type"
 
 const defaultValues = {
 	nullable: false,
@@ -11,14 +11,14 @@ const defaultValues = {
 	canCreate: true,
 	isPk: false,
 	hasDefault: false,
-} as const satisfies Partial<CreateFieldParams>
+} as const satisfies Partial<BuildFieldParams>
 
-function innerBuild<const TParams extends CreateFieldParams>(
+function coreBuild<const TParams extends BuildFieldParams>(
 	params: TParams,
 	columnType: ColumnDataType,
 	// ): CreateFieldParamsAndType<any, TParams> {
 ): any {
-	const data: CreateFieldParamsAndType<any, TParams> = {
+	const data: BuildFieldParamsAndType<any, TParams> = {
 		...defaultValues,
 		...params,
 		dataType: columnType,
@@ -35,58 +35,58 @@ function innerBuild<const TParams extends CreateFieldParams>(
  *
  *
  */
-function int<const Params extends CreateFieldParams>(
+function int<const Params extends BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<number, Params> {
-	return innerBuild(params, "int") as any
+): BuildFieldResult<number, Params> {
+	return coreBuild(params, "int") as any
 }
 
-function float<const Params extends CreateFieldParams>(
+function float<const Params extends BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<number, Params> {
-	return innerBuild(params, "float")
+): BuildFieldResult<number, Params> {
+	return coreBuild(params, "float")
 }
 
-function text<const Params extends CreateFieldParams = CreateFieldParams>(
+function text<const Params extends BuildFieldParams = BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<string, Params> {
-	return innerBuild(params, "text")
+): BuildFieldResult<string, Params> {
+	return coreBuild(params, "text")
 }
 
-function boolean<const Params extends CreateFieldParams>(
+function boolean<const Params extends BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<boolean, Params> {
-	return innerBuild(params, "boolean")
+): BuildFieldResult<boolean, Params> {
+	return coreBuild(params, "boolean")
 }
 
-function uuid<const Params extends CreateFieldParams>(
+function uuid<const Params extends BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<string, Params> {
-	return innerBuild(params, "uuid")
+): BuildFieldResult<string, Params> {
+	return coreBuild(params, "uuid")
 }
 
-function time<const Params extends CreateFieldParams>(
+function time<const Params extends BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<string, Params> {
-	return innerBuild(params, "time")
+): BuildFieldResult<string, Params> {
+	return coreBuild(params, "time")
 }
 
-function date<const Params extends CreateFieldParams>(
+function date<const Params extends BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<string, Params> {
-	return innerBuild(params, "date")
+): BuildFieldResult<string, Params> {
+	return coreBuild(params, "date")
 }
 
-function dateTime<const Params extends CreateFieldParams>(
+function dateTime<const Params extends BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<Date, Params> {
-	return innerBuild(params, "datetime")
+): BuildFieldResult<Date, Params> {
+	return coreBuild(params, "datetime")
 }
 
-function json<const Params extends CreateFieldParams>(
+function json<const Params extends BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<JsonValue, Params> {
-	return innerBuild(params, "json")
+): BuildFieldResult<JsonValue, Params> {
+	return coreBuild(params, "json")
 }
 
 /**
@@ -96,28 +96,28 @@ function json<const Params extends CreateFieldParams>(
  * Example: additionalInfo: f.custom<Record<string, any>>()({}),
  */
 function custom<T>() {
-	return function <const Params extends CreateFieldParams>(
+	return function <const Params extends BuildFieldParams>(
 		params: Params,
-	): CreateFieldResult<T, Params> {
-		return innerBuild(params, "json")
+	): BuildFieldResult<T, Params> {
+		return coreBuild(params, "json")
 	}
 }
 
 // for now only for strings
-function array<const Params extends CreateFieldParams>(
+function array<const Params extends BuildFieldParams>(
 	params: Params,
-): CreateFieldResult<string[], Params> {
-	return innerBuild(params, "datetime")
+): BuildFieldResult<string[], Params> {
+	return coreBuild(params, "datetime")
 }
 
 // This works, but I can't guarantee that value from db will be in this enum
-function enumString<const Params extends CreateFieldParams & { enum: readonly string[] }>(
+function enumString<const Params extends BuildFieldParams & { enum: readonly string[] }>(
 	params: Params,
-): CreateFieldResult<Params["enum"][number], Params> {
-	return innerBuild(params, "text")
+): BuildFieldResult<Params["enum"][number], Params> {
+	return coreBuild(params, "text")
 }
 
-function createdAt(params?: Pick<CreateFieldParams, "columnName">): CreateFieldResult<
+function createdAt(params?: Pick<BuildFieldParams, "columnName">): BuildFieldResult<
 	Date,
 	{
 		readonly canCreate: false
@@ -136,7 +136,7 @@ function createdAt(params?: Pick<CreateFieldParams, "columnName">): CreateFieldR
 	})
 }
 
-function updatedAt(params?: Pick<CreateFieldParams, "columnName">): CreateFieldResult<
+function updatedAt(params?: Pick<BuildFieldParams, "columnName">): BuildFieldResult<
 	Date,
 	{
 		readonly canCreate: false
@@ -178,7 +178,7 @@ export const createField = {
 /**
  * createFieldBuilder((builder) => builder.boolean({}))
  */
-export function createFieldBuilder<T extends Record<string, CreateFieldParamsAndType<any, any>>>(
+export function createFieldBuilder<T extends Record<string, BuildFieldParamsAndType<any, any>>>(
 	model: (fieldsBuilder: typeof createField) => T,
 ): T {
 	return model(createField)

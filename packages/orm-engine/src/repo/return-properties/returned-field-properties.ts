@@ -1,11 +1,11 @@
 import { BaseModel } from "@orm-engine/model/base-model"
 import { GetReadFields } from "@orm-engine/model/types/extract-model-fields.types"
 import { Base } from "@orm-engine/model/utils/base.type"
-import { SelectFields } from "./select-fields.type"
+import { SelectProperties } from "../select-properties/select-properties.type"
 
 export type ReturnedFieldProperties<
 	TModel extends BaseModel,
-	TFields extends SelectFields<TModel> | undefined,
+	TFields extends SelectProperties<TModel> | undefined,
 	TAddHidden extends boolean,
 > = Base<{
 	[key in keyof Required<GetReadFields<TModel, TAddHidden>>]: key extends keyof NonNullable<TFields>
@@ -17,7 +17,7 @@ export type ReturnedFieldProperties<
 
 export type HandleReturnField<
 	TModel extends BaseModel,
-	TFields extends SelectFields<TModel> | undefined,
+	TFields extends SelectProperties<TModel> | undefined,
 	TAddHidden extends boolean,
 	TKey,
 	T$Fields extends boolean,

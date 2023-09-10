@@ -2,8 +2,8 @@
 import {
 	BaseModel,
 	ColumnDataType,
-	Logger,
 	ModelsState,
+	OrmLogger,
 	PojoModel,
 	baseModelToPojoModel,
 } from "@zmaj-js/orm-engine"
@@ -12,7 +12,7 @@ import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "seque
 import { v4 } from "uuid"
 
 export class SequelizeModelsGenerator {
-	constructor(private state: ModelsState, private logger: Logger = console) {}
+	constructor(private state: ModelsState, private logger: OrmLogger = console) {}
 	removeAllModels(orm: Sequelize): void {
 		// Models in best delete order
 		const toRemove =

@@ -1,6 +1,6 @@
-import { SelectFields } from "@orm-engine/crud/select-fields.type"
 import { BaseModel } from "@orm-engine/model/base-model"
 import { RepoFilter } from "../filter/repo-filter.type"
+import { SelectProperties } from "../select-properties/select-properties.type"
 import { BaseFindOptions } from "./BaseFindOptions"
 import { Sort } from "./Sort"
 /**
@@ -10,7 +10,7 @@ import { Sort } from "./Sort"
  */
 export type FindManyCursor<
 	TModel extends BaseModel,
-	TFields extends SelectFields<TModel> | undefined,
+	TFields extends SelectProperties<TModel> | undefined,
 	TIncludeHidden extends boolean,
 > = BaseFindOptions<TModel, TFields, TIncludeHidden> & {
 	/**

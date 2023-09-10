@@ -9,7 +9,7 @@ import { BaseModel } from "@orm-engine/model/base-model"
 import { GetReadFields } from "@orm-engine/model/types/extract-model-fields.types"
 import { assertType, describe, expectTypeOf, it } from "vitest"
 import { ReturnedFieldProperties } from "./returned-field-properties"
-import { ReturnedFields } from "./returned-fields.type"
+import { ReturnedProperties } from "./returned-properties.type"
 
 const emptyPost = {
 	title: undefined,
@@ -38,41 +38,41 @@ it("should return fields if no item provided", () => {
 		tags?: GetReadFields<TagModel, false>[]
 	}
 
-	assertType<Expected>({} as ReturnedFields<PostModel, undefined>)
+	assertType<Expected>({} as ReturnedProperties<PostModel, undefined>)
 })
 
 it("should return simple fields", () => {
 	assertType<{ body: string; title: string }>(
-		{} as ReturnedFields<PostModel, { body: true; title: true }>,
+		{} as ReturnedProperties<PostModel, { body: true; title: true }>,
 	)
 	assertType<{ id: string; createdAt: Date }>(
-		{} as ReturnedFields<PostModel, { id: true; createdAt: true }>,
+		{} as ReturnedProperties<PostModel, { id: true; createdAt: true }>,
 	)
 })
 
 it("should unwrap when undefined", () => {
-	const val = {} as ReturnedFields<PostInfoModel, undefined>
+	const val = {} as ReturnedProperties<PostInfoModel, undefined>
 })
 
 it("should allow to return hidden", () => {
-	const val = {} as ReturnedFields<PostInfoModel, { hiddenField: true; id: true }>
+	const val = {} as ReturnedProperties<PostInfoModel, { hiddenField: true; id: true }>
 	// @ts-expect-error
 	assertType<string>(val.hiddenField)
 	assertType<string>(val.id)
 })
 
 it("should return m2o relations", () => {
-	const val = {} as ReturnedFields<PostModel, { body: true; writer: { name: true } }>
+	const val = {} as ReturnedProperties<PostModel, { body: true; writer: { name: true } }>
 	assertType<{ body: string; writer: { name: string; id?: string } }>(val)
 })
 
 it("should return o2m relations", () => {
-	const val = {} as ReturnedFields<PostModel, { body: true; comments: { body: true } }>
+	const val = {} as ReturnedProperties<PostModel, { body: true; comments: { body: true } }>
 	assertType<{ body: string; comments: { body: string }[] }>(val)
 })
 
 it("should return m2m relations", () => {
-	const val = {} as ReturnedFields<PostModel, { body: true; tags: { name: true } }>
+	const val = {} as ReturnedProperties<PostModel, { body: true; tags: { name: true } }>
 	assertType<{ body: string; tags: { name: string }[] }>(val)
 })
 
@@ -117,7 +117,7 @@ describe("should return object left contain fk and know fk is not null", () => {
 	}
 
 	it("should work on m2o", () => {
-		const val = {} as ReturnedFields<Tag, { post: true }, false>
+		const val = {} as ReturnedProperties<Tag, { post: true }, false>
 
 		expectTypeOf<{ post: GetReadFields<Post, false> }>(val)
 		// @ts-expect-error
@@ -125,7 +125,7 @@ describe("should return object left contain fk and know fk is not null", () => {
 	})
 
 	it("should work on o2o", () => {
-		const val = {} as ReturnedFields<Comment, { post: true }, false>
+		const val = {} as ReturnedProperties<Comment, { post: true }, false>
 
 		expectTypeOf<{ post: GetReadFields<Post, false> }>(val)
 		// @ts-expect-error
@@ -133,7 +133,7 @@ describe("should return object left contain fk and know fk is not null", () => {
 	})
 
 	it("should return optional when field is nullable ", () => {
-		const val = {} as ReturnedFields<News, { post: true }, false>
+		const val = {} as ReturnedProperties<News, { post: true }, false>
 
 		expectTypeOf<{ post: GetReadFields<Post, false> | undefined }>(val)
 		// @ts-expect-error
@@ -143,7 +143,7 @@ describe("should return object left contain fk and know fk is not null", () => {
 	})
 
 	it("should not impact array side", () => {
-		const val = {} as ReturnedFields<Post, { news: true }, false>
+		const val = {} as ReturnedProperties<Post, { news: true }, false>
 
 		expectTypeOf<{ news: GetReadFields<News, false>[] }>(val)
 		// @ts-expect-error
@@ -187,25 +187,27 @@ describe("should return selected normal fields", () => {
 })
 
 it("should work deep", () => {
-	expectTypeOf<ReturnedFields<PostModel, { title: true; writer: { name: true } }, false>>({
+	expectTypeOf<ReturnedProperties<PostModel, { title: true; writer: { name: true } }, false>>({
 		...emptyPost,
 		title: "string",
 		writer: { name: "hello", id: undefined, posts: undefined },
 	})
 
-	expectTypeOf<ReturnedFields<PostModel, { title: true; writer: true }, false>>({
+	expectTypeOf<ReturnedProperties<PostModel, { title: true; writer: true }, false>>({
 		...emptyPost,
 		title: "string",
 		writer: { name: "hello", id: "id", posts: undefined },
 	})
 
-	expectTypeOf<ReturnedFields<PostModel, { title: true; tags: { posts: { id: true } } }, false>>({
+	expectTypeOf<
+		ReturnedProperties<PostModel, { title: true; tags: { posts: { id: true } } }, false>
+	>({
 		...emptyPost,
 		title: "string",
 		tags: [{ id: undefined, name: undefined, posts: [{ ...emptyPost, id: "test" }] }],
 	})
 
-	expectTypeOf<ReturnedFields<PostModel, { title: true; comments: true }, false>>({
+	expectTypeOf<ReturnedProperties<PostModel, { title: true; comments: true }, false>>({
 		...emptyPost,
 		title: "string",
 		comments: [{ body: "", id: "", post: undefined, postId: "" }],
@@ -213,7 +215,7 @@ it("should work deep", () => {
 })
 
 it("should allow to pass $fields to get every readable field", () => {
-	expectTypeOf<ReturnedFields<PostModel, { $fields: true }, false>>({
+	expectTypeOf<ReturnedProperties<PostModel, { $fields: true }, false>>({
 		...emptyPost,
 		title: "string",
 		body: "string",
@@ -227,7 +229,7 @@ it("should allow to pass $fields to get every readable field", () => {
 		writerId: "",
 	})
 
-	expectTypeOf<ReturnedFields<PostModel, { $fields: true; writer: true }, false>>({
+	expectTypeOf<ReturnedProperties<PostModel, { $fields: true; writer: true }, false>>({
 		...emptyPost,
 		title: "string",
 		body: "string",
@@ -251,7 +253,7 @@ it("should respect hidden with $fields", () => {
 		}))
 	}
 
-	expectTypeOf<ReturnedFields<Post, { $fields: true }, false>>({
+	expectTypeOf<ReturnedProperties<Post, { $fields: true }, false>>({
 		id: "",
 		name: undefined,
 	})

@@ -1,3 +1,3 @@
 export { SequelizeAlterSchemaService } from "./schema/sq-alter-schema.service"
 export { SequelizeSchemaInfoService } from "./schema/sq-schema-info.service"
-export { sqOrmProvider } from "./sq.orm-provider"
+export { sqOrmEngine } from "./sq.orm-engine"

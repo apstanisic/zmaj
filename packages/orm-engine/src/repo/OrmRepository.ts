@@ -1,5 +1,3 @@
-import { ReturnedFields } from "@orm-engine/crud/returned-fields.type"
-import { SelectFields } from "@orm-engine/crud/select-fields.type"
 import { BaseModel } from "@orm-engine/model/base-model"
 import { CreateParams } from "./create/CreateParams"
 import { DeleteByIdParams } from "./delete/DeleteByIdParams"
@@ -13,6 +11,8 @@ import { FindManyOptions } from "./find/FindManyOptions"
 import { FindOneOptions } from "./find/FindOneOptions"
 import { PaginatedResponse } from "./find/PaginationResponse"
 import { RawQueryOptions } from "./raw-query-options.type"
+import { ReturnedProperties } from "./return-properties/returned-properties.type"
+import { SelectProperties } from "./select-properties/select-properties.type"
 import { UpdateManyOptions } from "./update/UpdateManyOptions"
 import { UpdateOneOptions } from "./update/UpdateOneOptions"
 
@@ -33,54 +33,54 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 * @param params
 	 */
 	abstract findOne<
-		TFields extends SelectFields<TModel> | undefined = undefined,
+		TFields extends SelectProperties<TModel> | undefined = undefined,
 		TIncludeHidden extends boolean = false,
 	>(
 		params: FindOneOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden> | undefined>
+	): Promise<ReturnedProperties<TModel, TFields, TIncludeHidden> | undefined>
 
 	/**
 	 * Find one record, or throw
 	 * @param params
 	 */
 	abstract findOneOrThrow<
-		TFields extends SelectFields<TModel> | undefined = undefined,
+		TFields extends SelectProperties<TModel> | undefined = undefined,
 		TIncludeHidden extends boolean = false,
 	>(
 		params: FindOneOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden>>
+	): Promise<ReturnedProperties<TModel, TFields, TIncludeHidden>>
 
 	/**
 	 * Find with filter
 	 * @param params
 	 */
 	abstract findWhere<
-		TFields extends SelectFields<TModel> | undefined = undefined,
+		TFields extends SelectProperties<TModel> | undefined = undefined,
 		TIncludeHidden extends boolean = false,
 	>(
 		params: FindManyOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden>[]>
+	): Promise<ReturnedProperties<TModel, TFields, TIncludeHidden>[]>
 
 	/**
 	 * Find record with ID or throw
 	 * @param params
 	 */
 	abstract findById<
-		TFields extends SelectFields<TModel> | undefined = undefined,
+		TFields extends SelectProperties<TModel> | undefined = undefined,
 		TIncludeHidden extends boolean = false,
 	>(
 		params: FindByIdOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<ReturnedFields<TModel, TFields, TIncludeHidden>>
+	): Promise<ReturnedProperties<TModel, TFields, TIncludeHidden>>
 	/**
 	 *
 	 * @param params
 	 */
 	abstract findAndCount<
-		TFields extends SelectFields<TModel> | undefined = undefined,
+		TFields extends SelectProperties<TModel> | undefined = undefined,
 		TIncludeHidden extends boolean = false,
 	>(
 		params: FindAndCountOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<[ReturnedFields<TModel, TFields, TIncludeHidden>[], number]>
+	): Promise<[ReturnedProperties<TModel, TFields, TIncludeHidden>[], number]>
 	/**
 	 *
 	 * @param params
@@ -92,21 +92,21 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 */
 	abstract createOne<OverrideCanCreate extends boolean = false>(
 		params: CreateParams<TModel, OverrideCanCreate, "one">,
-	): Promise<ReturnedFields<TModel, undefined>>
+	): Promise<ReturnedProperties<TModel, undefined>>
 	/**
 	 *
 	 * @param params
 	 */
 	abstract createMany<OverrideCanCreate extends boolean = false>(
 		params: CreateParams<TModel, OverrideCanCreate, "many">,
-	): Promise<ReturnedFields<TModel, undefined>[]>
+	): Promise<ReturnedProperties<TModel, undefined>[]>
 	/**
 	 *
 	 * @param params
 	 */
 	abstract updateById<OverrideCanUpdate extends boolean = false>(
 		params: UpdateOneOptions<TModel, OverrideCanUpdate>,
-	): Promise<ReturnedFields<TModel, undefined>>
+	): Promise<ReturnedProperties<TModel, undefined>>
 
 	/**
 	 *
@@ -114,31 +114,33 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	 */
 	abstract updateWhere<OverrideCanUpdate extends boolean = false>(
 		params: UpdateManyOptions<TModel, OverrideCanUpdate>,
-	): Promise<ReturnedFields<TModel, undefined>[]>
+	): Promise<ReturnedProperties<TModel, undefined>[]>
 	/**
 	 * Delete by Id
 	 * @param params
 	 */
-	abstract deleteById(params: DeleteByIdParams<TModel>): Promise<ReturnedFields<TModel, undefined>>
+	abstract deleteById(
+		params: DeleteByIdParams<TModel>,
+	): Promise<ReturnedProperties<TModel, undefined>>
 	/**
 	 * Delete where
 	 * @param params
 	 */
 	abstract deleteWhere(
 		params: DeleteManyParams<TModel>,
-	): Promise<ReturnedFields<TModel, undefined>[]>
+	): Promise<ReturnedProperties<TModel, undefined>[]>
 
 	abstract paginate<
-		TFields extends SelectFields<TModel> | undefined = undefined,
+		TFields extends SelectProperties<TModel> | undefined = undefined,
 		TIncludeHidden extends boolean = false,
 	>(
 		params: FindManyOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<PaginatedResponse<ReturnedFields<TModel, TFields, TIncludeHidden>>>
+	): Promise<PaginatedResponse<ReturnedProperties<TModel, TFields, TIncludeHidden>>>
 
 	abstract cursor<
-		TFields extends SelectFields<TModel> | undefined = undefined,
+		TFields extends SelectProperties<TModel> | undefined = undefined,
 		TIncludeHidden extends boolean = false,
 	>(
 		params: FindManyCursor<TModel, TFields, TIncludeHidden>,
-	): Promise<CursorPaginationResponse<ReturnedFields<TModel, TFields, TIncludeHidden>>>
+	): Promise<CursorPaginationResponse<ReturnedProperties<TModel, TFields, TIncludeHidden>>>
 }

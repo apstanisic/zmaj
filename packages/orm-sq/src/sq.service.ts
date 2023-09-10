@@ -2,8 +2,8 @@ import {
 	AlterSchemaService,
 	BaseModel,
 	DatabaseConfig,
-	Logger,
 	ModelsState,
+	OrmLogger,
 	RawQueryOptions,
 	RepoManager,
 	SchemaInfoService,
@@ -32,7 +32,7 @@ export class SequelizeService {
 
 	constructor(
 		private dbConfig: DatabaseConfig,
-		logger: Logger = console,
+		logger: OrmLogger = console,
 		private modelsStore: ModelsState,
 	) {
 		this.orm = new Sequelize({

@@ -1,9 +1,9 @@
-import { ModelRelationDefinition } from "@orm-engine/model/relations/relation-metadata"
+import { RelationBuilderResult } from "@orm-engine/model/relations/relation-builder-result"
+import { ModelPropertyKeys } from "@orm-engine/model/types/ModelPropertyKeys"
 import { Simplify } from "type-fest"
 import { assertType, it } from "vitest"
-import { CommentModel, PostModel } from "../example-models"
-import { BaseModel } from "../model/base-model"
-import { ModelProperties } from "../model/types/extract-model-types"
+import { CommentModel, PostModel } from "../../example-models"
+import { BaseModel } from "../../model/base-model"
 
 type All = { $fields?: true }
 // It does not work without 2 NonNullable
@@ -18,13 +18,13 @@ type All = { $fields?: true }
 // 		: true
 // } // & All
 
-export type SelectFields<TModel extends BaseModel> = Simplify<
+export type SelectProperties<TModel extends BaseModel> = Simplify<
 	{
-		[key in ModelProperties<TModel>]?: key extends keyof TModel["fields"]
+		[key in ModelPropertyKeys<TModel>]?: key extends keyof TModel["fields"]
 			? true
 			: key extends keyof TModel
-			? TModel[key] extends ModelRelationDefinition<infer TInnerModel>
-				? true | SelectFields<TInnerModel>
+			? TModel[key] extends RelationBuilderResult<infer TInnerModel, any, any>
+				? true | SelectProperties<TInnerModel>
 				: never
 			: never
 	} & All
@@ -33,7 +33,7 @@ export type SelectFields<TModel extends BaseModel> = Simplify<
 if (import.meta.vitest) {
 	//
 	it("should extract fields", () => {
-		assertType<SelectFields<PostModel>>({
+		assertType<SelectProperties<PostModel>>({
 			comments: true,
 			body: true,
 			tags: true,
@@ -41,7 +41,7 @@ if (import.meta.vitest) {
 			writer: true,
 		})
 
-		assertType<SelectFields<PostModel>>({
+		assertType<SelectProperties<PostModel>>({
 			body: true,
 			comments: { body: true },
 			tags: { name: true },
@@ -49,12 +49,12 @@ if (import.meta.vitest) {
 			writer: { name: true },
 		})
 
-		assertType<SelectFields<CommentModel>>({
+		assertType<SelectProperties<CommentModel>>({
 			post: { id: true },
 		})
 	})
 	it("should extract fields nested", () => {
-		assertType<SelectFields<PostModel>>({
+		assertType<SelectProperties<PostModel>>({
 			comments: {
 				body: true,
 				post: {

@@ -1,5 +1,5 @@
 import { Orm } from "@zmaj-js/orm-engine"
-import { sqOrmProvider } from "@zmaj-js/orm-sq"
+import { sqOrmEngine } from "@zmaj-js/orm-sq"
 import { inspect } from "node:util"
 import { CommentModel, PostInfoModel, PostModel, PostTagModel, TagModel } from "./example-models"
 inspect.defaultOptions.depth = null
@@ -15,7 +15,7 @@ async function run(): Promise<void> {
 			username: "db_user",
 			port: 5432,
 		},
-		provider: sqOrmProvider,
+		engine: sqOrmEngine,
 	})
 
 	await orm.init()

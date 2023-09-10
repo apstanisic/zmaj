@@ -1,7 +1,7 @@
 import { BaseModel } from "../base-model"
 import { Base } from "../utils/base.type"
 
-export type ExtractFields<T extends BaseModel> = Base<{
+export type GetModelFields<T extends BaseModel> = Base<{
 	[key in keyof T["fields"]]: T["fields"][key]["_type"]
 }>
 

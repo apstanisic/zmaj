@@ -1,15 +1,15 @@
-import { CreateFieldParamsAndType } from "./create-field-params-and-type.type"
+import { BuildFieldParamsAndType } from "./build-field-params-and-type.type"
 
 /**
  * Extract type for create params
  */
-export type HandleCreateFieldType<TCreateParams extends CreateFieldParamsAndType<any>> =
+export type HandleCreateFieldType<TCreateParams extends BuildFieldParamsAndType<any>> =
 	TCreateParams & {
 		_create: TCreateParams["canCreate"] extends false ? undefined : GetType<TCreateParams>
 		_createOverride: GetType<TCreateParams>
 	}
 
-type GetType<TCreateParams extends CreateFieldParamsAndType<any>> =
+type GetType<TCreateParams extends BuildFieldParamsAndType<any>> =
 	TCreateParams["hasDefault"] extends true // if has default value, it will allow null | undefined
 		? TCreateParams["_type"] | undefined | null
 		: TCreateParams["isPk"] extends true // if it's pk, we assume it has default (plus we provide auto create UUID)

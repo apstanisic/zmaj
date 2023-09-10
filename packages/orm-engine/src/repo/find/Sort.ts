@@ -1,5 +1,5 @@
 import { BaseModel } from "@orm-engine/model/base-model"
-import { ExtractFields } from "@orm-engine/model/types/extract-model-fields.types"
+import { GetModelFields } from "@orm-engine/model/types/extract-model-fields.types"
 
 // maybe return later NULLS_LAST/FIRST
 type SortOptions = "ASC" | "DESC"
@@ -9,5 +9,5 @@ type SortOptions = "ASC" | "DESC"
 // | "DESC_NULLS_FIRST"
 
 export type Sort<TModel extends BaseModel> = Partial<
-	Record<keyof ExtractFields<TModel>, SortOptions>
+	Record<keyof GetModelFields<TModel>, SortOptions>
 >
