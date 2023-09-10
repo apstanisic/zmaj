@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 import { UserModel } from "../users/user.model"
 
 export class FileModel extends BaseModel {
@@ -70,4 +70,4 @@ export class FileModel extends BaseModel {
 	user = this.manyToOne(() => UserModel, { fkField: "userId" })
 }
 
-export type FileInfo = ModelType<FileModel>
+export type FileInfo = GetModelFields<FileModel>

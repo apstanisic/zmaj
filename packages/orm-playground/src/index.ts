@@ -1,4 +1,4 @@
-import { Orm } from "@zmaj-js/orm-engine"
+import { Orm } from "@zmaj-js/orm"
 import { sqOrmEngine } from "@zmaj-js/orm-sq"
 import { inspect } from "node:util"
 import { CommentModel, PostInfoModel, PostModel, PostTagModel, TagModel } from "./example-models"

@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 
 // export type Webhook = {
 // 	url: string
@@ -42,4 +42,4 @@ export class WebhookModel extends BaseModel {
 	}))
 }
 
-export type Webhook = ModelType<WebhookModel>
+export type Webhook = GetModelFields<WebhookModel>

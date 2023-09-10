@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 
 // export type KeyValue = {
 // 	/**
@@ -41,4 +41,4 @@ export class KeyValueModel extends BaseModel {
 	}))
 }
 
-export type KeyValue = ModelType<KeyValueModel>
+export type KeyValue = GetModelFields<KeyValueModel>

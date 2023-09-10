@@ -61,7 +61,7 @@
 		"@tanstack/react-table": "^8.9.2",
 		"@zmaj-js/client-sdk": "workspace:*",
 		"@zmaj-js/common": "workspace:*",
-		"@zmaj-js/orm-common": "workspace:^",
+		"@zmaj-js/orm": "workspace:^",
 		"@zmaj-js/rich-input": "workspace:*",
 		"axios": "^1.4.0",
 		"clsx": "^1.2.1",

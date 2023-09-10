@@ -1,8 +1,9 @@
 import { DbFieldSchema, zodCastBool, ZodIdType } from "@common/zod/zod-utils"
-import { Fields } from "@zmaj-js/orm-common"
 import { z } from "zod"
-// import { Fields } from "./url-query.types"
 
+type Fields = {
+	[key: string]: true | Fields
+}
 /**
  * Schema that fields property must fulfill
  *
@@ -17,12 +18,14 @@ import { z } from "zod"
  *   }
  * }
  * ```
+ *
  */
-export const UrlFieldsSchema: z.ZodType<Fields<unknown>> = z.lazy(() =>
+export const UrlFieldsSchema: z.ZodType<Fields> = z.lazy(() =>
 	z.record(
+		z.string(),
 		z.union([
 			z.preprocess(zodCastBool, z.literal(true)), //
-			UrlFieldsSchema,
+			UrlFieldsSchema as any, // TODO Fix me
 		]),
 	),
 )

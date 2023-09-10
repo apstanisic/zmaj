@@ -2,9 +2,9 @@ import { now } from "@common/utils/now"
 import { ModelSchema } from "@common/zod"
 import { v4 } from "uuid"
 import { z } from "zod"
-import { KeyValue } from "./key-value.model"
+import { KeyValueModel } from "./key-value.model"
 
-export const KeyValueSchema = ModelSchema<KeyValue>()(
+export const KeyValueSchema = ModelSchema<KeyValueModel>()(
 	z.object({
 		key: z.string().min(1).max(150),
 		value: z.string().nullable(),

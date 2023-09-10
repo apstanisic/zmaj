@@ -209,9 +209,9 @@ importers:
       '@zmaj-js/common':
         specifier: workspace:*
         version: link:../common
-      '@zmaj-js/orm-common':
+      '@zmaj-js/orm':
         specifier: workspace:^
-        version: link:../orm-common
+        version: link:../orm
       '@zmaj-js/rich-input':
         specifier: workspace:*
         version: link:../rich-input
@@ -593,9 +593,9 @@ importers:
       '@zmaj-js/common':
         specifier: workspace:*
         version: link:../common
-      '@zmaj-js/orm-common':
+      '@zmaj-js/orm':
         specifier: workspace:*
-        version: link:../orm-common
+        version: link:../orm
       axios:
         specifier: ^1.4.0
         version: 1.4.0
@@ -630,9 +630,9 @@ importers:
 
   packages/common:
     dependencies:
-      '@zmaj-js/orm-common':
+      '@zmaj-js/orm':
         specifier: workspace:*
-        version: link:../orm-common
+        version: link:../orm
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0
@@ -770,52 +770,15 @@ importers:
 
   packages/orm:
     dependencies:
-      '@zmaj-js/common':
-        specifier: workspace:*
-        version: link:../common
-      '@zmaj-js/orm-common':
-        specifier: workspace:*
-        version: link:../orm-common
-      radash:
-        specifier: ^10.8.1
-        version: 10.8.1
-      sequelize:
-        specifier: ^6.32.0
-        version: 6.32.0(pg-hstore@2.3.4)(pg@8.11.0)
-      type-fest:
-        specifier: ^3.11.1
-        version: 3.11.1
-      uuid:
-        specifier: ^9.0.0
-        version: 9.0.0
-      zod:
-        specifier: ^3.21.4
-        version: 3.21.4
-    devDependencies:
-      '@zmaj-js/test-utils':
-        specifier: workspace:*
-        version: link:../test-utils
-
-  packages/orm-common:
-    dependencies:
-      radash:
-        specifier: ^10.8.1
-        version: 10.8.1
-      type-fest:
-        specifier: ^3.11.1
-        version: 3.11.1
-
-  packages/orm-engine:
-    dependencies:
       type-fest:
         specifier: ^3.11.1
         version: 3.11.1
 
   packages/orm-playground:
     dependencies:
-      '@zmaj-js/orm-engine':
+      '@zmaj-js/orm':
         specifier: workspace:*
-        version: link:../orm-engine
+        version: link:../orm
       '@zmaj-js/orm-sq':
         specifier: workspace:*
         version: link:../orm-sq
@@ -832,9 +795,9 @@ importers:
       '@zmaj-js/common':
         specifier: workspace:*
         version: link:../common
-      '@zmaj-js/orm-engine':
+      '@zmaj-js/orm':
         specifier: workspace:*
-        version: link:../orm-engine
+        version: link:../orm
       radash:
         specifier: ^10.8.1
         version: 10.8.1
@@ -945,9 +908,9 @@ importers:
       '@zmaj-js/common':
         specifier: workspace:*
         version: link:../common
-      '@zmaj-js/orm-common':
+      '@zmaj-js/orm':
         specifier: workspace:*
-        version: link:../orm-common
+        version: link:../orm
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0

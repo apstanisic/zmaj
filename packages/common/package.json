@@ -38,7 +38,7 @@
 		"dev": "tsup --config ../../tsup.config.ts --watch"
 	},
 	"dependencies": {
-		"@zmaj-js/orm-common": "workspace:*",
+		"@zmaj-js/orm": "workspace:*",
 		"date-fns": "^2.30.0",
 		"flat": "^5.0.2",
 		"qs": "^6.11.2",

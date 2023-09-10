@@ -18,7 +18,7 @@ import {
 	SingleUniqueKey,
 	TableHasNoPkError,
 	UniqueKey,
-} from "@zmaj-js/orm-engine"
+} from "@zmaj-js/orm"
 import { SequelizeService } from "../sq.service"
 
 type PgColumn = {

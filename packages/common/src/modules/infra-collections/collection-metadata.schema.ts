@@ -2,9 +2,9 @@ import { now } from "@common/utils/now"
 import { DbFieldSchema, ModelSchema } from "@common/zod"
 import { v4 } from "uuid"
 import { z } from "zod"
-import { CollectionMetadata } from "./collection-metadata.model"
+import { CollectionMetadataModel } from "./collection-metadata.model"
 
-export const CollectionMetadataSchema = ModelSchema<CollectionMetadata>()(
+export const CollectionMetadataSchema = ModelSchema<CollectionMetadataModel>()(
 	z.object({
 		tableName: DbFieldSchema,
 		collectionName: DbFieldSchema,

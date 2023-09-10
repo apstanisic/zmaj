@@ -39,7 +39,7 @@
 		"dev": "tsup --config ../../tsup.config.ts --watch"
 	},
 	"dependencies": {
-		"@zmaj-js/orm-engine": "workspace:*",
+		"@zmaj-js/orm": "workspace:*",
 		"@zmaj-js/orm-sq": "workspace:*",
 		"type-fest": "^3.11.1"
 	},

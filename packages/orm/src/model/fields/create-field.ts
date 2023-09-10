@@ -1,4 +1,4 @@
-import { JsonValue } from "type-fest"
+import { JsonValue, SetOptional } from "type-fest"
 import { ColumnDataType } from "./column-data-type"
 import { BuildFieldParamsAndType } from "./types/build-field-params-and-type.type"
 import { BuildFieldParams } from "./types/build-field-params.type"
@@ -11,7 +11,11 @@ const defaultValues = {
 	canCreate: true,
 	isPk: false,
 	hasDefault: false,
-} as const satisfies Partial<BuildFieldParams>
+	isUnique: false,
+	isCreatedAt: false,
+	isUpdatedAt: false,
+	isAutoIncrement: false,
+} as const satisfies SetOptional<Required<BuildFieldParams>, "columnName">
 
 function coreBuild<const TParams extends BuildFieldParams>(
 	params: TParams,

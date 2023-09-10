@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 import { RoleModel } from "../roles/role.model"
 
 export class PermissionModel extends BaseModel {
@@ -18,4 +18,4 @@ export class PermissionModel extends BaseModel {
 	role = this.manyToOne(() => RoleModel, { fkField: "roleId" })
 }
 
-export type Permission = ModelType<PermissionModel>
+export type Permission = GetModelFields<PermissionModel>

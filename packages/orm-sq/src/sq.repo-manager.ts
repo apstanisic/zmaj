@@ -7,7 +7,7 @@ import {
 	Transaction,
 	TransactionIsolationLevel,
 	UndefinedModelError,
-} from "@zmaj-js/orm-engine"
+} from "@zmaj-js/orm"
 import { isString } from "radash"
 import { Sequelize, literal } from "sequelize"
 import { Class } from "type-fest"

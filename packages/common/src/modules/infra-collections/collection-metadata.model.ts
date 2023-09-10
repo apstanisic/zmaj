@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 import { FieldMetadataModel } from "../infra-fields/field-metadata.model"
 import { RelationMetadataModel } from "../relations"
 
@@ -87,4 +87,4 @@ export class CollectionMetadataModel extends BaseModel {
 	})
 }
 
-export type CollectionMetadata = ModelType<CollectionMetadataModel>
+export type CollectionMetadata = GetModelFields<CollectionMetadataModel>

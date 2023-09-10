@@ -5,6 +5,17 @@ export { BaseModel } from "./model/base-model"
 export { baseModelToPojoModel } from "./model/base-model-to-pojo-model"
 export { type ColumnDataType } from "./model/fields/column-data-type"
 export { type PojoModel } from "./model/pojo-model"
+export type {
+	GetCreateFields,
+	GetModelFields,
+	GetReadFields,
+	GetUpdateFields,
+} from "./model/types/get-model-fields.types"
+export type {
+	ModelFieldKeys,
+	ModelPropertyKeys,
+	ModelRelationKeys,
+} from "./model/types/model-property-keys"
 export { Orm } from "./orm"
 export { createOrmEngine, type OrmEngine } from "./orm-engine"
 export * from "./orm-errors"

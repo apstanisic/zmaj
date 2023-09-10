@@ -4,9 +4,9 @@ import { ZodPassword } from "@common/zod/zod-utils"
 import { v4 } from "uuid"
 import { z } from "zod"
 import { PUBLIC_ROLE_ID } from "../roles/role.consts"
-import { User } from "./user.model"
+import { UserModel } from "./user.model"
 
-export const UserSchema = ModelSchema<User>()(
+export const UserSchema = ModelSchema<UserModel>()(
 	z.object({
 		confirmedEmail: z.boolean().default(false),
 		createdAt: z.date().default(now),
@@ -28,4 +28,4 @@ export const UserSchema = ModelSchema<User>()(
 /**
  * User schema from db (expect password to be hashed)
  */
-export const DbUserSchema = ModelSchema<User>()(UserSchema.extend({ password: z.string() }))
+export const DbUserSchema = ModelSchema<UserModel>()(UserSchema.extend({ password: z.string() }))

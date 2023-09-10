@@ -39,7 +39,7 @@
 	},
 	"dependencies": {
 		"@zmaj-js/common": "workspace:*",
-		"@zmaj-js/orm-engine": "workspace:*",
+		"@zmaj-js/orm": "workspace:*",
 		"radash": "^10.8.1",
 		"sequelize": "^6.32.0",
 		"type-fest": "^3.11.1",

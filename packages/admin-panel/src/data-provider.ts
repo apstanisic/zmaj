@@ -12,7 +12,7 @@ import {
 	quickFilterPrefix,
 	transformQuickFilter,
 } from "@zmaj-js/common"
-import { Filter, IdType } from "@zmaj-js/orm-common"
+import { Filter, IdType } from "@zmaj-js/orm"
 import { DataProvider, RaRecord } from "ra-core"
 import { isEqual, mapValues } from "radash"
 import { v4 } from "uuid"

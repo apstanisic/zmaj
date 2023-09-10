@@ -1,4 +1,4 @@
-import { endpoints, FieldDef, FieldCreateDto, FieldUpdateDto } from "@zmaj-js/common"
+import { FieldCreateDto, FieldDef, FieldUpdateDto, endpoints } from "@zmaj-js/common"
 import { AxiosInstance } from "axios"
 import { CrudClient } from "./crud.client"
 

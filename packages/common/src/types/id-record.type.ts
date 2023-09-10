@@ -1,4 +1,4 @@
-import { IdType } from "@zmaj-js/orm-common"
+import { IdType } from "@zmaj-js/orm"
 
 /**
  * Record that has id field defined and is an ID type, and all other fields nullable

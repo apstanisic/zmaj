@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 import { CollectionMetadataModel } from "../infra-collections"
 
 export class TranslationModel extends BaseModel {
@@ -35,7 +35,7 @@ export class TranslationModel extends BaseModel {
 	collection = this.manyToOne(() => CollectionMetadataModel, { fkField: "collectionId" })
 }
 
-export type Translation = ModelType<TranslationModel>
+export type Translation = GetModelFields<TranslationModel>
 // export type Translation = {
 // 	/**
 // 	 * Translation ID

@@ -1,5 +1,5 @@
 import { columnDataTypes } from "@zmaj-js/common"
-import { Transaction } from "@zmaj-js/orm-engine"
+import { Transaction } from "@zmaj-js/orm"
 import { isString } from "radash"
 import { z } from "zod"
 import { DbColumnNameSchema } from "./db-column-name.zod"

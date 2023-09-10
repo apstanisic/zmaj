@@ -2,9 +2,9 @@ import { now } from "@common/utils/now"
 import { ModelSchema } from "@common/zod"
 import { v4 } from "uuid"
 import { z } from "zod"
-import { Permission } from "./permission.model"
+import { PermissionModel } from "./permission.model"
 
-export const PermissionSchema = ModelSchema<Permission>()(
+export const PermissionSchema = ModelSchema<PermissionModel>()(
 	z.object({
 		roleId: z.string().uuid(),
 		action: z.string().min(1).max(100),

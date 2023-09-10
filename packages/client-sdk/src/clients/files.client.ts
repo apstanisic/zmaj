@@ -4,6 +4,7 @@ import {
 	Data,
 	endpoints,
 	FileInfo,
+	FileModel,
 	getEndpoints,
 	IdRecord,
 	isIn,
@@ -22,7 +23,7 @@ type FileData = Blob
 /**
  * Upload files
  */
-export class FilesClient extends CrudClient<IdRecord<FileInfo>> {
+export class FilesClient extends CrudClient<FileModel> {
 	constructor(client: AxiosInstance) {
 		super(client, endpoints.files.$base)
 	}

@@ -3,9 +3,9 @@ import { now } from "@common/utils/now"
 import { ModelSchema } from "@common/zod"
 import { v4 } from "uuid"
 import { z } from "zod"
-import { FileInfo } from "./file.model"
+import { FileModel } from "./file.model"
 
-export const FileSchema = ModelSchema<FileInfo>()(
+export const FileSchema = ModelSchema<FileModel>()(
 	z.object({
 		name: z.string().min(1).max(200),
 		fileSize: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),

@@ -5,7 +5,7 @@ import { SimpleListLayout } from "@admin-panel/crud-layouts/list/SimpleListLayou
 import { IconButton } from "@admin-panel/ui/IconButton"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
 import { AnyFn, templateParser, truncate } from "@zmaj-js/common"
-import { IdType } from "@zmaj-js/orm-common"
+import { IdType } from "@zmaj-js/orm"
 import { ListBase, ResourceContextProvider, useListContext } from "ra-core"
 import { memo } from "react"
 import { MdUndo } from "react-icons/md"

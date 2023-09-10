@@ -3,9 +3,9 @@ import { ModelSchema } from "@common/zod"
 import { v4 } from "uuid"
 import { z } from "zod"
 import { AuthUserSchema } from "../auth/auth-user.schema"
-import { ActivityLog } from "./activity-log.model"
+import { ActivityLogModel } from "./activity-log.model"
 
-export const ActivityLogSchema = ModelSchema<ActivityLog>()(
+export const ActivityLogSchema = ModelSchema<ActivityLogModel>()(
 	z.object({
 		action: z.string().min(1).max(200),
 		resource: z.string().min(1).max(200),

@@ -1,3 +1,4 @@
+import { ColumnDataType } from "../column-data-type"
 import { BuildFieldAddCreate } from "./build-field-add-create.type"
 import { BuildFieldAddNullable } from "./build-field-add-nullable.type"
 import { BuildFieldAddRead } from "./build-field-add-read.type"
@@ -13,4 +14,5 @@ export type BuildFieldResult<TType, TParams extends BuildFieldParams> = BuildFie
 			> //
 		> //
 	>
->
+> &
+	Required<BuildFieldParams> & { dataType: ColumnDataType }

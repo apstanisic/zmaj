@@ -38,7 +38,7 @@ import {
 	UpdateManyOptions,
 	UpdateOneOptions,
 	ZmajOrmError,
-} from "@zmaj-js/orm-engine"
+} from "@zmaj-js/orm"
 import { get, isArray, isEmpty, mapValues, pick, set } from "radash"
 import {
 	ForeignKeyConstraintError,

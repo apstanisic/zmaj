@@ -1,7 +1,6 @@
 import { Class } from "type-fest"
 import { createFieldBuilder } from "./fields/create-field"
 import { AllFieldsInModel } from "./fields/types/all-fields-in-model.type"
-import { BuildFieldParams } from "./fields/types/build-field-params.type"
 import { RelationBuilderResult } from "./relations/relation-builder-result"
 import { RelationType } from "./relations/relation-type.types"
 
@@ -28,8 +27,7 @@ export abstract class BaseModel {
 	}
 
 	getPkField(): string {
-		for (const [property, _field] of Object.entries(this.fields)) {
-			const field = _field as BuildFieldParams
+		for (const [property, field] of Object.entries(this.fields)) {
 			if (field.isPk) return property
 		}
 		throw new Error("No PK provided")

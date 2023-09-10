@@ -8,7 +8,7 @@ import {
 	RepoManager,
 	SchemaInfoService,
 	TransactionIsolationLevel,
-} from "@zmaj-js/orm-engine"
+} from "@zmaj-js/orm"
 import { ModelStatic, QueryInterface, Sequelize, Transaction } from "sequelize"
 import { WritableDeep } from "type-fest"
 import { SequelizeAlterSchemaService } from "./schema/sq-alter-schema.service"

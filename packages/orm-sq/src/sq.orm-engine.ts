@@ -1,4 +1,4 @@
-import { createOrmEngine } from "@zmaj-js/orm-engine"
+import { createOrmEngine } from "@zmaj-js/orm"
 import { SequelizeService } from "./sq.service"
 
 export const sqOrmEngine = createOrmEngine((params) => {

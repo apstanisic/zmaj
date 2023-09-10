@@ -12,13 +12,13 @@ import {
 	DropUniqueKeyParams,
 	InternalOrmProblem,
 	InvalidColumnTypeError,
-	Logger,
 	NoColumnError,
 	NoFkToDeleteError,
 	NoUniqueToDropError,
+	OrmLogger,
 	SchemaInfoService,
 	UpdateColumnParams,
-} from "@zmaj-js/orm-engine"
+} from "@zmaj-js/orm"
 import { alphabetical, isEqual } from "radash"
 import {
 	DataType,
@@ -46,7 +46,7 @@ export class SequelizeAlterSchemaService implements AlterSchemaService {
 	constructor(
 		private sq: SequelizeService,
 		private schemaInfo: SchemaInfoService,
-		private logger: Logger = console,
+		private logger: OrmLogger = console,
 	) {
 		this.qi = this.sq.orm.getQueryInterface()
 	}

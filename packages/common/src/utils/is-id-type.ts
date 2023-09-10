@@ -1,6 +1,6 @@
+import { IdType } from "@zmaj-js/orm"
 import { isInt, isString } from "radash"
 import { isUUID } from "./is-uuid"
-import { IdType } from "@zmaj-js/orm-common"
 
 /**
  * Check if value can be ID

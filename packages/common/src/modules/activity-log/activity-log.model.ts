@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 import { UserModel } from "../users/user.model"
 
 // export type ActivityLog = {
@@ -141,4 +141,4 @@ export class ActivityLogModel extends BaseModel {
 	user = this.manyToOne(() => UserModel, { fkField: "userId" })
 }
 
-export type ActivityLog = ModelType<ActivityLogModel>
+export type ActivityLog = GetModelFields<ActivityLogModel>

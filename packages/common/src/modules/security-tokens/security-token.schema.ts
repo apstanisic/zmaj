@@ -1,11 +1,11 @@
-import { add } from "date-fns"
 import { now } from "@common/utils/now"
 import { ModelSchema } from "@common/zod"
+import { add } from "date-fns"
 import { v4 } from "uuid"
 import { z } from "zod"
-import { SecurityToken } from "./security-token.model"
+import { SecurityTokenModel } from "./security-token.model"
 
-export const SecurityTokenSchema = ModelSchema<SecurityToken>()(
+export const SecurityTokenSchema = ModelSchema<SecurityTokenModel>()(
 	z.object({
 		createdAt: z.date().default(now),
 		id: z.string().uuid().default(v4),

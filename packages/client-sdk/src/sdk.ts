@@ -1,6 +1,7 @@
-import { parseJsonWithDates, Struct } from "@zmaj-js/common"
+import { parseJsonWithDates } from "@zmaj-js/common"
+import { BaseModel } from "@zmaj-js/orm"
 import Axios, { AxiosInstance } from "axios"
-import EventEmitter from "eventemitter3"
+import { EventEmitter } from "eventemitter3"
 import { isString } from "radash"
 import { AuthClient, AuthEventFn } from "./auth/auth.client"
 import { AuthzClient } from "./auth/authz.client"
@@ -94,7 +95,7 @@ export class ZmajSdk {
 	 * Get CRUD API for provided collection
 	 * @param name collections name
 	 */
-	collection<T extends Struct = Struct>(name: string): CrudClient<T> {
+	collection<T extends BaseModel = BaseModel>(name: string): CrudClient<T> {
 		return new CrudClient<T>(this.client, name)
 	}
 }

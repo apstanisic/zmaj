@@ -1,4 +1,3 @@
-// import { convertModelFromClassToPojo, createModelsStore } from "@zmaj-js/orm-common"
 import {
 	BaseModel,
 	ColumnDataType,
@@ -6,7 +5,7 @@ import {
 	OrmLogger,
 	PojoModel,
 	baseModelToPojoModel,
-} from "@zmaj-js/orm-engine"
+} from "@zmaj-js/orm"
 import { snake } from "radash"
 import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
 import { v4 } from "uuid"

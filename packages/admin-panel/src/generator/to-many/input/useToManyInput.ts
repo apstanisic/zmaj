@@ -1,5 +1,5 @@
 import { ToManyChange } from "@zmaj-js/common"
-import { IdType } from "@zmaj-js/orm-common"
+import { IdType } from "@zmaj-js/orm"
 import { useInput } from "ra-core"
 import { toggle as toggleFn, unique } from "radash"
 import { useCallback } from "react"

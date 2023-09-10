@@ -1,21 +1,18 @@
 import { LayoutConfigSchema } from "@common/modules/infra-collections/layout/layout-config.schema"
 import { camel, title } from "radash"
-import { CollectionDef, Struct } from "src"
+import { CollectionDef } from "src"
 import { Except } from "type-fest"
 import { v4 } from "uuid"
 import { z } from "zod"
 
-export type BuildCollectionOptions<T extends Struct = Struct> = Except<
-	Partial<CollectionDef<T>>,
-	"layoutConfig"
-> & {
+export type BuildCollectionOptions = Except<Partial<CollectionDef>, "layoutConfig"> & {
 	layoutConfig?: z.input<typeof LayoutConfigSchema>
 }
 
-export function buildCollection<T extends Struct = Struct>(
+export function buildCollection(
 	tableName: string,
-	params: BuildCollectionOptions<T> = {},
-): CollectionDef<T> {
+	params: BuildCollectionOptions = {},
+): CollectionDef {
 	return {
 		id: v4(),
 		definedInCode: true,

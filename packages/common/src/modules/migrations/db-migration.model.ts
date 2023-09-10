@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 
 export class DbMigrationModel extends BaseModel {
 	override name = "zmajMigrations"
@@ -11,4 +11,4 @@ export class DbMigrationModel extends BaseModel {
 	}))
 }
 
-export type DbMigration = ModelType<DbMigrationModel>
+export type DbMigration = GetModelFields<DbMigrationModel>

@@ -1,4 +1,4 @@
-import { BaseModel, ModelType } from "@zmaj-js/orm-common"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 import { UserModel } from "../users/user.model"
 
 export class SecurityTokenModel extends BaseModel {
@@ -17,4 +17,4 @@ export class SecurityTokenModel extends BaseModel {
 	user = this.manyToOne(() => UserModel, { fkField: "userId" })
 }
 
-export type SecurityToken = ModelType<SecurityTokenModel>
+export type SecurityToken = GetModelFields<SecurityTokenModel>

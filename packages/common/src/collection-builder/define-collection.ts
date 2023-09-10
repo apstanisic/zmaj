@@ -1,31 +1,22 @@
 import { CollectionDef } from "@common/modules/infra-collections/collection-def.type"
 import { ColumnDataType } from "@common/modules/infra-fields/column-data-type.schema"
 import { FieldDef } from "@common/modules/infra-fields/field-def.type"
-import { Struct } from "@common/types/struct.type"
 import { snakeCase } from "@common/utils/lodash"
-import {
-	BaseModel,
-	ModelRelationDefinition,
-	ModelType,
-	OnlyFields,
-	OnlyRelations,
-	createModelsStore,
-} from "@zmaj-js/orm-common"
-import { Class, ConditionalPick, Except } from "type-fest"
+import { BaseModel, ModelRelationKeys, createModelsStore } from "@zmaj-js/orm"
+import { Class, Except } from "type-fest"
 import { v4 } from "uuid"
 import { buildField } from "./_build-field"
 import { BuildCollectionOptions, buildCollection } from "./_build-infra-collection"
-import { RelationBuilderInfo } from "./_build-relation"
 
 type FieldParams = Except<Partial<FieldDef>, "dataType">
-type DefineCollectionParams<T extends Struct> = {
+type DefineCollectionParams = {
 	tableName: string
-	options?: BuildCollectionOptions<T>
-	fields: Record<keyof OnlyFields<T>, FieldParams>
-	relations: Record<
-		keyof OnlyRelations<T>,
-		Except<RelationBuilderInfo, "thisTableName" | "thisPropertyName">
-	>
+	options?: BuildCollectionOptions
+	// fields: Record<keyof GetModelFields<T>, FieldParams>
+	// relations: Record<
+	// 	keyof OnlyRelations<T>,
+	// 	Except<RelationBuilderInfo, "thisTableName" | "thisPropertyName">
+	// >
 }
 
 /**
@@ -72,20 +63,20 @@ let models = createModelsStore()
 export function defineCollection<TModel extends BaseModel>(
 	ModelClass: Class<TModel>,
 	config: {
-		options?: BuildCollectionOptions<ModelType<TModel>>
+		options?: BuildCollectionOptions
 		fields?: Partial<Record<keyof TModel["fields"], FieldParams>>
 		relations?: Partial<
 			Record<
-				keyof ConditionalPick<TModel, ModelRelationDefinition<any, any>>,
+				ModelRelationKeys<TModel>,
 				{ label?: string; hidden?: boolean; otherPropertyName?: string }
 			>
 		>
 	},
-): CollectionDef<ModelType<TModel>> {
+): CollectionDef {
 	models ??= createModelsStore()
 	const modelInstance = models.getModel(ModelClass)
 	const tableName = modelInstance.tableName ?? snakeCase(modelInstance.name)
-	const col = buildCollection<ModelType<TModel>>(tableName, config.options)
+	const col = buildCollection(tableName, config.options)
 
 	for (const [property, field] of Object.entries(modelInstance.fields)) {
 		// ts not working with .entries
