@@ -1,11 +1,12 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
 import { throw400, throw403, throw404, throw500 } from "@api/common/throw-http"
+import { Filter } from "@api/common/types"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { ForbiddenException, HttpException, Injectable, Logger } from "@nestjs/common"
 import { EventEmitter2 } from "@nestjs/event-emitter"
 import { CollectionDef, Struct, isError, isIdType, isNil, isStruct, notNil } from "@zmaj-js/common"
-import { Filter, RepoManager, Transaction } from "@zmaj-js/orm"
+import { RepoManager, Transaction } from "@zmaj-js/orm"
 import { isEmpty, omit } from "radash"
 import { PartialDeep } from "type-fest"
 import {
@@ -166,7 +167,7 @@ export class CrudBaseService<Item extends Struct> {
 	 * @throws if collection does not exist
 	 * @returns Relevant collection
 	 */
-	protected getCollection(tableOrCollection?: string | CollectionDef<Item>): CollectionDef<Item> {
+	protected getCollection(tableOrCollection?: string | CollectionDef): CollectionDef {
 		if (tableOrCollection === undefined) throw500(96233562)
 		if (typeof tableOrCollection !== "string") return tableOrCollection
 
@@ -174,7 +175,7 @@ export class CrudBaseService<Item extends Struct> {
 			this.infraState.getCollection(tableOrCollection) ?? throw404(97767, emsg.recordNotFound)
 		// don't allow disabled ext
 		if (col.disabled) throw404(73829, emsg.recordNotFound)
-		return col as CollectionDef<Item>
+		return col as CollectionDef
 	}
 
 	/**
@@ -209,10 +210,7 @@ export class CrudBaseService<Item extends Struct> {
 		return cloned
 	}
 
-	protected filterToWhere(
-		filter: ReadBeforeEvent<Item>["filter"],
-		col: CollectionDef<Item>,
-	): Struct {
+	protected filterToWhere(filter: ReadBeforeEvent<Item>["filter"], col: CollectionDef): Struct {
 		if (filter.type === "ids" && isEmpty(filter.ids)) throw400(3689292, emsg.invalidPayload)
 		if (filter.type === "id" && !isIdType(filter.id)) throw400(965323, emsg.invalidPayload)
 

@@ -1,6 +1,6 @@
 import { mixedColDef } from "@api/collection-to-model-config"
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common"
-import { SequelizeService } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import type PQueue from "p-queue"
 import { InfraSchemaSyncService } from "./infra-schema-sync/infra-schema-sync.service"
 import { InfraStateService } from "./infra-state/infra-state.service"

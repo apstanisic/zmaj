@@ -8,7 +8,8 @@ import {
 	RelationMetadataModel,
 	defineCollection,
 } from "@zmaj-js/common"
-import { BaseModel, ModelType, SequelizeRepoManager, SequelizeService } from "@zmaj-js/orm"
+import { BaseModel } from "@zmaj-js/orm"
+import { SequelizeRepoManager, SequelizeService } from "@zmaj-js/orm-sq"
 import { DataTypes, QueryInterface } from "sequelize"
 
 export async function eCommerceSchema(qi: QueryInterface, transaction: any): Promise<void> {
@@ -1031,7 +1032,7 @@ export function eCommerceInfra(): {
 export async function initECommerce(sq: SequelizeService, trx: any): Promise<void> {
 	await eCommerceSchema(sq.qi, trx)
 	const data = eCommerceInfra()
-	const rm = new SequelizeRepoManager(sq)
+	const rm = new SequelizeRepoManager(sq, sq["modelsStore"])
 	const createdCols = await rm
 		.getRepo(CollectionMetadataModel)
 		.createMany({ data: data.collections, trx })
@@ -1112,7 +1113,7 @@ class OrderProductTagModel extends BaseModel {
 	}))
 }
 
-export const storeCollectionDefs: CollectionDef<ModelType<BaseModel>>[] = [
+export const storeCollectionDefs: CollectionDef[] = [
 	defineCollection(CategoryModel, {}),
 	defineCollection(TagModel, {}),
 	defineCollection(ProductModel, {}),

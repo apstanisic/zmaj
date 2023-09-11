@@ -70,7 +70,10 @@ export class DirectRelationService {
 		// can't modify system table
 		if (leftCol.tableName.startsWith("zmaj")) throw403(42392, emsg.isSystemTable)
 
-		const alreadyExist = await this.schemaInfo.hasColumn(leftCol.tableName, dto.left.column)
+		const alreadyExist = await this.schemaInfo.hasColumn({
+			table: leftCol.tableName,
+			column: dto.left.column,
+		})
 		// we check if user provided fk column that already exist
 		if (alreadyExist) throw400(51932, emsg.fieldExists(dto.left.column))
 
@@ -133,7 +136,7 @@ export class DirectRelationService {
 					trx,
 				})
 
-				await this.alterSchema.createFk({
+				await this.alterSchema.createForeignKey({
 					fkColumn: dto.left.column,
 					fkTable: dto.left.table,
 					referencedTable: dto.right.table,
@@ -205,7 +208,7 @@ export class DirectRelationService {
 
 		await this.repoManager.transaction({
 			fn: async (trx) => {
-				await this.alterSchema.dropFk({
+				await this.alterSchema.dropForeignKey({
 					fkColumn: fkCol,
 					fkTable: fkTable,
 					indexName: relation.relation.fkName,

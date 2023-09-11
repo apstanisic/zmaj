@@ -12,11 +12,10 @@ import {
 	ActivityLog,
 	ActivityLogModel,
 	ActivityLogSchema,
-	ModelCreateType,
 	Struct,
 	zodCreate,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { GetCreateFields, OrmRepository, RepoManager } from "@zmaj-js/orm"
 import jsonPatch, { Operation } from "fast-json-patch"
 import { ActivityLogConfig } from "./activity-log.config"
 
@@ -93,7 +92,7 @@ export class ActivityLogService {
 	 */
 	private generateLogs(
 		event: UpdateFinishEvent | DeleteFinishEvent | CreateFinishEvent,
-	): ModelCreateType<ActivityLogModel>[] {
+	): GetCreateFields<ActivityLogModel, false>[] {
 		return event.result.map((item) => {
 			const id = item[event.collection.pkField] ?? throw500(3242301)
 

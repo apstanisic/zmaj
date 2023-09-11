@@ -1,9 +1,9 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { ConfigModuleConfig } from "@api/config/config.config"
 import { ConfigService } from "@api/config/config.service"
+import { DatabaseConfig } from "@api/database/database.config"
 import { SequelizeModule } from "@api/database/sequelize.module"
 import { DynamicModule, Module } from "@nestjs/common"
-import { DatabaseConfig } from "@zmaj-js/orm"
 import { MODULE_OPTIONS_TOKEN } from "../database/database.module-definition"
 
 @Module({})

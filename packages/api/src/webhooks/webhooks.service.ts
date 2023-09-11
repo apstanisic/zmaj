@@ -3,7 +3,7 @@ import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
 import { HttpClient } from "@api/http-client/http-client.service"
 import { Injectable, OnModuleInit } from "@nestjs/common"
 import { Struct, Webhook, WebhookCollection, WebhookModel } from "@zmaj-js/common"
-import { RepoManager } from "@zmaj-js/orm"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 
 /**
  * Webhooks CRUD service
@@ -14,13 +14,14 @@ export class WebhooksService implements OnModuleInit {
 	 * All webhooks in the app
 	 */
 	private allWebhooks: Webhook[] = []
+	private repo: OrmRepository<WebhookModel>
 
 	constructor(
 		private readonly http: HttpClient,
 		private readonly repoManager: RepoManager, //
-	) {}
-
-	private repo = this.repoManager.getRepo(WebhookModel)
+	) {
+		this.repo = this.repoManager.getRepo(WebhookModel)
+	}
 
 	/**
 	 * Get all webhooks on app startup

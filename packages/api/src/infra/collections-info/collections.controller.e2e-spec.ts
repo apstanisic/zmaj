@@ -11,7 +11,8 @@ import {
 	throwErr,
 	User,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager, SchemaInfoService, SequelizeService } from "@zmaj-js/orm"
+import { OrmRepository, RepoManager, SchemaInfoService } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { camel } from "radash"
 import { DataTypes } from "sequelize"
 import supertest from "supertest"
@@ -129,7 +130,7 @@ describe("CollectionsController e2e", () => {
 			expect(colInDb).toBeDefined()
 
 			// pk exist, means that table exists
-			const pk = await schemaInfoService.getPrimaryKey(tableName)
+			const pk = await schemaInfoService.getPrimaryKey({ table: tableName })
 			expect(pk).toBeDefined()
 			// pk should have name and type provided
 			expect(pk?.columnName).toEqual("id2")
@@ -218,7 +219,7 @@ describe("CollectionsController e2e", () => {
 			expect(colInDb).toBeUndefined()
 
 			// there should be no table
-			const exist = await schemaInfoService.hasTable(tableName)
+			const exist = await schemaInfoService.hasTable({ table: tableName })
 			expect(exist).toEqual(false)
 
 			// there should be no collection in state

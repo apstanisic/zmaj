@@ -10,7 +10,7 @@ import {
 	RelationUpdateDto,
 	UserModel,
 } from "@zmaj-js/common"
-import { SequelizeService } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { TComment, TPost, TPostInfo } from "@zmaj-js/test-utils"
 import { BuildTestDbService } from "./build-test-db.service"
 

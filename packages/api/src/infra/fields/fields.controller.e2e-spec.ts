@@ -11,7 +11,8 @@ import {
 	throwErr,
 	User,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager, SchemaInfoService, SequelizeService } from "@zmaj-js/orm"
+import { OrmRepository, RepoManager, SchemaInfoService } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { camel } from "radash"
 import { DataTypes } from "sequelize"
 import supertest from "supertest"
@@ -89,7 +90,7 @@ describe("RelationController e2e", () => {
 		const newField = "new_field"
 
 		it("should create field", async () => {
-			const hasField = await schemaInfoService.hasColumn(tableName, newField)
+			const hasField = await schemaInfoService.hasColumn({ table: tableName, column: newField })
 			expect(hasField).toEqual(false)
 
 			const res = await supertest(app.getHttpServer())
@@ -221,7 +222,7 @@ describe("RelationController e2e", () => {
 			expect(fieldInDb).toBeUndefined()
 
 			// should delete column
-			const exist = await schemaInfoService.hasColumn(tableName, "value")
+			const exist = await schemaInfoService.hasColumn({ table: tableName, column: "value" })
 			expect(exist).toEqual(false)
 
 			// should remove field from repo

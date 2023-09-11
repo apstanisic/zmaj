@@ -14,8 +14,8 @@ import { SequelizeService } from "@zmaj-js/orm-sq"
 			useFactory: async (orm: Orm, state: InfraStateService) => {
 				const sq = orm.engine.engineProvider as SequelizeService
 				// generate models with newly inited state
-				sq.updateModels(mixedColDef(Object.values(state.collections)))
-				return sqRepoManager
+				sq.generateModels(mixedColDef(Object.values(state.collections)))
+				return sq.repoManager
 			},
 		},
 	],

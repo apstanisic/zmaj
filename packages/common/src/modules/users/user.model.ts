@@ -1,4 +1,4 @@
-import { BaseModel, GetModelFields, GetReadFields } from "@zmaj-js/orm"
+import { BaseModel, GetReadFields } from "@zmaj-js/orm"
 import { AuthSessionModel } from "../auth-sessions/auth-session.model"
 import { FileModel } from "../files"
 import { RoleModel } from "../roles/role.model"
@@ -27,6 +27,6 @@ export class UserModel extends BaseModel {
 	authSessions = this.oneToMany(() => AuthSessionModel, { fkField: "userId" })
 }
 
-export type User = GetModelFields<UserModel>
+export type User = GetReadFields<UserModel, false>
 
 export type UserWithSecret = GetReadFields<UserModel, true> // SetRequired<User, "password" | "otpToken">

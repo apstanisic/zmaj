@@ -18,7 +18,7 @@ type Filter = {
 ///
 
 export type SharedParams<T extends Struct = Struct> = {
-	collection: string | CollectionDef<T>
+	collection: string | CollectionDef
 	user?: AuthUser
 	trx?: Transaction
 	// make this optional
@@ -48,7 +48,7 @@ type BaseEvent<T extends Struct = Struct<any>> = {
 	readonly action: "create" | "update" | "delete" | "read"
 	readonly trx?: Transaction
 	readonly req: SetRequired<Partial<CrudRequest>, "ip">
-	collection: CollectionDef<T>
+	collection: CollectionDef
 	resMeta?: Struct
 	//
 	// authz?: { resource: string; action: string }

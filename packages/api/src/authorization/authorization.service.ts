@@ -1,3 +1,4 @@
+import { Fields } from "@api/common"
 import { throw403, throw500 } from "@api/common/throw-http"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
@@ -24,7 +25,6 @@ import {
 	isStruct,
 	systemPermissions,
 } from "@zmaj-js/common"
-import { Fields } from "@zmaj-js/orm"
 import flat from "flat"
 import { isEmpty, isString } from "radash"
 import { PartialDeep } from "type-fest"
@@ -37,7 +37,7 @@ import { builtInTransformers } from "./condition-transformers"
 const { flatten, unflatten } = flat
 
 type Action = "create" | "read" | "update" | "delete" | string
-type Resource = string | CollectionDef<any>
+type Resource = string | CollectionDef
 
 type CanParams<T extends Struct = Struct> = {
 	user?: AuthUser
@@ -57,7 +57,7 @@ type PickFieldsParams<T extends Struct = Struct> = Pick<
 	// "resource" | "user" | "record"
 	"user" | "record"
 > & {
-	resource: CollectionDef<any>
+	resource: CollectionDef
 	fields?: Fields<T>
 }
 
@@ -291,8 +291,7 @@ export class AuthorizationService {
 				// this is for getting fields out of relation (relevant for both array and object)
 				// if field value for this property is true, it means give me all sub-values that you can
 				// (same as `undefined` above), so we are passing undefined
-				const fieldsToCheck =
-					fields?.[field] === true ? undefined : (fields?.[field] as Fields<any>)
+				const fieldsToCheck = fields?.[field] === true ? undefined : fields?.[field]
 
 				const rightCollection =
 					this.infraState.getCollection(fullRel?.otherSide.collectionName ?? "_") ?? throw500(78323)

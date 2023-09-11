@@ -7,15 +7,9 @@ import { UsersService } from "@api/users/users.service"
 import { INestApplication } from "@nestjs/common"
 import { NestExpressApplication } from "@nestjs/platform-express"
 import { Test } from "@nestjs/testing"
-import {
-	ADMIN_ROLE_ID,
-	BaseModel,
-	CollectionMetadataModel,
-	User,
-	UserCreateDto,
-	merge,
-} from "@zmaj-js/common"
-import { OrmRepository, RepoManager, SequelizeService } from "@zmaj-js/orm"
+import { ADMIN_ROLE_ID, CollectionMetadataModel, User, UserCreateDto, merge } from "@zmaj-js/common"
+import { BaseModel, OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { Class } from "type-fest"
 import { v4 } from "uuid"
 import { predefinedApiConfigs } from "../predefined-configs-const"

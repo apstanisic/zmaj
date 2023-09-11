@@ -1,16 +1,12 @@
 import { mixedColDef } from "@api/collection-to-model-config"
 import { ConfigModuleConfig } from "@api/config/config.config"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { DatabaseConfig } from "@api/database/database.config"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { getTestEnvValues } from "@api/testing/get-test-env-values"
 import { DbMigration, DbMigrationModel, systemCollections, uuidRegex } from "@zmaj-js/common"
-import {
-	AlterSchemaService,
-	DatabaseConfig,
-	RepoManager,
-	SchemaInfoService,
-	SequelizeService,
-} from "@zmaj-js/orm"
+import { AlterSchemaService, RepoManager, SchemaInfoService, createModelsStore } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { ConfigService } from "../config/config.service"
 import { type UserMigration } from "./migrations.types"
@@ -38,6 +34,8 @@ describe("MigrationsService e2e", () => {
 				{},
 				new ConfigService(new ConfigModuleConfig({ useEnvFile: true, envPath: ".env.test" })),
 			),
+			console,
+			createModelsStore(),
 		)
 		await sq.init(mixedColDef([...systemCollections]))
 		schemaInfo = sq.schemaInfo
@@ -69,7 +67,7 @@ describe("MigrationsService e2e", () => {
 				.findWhere({ where: { type: "user" } })
 			await api.close()
 
-			const created = await schemaInfo.hasTable(tableName)
+			const created = await schemaInfo.hasTable({ table: tableName })
 			expect(created).toEqual(true)
 			expect(migrations).toEqual<DbMigration[]>([
 				{

@@ -14,7 +14,7 @@ import {
 	UserWithSecret,
 	zodCreate,
 } from "@zmaj-js/common"
-import { Filter, OrmRepository, Transaction } from "@zmaj-js/orm"
+import { OrmRepository, RepoFilterWhere, Transaction } from "@zmaj-js/orm"
 import { omit } from "radash"
 import { EncryptionService } from "../encryption/encryption.service"
 
@@ -27,11 +27,6 @@ export class UsersService {
 		private readonly encryptionService: EncryptionService,
 	) {
 		this.repo = this.repoManager.getRepo(UserModel)
-		// this.repo = this.repoManager.getRepo(UserModel)
-		// const v2 = this.repoManager.getRepoFromModel(UserModel)
-		//  v2.findWhere({ fields: { role: { users: { id: true } } } }).then(r => {
-		// 	r[0]?.role.users
-		//  })
 	}
 
 	readonly repo: OrmRepository<UserModel>
@@ -44,7 +39,7 @@ export class UsersService {
 	}
 
 	async findUserWithHiddenFields(
-		filter: Filter<User>,
+		filter: RepoFilterWhere<UserModel>,
 		// userId: string,
 		trx?: Transaction,
 	): Promise<UserWithSecret | undefined> {

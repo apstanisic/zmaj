@@ -1,6 +1,7 @@
-import { SequelizeService } from "@zmaj-js/orm"
 import { BuildTestDbService } from "@api/testing/build-test-db.service"
 import { sleep } from "@zmaj-js/common"
+import { createModelsStore } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { execa } from "execa"
 import { getTestEnvValues } from "./get-test-env-values"
 
@@ -14,15 +15,19 @@ export default async function setupAndTeardown(): Promise<void | (() => Promise<
 	await sleep(3000)
 	console.log("\nDocker containers successfully running")
 
-	const sq = new SequelizeService({
-		username: env["DB_USERNAME"]!,
-		password: env["DB_PASSWORD"]!,
-		database: env["DB_DATABASE"]!,
-		port: Number(env["DB_PORT"]),
-		logging: false,
-		type: (env["DB_TYPE"] as "postgres") ?? "postgres",
-		host: env["DB_HOST"]!,
-	})
+	const sq = new SequelizeService(
+		{
+			username: env["DB_USERNAME"]!,
+			password: env["DB_PASSWORD"]!,
+			database: env["DB_DATABASE"]!,
+			port: Number(env["DB_PORT"]),
+			logging: false,
+			type: (env["DB_TYPE"] as "postgres") ?? "postgres",
+			host: env["DB_HOST"]!,
+		},
+		console,
+		createModelsStore(),
+	)
 
 	const testData = new BuildTestDbService(sq)
 	await testData.initSqWithMocks()

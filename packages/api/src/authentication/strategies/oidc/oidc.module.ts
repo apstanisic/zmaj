@@ -34,7 +34,7 @@ export class OidcModule implements NestModule {
 
 				const passportMiddleware = passport.authenticate(provider.name, { session: true })
 
-				passportMiddleware(req, res, next)
+				return passportMiddleware(req, res, next)
 			})
 			.forRoutes(OidcController)
 	}

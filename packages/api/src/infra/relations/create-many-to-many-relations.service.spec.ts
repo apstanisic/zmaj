@@ -1,5 +1,3 @@
-import { AlterSchemaService } from "@zmaj-js/orm"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common"
 import {
@@ -9,11 +7,12 @@ import {
 	asMock,
 	uuidRegex,
 } from "@zmaj-js/common"
+import { AlterSchemaService, SchemaInfoService } from "@zmaj-js/orm"
 import { CollectionDefStub } from "@zmaj-js/test-utils"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import { CreateManyToManyRelationsService } from "./create-many-to-many-relations.service"
-import { InfraStateService } from "../infra-state/infra-state.service"
 import { v4 } from "uuid"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { InfraStateService } from "../infra-state/infra-state.service"
+import { CreateManyToManyRelationsService } from "./create-many-to-many-relations.service"
 
 describe("CreateManyToManyRelationsService", () => {
 	let service: CreateManyToManyRelationsService
@@ -245,7 +244,7 @@ describe("CreateManyToManyRelationsService", () => {
 			}
 
 			alterSchema.createColumn = vi.fn()
-			alterSchema.createFk = vi.fn()
+			alterSchema.createForeignKey = vi.fn()
 			alterSchema.createTable = vi.fn()
 			alterSchema.createUniqueKey = vi.fn()
 		})
@@ -273,7 +272,7 @@ describe("CreateManyToManyRelationsService", () => {
 				trx: "TRX_1",
 			})
 
-			expect(alterSchema.createFk).nthCalledWith(1, {
+			expect(alterSchema.createForeignKey).nthCalledWith(1, {
 				fkColumn: "jlc",
 				fkTable: "jt",
 				referencedTable: "lt",
@@ -282,7 +281,7 @@ describe("CreateManyToManyRelationsService", () => {
 				trx: "TRX_1",
 			})
 
-			expect(alterSchema.createFk).nthCalledWith(2, {
+			expect(alterSchema.createForeignKey).nthCalledWith(2, {
 				fkColumn: "jrc",
 				fkTable: "jt",
 				referencedTable: "rt",

@@ -1,5 +1,4 @@
-import { Transaction } from "@zmaj-js/orm"
-import { IdType } from "@zmaj-js/common"
+import { IdType, Transaction } from "@zmaj-js/orm"
 import { ZodSchema } from "zod"
 
 export type CrudMethodOptions<T> = {

@@ -10,7 +10,7 @@ import {
 	getFreeValue,
 	zodCreate,
 } from "@zmaj-js/common"
-import { ModelCreateType, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
+import { GetCreateFields, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { title, unique } from "radash"
 import { InitialDbState } from "../infra-state/InitialDbState"
 
@@ -137,7 +137,7 @@ export class InfraSchemaRelationsSyncService {
 	 * It will always create m2o-o2m combo, never m2m
 	 */
 	private async createMissingRelations(data: DbState): Promise<RelationMetadata[]> {
-		const missingRelations: ModelCreateType<RelationMetadataModel>[] = []
+		const missingRelations: GetCreateFields<RelationMetadataModel, false>[] = []
 
 		for (const fk of data.fks) {
 			// many side (side where fk is located)

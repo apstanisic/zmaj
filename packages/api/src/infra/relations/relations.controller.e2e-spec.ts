@@ -13,7 +13,8 @@ import {
 	User,
 	UUID,
 } from "@zmaj-js/common"
-import { OrmRepository, SchemaInfoService, SequelizeService } from "@zmaj-js/orm"
+import { OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { camel } from "radash"
 import { DataTypes } from "sequelize"
 import supertest from "supertest"
@@ -147,7 +148,10 @@ describe("RelationController e2e", () => {
 
 				expect(res.statusCode).toEqual(201)
 
-				const createdCol = await schemaInfoService.hasColumn(ownerTableName, dto.left.column)
+				const createdCol = await schemaInfoService.hasColumn({
+					table: ownerTableName,
+					column: dto.left.column,
+				})
 				expect(createdCol).toEqual(true)
 
 				// const fks = await schemaInfoService.getForeignKeys()
@@ -209,7 +213,10 @@ describe("RelationController e2e", () => {
 
 				expect(res.statusCode).toEqual(201)
 
-				const createdCol = await schemaInfoService.hasColumn(ownerTableName, dto.right.column)
+				const createdCol = await schemaInfoService.hasColumn({
+					table: ownerTableName,
+					column: dto.right.column,
+				})
 				expect(createdCol).toEqual(true)
 
 				const createdFk = await schemaInfoService.getForeignKey({
@@ -400,7 +407,7 @@ describe("RelationController e2e", () => {
 
 				expect(res.statusCode).toEqual(201)
 
-				const hasTable = await schemaInfoService.hasTable(junctionTableName)
+				const hasTable = await schemaInfoService.hasTable({ table: junctionTableName })
 				expect(hasTable).toEqual(true)
 
 				const pkCol = await schemaInfoService.getColumn({ table: junctionTableName, column: "id" })

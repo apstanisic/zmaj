@@ -1,15 +1,15 @@
-import { SequelizeService } from "@zmaj-js/orm"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException } from "@nestjs/common"
+import { RepoManager } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { MigrationError } from "umzug"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { SystemMigration } from "./migrations.types"
 import { MigrationsService } from "./migrations.service"
+import { SystemMigration } from "./migrations.types"
 import { MigrationsUmzugStorage } from "./migrations.umzug-storage"
-import { systemMigrations } from "./system-migrations/mod"
 import { CreateMigrationsTable } from "./system-migrations/000_migrations"
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { RepoManager } from "@zmaj-js/orm"
+import { systemMigrations } from "./system-migrations/mod"
 
 describe("MigrationsService", () => {
 	let service: MigrationsService

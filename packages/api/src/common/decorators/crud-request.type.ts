@@ -16,7 +16,7 @@ export type CrudRequest = {
 	/** Request body. If request does not have body it will be empty object */
 	body: Struct
 	/** Only available if there is `:collection` param or set manually by `@SetCollection` */
-	collection: string | CollectionDef<any>
+	collection: string | CollectionDef
 	/** Only available if there is `:id` param  */
 	recordId?: IdType
 	/** Only available if set with `@SetSystemPermission('resource', 'action')` */

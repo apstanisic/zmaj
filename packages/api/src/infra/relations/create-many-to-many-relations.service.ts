@@ -98,7 +98,7 @@ export class CreateManyToManyRelationsService {
 		collections: [CollectionDef, CollectionDef]
 	}): Promise<string> {
 		if (params.junctionTable) {
-			const exist = await this.schemaInfo.hasTable(params.junctionTable)
+			const exist = await this.schemaInfo.hasTable({ table: params.junctionTable })
 			if (exist) throw400(5392864, emsg.collectionExists(params.junctionTable))
 			return params.junctionTable
 		}
@@ -107,7 +107,7 @@ export class CreateManyToManyRelationsService {
 
 		for (let i = 1; i < 30; i++) {
 			const name = baseName + (i === 1 ? "" : `_${i}`)
-			const exist = await this.schemaInfo.hasTable(name)
+			const exist = await this.schemaInfo.hasTable({ table: name })
 			if (!exist) return name
 		}
 		return `${baseName}_${v4().substring(24)}`
@@ -135,7 +135,7 @@ export class CreateManyToManyRelationsService {
 			trx,
 		})
 
-		await this.alterSchema.createFk({
+		await this.alterSchema.createForeignKey({
 			fkTable: dto.junction.table,
 			fkColumn: dto.junction.left.column,
 			referencedTable: dto.left.table,
@@ -144,7 +144,7 @@ export class CreateManyToManyRelationsService {
 			trx,
 		})
 
-		await this.alterSchema.createFk({
+		await this.alterSchema.createForeignKey({
 			fkTable: dto.junction.table,
 			fkColumn: dto.junction.right.column,
 			referencedTable: dto.right.table,

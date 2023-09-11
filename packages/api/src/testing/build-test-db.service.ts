@@ -17,12 +17,8 @@ import {
 	systemCollections,
 	times,
 } from "@zmaj-js/common"
-import {
-	RepoManager,
-	SequelizeRepoManager,
-	SequelizeSchemaInfoService,
-	SequelizeService,
-} from "@zmaj-js/orm"
+import { RepoManager } from "@zmaj-js/orm"
+import { SequelizeRepoManager, SequelizeSchemaInfoService, SequelizeService } from "@zmaj-js/orm-sq"
 import {
 	TCommentModel,
 	TCommentStub,
@@ -54,7 +50,7 @@ export class BuildTestDbService {
 	schemaInfo: SequelizeSchemaInfoService
 	constructor(private sq: SequelizeService) {
 		this.qi = this.sq.orm.getQueryInterface()
-		this.repoManager = new SequelizeRepoManager(this.sq)
+		this.repoManager = new SequelizeRepoManager(this.sq, sq["modelsStore"])
 		this.schemaInfo = new SequelizeSchemaInfoService(this.sq)
 	}
 

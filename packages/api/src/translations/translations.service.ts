@@ -5,7 +5,6 @@ import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { ForbiddenException, Injectable } from "@nestjs/common"
 import {
 	AuthUser,
-	IdType,
 	Struct,
 	Translation,
 	TranslationCreateDto,
@@ -15,7 +14,7 @@ import {
 	UUID,
 	zodCreate,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { IdType, OrmRepository, RepoManager } from "@zmaj-js/orm"
 
 type CommonParams = {
 	language: string

@@ -45,14 +45,14 @@ export class ManyToManyRelationsService {
 					trx,
 				})
 
-				await this.alterSchema.dropFk({
+				await this.alterSchema.dropForeignKey({
 					fkColumn: relation.junction.thisSide?.columnName,
 					fkTable: relation.junction.tableName,
 					indexName: relation.relation.fkName,
 					trx,
 				})
 
-				await this.alterSchema.dropFk({
+				await this.alterSchema.dropForeignKey({
 					fkColumn: relation.junction.otherSide?.columnName,
 					fkTable: relation.junction.tableName,
 					indexName: relation.relation.mtmFkName,

@@ -18,7 +18,8 @@ import {
 	zodCreate,
 	type UUID,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager, SequelizeService } from "@zmaj-js/orm"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { FileUploadDisabledError, StorageError } from "@zmaj-js/storage-core"
 import { format } from "date-fns"
 import path from "path"
@@ -85,6 +86,7 @@ export class FilesService {
 	}
 
 	async getFolders(user?: AuthUser): Promise<string[]> {
+		// Need to use group by
 		const paths = await this.sqService.orm
 			.model(FileCollection.tableName)
 			.findAll<Model<Pick<FileInfo, "folderPath">>>({

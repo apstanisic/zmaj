@@ -11,7 +11,7 @@ import {
 	nestByTableAndColumnName,
 	zodCreate,
 } from "@zmaj-js/common"
-import { ModelCreateType, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
+import { GetCreateFields, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { title } from "radash"
 import { InfraConfig } from "../infra.config"
 
@@ -78,7 +78,7 @@ export class InfraSchemaFieldsSyncService {
 	 * Ensure that every column has field metadata
 	 */
 	private async addMissingFields(fields: FieldMetadata[], columns: DbColumn[]): Promise<void> {
-		const missing: ModelCreateType<FieldMetadataModel>[] = []
+		const missing: GetCreateFields<FieldMetadataModel, false>[] = []
 
 		const nestedFields = nestByTableAndColumnName(fields)
 

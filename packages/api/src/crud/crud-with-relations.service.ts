@@ -59,11 +59,11 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 
 	separateFieldAndRelationChanges(
 		data: Struct,
-		collection: string | CollectionDef<Item>,
+		collection: string | CollectionDef,
 	): {
 		fields: Struct<unknown>
 		relations: Struct<z.infer<typeof ToManyChangeSchema>>
-		collection: CollectionDef<Item>
+		collection: CollectionDef
 	} {
 		const col = this.state.getCollection(collection) ?? throw404(9324833, emsg.notFound())
 
@@ -94,7 +94,7 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 		return {
 			fields: fieldData,
 			relations: toManyData,
-			collection: col as CollectionDef<Item>,
+			collection: col as CollectionDef,
 		}
 	}
 

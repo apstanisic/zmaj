@@ -61,7 +61,7 @@ describe("WebhooksController e2e", () => {
 	describe("GET /system/webhooks", () => {
 		it("should get webhooks", async () => {
 			const webhooksStubs = times(12, () => WebhookStub({}))
-			await webhooksRepo.createMany({ data: webhooksStubs })
+			await webhooksRepo.createMany({ data: webhooksStubs, overrideCanCreate: true })
 
 			const query = qsStringify({ limit: 5, count: true })
 			const res = await supertest(all.server())
@@ -83,7 +83,7 @@ describe("WebhooksController e2e", () => {
 	describe("GET /system/webhooks/:id", () => {
 		it("should get webhook by id", async () => {
 			const webhook = WebhookStub()
-			await webhooksRepo.createOne({ data: webhook })
+			await webhooksRepo.createOne({ data: webhook, overrideCanCreate: true })
 
 			const res = await supertest(all.server())
 				.get(`/api/system/webhooks/${webhook.id}`)
@@ -103,7 +103,7 @@ describe("WebhooksController e2e", () => {
 				url: "http://example.com",
 				sendData: false,
 			})
-			await webhooksRepo.createOne({ data: webhook })
+			await webhooksRepo.createOne({ data: webhook, overrideCanCreate: true })
 			await webhookService.onModuleInit()
 
 			const tagRes = await supertest(app.getHttpServer())

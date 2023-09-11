@@ -2,8 +2,9 @@ import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-modu
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
 import { randEmail, randFirstName, randNumber, randPastDate } from "@ngneat/falso"
-import { BaseModel, ModelType, qsStringify, times, User, uuidRegex } from "@zmaj-js/common"
-import { OrmRepository, SequelizeService } from "@zmaj-js/orm"
+import { qsStringify, times, User, uuidRegex } from "@zmaj-js/common"
+import { BaseModel, GetReadFields, OrmRepository } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { camel } from "radash"
 import { DataTypes, QueryInterface } from "sequelize"
 import supertest from "supertest"
@@ -22,7 +23,7 @@ class TestPersonModel extends BaseModel {
 	}))
 }
 
-type TestPerson = ModelType<TestPersonModel>
+type TestPerson = GetReadFields<TestPersonModel, false>
 
 describe("CollectionsEndpoint e2e", () => {
 	let all: TestBundle

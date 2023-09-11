@@ -3,6 +3,7 @@ import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { Injectable, Logger } from "@nestjs/common"
 import { DbMigrationCollection } from "@zmaj-js/common"
 import { SchemaInfoService } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { isString } from "radash"
 import { MigrationError, Umzug } from "umzug"
 import { MigrationsConfig } from "./migrations.config"
@@ -45,7 +46,7 @@ export class MigrationsService {
 		await this.repoManager.transaction({
 			type: "SERIALIZABLE",
 			fn: async (trx) => {
-				const done = await this.schemaInfo.hasTable(DbMigrationCollection.tableName, { trx })
+				const done = await this.schemaInfo.hasTable({ trx, table: DbMigrationCollection.tableName })
 				if (done) return
 				await this.executeMigration({ type: "system", trx: trx }, CreateMigrationsTable.up)
 			},

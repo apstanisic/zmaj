@@ -1,4 +1,4 @@
-import { BaseModel, GetModelFields } from "@zmaj-js/orm"
+import { BaseModel, GetReadFields } from "@zmaj-js/orm"
 import { UserModel } from "../users/user.model"
 
 export class AuthSessionModel extends BaseModel {
@@ -44,4 +44,4 @@ export class AuthSessionModel extends BaseModel {
 	user = this.manyToOne(() => UserModel, { fkField: "userId" })
 }
 
-export type AuthSession = GetModelFields<AuthSessionModel>
+export type AuthSession = GetReadFields<AuthSessionModel, false>

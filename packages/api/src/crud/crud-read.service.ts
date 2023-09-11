@@ -1,4 +1,4 @@
-import { ResponseWithCount } from "@api/common"
+import { Fields, Filter, ResponseWithCount } from "@api/common"
 import { throw400, throw403, throw404, throw500 } from "@api/common/throw-http"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
@@ -11,7 +11,7 @@ import {
 	pageToOffset,
 	zodCreate,
 } from "@zmaj-js/common"
-import { BaseModel, Fields, Filter, FindManyOptions, IdType, ModelType } from "@zmaj-js/orm"
+import { BaseModel, FindManyOptions, GetReadFields, IdType } from "@zmaj-js/orm"
 import { isEmpty, isString } from "radash"
 import { Except, PartialDeep } from "type-fest"
 import { v4 } from "uuid"
@@ -85,7 +85,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 				if (invalidSort) throw400(7756711, emsg.invalidSort(invalidSort))
 			}
 
-			const queryParams: FindManyOptions<BaseModel, typeof fields> = {
+			const queryParams: FindManyOptions<BaseModel, any, false> = {
 				trx: em,
 				limit,
 				fields,
@@ -95,7 +95,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 					filter.type === "id" ? [filter.id] : filter.type === "ids" ? filter.ids : filter.where,
 			}
 
-			let items: ModelType<BaseModel>[]
+			let items: GetReadFields<BaseModel, false>[]
 			let counted: number | undefined
 
 			// Only count if requested. This is needed because react-admin required it
