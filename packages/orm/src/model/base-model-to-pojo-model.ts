@@ -1,4 +1,5 @@
 import { ModelsState } from "@orm-engine/create-models-store"
+import { ZmajOrmError } from ".."
 import { BaseModel } from "./base-model"
 import { PojoModel, PojoModelField, PojoModelRelation } from "./pojo-model"
 
@@ -7,7 +8,7 @@ import { PojoModel, PojoModelField, PojoModelRelation } from "./pojo-model"
  */
 export function baseModelToPojoModel(
 	ModelClass: BaseModel | PojoModel,
-	store: ModelsState,
+	getOne: ModelsState["getOne"],
 ): PojoModel {
 	if (ModelClass instanceof BaseModel) {
 		const model = ModelClass
@@ -15,7 +16,7 @@ export function baseModelToPojoModel(
 			name: model.name,
 			tableName: model.tableName ?? model.name,
 			fields: convertAllModelFieldsFromClassToPojo(model.fields),
-			relations: convertAllModelRelationsFromClassToPojo(ModelClass, store),
+			relations: convertAllModelRelationsFromClassToPojo(ModelClass, getOne),
 			disabled: model.disabled,
 		}
 	} else {
@@ -25,7 +26,7 @@ export function baseModelToPojoModel(
 
 function convertAllModelRelationsFromClassToPojo(
 	model: BaseModel,
-	store: ModelsState,
+	getOne: ModelsState["getOne"],
 ): PojoModel["relations"] {
 	const relations = model.getRelations()
 
@@ -33,13 +34,20 @@ function convertAllModelRelationsFromClassToPojo(
 
 	for (const [property, relation] of Object.entries(relations)) {
 		const type = relation.options.type
-		const otherSide = store.getOne(relation.modelFn())
+		const otherSide = getOne(relation.modelFn())
+
+		const otherSidePk =
+			otherSide instanceof BaseModel
+				? otherSide.getPkField()
+				: Object.entries(otherSide.fields).find(([field, config]) => config.isPrimaryKey)?.[0]
+
+		if (!otherSidePk) throw new ZmajOrmError("No PK")
 
 		if (type === "many-to-one" || type === "owner-one-to-one") {
 			expanded[property] = {
 				type,
 				field: relation.options.fkField,
-				referencedField: relation.options.referencedField ?? otherSide.getPkField(),
+				referencedField: relation.options.referencedField ?? otherSidePk,
 				referencedModel: otherSide.name,
 			}
 		} else if (type === "one-to-many" || type === "ref-one-to-one") {
@@ -50,7 +58,7 @@ function convertAllModelRelationsFromClassToPojo(
 				referencedModel: otherSide.name,
 			}
 		} else if (type === "many-to-many") {
-			const junctionModel = store.getOne(relation.options.junction())
+			const junctionModel = getOne(relation.options.junction())
 			expanded[property] = {
 				type,
 				field: model.getPkField(),
@@ -58,7 +66,7 @@ function convertAllModelRelationsFromClassToPojo(
 				junctionReferencedField: relation.options.fields[1],
 				junctionModel: junctionModel.name,
 				referencedModel: otherSide.name,
-				referencedField: otherSide.getPkField(),
+				referencedField: otherSidePk,
 			}
 		}
 	}
@@ -76,9 +84,8 @@ function convertAllModelFieldsFromClassToPojo(
 
 function convertModelFieldFromClassToPojo(
 	fieldName: string,
-	field0: BaseModel["fields"][string],
+	field: BaseModel["fields"][string],
 ): PojoModelField {
-	const field = field0 as any // TODO!!!
 	return {
 		fieldName,
 		dataType: field.dataType,

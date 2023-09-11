@@ -74,7 +74,7 @@ export function defineCollection<TModel extends BaseModel>(
 	},
 ): CollectionDef {
 	models ??= createModelsStore()
-	const modelInstance = models.getModel(ModelClass)
+	const modelInstance = models.getOneAsPojo(ModelClass)
 	const tableName = modelInstance.tableName ?? snakeCase(modelInstance.name)
 	const col = buildCollection(tableName, config.options)
 
@@ -83,11 +83,10 @@ export function defineCollection<TModel extends BaseModel>(
 		const additionalConfig = config.fields?.[property as keyof TModel["fields"]]
 		const generated = buildField({
 			tableName,
-			fieldName: property,
 			...additionalConfig,
 			...field,
 			dataType: field.dataType as ColumnDataType, // TODO FIX THIS
-			isPrimaryKey: field.isPk,
+			isPrimaryKey: field.isPrimaryKey,
 		})
 		col.fields[property] = generated
 	}
@@ -95,7 +94,7 @@ export function defineCollection<TModel extends BaseModel>(
 	const a = 2 + 2 == 4
 	if (a) return col
 
-	const relations = modelInstance.getRelations()
+	const relations = modelInstance.relations
 
 	for (const [property, rel] of Object.entries(relations)) {
 		// FIXME: WHY IS THIS UNDEFINED

@@ -22,7 +22,7 @@ export class Orm {
 
 	constructor(params: OrmParams) {
 		this.models = createModelsStore()
-		this.models.set(params.models)
+		this.models.init(params.models)
 		this.engine = params.engine({ config: params.config, models: this.models })
 		this.alterSchema = this.engine.alterSchema
 		this.schemaInfo = this.engine.schemaInfo

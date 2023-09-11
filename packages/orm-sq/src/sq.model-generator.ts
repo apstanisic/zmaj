@@ -1,11 +1,4 @@
-import {
-	BaseModel,
-	ColumnDataType,
-	ModelsState,
-	OrmLogger,
-	PojoModel,
-	baseModelToPojoModel,
-} from "@zmaj-js/orm"
+import { ColumnDataType, ModelsState, OrmLogger, PojoModel } from "@zmaj-js/orm"
 import { snake } from "radash"
 import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
 import { v4 } from "uuid"
@@ -32,11 +25,12 @@ export class SequelizeModelsGenerator {
 	 * @param models for which we need to generate entities
 	 * @param orm Orm to which to define collection
 	 */
-	generateModels(models: readonly (BaseModel | PojoModel)[], orm: Sequelize): void {
+	generateModels(models: PojoModel[], orm: Sequelize): void {
 		this.removeAllModels(orm)
 
+		const modelConfigs = models
 		// const models = this.state.getAll()
-		const modelConfigs = models.map((model) => baseModelToPojoModel(model, this.state))
+		// const modelConfigs = models.map((model) => baseModelToPojoModel(model, this.state))
 
 		for (const model of modelConfigs) {
 			if (model.disabled) continue

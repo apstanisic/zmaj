@@ -1,5 +1,8 @@
+import { Class } from "type-fest"
 import { ModelsState } from "./create-models-store"
 import { DatabaseConfig } from "./database-config.type"
+import { BaseModel } from "./model/base-model"
+import { PojoModel } from "./model/pojo-model"
 import { RepoManager } from "./repo/repo-manager.type"
 import { AlterSchemaService } from "./schema/services/alter-schema.service"
 import { SchemaInfoService } from "./schema/services/schema-info.service"
@@ -10,7 +13,7 @@ export type OrmEngine<T = unknown> = {
 	repoManager: RepoManager
 	init: () => Promise<void>
 	destroy: () => Promise<void>
-	updateModels: (models: ModelsState) => void
+	updateModels: (models: (PojoModel | Class<BaseModel>)[]) => void
 	engineProvider: T
 }
 

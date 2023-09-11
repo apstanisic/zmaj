@@ -33,7 +33,7 @@ export class SequelizeRepoManager extends RepoManager {
 	getRepo<TModel extends BaseModel = BaseModel>(
 		model: Class<BaseModel> | string,
 	): OrmRepository<TModel> {
-		const name = isString(model) ? model : this.models.getModel(model).name
+		const name = isString(model) ? model : this.models.getOne(model).name
 		// const name = model
 
 		// const collection = isString(col) ? col : col.collectionName

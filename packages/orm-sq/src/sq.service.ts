@@ -67,15 +67,12 @@ export class SequelizeService {
 
 	// async init(collections: (Class<BaseModel> | ModelConfig)[]): Promise<void> {
 	async init(): Promise<void> {
-		this.generateModels(this.modelsStore.getAll())
+		this.generateModels(this.modelsStore.getAllAsPojos())
 		await this.orm.authenticate()
 	}
 
-	// generateModels(models: readonly (Class<BaseModel> | ModelConfig)[]): void {
 	generateModels(models: (Class<BaseModel> | PojoModel)[]): void {
-		this.modelsStore.clear()
-		this.modelsStore.set(models)
-		this.generator.generateModels(this.modelsStore.getAll(), this.orm)
+		this.generator.generateModels(this.modelsStore.init(models), this.orm)
 	}
 
 	async transaction<T>(params: {

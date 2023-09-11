@@ -38,7 +38,6 @@ describe("InitializeAdminService", () => {
 		//
 		usersService = module.get(UsersService)
 		makeWritable(usersService).repo = module.get(RepoManager).getRepo(UserModel)
-		// usersService.repo = module.get(RepoManager).getRepo(UserCollection)
 		usersService.createUser = vi.fn(async () => adminUser)
 	})
 

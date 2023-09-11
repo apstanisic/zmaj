@@ -6,27 +6,27 @@ export type PojoModelField = {
 	fieldName: string
 	dataType: ColumnDataType
 	/** We will use field name if not provided */
-	columnName?: string
+	columnName: string
 	/** @default true */
-	canRead?: boolean
+	canRead: boolean
 	/** @default true */
-	canUpdate?: boolean
+	canUpdate: boolean
 	/** @default true */
-	canCreate?: boolean
+	canCreate: boolean
 	/** @default false */
-	isUnique?: boolean
+	isUnique: boolean
 	/** @default false */
-	isNullable?: boolean
+	isNullable: boolean
 	/** @default false */
-	isUpdatedAt?: boolean
+	isUpdatedAt: boolean
 	/** @default false */
-	isCreatedAt?: boolean
+	isCreatedAt: boolean
 	/** @default false */
-	isAutoIncrement?: boolean
+	isAutoIncrement: boolean
 	/** @default false */
-	isPrimaryKey?: boolean
+	isPrimaryKey: boolean
 	/** @default false */
-	hasDefaultValue?: boolean
+	hasDefaultValue: boolean
 }
 
 export type PojoModelDirectRelation = {
@@ -51,8 +51,8 @@ export type PojoModelRelation = PojoModelDirectRelation | PojoModelJunctionRelat
 export type PojoModel = {
 	name: string
 	/** We will use name as tableName if tableName is undefined **/
-	tableName?: string
-	disabled?: boolean
+	tableName: string
+	disabled: boolean
 	fields: Record<string, PojoModelField>
 	relations: Record<string, PojoModelRelation>
 }
