@@ -20,14 +20,17 @@ export class InfraService {
 	) {}
 
 	async getCollectionMetadata(trx?: Transaction): Promise<CollectionMetadata[]> {
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
 		return this.baseRepoManager.getRepo(CollectionMetadataModel).findWhere({ trx })
 	}
 
 	async getFieldMetadata(trx?: Transaction): Promise<FieldMetadata[]> {
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
 		return this.baseRepoManager.getRepo(FieldMetadataModel).findWhere({ trx })
 	}
 
 	async getRelationMetadata(trx?: Transaction): Promise<RelationMetadata[]> {
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
 		return this.baseRepoManager.getRepo(RelationMetadataModel).findWhere({ trx })
 	}
 

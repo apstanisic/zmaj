@@ -27,6 +27,7 @@ export class WebhooksService implements OnModuleInit {
 	 * Get all webhooks on app startup
 	 */
 	async onModuleInit(): Promise<void> {
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
 		this.allWebhooks = await this.repo.findWhere({})
 	}
 

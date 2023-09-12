@@ -12,7 +12,7 @@ import {
 	quickFilterPrefix,
 	transformQuickFilter,
 } from "@zmaj-js/common"
-import { Filter, IdType } from "@zmaj-js/orm"
+import { IdType } from "@zmaj-js/orm"
 import { DataProvider, RaRecord } from "ra-core"
 import { isEqual, mapValues } from "radash"
 import { v4 } from "uuid"
@@ -30,6 +30,7 @@ const MetaValues = UrlQuerySchema.pick({
 	.extend({ getAll: z.boolean().optional() })
 	.optional()
 
+type Filter<T> = T
 /**
  * Can't fix data provider type
  */

@@ -304,15 +304,15 @@ export class AuthorizationService {
 							record: item,
 							// resource: `collections.${infraProperty.rightCollectionName}`,
 							resource: rightCollection,
-							fields: fieldsToCheck,
+							fields: fieldsToCheck === true ? undefined : fieldsToCheck,
 						}),
 					)
 				} else {
 					// if value is object m2o
 					allowedData[field] = this.pickAllowedData({
 						user,
-						record: value,
-						fields: fieldsToCheck,
+						record: value as Struct,
+						fields: fieldsToCheck === true ? undefined : fieldsToCheck,
 						resource: rightCollection,
 						// resource: `collections.${infraProperty.rightCollectionName}`,
 					})

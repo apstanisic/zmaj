@@ -1,10 +1,10 @@
 import { CollectionDef } from "@zmaj-js/common"
-import { BaseModel, ModelConfig, ModelRelation } from "@zmaj-js/orm"
+import { BaseModel, PojoModel } from "@zmaj-js/orm"
 import { mapValues } from "radash"
 import { Class } from "type-fest"
 
-export function collectionToModel(collection: CollectionDef): ModelConfig {
-	const relations = mapValues(collection.relations, (rel): ModelRelation => {
+export function collectionToModel(collection: CollectionDef): PojoModel {
+	const relations = mapValues(collection.relations, (rel): PojoModel["relations"][number] => {
 		if (rel.type !== "many-to-many") {
 			return {
 				field: rel.fieldName,
@@ -37,8 +37,8 @@ export function collectionToModel(collection: CollectionDef): ModelConfig {
 }
 
 export function mixedColDef(
-	collections: (CollectionDef | ModelConfig | Class<BaseModel>)[],
-): (ModelConfig | Class<BaseModel>)[] {
+	collections: (CollectionDef | PojoModel | Class<BaseModel>)[],
+): (PojoModel | Class<BaseModel>)[] {
 	return collections.map((c) => ("collectionName" in c ? collectionToModel(c) : c))
 }
 

@@ -55,9 +55,10 @@ export class BuildTestDbService {
 	}
 
 	async initSqWithMocks(): Promise<void> {
-		await this.sq.init(
+		this.sq.generateModels(
 			mixedColDef([...systemCollections, ...allMockCollectionDefs, ...storeCollectionDefs]),
 		)
+		await this.sq.init()
 	}
 
 	private exampleProjectTables = ["posts", "comments", "tags", "posts_tags", "posts_info"] as const

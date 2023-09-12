@@ -35,6 +35,7 @@ export class UsersService {
 	 * Find user either by ID or by email
 	 */
 	async findUser(where: IdOrEmailObject, trx?: Transaction): Promise<User | undefined> {
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
 		return this.repo.findOne({ where, trx })
 	}
 

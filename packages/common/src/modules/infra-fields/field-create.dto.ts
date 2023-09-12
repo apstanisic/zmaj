@@ -12,7 +12,9 @@ export const FieldCreateSchema = FieldUpdateSchema.omit({
 	columnName: DbFieldSchema,
 	fieldName: DbFieldSchema.nullish().transform(zodStripNull),
 	collectionName: DbFieldSchema,
-	dataType: z.enum(allColumnDataTypes),
+	dataType: z.enum(allColumnDataTypes).transform((val) => {
+		return val === "short-text" || val === "long-text" ? "text" : val
+	}),
 	isUnique: z.boolean().default(false),
 	isNullable: z.boolean().default(true),
 	dbDefaultValue: z.unknown().nullish().default(null),

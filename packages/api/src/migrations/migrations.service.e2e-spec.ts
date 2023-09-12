@@ -37,7 +37,8 @@ describe("MigrationsService e2e", () => {
 			console,
 			createModelsStore(),
 		)
-		await sq.init(mixedColDef([...systemCollections]))
+		sq.generateModels(mixedColDef([...systemCollections]))
+		await sq.init()
 		schemaInfo = sq.schemaInfo
 		alterSchema = sq.alterSchema
 		repoManager = sq.repoManager

@@ -7,8 +7,6 @@ import { rand } from "@ngneat/falso"
 import {
 	ADMIN_ROLE_ID,
 	AuthUser,
-	BaseModel,
-	EntityRef,
 	PUBLIC_ROLE_ID,
 	Permission,
 	asMock,
@@ -16,6 +14,7 @@ import {
 	defineCollection,
 	times,
 } from "@zmaj-js/common"
+import { BaseModel } from "@zmaj-js/orm"
 import {
 	AuthUserStub,
 	CollectionDefStub,
@@ -663,7 +662,7 @@ describe("AuthorizationService", () => {
 					postId: postStub.id,
 				})
 
-				postStub.postInfo = postInfoStub as EntityRef<TPostInfo>
+				postStub.postInfo = postInfoStub
 
 				service.check = vi.fn((v) => {
 					if (v.resource === "collections.posts") {
@@ -759,7 +758,7 @@ describe("AuthorizationService", () => {
 						TCommentStub({ body: "hello1", postId: postStub.id }),
 						TCommentStub({ body: "hello2", postId: postStub.id }),
 					]
-					postStub.comments = comments as EntityRef<TComment>[]
+					postStub.comments = comments
 				})
 
 				it("should check every property if value is array", () => {

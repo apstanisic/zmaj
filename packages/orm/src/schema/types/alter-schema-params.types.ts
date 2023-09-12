@@ -51,7 +51,7 @@ export type CreateColumnParams = SharedParams & {
 	autoIncrement?: boolean
 	index?: boolean
 	dataType: { type: "general"; value: ColumnDataType } | { type: "specific"; value: string }
-	defaultValue?: DefaultValueType
+	defaultValue?: DefaultValueType | null
 }
 
 export type DropColumnParams = SharedParams & { tableName: string; columnName: string }
@@ -61,5 +61,5 @@ export type UpdateColumnParams = SharedParams & {
 	columnName: string
 	nullable?: boolean
 	unique?: boolean
-	defaultValue?: DefaultValueType
+	defaultValue?: DefaultValueType | null
 }

@@ -30,7 +30,7 @@ export type CrudController<Item extends Struct<any> = Struct<any>> = {
 export type RedirectResponse = { url: string; statusCode: number }
 
 export type Fields<T = unknown> = {
-	[key: string]: Fields | boolean
+	[key: string]: Fields | true
 }
 
 export type Filter<T = unknown> = Struct<any>
