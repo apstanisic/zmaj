@@ -30,6 +30,7 @@
 		".vscode-insiders",
 		"pnpm-lock.yaml"
 	],
+	"tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],
 	// Valid words that are not in dictonary
 	"cSpell.words": [
 		"Aleksandar",
@@ -117,8 +118,5 @@
 		"vitest",
 		"Zmaj",
 		"zustand"
-	],
-	"[typescript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	}
+	]
 }

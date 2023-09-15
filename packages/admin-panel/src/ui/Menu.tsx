@@ -1,9 +1,9 @@
 import { autoUpdate, flip, offset, shift, useFloating } from "@floating-ui/react-dom"
 import { Menu as HeadlessMenu } from "@headlessui/react"
-import { filterStruct, Struct } from "@zmaj-js/common"
+import { Struct, filterStruct } from "@zmaj-js/common"
 import { clsx } from "clsx"
 import { isString } from "radash"
-import { forwardRef, Fragment, ReactNode, useMemo, useRef } from "react"
+import { Fragment, ReactNode, forwardRef, useMemo, useRef } from "react"
 import { Link } from "react-router-dom"
 
 const DirtyDirtyWorkaroundButton = forwardRef<
@@ -38,7 +38,12 @@ const DirtyDirtyWorkaroundButton = forwardRef<
 })
 
 export function Menu(props: Props): JSX.Element {
-	const { x, y, reference, floating, strategy } = useFloating({
+	const {
+		x,
+		y,
+		refs: { setReference, setFloating },
+		strategy,
+	} = useFloating({
 		middleware: [offset(0), flip(), shift({ padding: 10 })],
 		placement: "bottom",
 		strategy: "fixed",
@@ -47,7 +52,7 @@ export function Menu(props: Props): JSX.Element {
 	return (
 		<HeadlessMenu>
 			{/* <HeadlessMenu.Button as="div" ref={reference}> */}
-			<div ref={reference}>
+			<div ref={setReference}>
 				<HeadlessMenu.Button as={Fragment}>
 					<DirtyDirtyWorkaroundButton btn={props.button!} />
 					{/* <AAA /> */}
@@ -60,7 +65,7 @@ export function Menu(props: Props): JSX.Element {
 				as="ul"
 				// Hide outline since it's distinct enough
 				className="z-30 min-w-[150px] gap-y-1 overflow-hidden rounded-md border bg-base-100 py-1 text-base-content shadow-lg outline-none"
-				ref={floating}
+				ref={setFloating}
 				style={{
 					position: strategy,
 					top: y ?? 0,
@@ -102,17 +107,16 @@ export function Menu(props: Props): JSX.Element {
 // 	)
 // }
 
-export type MenuItemParams =
-	| {
-			startIcon?: ReactNode
-			endIcon?: ReactNode
-			title?: string
-			disabled?: boolean
-	  } & (
-			| { to: string; button?: false } //
-			| ({ button: true } & JSX.IntrinsicElements["button"])
-			| { button: string }
-	  )
+export type MenuItemParams = {
+	startIcon?: ReactNode
+	endIcon?: ReactNode
+	title?: string
+	disabled?: boolean
+} & (
+	| { to: string; button?: false } //
+	| ({ button: true } & JSX.IntrinsicElements["button"])
+	| { button: string }
+)
 
 type Props = {
 	button?: (ref: React.RefObject<HTMLButtonElement> | null, props: Struct) => ReactNode

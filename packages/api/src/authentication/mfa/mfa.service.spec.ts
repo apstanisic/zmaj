@@ -84,7 +84,8 @@ describe("MfaService", () => {
 
 		beforeEach(() => {
 			jwtService = module.get(JwtService)
-			jwtService.signAsync = vi.fn(async (p) => JSON.stringify(p))
+			// TODO
+			jwtService.signAsync = vi.fn(async (p) => JSON.stringify(p)) as any
 
 			module.get(GlobalConfig).name = "Hello World"
 

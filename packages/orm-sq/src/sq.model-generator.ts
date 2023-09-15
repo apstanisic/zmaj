@@ -4,15 +4,17 @@ import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "seque
 import { v4 } from "uuid"
 
 export class SequelizeModelsGenerator {
-	constructor(private state: ModelsState, private logger: OrmLogger = console) {}
+	constructor(
+		private state: ModelsState,
+		private logger: OrmLogger = console,
+	) {}
 	removeAllModels(orm: Sequelize): void {
 		// Models in best delete order
 		const toRemove =
 			orm.modelManager
 				.getModelsTopoSortedByForeignKey()
 				?.concat() // reverse mutates array, so we clone it here
-				.reverse() ?? //
-			orm.modelManager.all
+				.reverse() ?? orm.modelManager.all //
 		// Object.values(orm.models)
 
 		for (const model of toRemove) {
@@ -112,6 +114,7 @@ export class SequelizeModelsGenerator {
 			const rightModel = models[rel.referencedModel]
 			// if collection is disabled, it can infer with relations
 			if (!leftModel || !rightModel) continue
+			console.log({ col: col.tableName, rel: rel, propertyName })
 
 			if (rel.type === "many-to-one") {
 				leftModel.belongsTo(rightModel, {

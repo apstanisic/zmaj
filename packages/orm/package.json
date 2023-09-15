@@ -38,6 +38,6 @@
 		"dev": "tsup --config ../../tsup.config.ts --watch"
 	},
 	"dependencies": {
-		"type-fest": "^3.11.1"
+		"type-fest": "^4.3.1"
 	}
 }

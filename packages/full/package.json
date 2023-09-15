@@ -38,7 +38,7 @@
 		"dev": "tsup --config ../../tsup.config.ts --watch"
 	},
 	"dependencies": {
-		"@nestjs/serve-static": "^3.0.1",
+		"@nestjs/serve-static": "^4.0.0",
 		"@zmaj-js/admin-panel": "workspace:*",
 		"@zmaj-js/api": "workspace:*",
 		"import-meta-resolve": "^3.0.0"

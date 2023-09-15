@@ -39,18 +39,18 @@
 		"dev": "tsup --config ../../tsup.config.ts --watch"
 	},
 	"dependencies": {
-		"@ngneat/falso": "^6.4.0",
+		"@ngneat/falso": "^7.1.0",
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/orm": "workspace:*",
 		"date-fns": "^2.30.0",
 		"flat": "^5.0.2",
 		"qs": "^6.11.2",
-		"radash": "^10.8.1",
-		"type-fest": "^3.11.1",
-		"uuid": "^9.0.0",
-		"zod": "^3.21.4"
+		"radash": "^11.0.0",
+		"type-fest": "^4.3.1",
+		"uuid": "^9.0.1",
+		"zod": "^3.22.2"
 	},
 	"devDependencies": {
-		"@types/qs": "^6.9.7"
+		"@types/qs": "^6.9.8"
 	}
 }

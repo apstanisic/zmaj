@@ -3,7 +3,7 @@ import { UsersService } from "@api/users/users.service"
 import { BadRequestException, ForbiddenException } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import { TestingModule } from "@nestjs/testing"
-import { asMock, AuthUser, makeWritable, SignInDto, User, UserWithSecret } from "@zmaj-js/common"
+import { AuthUser, SignInDto, User, UserWithSecret, asMock, makeWritable } from "@zmaj-js/common"
 import { AuthUserStub, UserStub } from "@zmaj-js/test-utils"
 import { SetRequired } from "type-fest"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -56,7 +56,8 @@ describe("UsersMfaService", () => {
 			mfaService["generateQrCode"] = vi.fn(async (name, secret) => `qrcode_${name}_${secret}`)
 			mfaService.calculateBackupCodes = vi.fn(async (secret) => secret.split("_"))
 			jwtService = module.get(JwtService)
-			jwtService.signAsync = vi.fn(async (v) => JSON.stringify(v))
+			// TODO
+			jwtService.signAsync = vi.fn(async (v) => JSON.stringify(v)) as any
 
 			mfaService.generateParamsToEnable = vi.fn(async (email) => ({
 				image: "img",
@@ -135,7 +136,7 @@ describe("UsersMfaService", () => {
 						secret: "1234512345",
 						email: "test@example.com",
 						purpose: "enable-mfa",
-					} as any),
+					}) as any,
 			)
 
 			mfa = module.get(MfaService)

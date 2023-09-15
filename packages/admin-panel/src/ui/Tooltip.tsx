@@ -36,7 +36,12 @@ export function Tooltip({ children, ...props }: Props): JSX.Element {
  */
 function TooltipInner(props: Props): JSX.Element {
 	const [show, setShow] = useState(false)
-	const { x, y, reference, floating, strategy } = useFloating({
+	const {
+		x,
+		y,
+		refs: { setFloating, setReference },
+		strategy,
+	} = useFloating({
 		middleware: [offset(10), flip(), shift()],
 		placement: props.side,
 		strategy: "fixed",
@@ -45,12 +50,16 @@ function TooltipInner(props: Props): JSX.Element {
 
 	return (
 		<>
-			<div ref={reference} onMouseLeave={() => setShow(false)} onMouseEnter={() => setShow(true)}>
+			<div
+				ref={setReference}
+				onMouseLeave={() => setShow(false)}
+				onMouseEnter={() => setShow(true)}
+			>
 				{props.children}
 			</div>
 			{show && (
 				<div
-					ref={floating}
+					ref={setFloating}
 					style={{
 						position: strategy,
 						top: y ?? 0,
