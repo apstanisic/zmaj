@@ -1,5 +1,13 @@
 import { sdkThrow } from "@client-sdk/errors/error-utils"
-import { Data, endpoints, FieldMetadataModel, getEndpoints, RelationDef } from "@zmaj-js/common"
+import {
+	Data,
+	endpoints,
+	getEndpoints,
+	RelationCreateDto,
+	RelationDef,
+	RelationMetadataModel,
+	RelationUpdateDto,
+} from "@zmaj-js/common"
 import { BaseModel } from "@zmaj-js/orm"
 import { AxiosInstance } from "axios"
 import { CrudClient } from "./crud.client"
@@ -12,11 +20,16 @@ const ep = getEndpoints((ep) => ep.infraRelations)
 class RelationDefModel extends BaseModel {
 	name = "relations"
 	fields = this.buildFields((f) => ({
-		...new FieldMetadataModel().fields,
+		...new RelationMetadataModel().fields,
 	}))
 }
 
-export class RelationsClient extends CrudClient<RelationDefModel> {
+export class RelationsClient extends CrudClient<
+	RelationDefModel,
+	RelationDef,
+	RelationCreateDto,
+	RelationUpdateDto
+> {
 	constructor(http: AxiosInstance) {
 		super(http, endpoints.infraRelations.$base)
 	}

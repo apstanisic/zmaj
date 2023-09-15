@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test"
+import { FieldCreateDto } from "@zmaj-js/common"
+import { camel } from "radash"
 import { createIdRegex } from "../utils/create-id-regex.js"
 import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
-import { camel } from "radash"
 
 const tableName = "field_test_delete_playwright"
 const collectionName = camel(tableName)
@@ -13,15 +14,16 @@ test.beforeEach(async () => {
 	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName, label: "Test345" },
 	})
+
 	await sdk.infra.fields.createOne({
-		data: {
+		data: new FieldCreateDto({
 			columnName: "to_delete",
 			dataType: "short-text",
 			collectionName,
 			isNullable: true,
 			isUnique: false,
 			dbDefaultValue: null,
-		},
+		}),
 	})
 })
 

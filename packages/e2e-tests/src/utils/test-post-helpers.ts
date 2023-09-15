@@ -1,6 +1,6 @@
 import { ZmajSdk } from "@zmaj-js/client-sdk"
-import { OnlyFields } from "@zmaj-js/common"
-import { TPost } from "@zmaj-js/test-utils"
+import { TPost, TPostModel } from "@zmaj-js/test-utils"
+import { GetReadFields } from "zmaj"
 import { getSdk } from "./test-sdk.js"
 
 export async function deletePostsByTitle(title: string, sdk?: ZmajSdk): Promise<void> {
@@ -16,13 +16,13 @@ export async function deletePostsByTitle(title: string, sdk?: ZmajSdk): Promise<
 
 export async function createPost(
 	title: string,
-	rest: Partial<OnlyFields<TPost>> = {},
+	rest: Partial<GetReadFields<TPostModel, true>> = {},
 	sdk?: ZmajSdk,
 ): Promise<TPost> {
 	sdk ??= getSdk()
 	try {
 		const res = await sdk
-			.collection<TPost>("posts")
+			.collection<TPostModel>("posts")
 			.createOne({ data: { likes: 5, ...rest, title } })
 		return res
 	} catch (error) {

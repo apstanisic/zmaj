@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { Struct, times } from "@zmaj-js/common"
-import { TComment, TPost, TTag } from "@zmaj-js/test-utils"
+import { TComment, TCommentModel, TPost, TPostModel, TTag, TTagModel } from "@zmaj-js/test-utils"
 import { createIdRegex } from "../utils/create-id-regex.js"
 import { namespaceCollection } from "../utils/namespace-collection.js"
 import { getSdk } from "../utils/test-sdk.js"
@@ -13,13 +13,13 @@ const updatedPostTitle = `Updated Title${suffix}`
 
 const deletePrevious = async (sdk: ZmajSdk): Promise<void> => {
 	await sdk
-		.collection<TComment>("comments")
+		.collection<TCommentModel>("comments")
 		.temp__deleteWhere({ filter: { body: { $like: "%" + suffix } } })
 	await sdk
-		.collection<TTag>("tags")
+		.collection<TTagModel>("tags")
 		.temp__deleteWhere({ filter: { name: { $like: "%" + suffix } } })
 	await sdk
-		.collection<TPost>("posts")
+		.collection<TPostModel>("posts")
 		.temp__deleteWhere({ filter: { title: { $like: "%" + suffix } } })
 }
 
@@ -33,23 +33,24 @@ test.beforeEach(async () => {
 
 	tags = await Promise.all(
 		times(5, (i) =>
-			sdk.collection<TTag>("tags").createOne({ data: { name: `Tag ${i} ${suffix}` } }),
+			sdk.collection<TTagModel>("tags").createOne({ data: { name: `Tag ${i} ${suffix}` } }),
 		),
 	)
 
 	const toId = (val: Struct): any => val["id"]
-	post = await sdk.collection<TPost>("posts").createOne({
+	post = await sdk.collection<TPostModel>("posts").createOne({
 		data: {
 			title: originalPostTitle,
 			body: "Hello World",
 			likes: 55,
+			// @ts-ignore TODO, SDK does not contain "toMany" create support
 			tags: { type: "toMany", added: tags.slice(0, 3).map(toId), removed: [] },
 		},
 	})
 
 	comments = await Promise.all(
 		times(5, (i) =>
-			sdk.collection<TComment>("comments").createOne({
+			sdk.collection<TCommentModel>("comments").createOne({
 				data: {
 					postId: i < 3 ? post.id : undefined, //
 					body: `Com ${i} ${suffix}`,

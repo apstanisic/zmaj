@@ -5,7 +5,7 @@ import {
 	columnDataTypes,
 	endpoints,
 } from "@zmaj-js/common"
-import { BaseModel } from "@zmaj-js/orm"
+import { BaseModel, GetReadFields } from "@zmaj-js/orm"
 import { AxiosInstance } from "axios"
 import { CrudClient } from "./crud.client"
 
@@ -26,7 +26,12 @@ class FieldDefModel extends BaseModel {
 	}))
 }
 
-export class FieldsClient extends CrudClient<FieldDefModel, FieldCreateDto, FieldUpdateDto> {
+export class FieldsClient extends CrudClient<
+	FieldDefModel,
+	GetReadFields<FieldDefModel, true>,
+	FieldCreateDto,
+	FieldUpdateDto
+> {
 	constructor(http: AxiosInstance) {
 		super(http, endpoints.infraFields.$base)
 	}

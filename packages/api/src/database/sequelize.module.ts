@@ -20,6 +20,7 @@ import { DatabaseConfig } from "./database.config"
 			useFactory: async (config: DatabaseConfig) => {
 				const orm = new Orm({ config, engine: sqOrmEngine, models: [...systemModels] })
 				await orm.init()
+				return orm
 			},
 		},
 		{
@@ -44,7 +45,23 @@ import { DatabaseConfig } from "./database.config"
 			inject: [Orm],
 			useFactory: (orm: Orm) => orm.schemaInfo,
 		},
+
+		{
+			provide: BootstrapRepoManager,
+			inject: [Orm],
+			useFactory: (orm: Orm) => orm.repoManager,
+		},
+		{
+			provide: AlterSchemaService,
+			inject: [Orm],
+			useFactory: (orm: Orm) => orm.alterSchema,
+		},
+		{
+			provide: SchemaInfoService,
+			inject: [Orm],
+			useFactory: (orm: Orm) => orm.schemaInfo,
+		},
 	],
-	exports: [BootstrapRepoManager, AlterSchemaService, SchemaInfoService],
+	exports: [Orm, BootstrapRepoManager, AlterSchemaService, SchemaInfoService, SequelizeService],
 })
 export class SequelizeModule {}

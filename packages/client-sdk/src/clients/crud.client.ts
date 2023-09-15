@@ -37,9 +37,9 @@ type CrudParams<TModel extends BaseModel> = Partial<
  */
 export class CrudClient<
 	TModel extends BaseModel = BaseModel,
-	TRead = GetReadFields<TModel, false>,
-	CreateDto = GetCreateFields<TModel, false>,
-	UpdateDto = GetUpdateFields<TModel, false>,
+	TRead = GetReadFields<TModel, true>,
+	TCreateDto = Partial<GetCreateFields<TModel, true>>,
+	TUpdateDto = Partial<GetUpdateFields<TModel, true>>,
 > {
 	readonly #resourcePath: string
 
@@ -137,7 +137,7 @@ export class CrudClient<
 	/**
 	 * Create new item
 	 */
-	async createOne({ data }: { data: CreateDto }): Promise<TRead> {
+	async createOne({ data }: { data: TCreateDto }): Promise<TRead> {
 		return this.http
 			.post<Data<TRead>>(this.makePath({}), data)
 			.then((r) => r.data.data)
@@ -147,7 +147,7 @@ export class CrudClient<
 	/**
 	 * Update item by ID
 	 */
-	async updateById({ id, data }: { id: IdType; data: UpdateDto }): Promise<TRead> {
+	async updateById({ id, data }: { id: IdType; data: TUpdateDto }): Promise<TRead> {
 		return this.http
 			.put<Data<TRead>>(this.makePath({ id }), data)
 			.then((r) => r.data.data)
@@ -157,7 +157,7 @@ export class CrudClient<
 	/**
 	 * This is needed for react-admin. It has to be rewritten in api
 	 */
-	async updateByIds({ data, ids }: { data: UpdateDto; ids: IdType[] }): Promise<TRead[]> {
+	async updateByIds({ data, ids }: { data: TUpdateDto; ids: IdType[] }): Promise<TRead[]> {
 		// const query = qsStringify({ filter: { id: { $in: ids } } });
 
 		const items: TRead[] = []

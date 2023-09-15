@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { times } from "@zmaj-js/common"
-import { TComment, TPost, TTag } from "@zmaj-js/test-utils"
+import { TCommentModel, TPostModel, TTagModel } from "@zmaj-js/test-utils"
 import { namespaceTestCollections } from "../utils/namespace-collection.js"
 import { getSdk } from "../utils/test-sdk.js"
 
@@ -9,13 +9,13 @@ const suffix = "9k8fk3"
 
 const deletePrevious = async (sdk: ZmajSdk): Promise<void> => {
 	await sdk
-		.collection<TComment>("comments")
+		.collection<TCommentModel>("comments")
 		.temp__deleteWhere({ filter: { body: { $like: "%" + suffix } } })
 	await sdk
-		.collection<TTag>("tags")
+		.collection<TTagModel>("tags")
 		.temp__deleteWhere({ filter: { name: { $like: "%" + suffix } } })
 	await sdk
-		.collection<TPost>("posts")
+		.collection<TPostModel>("posts")
 		.temp__deleteWhere({ filter: { title: { $like: "%" + suffix } } })
 }
 
@@ -25,8 +25,10 @@ test.beforeEach(async () => {
 	await deletePrevious(sdk)
 	// create
 	for (const i of times(6)) {
-		await sdk.collection<TTag>("tags").createOne({ data: { name: `Tag ${i} ${suffix}` } })
-		await sdk.collection<TComment>("comments").createOne({ data: { body: `Com ${i} ${suffix}` } })
+		await sdk.collection<TTagModel>("tags").createOne({ data: { name: `Tag ${i} ${suffix}` } })
+		await sdk
+			.collection<TCommentModel>("comments")
+			.createOne({ data: { body: `Com ${i} ${suffix}` } })
 	}
 })
 test.afterEach(async () => {
