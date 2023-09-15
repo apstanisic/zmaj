@@ -4,6 +4,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core"
 import { ExceptionTransformer } from "./exception.transformer"
 import { ParseStringPipe } from "./parse-string.pipe"
 import { RequestParserInterceptor } from "./request-parser/request-parser.interceptor"
+import { OrmExceptionFilter } from "./validation/orm.filter"
 import { ZodExceptionFilter } from "./validation/zod-exception.filter"
 
 @Global()
@@ -13,7 +14,7 @@ import { ZodExceptionFilter } from "./validation/zod-exception.filter"
 		{ provide: APP_INTERCEPTOR, useClass: RequestParserInterceptor },
 		{ provide: APP_FILTER, useClass: ZodExceptionFilter },
 		{ provide: APP_FILTER, useClass: HttpExceptionFilter },
-		// { provide: APP_FILTER, useClass: MyFilter },
+		{ provide: APP_FILTER, useClass: OrmExceptionFilter },
 		ParseStringPipe,
 	],
 	exports: [ParseStringPipe, ExceptionTransformer],

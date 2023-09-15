@@ -68,7 +68,10 @@ export class SequelizeRepository<
 	TModel extends BaseModel = BaseModel,
 > extends OrmRepository<TModel> {
 	// collectionName: string
-	constructor(private orm: SequelizeService, private collectionName: string) {
+	constructor(
+		private orm: SequelizeService,
+		private collectionName: string,
+	) {
 		//private modelConfig: ModelConfig) {
 		super()
 		// this.collectionName = modelConfig.collectionName
@@ -483,8 +486,14 @@ export class SequelizeRepository<
 
 		// delete fields!.$subQuery
 		for (const [property, value] of Object.entries(fields!)) {
+			// if $fields, get all fields
+			if (property === "$fields") {
+				attributes.push(...Object.keys(fieldsMeta))
+				continue
+			}
 			// field property is not relation, simply add to attributes (fields)
 			const isField = fieldsMeta[property]
+
 			if (isField) {
 				attributes.push(property)
 				continue

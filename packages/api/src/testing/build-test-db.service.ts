@@ -15,6 +15,7 @@ import {
 	User,
 	UserModel,
 	systemCollections,
+	systemModels,
 	times,
 } from "@zmaj-js/common"
 import { RepoManager } from "@zmaj-js/orm"
@@ -56,7 +57,7 @@ export class BuildTestDbService {
 
 	async initSqWithMocks(): Promise<void> {
 		this.sq.generateModels(
-			mixedColDef([...systemCollections, ...allMockCollectionDefs, ...storeCollectionDefs]),
+			mixedColDef([...systemModels, ...allMockCollectionDefs, ...storeCollectionDefs]),
 		)
 		await this.sq.init()
 	}

@@ -4,7 +4,7 @@ import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { DatabaseConfig } from "@api/database/database.config"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { getTestEnvValues } from "@api/testing/get-test-env-values"
-import { DbMigration, DbMigrationModel, systemCollections, uuidRegex } from "@zmaj-js/common"
+import { DbMigration, DbMigrationModel, systemModels, uuidRegex } from "@zmaj-js/common"
 import { AlterSchemaService, RepoManager, SchemaInfoService, createModelsStore } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
@@ -37,7 +37,7 @@ describe("MigrationsService e2e", () => {
 			console,
 			createModelsStore(),
 		)
-		sq.generateModels(mixedColDef([...systemCollections]))
+		sq.generateModels(mixedColDef([...systemModels]))
 		await sq.init()
 		schemaInfo = sq.schemaInfo
 		alterSchema = sq.alterSchema

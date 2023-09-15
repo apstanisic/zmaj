@@ -14,7 +14,7 @@ export const CreateRolesTable = createSystemMigration({
 				...getRequiredColumns(),
 				name: { type: DataTypes.STRING(200), allowNull: false, unique: true },
 				description: { type: DataTypes.STRING(500) },
-				require_mfa: { type: DataTypes.BOOLEAN, defaultValue: false },
+				require_mfa: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
 			},
 			{ transaction: trx },
 		)

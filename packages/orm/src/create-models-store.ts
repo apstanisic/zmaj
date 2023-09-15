@@ -43,6 +43,7 @@ export function createModelsStore(models: ModelParam[] = []): ModelsState {
 		models: allModels,
 		init: (models: ModelParam[]): PojoModel[] => {
 			allModels.clear()
+			pojoModels.clear()
 			for (const model of models) {
 				addIfMissing(model)
 			}

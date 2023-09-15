@@ -1,6 +1,6 @@
+import { mixedColDef } from "@api/collection-to-model-config"
 import { throw500 } from "@api/common/throw-http"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
@@ -20,10 +20,12 @@ import {
 	nestByTableAndColumnName,
 	notNil,
 	systemCollections,
+	systemModels,
 } from "@zmaj-js/common"
+import { BaseModel, Class, PojoModel, SchemaInfoService } from "@zmaj-js/orm"
 import { objectify } from "radash"
-import { ExpandRelationsService } from "./expand-relations.service"
 import { InitialDbState } from "./InitialDbState"
+import { ExpandRelationsService } from "./expand-relations.service"
 
 /**
  * Keep all needed infra info in memory, so we can access it quickly
@@ -60,6 +62,14 @@ export class InfraStateService {
 	/** Collections */
 	get collections(): Struct<CollectionDef> {
 		return this._collections
+	}
+
+	// temp solution
+	get _collectionsForOrm(): (PojoModel | Class<BaseModel>)[] {
+		return mixedColDef([
+			...Object.values(this._collections).filter((c) => !c.tableName.startsWith("zmaj")),
+			...systemModels,
+		])
 	}
 
 	/**

@@ -39,7 +39,9 @@ export function collectionToModel(collection: CollectionDef): PojoModel {
 export function mixedColDef(
 	collections: (CollectionDef | PojoModel | Class<BaseModel>)[],
 ): (PojoModel | Class<BaseModel>)[] {
-	return collections.map((c) => ("collectionName" in c ? collectionToModel(c) : c))
+	return collections.map((c) => {
+		return "collectionName" in c ? collectionToModel(c) : c
+	})
 }
 
 // export function modelToModelConfig(

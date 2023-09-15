@@ -52,7 +52,7 @@ export class SequelizeService {
 				timestamps: false,
 			},
 		})
-		this.generator = new SequelizeModelsGenerator(modelsStore, logger)
+		this.generator = new SequelizeModelsGenerator(logger)
 		this.repoManager = new SequelizeRepoManager(this, modelsStore)
 		this.schemaInfo = new SequelizeSchemaInfoService(this)
 		this.alterSchema = new SequelizeAlterSchemaService(this, this.schemaInfo, logger)

@@ -1,4 +1,3 @@
-import { mixedColDef } from "@api/collection-to-model-config"
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import type PQueue from "p-queue"
@@ -30,7 +29,7 @@ export class OnInfraChangeService implements OnModuleDestroy, OnModuleInit {
 	async syncAppAndDb(): Promise<void> {
 		await this.infraSchemaSync.sync()
 		await this.infraState.initializeState()
-		this.sequelizeService.generateModels(mixedColDef(Object.values(this.infraState.collections)))
+		this.sequelizeService.generateModels(this.infraState._collectionsForOrm)
 	}
 
 	async executeChange<T>(fn: () => Promise<T>): Promise<T> {

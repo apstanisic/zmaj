@@ -415,8 +415,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       flat:
-        specifier: ^6.0.0
-        version: 6.0.0
+        specifier: ^5.0.2
+        version: 5.0.2
       ioredis:
         specifier: ^5.3.2
         version: 5.3.2
