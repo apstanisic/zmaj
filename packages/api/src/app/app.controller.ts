@@ -34,7 +34,7 @@ export class AppController {
 		})
 		// o2m returns T | T[]
 		return res
-
+		// HELLO
 		return { message: "API successfully reached!" }
 	}
 

@@ -60,6 +60,8 @@ tsconfig.tsbuildinfo
 /packages/*/dist/
 /packages/*/build/
 /examples/*/dist
+dist
+build
 
 # Uploaded files during dev
 /packages/api/files/

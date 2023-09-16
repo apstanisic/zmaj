@@ -28,7 +28,10 @@ export class EmailService implements OnModuleInit {
 	/** Logger */
 	private logger = new Logger(EmailService.name)
 
-	constructor(private config: EmailConfig, private globalConfig: GlobalConfig) {
+	constructor(
+		private config: EmailConfig,
+		private globalConfig: GlobalConfig,
+	) {
 		this.enabled = this.config.enabled
 	}
 

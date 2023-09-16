@@ -34,7 +34,7 @@ async function main() {
 	const rootPackageJsonPath = path.join(root, "./package.json")
 	const rootPackageJson = await readJSON(rootPackageJsonPath)
 
-	const { engines: _engines, ...forRoot } = requiredPackageJsonValues
+	const { engines: _engines, prettier, ...forRoot } = requiredPackageJsonValues
 	await writeJSON(
 		rootPackageJsonPath,
 		{
@@ -83,7 +83,7 @@ function ensureRequiredScripts(packageJson, folderName) {
 		lint: "eslint --fix src",
 		test: `cd ../.. && vitest run --config vitest-unit.config.ts projects/${folderName}`,
 		tsc: "tsc",
-		format: "prettier . --write --ignore-unknown",
+		format: "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
 	}
 
 	if (folderName === "docs") {

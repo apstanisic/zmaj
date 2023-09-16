@@ -17,7 +17,7 @@ describe("RedisService", () => {
 		// For every test we are setting up new implementation that returns current `i` for that test
 		asMock(Redis)
 			.mockClear()
-			.mockImplementation(() => ({ id: ++i, quit: vi.fn() } as any))
+			.mockImplementation(() => ({ id: ++i, quit: vi.fn() }) as any)
 
 		const module = await buildTestModule(RedisService, [
 			{

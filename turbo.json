@@ -3,7 +3,8 @@
 	"globalDependencies": ["tsconfig.json"],
 	"pipeline": {
 		"format": {
-			"inputs": ["//.prettierrc.json"]
+			"inputs": ["../../.prettierrc.json", "../../.prettierignore", "*/**", "!dist/**"],
+			"outputs": []
 		},
 		"tsc": {
 			"dependsOn": ["^tsc"],
