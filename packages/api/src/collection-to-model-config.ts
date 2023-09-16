@@ -1,4 +1,4 @@
-import { CollectionDef } from "@zmaj-js/common"
+import { CollectionDef, snakeCase } from "@zmaj-js/common"
 import { BaseModel, PojoModel } from "@zmaj-js/orm"
 import { mapValues } from "radash"
 import { Class } from "type-fest"
@@ -32,7 +32,7 @@ function collectionToPojoModel(collection: CollectionDef): PojoModel {
 
 	return {
 		name: collection.collectionName,
-		tableName: collection.tableName,
+		tableName: collection.tableName ?? snakeCase(collection.collectionName),
 		fields: collection.fields,
 		relations,
 		disabled: collection.disabled,

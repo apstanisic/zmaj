@@ -40,7 +40,7 @@ import { draw, omit, pick, random, shuffle, unique } from "radash"
 import { DataTypes, QueryInterface } from "sequelize"
 import { configureBlogInfra } from "./blog-demo"
 import mockData from "./const-mocks.json"
-import { initECommerce, storeCollectionDefs } from "./ecommerce-demo"
+import { initECommerce, storeExampleModels } from "./ecommerce-demo"
 
 type Trx = any // Transaction | SqTrx
 
@@ -57,7 +57,7 @@ export class BuildTestDbService {
 
 	async initSqWithMocks(): Promise<void> {
 		this.sq.generateModels(
-			mixedColDef([...systemModels, ...allMockCollectionDefs, ...storeCollectionDefs]),
+			mixedColDef([...systemModels, ...allMockCollectionDefs, ...storeExampleModels]),
 		)
 		await this.sq.init()
 	}

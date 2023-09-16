@@ -3,7 +3,7 @@ export { type DatabaseConfig } from "./database-config.type"
 export { type OrmLogger } from "./logger.type"
 export { BaseModel } from "./model/base-model"
 export { baseModelToPojoModel } from "./model/base-model-to-pojo-model"
-export { type ColumnDataType } from "./model/fields/column-data-type"
+export { columnTypes, type ColumnDataType } from "./model/fields/column-data-type"
 export { type PojoModel } from "./model/pojo-model"
 export type {
 	GetCreateFields,

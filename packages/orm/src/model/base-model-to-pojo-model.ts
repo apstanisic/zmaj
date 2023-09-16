@@ -1,5 +1,5 @@
 import { ModelsState } from "@orm/create-models-store"
-import { ZmajOrmError } from ".."
+import { ZmajOrmError } from "@orm/orm-errors"
 import { BaseModel } from "./base-model"
 import { PojoModel, PojoModelField, PojoModelRelation } from "./pojo-model"
 

@@ -31,7 +31,7 @@ export default defineConfig({
 		// restoreMocks: true,
 		dangerouslyIgnoreUnhandledErrors: false,
 		threads: false,
-		include: ["packages/api/**/*.e2e-spec.ts"],
+		include: ["./packages/api/**/*.e2e-spec.ts"],
 		globalSetup: "./packages/api/src/testing/vitest-e2e-setup.ts",
 		logHeapUsage: true,
 		// isolate: false,

@@ -29,7 +29,8 @@ export class TCommentModel extends BaseModel {
 }
 
 export class TPostTagModel extends BaseModel {
-	name = "posts_tags"
+	name = "postsTags"
+	override tableName = "posts_tags"
 	fields = this.buildFields((f) => ({
 		id: f.int({ isPk: true, hasDefault: true }),
 		postId: f.uuid({ columnName: "post_id" }),
@@ -38,7 +39,8 @@ export class TPostTagModel extends BaseModel {
 }
 
 export class TPostInfoModel extends BaseModel {
-	name = "post_info"
+	name = "postsInfo"
+	override tableName = "posts_info"
 	fields = this.buildFields((f) => ({
 		id: f.uuid({ isPk: true }),
 		postId: f.uuid({ columnName: "post_id" }),

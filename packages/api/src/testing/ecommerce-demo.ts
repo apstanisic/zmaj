@@ -1,14 +1,12 @@
 import {
-	CollectionDef,
 	CollectionMetadata,
 	CollectionMetadataModel,
 	FieldMetadata,
 	FieldMetadataModel,
 	RelationMetadata,
 	RelationMetadataModel,
-	defineCollection,
 } from "@zmaj-js/common"
-import { BaseModel } from "@zmaj-js/orm"
+import { BaseModel, Class } from "@zmaj-js/orm"
 import { SequelizeRepoManager, SequelizeService } from "@zmaj-js/orm-sq"
 import { DataTypes, QueryInterface } from "sequelize"
 
@@ -1113,12 +1111,12 @@ class OrderProductTagModel extends BaseModel {
 	}))
 }
 
-export const storeCollectionDefs: CollectionDef[] = [
-	defineCollection(CategoryModel, {}),
-	defineCollection(TagModel, {}),
-	defineCollection(ProductModel, {}),
-	defineCollection(ReviewModel, {}),
-	defineCollection(OrderModel, {}),
-	defineCollection(ProductTagModel, {}),
-	defineCollection(OrderProductTagModel, {}),
+export const storeExampleModels: Class<BaseModel>[] = [
+	CategoryModel,
+	TagModel,
+	ProductModel,
+	ReviewModel,
+	OrderModel,
+	ProductTagModel,
+	OrderProductTagModel,
 ]

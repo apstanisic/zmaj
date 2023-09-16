@@ -47,7 +47,8 @@ export default defineConfig({
 	/* Configure projects for major browsers */
 	projects: [
 		{ name: "chromium", use: { ...devices["Desktop Chrome"] } },
-		{ name: "webkit", use: { ...devices["Desktop Safari"] } },
+		// TODO Return this
+		// { name: "webkit", use: { ...devices["Desktop Safari"] } },
 		// Comment out until this issues are resolved
 		// https://github.com/microsoft/playwright/issues/20993
 		// https://github.com/microsoft/playwright/issues/21995

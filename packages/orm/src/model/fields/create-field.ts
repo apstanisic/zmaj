@@ -111,7 +111,7 @@ function custom<T>() {
 function array<const Params extends BuildFieldParams>(
 	params: Params,
 ): BuildFieldResult<string[], Params> {
-	return coreBuild(params, "datetime")
+	return coreBuild(params, "array.text")
 }
 
 // This works, but I can't guarantee that value from db will be in this enum
