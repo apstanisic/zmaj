@@ -17,7 +17,7 @@ test.beforeEach(async () => {
 	await sdk.infra.fields.createOne({
 		data: new FieldCreateDto({
 			columnName: "to_update",
-			dataType: "short-text",
+			dataType: "text",
 			collectionName,
 			isNullable: true,
 			isUnique: false,

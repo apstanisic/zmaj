@@ -46,14 +46,15 @@ export async function createTestCollections(): Promise<void> {
 		data: new FieldCreateDto({
 			collectionName: "postsPlw",
 			columnName: "title",
-			dataType: "short-text",
+			dataType: "text",
 		}),
 	})
 	await sdk.infra.fields.createOne({
 		data: new FieldCreateDto({
 			collectionName: "postsPlw",
 			columnName: "body",
-			dataType: "long-text",
+			dataType: "text",
+			componentName: "long-text",
 		}),
 	})
 	await sdk.infra.fields.createOne({
@@ -77,7 +78,8 @@ export async function createTestCollections(): Promise<void> {
 		data: new FieldCreateDto({
 			collectionName: "commentsPlw",
 			columnName: "body",
-			dataType: "long-text",
+			dataType: "text",
+			componentName: "long-text",
 		}),
 	})
 
@@ -94,7 +96,7 @@ export async function createTestCollections(): Promise<void> {
 		data: new FieldCreateDto({
 			collectionName: "tagsPlw",
 			columnName: "name",
-			dataType: "short-text",
+			dataType: "text",
 		}),
 	})
 

@@ -14,7 +14,7 @@
 		"tsc": "turbo run tsc --cache-dir=turbo-cache --filter=./packages/*",
 		"build": "turbo run build --cache-dir=turbo-cache --filter=./packages/*",
 		"test-unit": "vitest run",
-		"test-e2e-api": "vitest run --config vitest.config.e2e.ts",
+		"test-e2e-api": "npx turbo test-e2e-api",
 		"test-e2e-gui": "pnpm --filter '@zmaj-js/e2e-tests' test-gui",
 		"test-packaging": "vitest run scripts/test-packaging.spec.mts",
 		"dev": "npx mprocs",
