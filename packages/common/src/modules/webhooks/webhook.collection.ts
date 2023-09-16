@@ -23,7 +23,7 @@ export const WebhookCollection = codeCollection(WebhookModel, {
 		// was array
 		events: { dbRawDataType: "character varying[]" },
 		httpHeaders: {
-			componentName: "key-value",
+			// componentName: "key-value", // TODO
 		},
 	},
 	relations: {},

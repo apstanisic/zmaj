@@ -50,7 +50,7 @@ test("Show Field", async ({ page }) => {
 	await expect(page.locator(".crud-content")).toContainText(tableName)
 	await expect(page.locator(".crud-content")).toContainText('Field "toShow"')
 	await expect(page.locator(".crud-content")).toContainText("to_show")
-	await expect(page.locator(".crud-content")).toContainText("short-text")
+	await expect(page.locator(".crud-content")).toContainText("text")
 	// Delete button
 	await expect(page.locator(".crud-content")).toContainText("Delete")
 })

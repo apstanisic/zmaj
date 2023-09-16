@@ -63,7 +63,10 @@ test("Create Webhook", async ({ page }) => {
 	await page.getByRole("button", { name: "Save" }).click()
 
 	const created = await getSdk().webhooks.getOne({ filter: { name: hookName } })
-	if (!created?.id) throwErr("432786")
+	if (!created?.id) {
+		console.log({ created })
+		throwErr("432786")
+	}
 
 	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajWebhooks/${created.id}/show`)
 

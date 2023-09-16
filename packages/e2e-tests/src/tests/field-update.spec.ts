@@ -59,7 +59,7 @@ test("Update Field", async ({ page }) => {
 	await expect(page.locator(".crud-content")).toContainText(tableName)
 	await expect(page.locator(".crud-content")).toContainText('Field "toUpdate"')
 	await expect(page.locator(".crud-content")).toContainText("to_update")
-	await expect(page.locator(".crud-content")).toContainText("short-text")
+	await expect(page.locator(".crud-content")).toContainText("text")
 	await expect(page.locator(".crud-content")).toContainText("Updated Label")
 	// Delete button
 	await expect(page.locator(".crud-content")).toContainText("Delete")

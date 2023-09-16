@@ -12,7 +12,7 @@ try {
 	//
 }
 
-const e2e = defineProject({
+const e2eApi = defineProject({
 	plugins: [swc.vite()],
 	test: {
 		name: "api-e2e",
@@ -27,7 +27,7 @@ const e2e = defineProject({
 
 const folders = readdirSync("./packages").filter((f) => f !== "e2e-tests")
 
-const projects = folders.map((folder) =>
+const unitTests = folders.map((folder) =>
 	defineProject({
 		plugins: [swc.vite()],
 		test: {
@@ -43,4 +43,4 @@ const projects = folders.map((folder) =>
 	}),
 )
 
-export default defineWorkspace(projects)
+export default defineWorkspace([...unitTests, e2eApi])

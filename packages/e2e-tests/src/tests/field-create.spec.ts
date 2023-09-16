@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test"
+import { camel } from "radash"
 import { createIdRegex, uuidInsideRegex } from "../utils/create-id-regex.js"
 import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
 import { getSdk } from "../utils/test-sdk.js"
-import { camel } from "radash"
 
 const tableName = "field_test_create_playwright"
 const collectionName = camel(tableName)
@@ -50,7 +50,7 @@ test("Create Field", async ({ page }) => {
 	await expect(page.locator(".crud-content")).toContainText(tableName)
 	await expect(page.locator(".crud-content")).toContainText('Field "testField"')
 	await expect(page.locator(".crud-content")).toContainText("test_field")
-	await expect(page.locator(".crud-content")).toContainText("short-text")
+	await expect(page.locator(".crud-content")).toContainText("text")
 	await expect(page.locator(".crud-content")).toContainText(uuidInsideRegex)
 	// Delete button
 	await expect(page.locator(".crud-content")).toContainText("Delete")
