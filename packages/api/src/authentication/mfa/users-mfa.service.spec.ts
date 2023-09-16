@@ -116,6 +116,7 @@ describe("UsersMfaService", () => {
 			expect(usersService.repo.updateById).toBeCalledWith({
 				id: user.userId,
 				changes: { otpToken: null },
+				overrideCanUpdate: true,
 			})
 		})
 	})
@@ -174,6 +175,7 @@ describe("UsersMfaService", () => {
 			expect(usersService.repo.updateById).toBeCalledWith({
 				id: user.id,
 				changes: { otpToken: "mfa_1234512345" },
+				overrideCanUpdate: true,
 			})
 		})
 	})

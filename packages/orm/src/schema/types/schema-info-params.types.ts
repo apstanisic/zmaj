@@ -1,4 +1,4 @@
-import { Transaction } from "@orm-engine/repo/transaction/transaction.type"
+import { Transaction } from "@orm/repo/transaction/transaction.type"
 import { Except } from "type-fest"
 
 type SchemaInfoCommonParams = { schema?: string; trx?: Transaction }

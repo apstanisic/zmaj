@@ -6,7 +6,7 @@ import { asMock } from "@zmaj-js/common"
 import { AuthUserStub } from "@zmaj-js/test-utils"
 import { AxiosInstance, AxiosRequestConfig } from "axios"
 import { addSeconds, getUnixTime } from "date-fns"
-import EventEmitter from "eventemitter3"
+import { EventEmitter } from "eventemitter3"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { AccessTokenClient } from "./access-token.client"
 

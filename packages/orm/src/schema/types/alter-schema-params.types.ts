@@ -1,5 +1,5 @@
-import { ColumnDataType } from "@orm-engine/model/fields/column-data-type"
-import { Transaction } from "@orm-engine/repo/transaction/transaction.type"
+import { ColumnDataType } from "@orm/model/fields/column-data-type"
+import { Transaction } from "@orm/repo/transaction/transaction.type"
 
 type SharedParams = {
 	schema?: string

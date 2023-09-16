@@ -1,4 +1,4 @@
-import { BaseModel } from "@orm-engine/model/base-model"
+import { BaseModel } from "@orm/model/base-model"
 import { Class } from "type-fest"
 import { OrmRepository } from "./OrmRepository"
 import { RawQueryOptions } from "./raw-query-options.type"

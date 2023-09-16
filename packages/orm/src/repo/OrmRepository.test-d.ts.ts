@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { CommentModel, PostInfoModel, PostModel, TagModel } from "@orm-engine/example-models"
-import { BaseModel } from "@orm-engine/model/base-model"
+import { CommentModel, PostInfoModel, PostModel, TagModel } from "@orm/example-models"
+import { BaseModel } from "@orm/model/base-model"
 import { assertType, beforeEach, describe, it, vi } from "vitest"
 import { OrmRepository } from "./OrmRepository"
 

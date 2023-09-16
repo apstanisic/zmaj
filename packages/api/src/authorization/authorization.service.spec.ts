@@ -11,7 +11,7 @@ import {
 	Permission,
 	asMock,
 	camelCaseKeys,
-	defineCollection,
+	codeCollection,
 	times,
 } from "@zmaj-js/common"
 import { BaseModel } from "@zmaj-js/orm"
@@ -77,15 +77,14 @@ describe("AuthorizationService", () => {
 		})
 
 		it("should get resource name infra collection", () => {
-			const col = defineCollection(
-				class WorldModel extends BaseModel {
-					name = "world"
-					fields = this.buildFields((f) => ({}))
-				},
-				{
-					options: { authzKey: "test.me" },
-				},
-			)
+			class WorldModel extends BaseModel {
+				name = "world"
+				fields = this.buildFields((f) => ({}))
+			}
+			const col = codeCollection(WorldModel, {
+				relations: {},
+				options: { authzKey: "test.me" },
+			})
 			const name = service["getResourceName"](col)
 			expect(name).toEqual("test.me")
 		})

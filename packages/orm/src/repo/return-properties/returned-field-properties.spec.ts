@@ -1,5 +1,5 @@
-import { PostModel } from "@orm-engine/example-models"
-import { BaseModel } from "@orm-engine/model/base-model"
+import { PostModel } from "@orm/example-models"
+import { BaseModel } from "@orm/model/base-model"
 import { describe, expectTypeOf, it } from "vitest"
 import { ReturnedFieldProperties } from "./returned-field-properties"
 

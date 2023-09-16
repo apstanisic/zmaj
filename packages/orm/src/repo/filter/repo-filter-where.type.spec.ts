@@ -1,4 +1,4 @@
-import { PostModel } from "@orm-engine/example-models"
+import { PostModel } from "@orm/example-models"
 import { assertType, describe, it } from "vitest"
 import { RepoFilterWhere } from "./repo-filter-where.type"
 

@@ -318,7 +318,7 @@ describe("CreateManyToManyRelationsService", () => {
 				trx: "TRX_1",
 				data: {
 					// collectionId: colId,
-					createdAt: expect.any(Date),
+					// createdAt: expect.any(Date),
 					fkName: "lfk",
 					hidden: false,
 					id: expect.stringMatching(uuidRegex),
@@ -337,7 +337,7 @@ describe("CreateManyToManyRelationsService", () => {
 				data: [
 					{
 						// collectionId: jId,
-						createdAt: expect.any(Date),
+						// createdAt: expect.any(Date),
 						fkName: "lfk",
 						hidden: false,
 						id: expect.stringMatching(uuidRegex),
@@ -349,7 +349,7 @@ describe("CreateManyToManyRelationsService", () => {
 					},
 					{
 						// collectionId: jId,
-						createdAt: expect.any(Date),
+						// createdAt: expect.any(Date),
 						fkName: "rfk",
 						hidden: false,
 						id: expect.stringMatching(uuidRegex),
@@ -369,7 +369,7 @@ describe("CreateManyToManyRelationsService", () => {
 				trx: "TRX_1",
 				data: {
 					// collectionId: colId,
-					createdAt: expect.any(Date),
+					// createdAt: expect.any(Date),
 					fkName: "rfk",
 					hidden: false,
 					id: expect.stringMatching(uuidRegex),

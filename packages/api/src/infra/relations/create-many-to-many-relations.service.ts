@@ -210,7 +210,7 @@ export class CreateManyToManyRelationsService {
 					propertyName: dto.junction.left.propertyName,
 					template: dto.junction.left.template,
 				}),
-				zodCreate(RelationMetadataSchema, {
+				zodCreate(RelationMetadataSchema.omit({ createdAt: true }), {
 					tableName: dto.junction.table,
 					// collectionId: junctionCollectionId,
 					fkName: dto.right.fkName,

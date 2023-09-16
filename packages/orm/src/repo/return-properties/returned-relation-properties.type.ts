@@ -1,5 +1,5 @@
-import { BaseModel } from "@orm-engine/model/base-model"
-import { ArrayRelationType, RelationType } from "@orm-engine/model/relations/relation-type.types"
+import { BaseModel } from "@orm/model/base-model"
+import { ArrayRelationType, RelationType } from "@orm/model/relations/relation-type.types"
 import { SelectProperties } from "../select-properties/select-properties.type"
 import { ReturnedProperties } from "./returned-properties.type"
 

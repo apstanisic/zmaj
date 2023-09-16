@@ -1,4 +1,4 @@
-import { BaseModel } from "@orm-engine/model/base-model"
+import { BaseModel } from "@orm/model/base-model"
 import { CreateParams } from "./create/CreateParams"
 import { DeleteByIdParams } from "./delete/DeleteByIdParams"
 import { DeleteManyParams } from "./delete/DeleteManyParams"

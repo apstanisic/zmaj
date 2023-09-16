@@ -1,5 +1,5 @@
-import { BaseModel } from "@orm-engine/model/base-model"
-import { GetUpdateFields } from "@orm-engine/model/types/get-model-fields.types"
+import { BaseModel } from "@orm/model/base-model"
+import { GetUpdateFields } from "@orm/model/types/get-model-fields.types"
 import { BaseRepoMethodParams } from "../BaseRepoMethodParams"
 import { IdType } from "../id-type.type"
 

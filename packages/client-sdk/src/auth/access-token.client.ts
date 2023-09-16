@@ -3,7 +3,7 @@ import { SdkState } from "@client-sdk/sdk-state"
 import { isNil, sleep } from "@zmaj-js/common"
 import axios, { AxiosError, AxiosHeaders, AxiosInstance } from "axios"
 import { isFuture, secondsToMilliseconds, subSeconds } from "date-fns"
-import EventEmitter from "eventemitter3"
+import { EventEmitter } from "eventemitter3"
 import { AuthEventFn } from "./auth.client"
 
 /**

@@ -1,4 +1,4 @@
-import { BaseModel } from "@orm-engine/model/base-model"
+import { BaseModel } from "@orm/model/base-model"
 import { SelectProperties } from "../select-properties/select-properties.type"
 import { FindManyOptions } from "./FindManyOptions"
 

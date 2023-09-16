@@ -2,10 +2,10 @@ import { axiosMock } from "@client-sdk/axios.mock"
 import { SdkState } from "@client-sdk/sdk-state"
 import { SdkStateStub } from "@client-sdk/sdk-state.stub"
 import { stubAccessToken, testEnsureCatch } from "@client-sdk/test-utils"
-import { asMock, AuthUser, SignInDto, SignInResponse, SignUpDto } from "@zmaj-js/common"
+import { AuthUser, SignInDto, SignInResponse, SignUpDto, asMock } from "@zmaj-js/common"
 import { AuthUserStub, SignUpDtoStub } from "@zmaj-js/test-utils"
 import { AxiosInstance } from "axios"
-import EventEmitter from "eventemitter3"
+import { EventEmitter } from "eventemitter3"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { AuthClient } from "./auth.client"
 
@@ -219,26 +219,6 @@ describe("AuthClient", () => {
 			return testEnsureCatch({ client: http, fn: async () => client.sendMagicLink("hello") })
 		})
 	})
-
-	// describe("isAdminInitialized", () => {
-	// 	beforeEach(() => {
-	// 		asMock(http.get).mockResolvedValue({ data: { initialized: true } })
-	// 	})
-
-	// 	it("should call api", async () => {
-	// 		await client.isAdminInitialized()
-	// 		expect(http.get).toBeCalledWith("/auth/initialize-admin/is-initialized")
-	// 	})
-
-	// 	it("should return result", async () => {
-	// 		const res = await client.isAdminInitialized()
-	// 		expect(res).toEqual(true)
-	// 	})
-
-	// 	it("should catch api errors", async () => {
-	// 		return testEnsureCatch({ client: http, fn: async () => client.isAdminInitialized() })
-	// 	})
-	// })
 
 	describe("createFirstAdminAccount", () => {
 		let user: AuthUser

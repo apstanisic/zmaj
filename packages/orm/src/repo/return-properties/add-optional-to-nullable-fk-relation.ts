@@ -1,5 +1,5 @@
-import { BaseModel } from "@orm-engine/model/base-model"
-import { RelationBuilderResult } from "@orm-engine/model/relations/relation-builder-result"
+import { BaseModel } from "@orm/model/base-model"
+import { RelationBuilderResult } from "@orm/model/relations/relation-builder-result"
 
 /**
  * If FK is nullable, we will never be sure that this relation will return, so we need to add undefined

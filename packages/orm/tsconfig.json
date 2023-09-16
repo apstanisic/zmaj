@@ -5,7 +5,7 @@
 		"outDir": "./dist",
 		"incremental": false,
 		"paths": {
-			"@orm-engine/*": ["src/*"]
+			"@orm/*": ["src/*"]
 		}
 	},
 	"exclude": ["./dist"],

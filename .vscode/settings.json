@@ -8,7 +8,7 @@
 	// use nestjs icons
 	"material-icon-theme.activeIconPack": "nest",
 	// Unit Vitest config
-	"vitest.commandLine": "npx vitest watch --config vitest-unit.config.ts ",
+	// "vitest.commandLine": "npx vitest watch --config vitest-unit.config.ts ",
 	// Vitest extension is trying to run Playwright tests
 	"vitest.exclude": [
 		"**/node_modules/**",
@@ -21,6 +21,8 @@
 	// E2E Vitest config. For now there is no better way
 	// "vitest.include": ["**/*.{e2e-spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
 	// "vitest.commandLine": "npx vitest watch --config vitest-e2e.config.ts ",
+	"vitest.commandLine": "npx vitest --config vitest.workspace.ts ",
+
 	"cSpell.ignorePaths": [
 		"package-lock.json",
 		"node_modules",

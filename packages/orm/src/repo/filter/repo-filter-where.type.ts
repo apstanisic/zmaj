@@ -1,7 +1,7 @@
-import { BaseModel } from "@orm-engine/model/base-model"
-import { RelationBuilderResult } from "@orm-engine/model/relations/relation-builder-result"
-import { GetModelFields } from "@orm-engine/model/types/get-model-fields.types"
-import { ModelPropertyKeys } from "@orm-engine/model/types/model-property-keys"
+import { BaseModel } from "@orm/model/base-model"
+import { RelationBuilderResult } from "@orm/model/relations/relation-builder-result"
+import { GetModelFields } from "@orm/model/types/get-model-fields.types"
+import { ModelPropertyKeys } from "@orm/model/types/model-property-keys"
 import { RequireExactlyOne, Simplify } from "type-fest"
 
 type Comparisons<T> = RequireExactlyOne<{

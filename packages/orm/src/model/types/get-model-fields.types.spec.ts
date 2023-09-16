@@ -1,4 +1,4 @@
-import { PostInfoModel, PostModel } from "@orm-engine/example-models"
+import { PostInfoModel, PostModel } from "@orm/example-models"
 import { assertType, it } from "vitest"
 import {
 	GetCreateFields,
