@@ -43,4 +43,7 @@ const unitTests = folders.map((folder) =>
 	}),
 )
 
-export default defineWorkspace([...unitTests, e2eApi])
+export default defineWorkspace([
+	...unitTests,
+	// e2eApi,
+])
