@@ -1,6 +1,9 @@
 import { RelationDef } from "@common/modules"
-import { camel, title } from "radash"
+import { BaseModel, ModelRelationKeys } from "@zmaj-js/orm"
+import { camel, mapValues, title } from "radash"
+import { Except } from "type-fest"
 import { v4 } from "uuid"
+import { snakeCase } from ".."
 
 export type RelationBuilderInfo = {
 	thisPropertyName: string
@@ -70,4 +73,17 @@ export function buildRelation(params: RelationBuilderInfo): RelationDef {
 					},
 			  }),
 	}
+}
+
+export function buildRelations<TModel extends BaseModel>(
+	model: TModel,
+	relations: Record<
+		ModelRelationKeys<TModel>,
+		Except<RelationBuilderInfo, "thisTableName" | "thisPropertyName">
+	>,
+): Record<string, RelationDef> {
+	const thisTableName = model.tableName ?? snakeCase(model.name)
+	return mapValues(relations, (val, thisPropertyName: string) =>
+		buildRelation({ ...val, thisTableName, thisPropertyName }),
+	)
 }

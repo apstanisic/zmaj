@@ -6,17 +6,19 @@ import { RelationCreate } from "./RelationCreate"
 import { RelationEdit } from "./RelationEdit"
 import { RelationShow } from "./RelationShow"
 
+const relation = RelationMetadataCollection
+
 export function relationResource(props: { authz: Authz }): JSX.Element {
 	const read = checkSystem(props.authz, "infra", "read")
 	const modify = checkSystem(props.authz, "infra", "modify")
 	return (
 		<Resource
-			name={RelationMetadataCollection.collectionName}
+			name={relation.collectionName}
 			show={read ? RelationShow : undefined}
 			create={modify ? RelationCreate : undefined}
 			edit={modify ? RelationEdit : undefined}
 			options={{
-				label: RelationMetadataCollection.label ?? "Relations",
+				label: relation.label ?? "Relations",
 				authzResource: systemPermissions.infra.resource,
 			}}
 		/>

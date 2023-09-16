@@ -1,10 +1,10 @@
-import { defineCollection } from "@common/collection-builder/define-collection"
+import { codeCollection } from "@common/collection-builder/define-collection"
 import { zodCreate } from "@common/zod"
 import { LayoutConfigSchema } from "../infra-collections/layout/layout-config.schema"
 import { systemPermissions } from "../permissions"
 import { WebhookModel } from "./webhook.model"
 
-export const WebhookCollection = defineCollection(WebhookModel, {
+export const WebhookCollection = codeCollection(WebhookModel, {
 	options: {
 		authzKey: systemPermissions.webhooks.resource,
 		displayTemplate: "{name}",
@@ -26,4 +26,5 @@ export const WebhookCollection = defineCollection(WebhookModel, {
 			componentName: "key-value",
 		},
 	},
+	relations: {},
 })

@@ -2,6 +2,7 @@ import { Class } from "type-fest"
 import { BaseModel } from "./model/base-model"
 import { baseModelToPojoModel } from "./model/base-model-to-pojo-model"
 import { PojoModel } from "./model/pojo-model"
+import { ZmajOrmError } from "./orm-errors"
 
 type ModelParam = Class<BaseModel> | PojoModel
 
@@ -11,6 +12,7 @@ export type ModelsState = {
 	getOne: (model: ModelParam) => PojoModel | BaseModel
 	getOneAsPojo: (model: ModelParam) => PojoModel
 	getAllAsPojo: () => PojoModel[]
+	getByNameAsPojo: (name: string) => PojoModel
 	removeAll: () => void
 }
 
@@ -59,6 +61,14 @@ export function createModelsStore(models: ModelParam[] = []): ModelsState {
 		getOneAsPojo: (model: ModelParam) => {
 			addIfMissing(model)
 			return pojoModels.get(modelName(model))!
+		},
+		// TEMP
+		getByNameAsPojo: (name: string) => {
+			for (const [_name, model] of pojoModels.entries()) {
+				if (name === model.name) return model
+			}
+			// const model = pojoModels.get(name)
+			throw new ZmajOrmError(`No model ${name}`, 4099)
 		},
 		getAllAsPojo: () => {
 			return Array.from(pojoModels.values())

@@ -6,17 +6,19 @@ import { FieldCreate } from "./FieldCreate"
 import { FieldEdit } from "./FieldEdit"
 import { FieldShow } from "./FieldShow"
 
+const field = FieldMetadataCollection
+
 export function fieldResource(props: { authz: Authz }): JSX.Element {
 	const read = checkSystem(props.authz, "infra", "read")
 	const modify = checkSystem(props.authz, "infra", "modify")
 	return (
 		<Resource
-			name={FieldMetadataCollection.collectionName}
+			name={field.collectionName}
 			show={read ? FieldShow : undefined}
 			create={modify ? FieldCreate : undefined}
 			edit={modify ? FieldEdit : undefined}
 			options={{
-				label: FieldMetadataCollection.label ?? "Fields", //
+				label: field.label ?? "Fields", //
 				authzResource: systemPermissions.infra.resource,
 			}}
 		/>

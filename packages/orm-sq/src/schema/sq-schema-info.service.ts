@@ -18,6 +18,7 @@ import {
 	SingleUniqueKey,
 	TableHasNoPkError,
 	UniqueKey,
+	ZmajOrmError,
 } from "@zmaj-js/orm"
 import { SequelizeService } from "../sq.service"
 
@@ -63,6 +64,8 @@ export class SequelizeSchemaInfoService implements SchemaInfoService {
 	// https://stackoverflow.com/a/24089729
 	async hasTable(params: HasTableParams): Promise<boolean> {
 		const { table, ...other } = params
+		if (!table) throw new ZmajOrmError("Missing table name", 59399)
+
 		const query = `
 		select
 		  count(pt.tablename) = 1 as "exists"

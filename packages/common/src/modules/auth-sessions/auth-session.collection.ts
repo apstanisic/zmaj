@@ -1,9 +1,9 @@
 import { zodCreate } from "@common/zod"
-import { defineCollection } from "../../collection-builder/define-collection"
+import { codeCollection } from "../../collection-builder/define-collection"
 import { LayoutConfigSchema } from "../infra-collections"
 import { AuthSessionModel } from "./auth-session.model"
 
-export const AuthSessionCollection = defineCollection(AuthSessionModel, {
+export const AuthSessionCollection = codeCollection(AuthSessionModel, {
 	fields: {
 		createdAt: {
 			label: "Logged In At",
@@ -14,6 +14,10 @@ export const AuthSessionCollection = defineCollection(AuthSessionModel, {
 		user: {
 			label: "User",
 			otherPropertyName: "authSessions",
+			otherColumnName: "id",
+			otherTableName: "zmaj_users",
+			thisColumnName: "user_id",
+			type: "many-to-one",
 		},
 	},
 	options: {

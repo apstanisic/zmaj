@@ -1,11 +1,11 @@
-import { defineCollection } from "@common/collection-builder/define-collection"
+import { codeCollection } from "@common/collection-builder/define-collection"
 import { zodCreate } from "@common/zod"
 import { LayoutConfigSchema } from "../infra-collections/layout/layout-config.schema"
 import { systemPermissions } from "../permissions"
 import { PUBLIC_ROLE_ID } from "../roles"
 import { UserModel } from "./user.model"
 
-export const UserCollection = defineCollection(UserModel, {
+export const UserCollection = codeCollection(UserModel, {
 	options: {
 		authzKey: systemPermissions.users.resource,
 		pkColumn: "id",
@@ -70,14 +70,26 @@ export const UserCollection = defineCollection(UserModel, {
 	},
 	relations: {
 		authSessions: {
+			otherColumnName: "userId",
+			otherTableName: "zmaj_auth_sessions",
+			thisColumnName: "id",
+			type: "one-to-many",
 			hidden: true,
 			otherPropertyName: "user",
 		},
 		files: {
+			otherColumnName: "userId",
+			otherTableName: "zmaj_files",
+			thisColumnName: "id",
+			type: "one-to-many",
 			hidden: true,
 			otherPropertyName: "user",
 		},
 		role: {
+			otherColumnName: "id",
+			otherTableName: "zmaj_roles",
+			thisColumnName: "role_id",
+			type: "many-to-one",
 			label: "Role",
 			otherPropertyName: "user",
 		},

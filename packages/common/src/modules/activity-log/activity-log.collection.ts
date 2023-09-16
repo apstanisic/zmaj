@@ -1,4 +1,4 @@
-import { defineCollection } from "@common/collection-builder/define-collection"
+import { codeCollection } from "@common/collection-builder/define-collection"
 import { zodCreate } from "@common/zod"
 import { LayoutConfigSchema } from "../infra-collections/layout/layout-config.schema"
 import { systemPermissions } from "../permissions"
@@ -8,7 +8,7 @@ import { ActivityLog, ActivityLogModel } from "./activity-log.model"
  * ActivityLog entity
  * Most of the column can not be updated, since that would harm log integrity
  */
-export const ActivityLogCollection = defineCollection(ActivityLogModel, {
+export const ActivityLogCollection = codeCollection(ActivityLogModel, {
 	options: {
 		authzKey: systemPermissions.activityLog.resource,
 		layoutConfig: zodCreate(LayoutConfigSchema, {
@@ -30,5 +30,14 @@ export const ActivityLogCollection = defineCollection(ActivityLogModel, {
 	},
 	fields: {
 		userId: { isForeignKey: true },
+	},
+	relations: {
+		user: {
+			otherPropertyName: "activityLogs",
+			type: "many-to-one",
+			otherColumnName: "id",
+			otherTableName: "zmaj_users",
+			thisColumnName: "user_id",
+		},
 	},
 })

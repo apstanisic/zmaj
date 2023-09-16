@@ -6,17 +6,19 @@ import { FileEdit } from "./FileEdit"
 import { FilesList } from "./FilesList"
 import { FilesShow } from "./FilesShow"
 
+const file = FileCollection
+
 export function filesResource(props: { authz: Authz }): JSX.Element {
 	const read = checkSystem(props.authz, "files", "read")
 	const edit = checkSystem(props.authz, "files", "update")
 	return (
 		<Resource
-			name={FileCollection.collectionName}
+			name={file.collectionName}
 			list={read ? FilesList : undefined}
 			show={read ? FilesShow : undefined}
 			edit={edit ? FileEdit : undefined}
 			options={{
-				label: FileCollection.label ?? undefined,
+				label: file.label ?? undefined,
 				authzResource: systemPermissions.files.resource,
 			}}
 		/>

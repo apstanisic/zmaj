@@ -1,7 +1,7 @@
 import { throw500 } from "@api/common/throw-http"
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { Injectable, Logger } from "@nestjs/common"
-import { DbMigrationCollection } from "@zmaj-js/common"
+import { DbMigrationModel } from "@zmaj-js/common"
 import { SchemaInfoService } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { isString } from "radash"
@@ -46,7 +46,10 @@ export class MigrationsService {
 		await this.repoManager.transaction({
 			type: "SERIALIZABLE",
 			fn: async (trx) => {
-				const done = await this.schemaInfo.hasTable({ trx, table: DbMigrationCollection.tableName })
+				const done = await this.schemaInfo.hasTable({
+					trx,
+					table: new DbMigrationModel().getTableName(),
+				})
 				if (done) return
 				await this.executeMigration({ type: "system", trx: trx }, CreateMigrationsTable.up)
 			},

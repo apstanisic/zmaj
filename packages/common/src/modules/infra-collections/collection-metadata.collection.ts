@@ -1,8 +1,8 @@
-import { defineCollection } from "@common/collection-builder/define-collection"
+import { codeCollection } from "@common/collection-builder/define-collection"
 import { systemPermissions } from "../permissions"
 import { CollectionMetadataModel } from "./collection-metadata.model"
 
-export const CollectionMetadataCollection = defineCollection(CollectionMetadataModel, {
+export const CollectionMetadataCollection = codeCollection(CollectionMetadataModel, {
 	options: {
 		authzKey: systemPermissions.infra.resource,
 		label: "Collections",
@@ -19,6 +19,22 @@ export const CollectionMetadataCollection = defineCollection(CollectionMetadataM
 				primaryTemplate: "{tableName}",
 				secondaryTemplate: "{description}",
 			},
+		},
+	},
+	relations: {
+		colFields: {
+			type: "one-to-many",
+			otherColumnName: "tableName",
+			otherPropertyName: "collection",
+			otherTableName: "zmaj_relation_metadata",
+			thisColumnName: "tableName",
+		},
+		relations: {
+			type: "one-to-many",
+			otherColumnName: "tableName",
+			otherPropertyName: "collection",
+			otherTableName: "zmaj_relation_metadata",
+			thisColumnName: "tableName",
 		},
 	},
 })

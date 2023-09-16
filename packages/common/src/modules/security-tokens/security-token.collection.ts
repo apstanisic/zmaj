@@ -1,8 +1,8 @@
-import { defineCollection } from "@common/collection-builder/define-collection"
+import { codeCollection } from "@common/collection-builder/define-collection"
 import { forbiddenKey } from "../permissions"
 import { SecurityTokenModel } from "./security-token.model"
 
-export const SecurityTokenCollection = defineCollection(SecurityTokenModel, {
+export const SecurityTokenCollection = codeCollection(SecurityTokenModel, {
 	options: { authzKey: forbiddenKey },
 	fields: {
 		userId: { isForeignKey: true }, // security token can't change owner
@@ -10,6 +10,10 @@ export const SecurityTokenCollection = defineCollection(SecurityTokenModel, {
 	relations: {
 		user: {
 			otherPropertyName: "tokens",
+			otherColumnName: "id",
+			otherTableName: "zmaj_users",
+			thisColumnName: "userId",
+			type: "many-to-one",
 		},
 	},
 })

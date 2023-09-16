@@ -1,5 +1,4 @@
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { SchemaInfoService } from "@zmaj-js/orm"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { InternalServerErrorException } from "@nestjs/common"
 import { TestingModule } from "@nestjs/testing"
@@ -9,6 +8,7 @@ import {
 	nestByTableAndColumnName,
 	systemCollections,
 } from "@zmaj-js/common"
+import { SchemaInfoService } from "@zmaj-js/orm"
 import {
 	CollectionMetadataStub,
 	DbColumnStub,
@@ -32,9 +32,9 @@ import {
 import { omit } from "radash"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraService } from "../infra.service"
+import { InitialDbState } from "./InitialDbState"
 import { ExpandRelationsService } from "./expand-relations.service"
 import { InfraStateService } from "./infra-state.service"
-import { InitialDbState } from "./InitialDbState"
 
 const dbState: InitialDbState = structuredClone({
 	columns: nestByTableAndColumnName(allMockColumns),

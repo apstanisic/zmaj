@@ -7,6 +7,8 @@ import { GeneratedEditPage } from "../../generator/pages/GeneratedEditPage"
 import { GeneratedListPage } from "../../generator/pages/GeneratedListPage"
 import { GeneratedShowPage } from "../../generator/pages/GeneratedShowPage"
 
+const user = UserCollection
+
 export function usersResource(props: { authz: Authz }): JSX.Element {
 	const read = checkSystem(props.authz, "users", "read")
 	const edit = checkSystem(props.authz, "users", "update")
@@ -14,13 +16,13 @@ export function usersResource(props: { authz: Authz }): JSX.Element {
 
 	return (
 		<Resource
-			name={UserCollection.collectionName}
+			name={user.collectionName}
 			list={read ? GeneratedListPage : undefined}
 			show={read ? GeneratedShowPage : undefined}
 			create={create ? GeneratedCreatePage : undefined}
 			edit={edit ? GeneratedEditPage : undefined}
 			options={{
-				label: UserCollection.label ?? undefined,
+				label: user.label ?? undefined,
 				authzResource: systemPermissions.users.resource,
 			}}
 		/>

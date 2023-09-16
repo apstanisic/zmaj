@@ -12,6 +12,10 @@ export abstract class BaseModel {
 	tableName?: string
 	abstract fields: AllFieldsInModel
 
+	getTableName(): string {
+		return this.tableName ?? this.name
+	}
+
 	protected buildFields = createFieldBuilder
 
 	readonly disabled = false

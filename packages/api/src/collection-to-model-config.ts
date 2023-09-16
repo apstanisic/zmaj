@@ -3,7 +3,10 @@ import { BaseModel, PojoModel } from "@zmaj-js/orm"
 import { mapValues } from "radash"
 import { Class } from "type-fest"
 
-export function collectionToModel(collection: CollectionDef): PojoModel {
+/**
+ *  This is used when we build collection from DB
+ */
+function collectionToPojoModel(collection: CollectionDef): PojoModel {
 	const relations = mapValues(collection.relations, (rel): PojoModel["relations"][number] => {
 		if (rel.type !== "many-to-many") {
 			return {
@@ -40,7 +43,7 @@ export function mixedColDef(
 	collections: (CollectionDef | PojoModel | Class<BaseModel>)[],
 ): (PojoModel | Class<BaseModel>)[] {
 	return collections.map((c) => {
-		return "collectionName" in c ? collectionToModel(c) : c
+		return "collectionName" in c ? collectionToPojoModel(c) : c
 	})
 }
 

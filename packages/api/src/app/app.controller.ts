@@ -1,5 +1,4 @@
 import { Controller, Get } from "@nestjs/common"
-import { UserModel } from "@zmaj-js/common"
 import { RepoManager } from "@zmaj-js/orm"
 import { GlobalConfig } from "./global-app.config"
 
@@ -16,25 +15,24 @@ export class AppController {
 		// 	.getRepo("comments")
 		// 	.findWhere({ fields: { id: true, postId: true, post: true } })
 		// return user
-		const res = await this.rm.getRepo(UserModel).findWhere({
-			fields: {
-				id: true,
-				email: true,
-				authSessions: {
-					id: true,
-				},
-				files: true,
-				role: {
-					id: true,
-					permissions: true,
-					users: true,
-					// permissions: { action: true },
-				},
-			},
-		})
-		// o2m returns T | T[]
-		return res
-		// HELLO
+		// const res = await this.rm.getRepo(UserModel).findWhere({
+		// 	fields: {
+		// 		id: true,
+		// 		email: true,
+		// 		authSessions: {
+		// 			id: true,
+		// 		},
+		// 		files: true,
+		// 		role: {
+		// 			id: true,
+		// 			permissions: true,
+		// 			users: true,
+		// 			// permissions: { action: true },
+		// 		},
+		// 	},
+		// })
+		// // o2m returns T | T[]
+		// return res
 		return { message: "API successfully reached!" }
 	}
 
