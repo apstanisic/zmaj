@@ -18,7 +18,10 @@ class ChangeSignUpAllowed extends ZodDto(z.object({ allowed: z.boolean() })) {}
 
 @Controller(ep.$base)
 export class SignUpController {
-	constructor(private service: SignUpService, private config: GlobalConfig) {}
+	constructor(
+		private service: SignUpService,
+		private config: GlobalConfig,
+	) {}
 
 	/**
 	 * This does not log in user, you have to make separate request for that

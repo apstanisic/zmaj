@@ -5,7 +5,10 @@ import type { ZodError } from "zod"
  */
 export class StorageError extends Error {
 	httpError = 400
-	constructor(message?: string, public options?: ErrorOptions) {
+	constructor(
+		message?: string,
+		public options?: ErrorOptions,
+	) {
 		super(message, options)
 		this.initName()
 	}

@@ -27,7 +27,10 @@ export class RecordNotFoundError extends ZmajOrmError {
 }
 
 export class InternalOrmProblem extends ZmajOrmError {
-	constructor(public code: number, cause?: any) {
+	constructor(
+		public code: number,
+		cause?: any,
+	) {
 		super("There is a problem with orm library")
 		if (cause) {
 			this.cause = cause
@@ -57,14 +60,20 @@ export class FkDeleteError extends ZmajOrmError {
 
 export class NoPropertyError extends ZmajOrmError {
 	override httpCode: number = 400
-	constructor(property?: string, public code?: number) {
+	constructor(
+		property?: string,
+		public code?: number,
+	) {
 		super(property ? `Property ${property} does not exist` : "Invalid properties requested")
 	}
 }
 
 export class UniqueError<TCause extends { fields: Record<string, unknown> }> extends ZmajOrmError {
 	override httpCode: number = 400
-	constructor(public override cause: TCause, public code: number) {
+	constructor(
+		public override cause: TCause,
+		public code: number,
+	) {
 		super(
 			compositeUnique(
 				Object.keys(cause.fields),

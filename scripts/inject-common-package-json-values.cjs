@@ -18,6 +18,7 @@ async function main() {
 		homepage: "https://github.com/apstanisic/zmaj#readme",
 		license: "MIT",
 		// type: "module",
+		prettier: "../../.prettierrc.json",
 		repository: {
 			type: "git",
 			url: "https://github.com/apstanisic/zmaj.git",
@@ -39,7 +40,7 @@ async function main() {
 		{
 			...rootPackageJson,
 			...forRoot,
-			engines: { ..._engines, pnpm: ">=7.0.0" },
+			engines: { ..._engines, pnpm: ">=8.0.0" },
 		},
 		{ spaces: "\t" },
 	)
@@ -82,6 +83,7 @@ function ensureRequiredScripts(packageJson, folderName) {
 		lint: "eslint --fix src",
 		test: `cd ../.. && vitest run --config vitest-unit.config.ts projects/${folderName}`,
 		tsc: "tsc",
+		format: "prettier . --write --ignore-unknown",
 	}
 
 	if (folderName === "docs") {

@@ -2,8 +2,6 @@
 	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
-	"type": "module",
-	"private": true,
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -14,6 +12,8 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
+	"type": "module",
+	"private": true,
 	"name": "@zmaj-js/orm-playground",
 	"version": "0.2.2",
 	"types": "./dist/index.d.ts",
@@ -33,10 +33,11 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/orm",
+		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/orm-playground",
 		"tsc": "tsc",
 		"build": "tsup --config ../../tsup.config.ts",
-		"dev": "tsup --config ../../tsup.config.ts --watch"
+		"dev": "tsup --config ../../tsup.config.ts --watch",
+		"format": "prettier . --write --ignore-unknown"
 	},
 	"dependencies": {
 		"@zmaj-js/orm": "workspace:*",

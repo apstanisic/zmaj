@@ -16,7 +16,7 @@ export class AppController {
 		// 	.getRepo("comments")
 		// 	.findWhere({ fields: { id: true, postId: true, post: true } })
 		// return user
-		return this.rm.getRepo(UserModel).findWhere({
+		const res = await this.rm.getRepo(UserModel).findWhere({
 			fields: {
 				id: true,
 				email: true,
@@ -32,6 +32,8 @@ export class AppController {
 				},
 			},
 		})
+		// o2m returns T | T[]
+		return res
 
 		return { message: "API successfully reached!" }
 	}

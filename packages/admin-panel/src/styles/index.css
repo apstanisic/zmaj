@@ -6,7 +6,8 @@
 @layer base {
 	@font-face {
 		font-family: "Raleway";
-		src: url("/Raleway-VF.woff2") format("woff2 supports variations"),
+		src:
+			url("/Raleway-VF.woff2") format("woff2 supports variations"),
 			url("/Raleway-VF.woff2") format("woff2-variations");
 		font-weight: 100 1000;
 	}

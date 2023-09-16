@@ -2,7 +2,6 @@
 	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
-	"type": "module",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -13,6 +12,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
+	"type": "module",
 	"name": "@zmaj-js/api",
 	"version": "0.2.3",
 	"types": "./dist/index.d.ts",
@@ -36,7 +36,8 @@
 		"tsc": "tsc",
 		"build": "tsup --config tsup.config.ts",
 		"dev": "tsup --config tsup.config.ts --watch",
-		"serve": "NODE_ENV=dev node --inspect --watch dist/main.js"
+		"serve": "NODE_ENV=dev node --inspect --watch dist/main.js",
+		"format": "prettier . --write --ignore-unknown"
 	},
 	"dependencies": {
 		"@casl/ability": "^6.5.0",

@@ -90,7 +90,7 @@ export class LocalFileStorage extends BaseStorage {
 	/**
 	 * Temp until switch to esm only
 	 */
-	private fileTypeFromFile?: typeof import("file-type")["fileTypeFromFile"]
+	private fileTypeFromFile?: (typeof import("file-type"))["fileTypeFromFile"]
 
 	/**
 	 * Get info about file

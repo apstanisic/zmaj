@@ -2,7 +2,6 @@
 	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
-	"type": "module",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -13,6 +12,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
+	"type": "module",
 	"name": "@zmaj-js/e2e-tests",
 	"version": "0.2.3",
 	"private": true,

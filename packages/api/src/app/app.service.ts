@@ -9,7 +9,10 @@ import { GlobalConfig } from "./global-app.config"
 
 @Injectable()
 export class AppService {
-	constructor(private config: GlobalConfig, private securityConfig: SecurityConfig) {}
+	constructor(
+		private config: GlobalConfig,
+		private securityConfig: SecurityConfig,
+	) {}
 
 	configureApp(app: NestExpressApplication): void {
 		// use custom query parser (qs with custom params)

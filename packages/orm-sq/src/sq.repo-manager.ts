@@ -18,7 +18,10 @@ import { SequelizeService } from "./sq.service"
  * Clearing not implemented????
  */
 export class SequelizeRepoManager extends RepoManager {
-	constructor(private sq: SequelizeService, protected models: ModelsState) {
+	constructor(
+		private sq: SequelizeService,
+		protected models: ModelsState,
+	) {
 		super()
 	}
 
