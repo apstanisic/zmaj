@@ -1,6 +1,6 @@
 import { knexQuery } from "@api/database/knex-query"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
-import { INestApplication, InternalServerErrorException } from "@nestjs/common"
+import { INestApplication } from "@nestjs/common"
 import {
 	CollectionCreateDto,
 	CollectionDef,
@@ -11,7 +11,7 @@ import {
 	throwErr,
 	User,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager, SchemaInfoService } from "@zmaj-js/orm"
+import { OrmRepository, RepoManager, SchemaInfoService, ZmajOrmError } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { camel } from "radash"
 import { DataTypes } from "sequelize"
@@ -197,7 +197,7 @@ describe("CollectionsController e2e", () => {
 			// don't initialize repo if collection disabled
 			expect(() => {
 				return repoManager.getRepo(collection.tableName)
-			}).toThrow(InternalServerErrorException)
+			}).toThrow(ZmajOrmError)
 		})
 	})
 
@@ -227,7 +227,7 @@ describe("CollectionsController e2e", () => {
 			expect(colInState).toBeUndefined()
 
 			// there should be no repo
-			expect(() => repoManager.getRepo(tableName)).toThrow(InternalServerErrorException)
+			expect(() => repoManager.getRepo(tableName)).toThrow(ZmajOrmError)
 
 			// TODO not creating migrations currently
 			// there should be migration that does this, and reverts

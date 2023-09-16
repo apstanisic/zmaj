@@ -12,6 +12,19 @@ try {
 	//
 }
 
+const e2e = defineProject({
+	plugins: [swc.vite()],
+	test: {
+		name: "api-e2e",
+		include: [join("./packages/api/**/*.e2e-spec.ts")],
+		alias: {
+			[`@api`]: resolve(__dirname, `packages/api/src`),
+		},
+		clearMocks: true,
+		globals: false,
+	},
+})
+
 const folders = readdirSync("./packages").filter((f) => f !== "e2e-tests")
 
 const projects = folders.map((folder) =>

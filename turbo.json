@@ -16,10 +16,10 @@
 			"outputs": ["src/**"]
 		},
 		"test": {
-			"inputs": ["src/**", "../../vitest-unit.config.ts", "tsconfig.json"],
+			"inputs": ["src/**", "../../vitest.workspace.ts", "tsconfig.json"],
 			"outputs": []
 		},
-		"//#test-e2e-api": {
+		"test-e2e-api": {
 			"dependsOn": [],
 			"outputs": []
 		},

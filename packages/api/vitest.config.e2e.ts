@@ -19,20 +19,14 @@ export default defineConfig({
 	plugins: [swc.vite()],
 	test: {
 		alias: {
-			"@client-sdk": resolve(__dirname, "packages/client-sdk/src"),
-			"@storage-core": resolve(__dirname, "packages/storage-core/src"),
-			"@storage-s3": resolve(__dirname, "packages/storage-s3/src"),
-			"@common": resolve(__dirname, "packages/common/src"),
-			"@api": resolve(__dirname, "packages/api/src"),
+			"@api": resolve(__dirname, "src"),
 		},
 		clearMocks: true,
 		globals: false,
-		// mockReset: true,
-		// restoreMocks: true,
 		dangerouslyIgnoreUnhandledErrors: false,
 		threads: false,
-		include: ["./packages/api/**/*.e2e-spec.ts"],
-		globalSetup: "./packages/api/src/testing/vitest-e2e-setup.ts",
+		include: ["**/*.e2e-spec.ts"],
+		globalSetup: "./src/testing/vitest-e2e-setup.ts",
 		logHeapUsage: true,
 		// isolate: false,
 		// vitest sharp problem

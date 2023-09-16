@@ -33,7 +33,9 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/api",
+		"test": "cd ../.. && vitest run packages/api",
+		"test-e2e-api": " vitest run --config vitest.config.e2e.ts",
+		"test-e2e-api-watch": " vitest watch --config vitest.config.e2e.ts",
 		"tsc": "tsc",
 		"build": "tsup --config tsup.config.ts",
 		"dev": "tsup --config tsup.config.ts --watch",

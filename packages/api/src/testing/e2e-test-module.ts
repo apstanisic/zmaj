@@ -10,6 +10,7 @@ import { Test } from "@nestjs/testing"
 import { ADMIN_ROLE_ID, CollectionMetadataModel, User, UserCreateDto, merge } from "@zmaj-js/common"
 import { BaseModel, OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
+import { join } from "node:path"
 import { Class } from "type-fest"
 import { v4 } from "uuid"
 import { predefinedApiConfigs } from "../predefined-configs-const"
@@ -18,7 +19,10 @@ import { TestingUtilsModule } from "./testing-utils.module"
 export async function getE2ETestModule(
 	override: Partial<ConfigureAppParams> = {},
 ): Promise<INestApplication> {
+	const envPath = join(__dirname, "../../../..", ".env.test")
 	const combined: ConfigureAppParams = merge(predefinedApiConfigs.test, override ?? {})
+	combined.config ??= {}
+	combined.config.envPath = envPath
 	const module = await Test.createTestingModule({
 		imports: [AppModule.register(combined), TestingUtilsModule],
 	}).compile()

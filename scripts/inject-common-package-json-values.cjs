@@ -79,9 +79,8 @@ main()
 function ensureRequiredScripts(packageJson, folderName) {
 	const requiredScripts = {
 		prebuild: "rimraf dist",
-		// lint: "eslint --fix --ext .ts,.tsx,.cts,.mts,.js,.cjs,.mjs src",
 		lint: "eslint --fix src",
-		test: `cd ../.. && vitest run --config vitest-unit.config.ts projects/${folderName}`,
+		test: `cd ../.. && vitest run packages/${folderName}`,
 		tsc: "tsc",
 		format: "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
 	}

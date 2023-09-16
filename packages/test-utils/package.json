@@ -34,7 +34,7 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/test-utils",
+		"test": "cd ../.. && vitest run packages/test-utils",
 		"tsc": "tsc",
 		"build": "tsup --config ../../tsup.config.ts",
 		"dev": "tsup --config ../../tsup.config.ts --watch",

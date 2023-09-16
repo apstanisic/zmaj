@@ -99,7 +99,7 @@ describe("RelationController e2e", () => {
 				.send(
 					new FieldCreateDto({
 						columnName: newField,
-						dataType: "long-text",
+						dataType: "text",
 						isNullable: true,
 						collectionName: collectionName,
 					}),

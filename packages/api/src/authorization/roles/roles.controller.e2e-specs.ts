@@ -28,7 +28,7 @@ describe("RoleController e2e", () => {
 		user = await all.createUser()
 	})
 	afterAll(async () => {
-		all.deleteUser(user)
+		await all.deleteUser(user)
 		await app.close()
 	})
 

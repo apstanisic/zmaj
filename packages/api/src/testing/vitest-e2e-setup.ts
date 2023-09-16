@@ -3,13 +3,16 @@ import { sleep } from "@zmaj-js/common"
 import { createModelsStore } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { execa } from "execa"
+import { join } from "node:path"
 import { getTestEnvValues } from "./get-test-env-values"
 
-export default async function setupAndTeardown(): Promise<void | (() => Promise<void>)> {
-	const env = getTestEnvValues()
+const root = join(__dirname, "../../../..")
 
-	await execa("make", ["docker_test_down"])
-	await execa("make", ["docker_test_up"])
+export default async function setupAndTeardown(): Promise<void | (() => Promise<void>)> {
+	const env = getTestEnvValues(root)
+
+	await execa("make", ["docker_test_down"], { cwd: root })
+	await execa("make", ["docker_test_up"], { cwd: root })
 	// must sleep here, otherwise it won't connect
 	// I think that pg needs to setup, even tough container is running
 	await sleep(3000)
@@ -44,7 +47,7 @@ export default async function setupAndTeardown(): Promise<void | (() => Promise<
 
 	return async () => {
 		await sq.onModuleDestroy()
-		await execa("make", ["docker_test_down"])
+		await execa("make", ["docker_test_down"], { cwd: root })
 		console.log("Docker containers successfully stopped")
 	}
 }

@@ -7,6 +7,7 @@ import { getTestEnvValues } from "@api/testing/get-test-env-values"
 import { DbMigration, DbMigrationModel, systemModels, uuidRegex } from "@zmaj-js/common"
 import { AlterSchemaService, RepoManager, SchemaInfoService, createModelsStore } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
+import { join } from "node:path"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { ConfigService } from "../config/config.service"
 import { type UserMigration } from "./migrations.types"
@@ -28,11 +29,16 @@ describe("MigrationsService e2e", () => {
 	let repoManager: BootstrapRepoManager
 	//
 	beforeAll(async () => {
-		getTestEnvValues()
+		const root = join(process.cwd(), "../..")
+		console.log({ root })
+
+		getTestEnvValues(root)
 		sq = new SequelizeService(
 			new DatabaseConfig(
 				{},
-				new ConfigService(new ConfigModuleConfig({ useEnvFile: true, envPath: ".env.test" })),
+				new ConfigService(
+					new ConfigModuleConfig({ useEnvFile: true, envPath: join(root, ".env.test") }),
+				),
 			),
 			console,
 			createModelsStore(),
