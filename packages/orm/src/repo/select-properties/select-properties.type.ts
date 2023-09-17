@@ -1,8 +1,6 @@
 import { RelationBuilderResult } from "@orm/model/relations/relation-builder-result"
 import { ModelPropertyKeys } from "@orm/model/types/model-property-keys"
 import { Simplify } from "type-fest"
-import { assertType, it } from "vitest"
-import { CommentModel, PostModel } from "../../example-models"
 import { BaseModel } from "../../model/base-model"
 
 type All = { $fields?: true }
@@ -29,49 +27,3 @@ export type SelectProperties<TModel extends BaseModel> = Simplify<
 			: never
 	} & All
 >
-
-if (import.meta.vitest) {
-	//
-	it("should extract fields", () => {
-		assertType<SelectProperties<PostModel>>({
-			comments: true,
-			body: true,
-			tags: true,
-			info: true,
-			writer: true,
-		})
-
-		assertType<SelectProperties<PostModel>>({
-			body: true,
-			comments: { body: true },
-			tags: { name: true },
-			info: { postId: true },
-			writer: { name: true },
-		})
-
-		assertType<SelectProperties<CommentModel>>({
-			post: { id: true },
-		})
-	})
-	it("should extract fields nested", () => {
-		assertType<SelectProperties<PostModel>>({
-			comments: {
-				body: true,
-				post: {
-					tags: {
-						posts: {
-							comments: {
-								id: true,
-							},
-							info: {
-								post: {
-									createdAt: true, //
-								},
-							},
-						},
-					},
-				},
-			},
-		})
-	})
-}

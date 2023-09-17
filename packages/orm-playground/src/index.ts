@@ -37,6 +37,10 @@ async function run(): Promise<void> {
 	})
 	// @ts-expect-error Should be undefined, cause we can't be certain that it exist
 	post1.info.additionalInfo
+
+	post1.info?.additionalInfo
+	post1.tags.map((t) => t.id)
+	post1.comments.at(0)?.body.replace("", "")
 	// const post1 = result[0]!
 	if (falsy) {
 		post1.title
