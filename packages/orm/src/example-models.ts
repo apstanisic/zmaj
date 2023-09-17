@@ -1,4 +1,5 @@
 import { BaseModel } from "./model/base-model"
+import { OrmRepository } from "./repo/OrmRepository"
 
 export class WriterModel extends BaseModel {
 	name = "writers"
@@ -75,4 +76,15 @@ export class PostInfoModel extends BaseModel {
 		hiddenField: f.text({ canRead: false }),
 	}))
 	post = this.oneToOneOwner(() => PostModel, { fkField: "postId" })
+}
+
+const repo = {} as OrmRepository<PostModel>
+const f = false as boolean
+
+async function test() {
+	const post = await repo.findOneOrThrow({
+		fields: { id: true, writerId: true, $fields: true, info: true, writer: true },
+	})
+	post.info?.additionalInfo
+	post.writer.name
 }

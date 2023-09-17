@@ -29,6 +29,6 @@ export type HandleReturnField<
 	? TKey extends keyof NonNullable<TFields>
 		? NonNullable<TFields>[TKey] extends true
 			? GetReadFields<TModel, TAddHidden>[TKey]
-			: GetReadFields<TModel, TAddHidden>[TKey] | undefined
-		: Required<GetReadFields<TModel, TAddHidden>>[TKey] | undefined
+			: never //GetReadFields<TModel, TAddHidden>[TKey] | undefined
+		: never // Required<GetReadFields<TModel, TAddHidden>>[TKey] | undefined
 	: never

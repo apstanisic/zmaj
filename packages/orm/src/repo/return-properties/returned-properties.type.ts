@@ -37,11 +37,10 @@ export type ReturnedProperties<
 							| AddOptionalNullableFkRelation<key, TModel>
 							| AddOptionalToRefOneToOne<TRelType>
 					: never
-				:
-						| undefined
-						| ReturnedRelationProperties<TInner, undefined, TIncludeHidden, TRelType>
-						| AddOptionalNullableFkRelation<key, TModel>
-						| AddOptionalToRefOneToOne<TRelType>
+				: // | ReturnedRelationProperties<TInner, undefined, TIncludeHidden, TRelType>
+				  // | AddOptionalNullableFkRelation<key, TModel>
+				  // | AddOptionalToRefOneToOne<TRelType>
+				  never
 			: never
 		: never
 }>
