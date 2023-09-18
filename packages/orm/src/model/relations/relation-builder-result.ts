@@ -5,17 +5,17 @@ import { RelationType } from "./relation-type.types"
 type ManyToOneParams<TFkField extends string | number | symbol | undefined> = {
 	fkField: NonNullable<TFkField>
 	referencedField?: string
-	type: Extract<RelationType, "many-to-one" | "owner-one-to-one">
+	type: "many-to-one" | "owner-one-to-one"
 }
 
 type OneToManyParams = {
 	fkField: string
 	referencedField?: string
-	type: Extract<RelationType, "one-to-many" | "ref-one-to-one">
+	type: "one-to-many" | "ref-one-to-one"
 }
 
 type ManyToManyParams = {
-	type: Extract<RelationType, "many-to-many">
+	type: "many-to-many"
 	junction: () => Class<BaseModel>
 	fields: [string, string]
 }
@@ -27,13 +27,14 @@ export class RelationBuilderResult<
 > {
 	constructor(
 		modelFn: () => Class<TReferencedModel>,
-		params: TRelationType extends ManyToManyParams["type"]
-			? ManyToManyParams
-			: TRelationType extends OneToManyParams["type"]
-			? OneToManyParams
-			: TRelationType extends ManyToOneParams<TFkColumnName>["type"]
-			? ManyToOneParams<TFkColumnName>
-			: never,
+		params: any,
+		// TRelationType["type"] extends ManyToManyParams["type"]
+		// 	? ManyToManyParams
+		// 	: TRelationType["type"] extends OneToManyParams["type"]
+		// 	? OneToManyParams
+		// 	: TRelationType["type"] extends ManyToOneParams<TFkColumnName>["type"]
+		// 	? ManyToOneParams<TFkColumnName>
+		// 	: never,
 	) {
 		this.options = params
 		this.modelFn = modelFn

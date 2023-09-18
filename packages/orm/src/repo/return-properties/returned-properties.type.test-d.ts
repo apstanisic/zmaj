@@ -5,17 +5,19 @@ import { assertType, describe, expectTypeOf, it } from "vitest"
 import { ReturnedFieldProperties } from "./returned-field-properties"
 import { ReturnedProperties } from "./returned-properties.type"
 
+const NEVER: never = undefined as never
+
 const emptyPost = {
-	title: undefined,
-	writer: undefined,
-	body: undefined,
-	comments: undefined,
-	createdAt: undefined,
-	id: undefined,
-	info: undefined,
-	likes: undefined,
-	tags: undefined,
-	writerId: undefined,
+	title: NEVER,
+	writer: NEVER,
+	body: NEVER,
+	comments: NEVER,
+	createdAt: NEVER,
+	id: NEVER,
+	info: NEVER,
+	likes: NEVER,
+	tags: NEVER,
+	writerId: NEVER,
 }
 
 it("should return fields if no item provided", () => {
@@ -184,13 +186,13 @@ it("should work deep", () => {
 	expectTypeOf<ReturnedProperties<PostModel, { title: true; writer: { name: true } }, false>>({
 		...emptyPost,
 		title: "string",
-		writer: { name: "hello", id: undefined, posts: undefined },
+		writer: { name: "hello", id: NEVER, posts: NEVER },
 	})
 
 	expectTypeOf<ReturnedProperties<PostModel, { title: true; writer: true }, false>>({
 		...emptyPost,
 		title: "string",
-		writer: { name: "hello", id: "id", posts: undefined },
+		writer: { name: "hello", id: "id", posts: NEVER },
 	})
 
 	expectTypeOf<
@@ -198,13 +200,13 @@ it("should work deep", () => {
 	>({
 		...emptyPost,
 		title: "string",
-		tags: [{ id: undefined, name: undefined, posts: [{ ...emptyPost, id: "test" }] }],
+		tags: [{ id: NEVER, name: NEVER, posts: [{ ...emptyPost, id: "test" }] }],
 	})
 
 	expectTypeOf<ReturnedProperties<PostModel, { title: true; comments: true }, false>>({
 		...emptyPost,
 		title: "string",
-		comments: [{ body: "", id: "", post: undefined, postId: "" }],
+		comments: [{ body: "", id: "", post: NEVER, postId: "" }],
 	})
 })
 
@@ -216,10 +218,10 @@ it("should allow to pass $fields to get every readable field", () => {
 		createdAt: new Date(),
 		id: "",
 		likes: 5,
-		writer: undefined,
-		comments: undefined,
-		info: undefined,
-		tags: undefined,
+		writer: NEVER,
+		comments: NEVER,
+		info: NEVER,
+		tags: NEVER,
 		writerId: "",
 	})
 
@@ -230,10 +232,10 @@ it("should allow to pass $fields to get every readable field", () => {
 		createdAt: new Date(),
 		id: "",
 		likes: 5,
-		writer: { id: "", name: "", posts: undefined },
-		comments: undefined,
-		info: undefined,
-		tags: undefined,
+		writer: { id: "", name: "", posts: {} as never },
+		comments: {} as never,
+		info: {} as never,
+		tags: {} as never,
 		writerId: "",
 	})
 })
@@ -251,4 +253,32 @@ it("should respect hidden with $fields", () => {
 		id: "",
 		name: undefined,
 	})
+})
+
+it("should always return optional for ref o2o", () => {
+	// If fk is not located in it's table, we cannot guarantee that it exists.
+	// For example Writer is created, and they can have 1 post. But that post might not yet exist
+	class Post extends BaseModel {
+		override name = "post"
+		fields = this.buildFields((f) => ({
+			id: f.uuid({ isPk: true }),
+			title: f.text({}),
+			writerId: this.field.uuid({}),
+		}))
+		writer = this.oneToOneOwner(() => Writer, { fkField: "writerId" })
+	}
+
+	class Writer extends BaseModel {
+		override name = "writer"
+		fields = this.buildFields((f) => ({
+			id: this.field.uuid({ isPk: true }),
+		}))
+
+		post = this.oneToOneRef(() => Post, { fkField: "writerId" })
+	}
+
+	type Result = ReturnedProperties<Writer, { post: true }, true>
+
+	expectTypeOf<Result["post"]>(undefined)
+	expectTypeOf<Result["post"]>({ id: "", title: "", writer: NEVER, writerId: "" })
 })

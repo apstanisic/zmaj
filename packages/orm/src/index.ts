@@ -5,6 +5,12 @@ export { BaseModel } from "./model/base-model"
 export { baseModelToPojoModel } from "./model/base-model-to-pojo-model"
 export { columnTypes, type ColumnDataType } from "./model/fields/column-data-type"
 export { type PojoModel } from "./model/pojo-model"
+export { RelationBuilderResult } from "./model/relations/relation-builder-result"
+export {
+	type ArrayRelationType,
+	type RelationType,
+	type SingleRelationType,
+} from "./model/relations/relation-type.types"
 export type {
 	GetCreateFields,
 	GetModelFields,

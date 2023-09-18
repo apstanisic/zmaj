@@ -7,8 +7,8 @@ export type ReturnedRelationProperties<
 	TInnerModel extends BaseModel,
 	TInnerFields extends SelectProperties<TInnerModel> | undefined,
 	TAddHidden extends boolean,
-	TRelationType extends RelationType,
-> = TRelationType extends ArrayRelationType
+	TRel extends RelationType,
+> = TRel extends ArrayRelationType
 	? SubRelationInner<TInnerModel, TInnerFields, TAddHidden>[]
 	: SubRelationInner<TInnerModel, TInnerFields, TAddHidden>
 

@@ -1,8 +1,8 @@
-import { group, mapValues, objectify } from "radash"
-import { DbColumn } from "../database"
 import { Struct } from "@common/types"
-import { FieldMetadata } from "./field-metadata.model"
+import { group, mapValues, objectify } from "radash"
+import { DbColumn } from "../database/db-column.type"
 import { FieldDef } from "./field-def.type"
+import { FieldMetadata } from "./field-metadata.model"
 
 /**
  * Returns in format result['comments']['post_id']

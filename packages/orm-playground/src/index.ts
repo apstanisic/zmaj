@@ -35,6 +35,7 @@ async function run(): Promise<void> {
 			info: { additionalInfo: true },
 		},
 	})
+
 	// @ts-expect-error Should be undefined, cause we can't be certain that it exist
 	post1.info.additionalInfo
 

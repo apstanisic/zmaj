@@ -5,11 +5,10 @@ import {
 	CollectionMetadataModel,
 	FieldMetadata,
 	FieldMetadataModel,
-	ForeignKey,
 	RelationMetadata,
 	RelationMetadataModel,
 } from "@zmaj-js/common"
-import { SchemaInfoService, Transaction } from "@zmaj-js/orm"
+import { ForeignKey, SchemaInfoService, Transaction } from "@zmaj-js/orm"
 import { alphabetical, unique } from "radash"
 
 @Injectable()

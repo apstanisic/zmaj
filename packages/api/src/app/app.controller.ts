@@ -34,7 +34,7 @@ export class AppController {
 		// a.authSessions
 		// b.ff
 
-		const res = await this.rm.getRepo(UserModel).findOne({
+		const res = await this.rm.getRepo(UserModel).findOneOrThrow({
 			fields: {
 				id: true,
 				email: true,
@@ -44,12 +44,21 @@ export class AppController {
 				files: true,
 				role: {
 					id: true,
-					permissions: true,
-					users: true,
+					requireMfa: true,
+					// permissions: true,
+					// users: true,
 					// permissions: { action: true },
 				},
 			},
 		})
+		const aaa = new UserModel().authSessions
+		// const role = res?.role
+		res.role.requireMfa
+		res.authSessions.push
+
+		// res?.authSessions.filter
+		// res?.role.filter
+		// const rr = res?.role
 		// INFERENCE NOT WORKING. STRING NOT POSSIBLE
 		// SHOULD BE ARRAY, NOT T | T[]
 		// IT KEEPS GENERIC ALL VERSION
