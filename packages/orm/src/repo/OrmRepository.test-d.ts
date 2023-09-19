@@ -36,16 +36,22 @@ describe("Fields", () => {
 		})
 		it("should not return relations by default", async () => {
 			const result = await postRepo.findOneOrThrow({})
-			// @ts-expect-error
-			assertType<any[]>(result.comments)
-			// @ts-expect-error
-			assertType<any[]>(result.tags)
-			// @ts-expect-error
-			assertType<{}>(result.info)
 
-			assertType<any[] | undefined>(result.comments)
-			assertType<any[] | undefined>(result.tags)
-			assertType<{} | undefined>(result.info)
+			assertType<never>(result.comments)
+			assertType<never>(result.tags)
+			assertType<never>(result.info)
+			assertType<never>(result.writer)
+
+			// // @ts-expect-error
+			// assertType<any[]>(result.comments)
+			// // @ts-expect-error
+			// assertType<any[]>(result.tags)
+			// // @ts-expect-error
+			// assertType<{}>(result.info)
+
+			// assertType<any[] | undefined>(result.comments)
+			// assertType<any[] | undefined>(result.tags)
+			// assertType<{} | undefined>(result.info)
 		})
 
 		it("should return selected fields", () => {
@@ -54,16 +60,20 @@ describe("Fields", () => {
 		})
 
 		it("should not return non selected fields", () => {
-			// @ts-expect-error
-			assertType<string>(result.body)
-			// @ts-expect-error
-			assertType<string>(result.id)
-			// @ts-expect-error
-			assertType<Date>(result.createdAt)
+			assertType<never>(result.body)
+			assertType<never>(result.id)
+			assertType<never>(result.createdAt)
 
-			assertType<string | undefined>(result.body)
-			assertType<string | undefined>(result.id)
-			assertType<Date | undefined>(result.createdAt)
+			// // @ts-expect-error
+			// assertType<string>(result.body)
+			// // @ts-expect-error
+			// assertType<string>(result.id)
+			// // @ts-expect-error
+			// assertType<Date>(result.createdAt)
+
+			// assertType<string | undefined>(result.body)
+			// assertType<string | undefined>(result.id)
+			// assertType<Date | undefined>(result.createdAt)
 		})
 	})
 
@@ -84,13 +94,16 @@ describe("Fields", () => {
 		})
 
 		it("should not return not specified fields", () => {
-			// @ts-expect-error
-			assertType<string>(result.post.id)
-			// @ts-expect-error
-			assertType<string>(result.post.body)
+			assertType<never>(result.post.id)
+			assertType<never>(result.post.body)
 
-			assertType<string | undefined>(result.post.id)
-			assertType<string | undefined>(result.post.body)
+			// // @ts-expect-error
+			// assertType<string>(result.post.id)
+			// // @ts-expect-error
+			// assertType<string>(result.post.body)
+
+			// assertType<string | undefined>(result.post.id)
+			// assertType<string | undefined>(result.post.body)
 		})
 	})
 
@@ -111,13 +124,16 @@ describe("Fields", () => {
 		})
 
 		it("should not return not specified fields", () => {
-			// @ts-expect-error
-			assertType<string>(result.post.id)
-			// @ts-expect-error
-			assertType<string>(result.post.body)
+			assertType<never>(result.post.id)
+			assertType<never>(result.post.body)
 
-			assertType<string | undefined>(result.post.id)
-			assertType<string | undefined>(result.post.body)
+			// // @ts-expect-error
+			// assertType<string>(result.post.id)
+			// // @ts-expect-error
+			// assertType<string>(result.post.body)
+
+			// assertType<string | undefined>(result.post.id)
+			// assertType<string | undefined>(result.post.body)
 		})
 	})
 
@@ -140,30 +156,34 @@ describe("Fields", () => {
 					id: true,
 				},
 			})
+			assertType<never>(result.comments)
 
-			// @ts-expect-error
-			assertType<unknown[]>(result.comments)
+			// // @ts-expect-error
+			// assertType<unknown[]>(result.comments)
 
-			assertType<unknown[] | undefined>(result.comments)
+			// assertType<unknown[] | undefined>(result.comments)
 		})
 
 		it("should return selected fields", () => {
 			const comment = post.comments[0]!
 
 			assertType<string>(comment.id)
-			// @ts-expect-error
-			assertType<string>(comment.postId)
+			// // @ts-expect-error
+			// assertType<string>(comment.postId)
+			assertType<never>(comment.postId)
 		})
 
 		it("should not return not specified fields", () => {
 			const comment = post.comments[0]!
 
 			assertType<string>(comment.id)
-			// @ts-expect-error
-			assertType<string>(comment.postId)
+			// // @ts-expect-error
+			// assertType<string>(comment.postId)
+			assertType<never>(comment.postId)
 
-			// @ts-expect-error
-			assertType<string>(comment.body)
+			// // @ts-expect-error
+			// assertType<string>(comment.body)
+			assertType<never>(comment.body)
 		})
 	})
 

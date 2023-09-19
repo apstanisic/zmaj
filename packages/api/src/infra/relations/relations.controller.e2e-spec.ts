@@ -2,9 +2,7 @@ import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-modu
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
 import {
-	DbColumn,
 	DbMigrationModel,
-	ForeignKey,
 	RelationCreateDto,
 	RelationDef,
 	RelationMetadataModel,
@@ -13,7 +11,7 @@ import {
 	User,
 	UUID,
 } from "@zmaj-js/common"
-import { OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
+import { DbColumn, ForeignKey, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { camel } from "radash"
 import { DataTypes } from "sequelize"
