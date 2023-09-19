@@ -3,7 +3,6 @@ import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
-	DbColumn,
 	FieldMetadata,
 	FieldMetadataModel,
 	FieldMetadataSchema,
@@ -11,7 +10,7 @@ import {
 	nestByTableAndColumnName,
 	zodCreate,
 } from "@zmaj-js/common"
-import { GetCreateFields, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
+import { DbColumn, GetCreateFields, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { title } from "radash"
 import { InfraConfig } from "../infra.config"
 

@@ -2,14 +2,13 @@ import { throw500 } from "@api/common/throw-http"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionDef,
-	CompositeUniqueKey,
-	expandRelation,
-	ForeignKey,
 	CollectionMetadata,
-	RelationMetadata,
-	RelationDef,
 	FieldMetadata,
+	RelationDef,
+	RelationMetadata,
+	expandRelation,
 } from "@zmaj-js/common"
+import { CompositeUniqueKey, ForeignKey } from "@zmaj-js/orm"
 
 type ExpandRelationParams = {
 	allRelations: readonly RelationMetadata[]

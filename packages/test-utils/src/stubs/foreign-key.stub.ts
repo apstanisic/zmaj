@@ -1,5 +1,6 @@
 import { rand, randBoolean, randDatabaseColumn, randWord } from "@ngneat/falso"
-import { ForeignKey, ForeignKeySchema, onColumnDeleteActions, stub } from "@zmaj-js/common"
+import { ForeignKeySchema, onColumnDeleteActions, stub } from "@zmaj-js/common"
+import { ForeignKey } from "@zmaj-js/orm"
 
 export const ForeignKeyStub = stub<ForeignKey>(
 	() => ({

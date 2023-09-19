@@ -1,4 +1,4 @@
-import { CompositeUniqueKey } from "@zmaj-js/common"
+import { CompositeUniqueKey } from "@zmaj-js/orm"
 import { mockCollectionConsts, mockCompositeUniqueKeyId } from "./infra-mock-consts.js"
 
 export const mockCompositeUniqueKeys = {

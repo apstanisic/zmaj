@@ -1,5 +1,6 @@
 import { randBoolean, randDatabaseColumn, randDatabaseType, randWord } from "@ngneat/falso"
-import { DbColumn, DbColumnSchema, stub } from "@zmaj-js/common"
+import { DbColumnSchema, stub } from "@zmaj-js/common"
+import { DbColumn } from "@zmaj-js/orm"
 
 export const DbColumnStub = stub<DbColumn>(
 	() => ({

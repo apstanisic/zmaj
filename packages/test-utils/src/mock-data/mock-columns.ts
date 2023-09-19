@@ -1,4 +1,4 @@
-import { DbColumn } from "@zmaj-js/common"
+import { DbColumn } from "@zmaj-js/orm"
 import { DbColumnStub } from "../stubs/db-column.stub.js"
 import { mockCollectionConsts as c, mockFieldsConsts as f } from "./infra-mock-consts.js"
 
