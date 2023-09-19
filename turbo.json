@@ -33,6 +33,7 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
+			"inputs": ["src/**", "tsconfig.json"],
 			"outputs": ["dist/**", "build/**"]
 		}
 	}

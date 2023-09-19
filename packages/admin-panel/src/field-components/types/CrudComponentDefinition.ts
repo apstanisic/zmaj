@@ -1,4 +1,5 @@
-import { ColumnDataType, Comparison, FieldDef } from "@zmaj-js/common"
+import { Comparison, FieldDef } from "@zmaj-js/common"
+import { ColumnDataType } from "@zmaj-js/orm"
 import { ReactNode } from "react"
 import { InputFieldProps } from "./InputFieldProps"
 import { ListFieldProps } from "./ListFieldProps"

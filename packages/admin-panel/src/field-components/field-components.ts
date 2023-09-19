@@ -1,4 +1,5 @@
-import { castArray, ColumnDataType, Struct } from "@zmaj-js/common"
+import { castArray, Struct } from "@zmaj-js/common"
+import { ColumnDataType } from "@zmaj-js/orm"
 import { ReadonlyDeep, SetOptional } from "type-fest"
 import { AdminPanelError } from "../shared/AdminPanelError"
 import { BooleanComponents } from "./boolean"
