@@ -38,6 +38,8 @@ export function handleError(...params: ErrorParams): ErrorThrowObject {
 export function throw500(...params: ErrorParams): never {
 	// since it's 500 error, there is no need to show user custom message
 	if (typeof params[0] === "number") {
+		console.log(params[0])
+
 		params[1] ??= "Problem with server"
 	}
 	const meta = handleError(...params)

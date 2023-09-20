@@ -12,7 +12,7 @@ export const WebhookCollection = codeCollection(WebhookModel, {
 		layoutConfig: zodCreate(LayoutConfigSchema, {
 			list: {
 				layout: {
-					table: { fields: ["email", "roleId", "status", "firstName", "lastName"] },
+					table: { fields: ["name", "enabled", "httpMethod", "url"] },
 				},
 				defaultSort: { field: "createdAt", order: "DESC" },
 			},

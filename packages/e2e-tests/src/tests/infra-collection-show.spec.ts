@@ -7,10 +7,18 @@ const tableName = "test_show_playwright"
 
 test.beforeEach(async () => {
 	const sdk = getSdk()
-	await deleteCollectionByTable(tableName, sdk)
-	await sdk.infra.collections.createOne({
-		data: { pkColumn: "id", pkType: "auto-increment", tableName, label: "Test345" },
+	await deleteCollectionByTable(tableName, sdk).catch((e) => {
+		console.log({ e })
+		throw e
 	})
+	await sdk.infra.collections
+		.createOne({
+			data: { pkColumn: "id", pkType: "auto-increment", tableName, label: "Test345" },
+		})
+		.catch((e2) => {
+			console.log({ e2 })
+			throw e2
+		})
 })
 
 test.afterEach(async () => deleteCollectionByTable(tableName))

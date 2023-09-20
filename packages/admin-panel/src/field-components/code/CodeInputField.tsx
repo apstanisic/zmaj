@@ -34,7 +34,7 @@ export const CodeInputField = memo((props: CodeInputFieldProps) => {
 				}
 				el.innerHTML = Highlight.highlight(el.textContent ?? "", { language }).value
 			},
-			{ catchTab: false },
+			{ catchTab: false, addClosing: false },
 		)
 
 		jar.current.updateCode(props.toInput ? props.toInput(field.field.value) : field.field.value)
