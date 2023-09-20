@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deletePostsByTitle } from "../utils/test-post-helpers.js"
+import { postUtils } from "../utils/e2e-post-utils.js"
 
-const postTitle = "create-e2e-test-123-playwright"
+const postTitle = postUtils.getRandTitle()
 
-test.afterEach(async () => deletePostsByTitle(postTitle))
+test.afterEach(async () => postUtils.deleteByTitle(postTitle))
 
 test("Create Record", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

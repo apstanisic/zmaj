@@ -716,9 +716,18 @@ importers:
       '@clack/prompts':
         specifier: ^0.7.0
         version: 0.7.0
+      '@faker-js/faker':
+        specifier: ^8.1.0
+        version: 8.1.0
+      '@ngneat/falso':
+        specifier: ^7.1.0
+        version: 7.1.0
       '@playwright/test':
         specifier: 1.38.0
         version: 1.38.0
+      '@types/mime-types':
+        specifier: ^2.1.1
+        version: 2.1.1
       '@zmaj-js/client-sdk':
         specifier: workspace:*
         version: link:../client-sdk
@@ -737,6 +746,9 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
+      mime-types:
+        specifier: ^2.1.35
+        version: 2.1.35
       otplib:
         specifier: ^12.0.1
         version: 12.0.1
@@ -4287,6 +4299,11 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: true
+
+  /@faker-js/faker@8.1.0:
+    resolution: {integrity: sha512-38DT60rumHfBYynif3lmtxMqMqmsOQIxQgEuPZxCk2yUYN0eqWpTACgxi0VpidvsJB8CRxCpvP7B3anK85FjtQ==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
+    dev: false
 
   /@floating-ui/core@1.5.0:
     resolution: {integrity: sha512-kK1h4m36DQ0UHGj5Ah4db7R0rHemTqqO0QLvUqi1/mUUp3LuAWbWxdxSIf/XsnH9VS6rRVPLJCncjRzUvyCLXg==}
@@ -7925,6 +7942,10 @@ packages:
     resolution: {integrity: sha512-W864tg/Osz1+9f4lrGTZpCSO5/z4608eUp19tbozkq2HJK6i3z1kT0H9tlADXuYIb1YYOBByU4Jsqkk75q48qA==}
     dependencies:
       '@types/unist': 2.0.6
+    dev: false
+
+  /@types/mime-types@2.1.1:
+    resolution: {integrity: sha512-vXOTGVSLR2jMw440moWTC7H19iUyLtP3Z1YTj7cSsubOICinjMxFeb/V57v9QdyyPGbbWolUFSSmSiRSn94tFw==}
     dev: false
 
   /@types/mime@3.0.1:

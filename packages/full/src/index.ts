@@ -13,11 +13,16 @@ export async function runServer(config: ConfigureAppParams = {}): Promise<ZmajAp
 		config,
 		{
 			customModules: [
-				ServeStaticModule.forRoot({ rootPath: adminPanelDistFolder, serveRoot: "/admin" }),
+				ServeStaticModule.forRoot({
+					rootPath: adminPanelDistFolder,
+					serveRoot: "/admin",
+					serveStaticOptions: { redirect: true, fallthrough: true },
+				}),
 				...(config.customModules ?? []),
 			],
 		},
 	)
+
 	return apiAndGui
 }
 

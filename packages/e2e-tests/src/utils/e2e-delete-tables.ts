@@ -1,6 +1,6 @@
 import { CollectionMetadataModel } from "@zmaj-js/common"
 import { getOrm } from "../setup/e2e-orm.js"
-import { getSdk } from "./getSdk.js"
+import { getSdk } from "./e2e-get-sdk.js"
 
 async function deleteTable(tableName: string): Promise<void> {
 	const orm = await getOrm()

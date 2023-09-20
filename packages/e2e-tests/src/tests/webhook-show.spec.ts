@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { Webhook, WebhookCreateDto } from "@zmaj-js/common"
-import { getSdk } from "../utils/getSdk.js"
+import { getSdk } from "../utils/e2e-get-sdk.js"
 
 const hookName = "Playwright Show Hook"
 

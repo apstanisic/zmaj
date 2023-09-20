@@ -1,5 +1,12 @@
 import { sleep, systemModels } from "@zmaj-js/common"
 import { sqOrmEngine } from "@zmaj-js/orm-sq"
+import {
+	TCommentModel,
+	TPostInfoModel,
+	TPostModel,
+	TPostTagModel,
+	TTagModel,
+} from "@zmaj-js/test-utils"
 import { Orm } from "zmaj"
 
 function createOrm(): Orm {
@@ -13,7 +20,7 @@ function createOrm(): Orm {
 			type: process.env.DB_TYPE,
 		},
 		engine: sqOrmEngine,
-		models: [...systemModels],
+		models: [...systemModels, TTagModel, TPostInfoModel, TPostModel, TCommentModel, TPostTagModel],
 	})
 }
 

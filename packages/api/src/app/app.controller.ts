@@ -1,9 +1,10 @@
 import { GetUser } from "@api/authentication/get-user.decorator"
 import { throw403 } from "@api/common/throw-http"
 import { OnInfraChangeService } from "@api/infra/on-infra-change.service"
-import { Controller, Get } from "@nestjs/common"
+import { Controller, Get, Res } from "@nestjs/common"
 import { ADMIN_ROLE_ID, AuthUser, UserModel } from "@zmaj-js/common"
 import { RepoManager } from "@zmaj-js/orm"
+import type { Response } from "express"
 import { GlobalConfig } from "./global-app.config"
 
 @Controller()
@@ -15,6 +16,14 @@ export class AppController {
 	) {}
 
 	@Get("/")
+	async adminPanel(@Res() res: Response): Promise<any> {
+		res.redirect("/admin")
+	}
+
+	/**
+	 * Special case, this is excluded from `/api` prefix
+	 */
+	@Get("/api")
 	async home(): Promise<any> {
 		return { message: "API successfully reached." }
 	}

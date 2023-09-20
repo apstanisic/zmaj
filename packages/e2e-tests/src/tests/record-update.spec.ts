@@ -1,22 +1,20 @@
 import { expect, test } from "@playwright/test"
 import { qsStringify } from "@zmaj-js/common"
 import { TPost } from "@zmaj-js/test-utils"
-import { getSdk } from "../utils/getSdk.js"
-import { createPost, deletePostsByTitle } from "../utils/test-post-helpers.js"
+import { postUtils } from "../utils/e2e-post-utils.js"
 
-const originalPostTitle = "e2e-record-update-gui-test"
+const originalPostTitle = postUtils.getRandTitle()
 const updatedPostTitle = originalPostTitle + "-updated"
 
 let record: TPost
 
 test.beforeEach(async () => {
-	record = await createPost(originalPostTitle, { body: "<b>some bold value</b>" })
+	record = await postUtils.create(originalPostTitle, { body: "<b>some bold value</b>" })
 })
 
 test.afterEach(async () => {
-	const sdk = getSdk()
-	await deletePostsByTitle(originalPostTitle, sdk)
-	await deletePostsByTitle(updatedPostTitle, sdk)
+	await postUtils.deleteByTitle(originalPostTitle)
+	await postUtils.deleteByTitle(updatedPostTitle)
 })
 
 test("Update Record", async ({ page }) => {

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { sleep, throwErr } from "@zmaj-js/common"
-import { deleteTestFile, uploadTestFile } from "../utils/test-file-helpers.js"
+import { fileUtils, uploadTestFile } from "../utils/e2e-file-utils.js"
 import { toRaQuery } from "../utils/test-sdk.js"
 
 const img1 = "test-image-download-multiple-1.png"
@@ -13,8 +13,8 @@ test.beforeEach(async ({ request }) => {
 	await uploadTestFile({ request, assetsPath: img2, customName: imgName2 })
 })
 test.afterAll(async () => {
-	await deleteTestFile(imgName1)
-	await deleteTestFile(imgName2)
+	await fileUtils.deleteFile(imgName1)
+	await fileUtils.deleteFile(imgName2)
 })
 
 test("Download multiple files", async ({ page }) => {

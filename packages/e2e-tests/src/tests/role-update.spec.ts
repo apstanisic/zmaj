@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { Role } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { getSdk } from "../utils/getSdk.js"
+import { getSdk } from "../utils/e2e-get-sdk.js"
 
 let role: Role
 

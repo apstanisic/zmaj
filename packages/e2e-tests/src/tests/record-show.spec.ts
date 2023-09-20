@@ -1,20 +1,20 @@
 import { expect, test } from "@playwright/test"
 import { Struct } from "@zmaj-js/common"
+import { postUtils } from "../utils/e2e-post-utils.js"
 import { namespaceCollection } from "../utils/namespace-collection.js"
-import { createPost, deletePostsByTitle } from "../utils/test-post-helpers.js"
 // import { deleteMockPosts } from "../utils/delete-mock-posts"
 
 const suffix = "fj98h9h9"
-const title = "Hello World " + suffix
+const title = postUtils.getRandTitle() + suffix
 
 let record: Struct
 
 test.beforeEach(async () => {
-	record = await createPost(title, { body: "<b>some bold value</b>" })
+	record = await postUtils.create(title, { body: "<b>some bold value</b>" })
 })
 
 test.afterEach(async () => {
-	await deletePostsByTitle(title)
+	await postUtils.deleteByTitle(title)
 })
 
 test("Show Record", async ({ page }) => {

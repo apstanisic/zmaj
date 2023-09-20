@@ -2,8 +2,8 @@ import { expect, test } from "@playwright/test"
 import { camel } from "radash"
 import { getRandomTableName } from "../setup/e2e-unique-id.js"
 import { createIdRegex, uuidInsideRegex } from "../utils/create-id-regex.js"
-import { deleteTables } from "../utils/deleteTable.js"
-import { getSdk } from "../utils/getSdk.js"
+import { deleteTables } from "../utils/e2e-delete-tables.js"
+import { getSdk } from "../utils/e2e-get-sdk.js"
 
 const tableName = getRandomTableName()
 const collectionName = camel(tableName)

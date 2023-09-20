@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { ADMIN_ROLE_ID, UserCreateDto } from "@zmaj-js/common"
 import { emptyState } from "../state/empty-state.js"
-import { getSdk } from "../utils/getSdk.js"
+import { getSdk } from "../utils/e2e-get-sdk.js"
 
 test.use({ storageState: emptyState })
 

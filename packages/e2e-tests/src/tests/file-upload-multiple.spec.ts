@@ -1,15 +1,15 @@
 import { expect, test } from "@playwright/test"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
-import { deleteTestFile } from "../utils/test-file-helpers.js"
+import { fileUtils } from "../utils/e2e-file-utils.js"
 
 test.beforeEach(async () => {
-	await deleteTestFile("test-image-multiple-1.png")
-	await deleteTestFile("test-image-multiple-2.png")
+	await fileUtils.deleteFile("test-image-multiple-1.png")
+	await fileUtils.deleteFile("test-image-multiple-2.png")
 })
 test.afterAll(async () => {
-	await deleteTestFile("test-image-multiple-1.png")
-	await deleteTestFile("test-image-multiple-2.png")
+	await fileUtils.deleteFile("test-image-multiple-1.png")
+	await fileUtils.deleteFile("test-image-multiple-2.png")
 })
 
 test("Upload multiple files", async ({ page }) => {

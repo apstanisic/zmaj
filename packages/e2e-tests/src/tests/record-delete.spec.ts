@@ -1,15 +1,15 @@
 import { expect, test } from "@playwright/test"
-import { qsStringify, Struct } from "@zmaj-js/common"
-import { createPost, deletePostsByTitle } from "../utils/test-post-helpers.js"
+import { Struct, qsStringify } from "@zmaj-js/common"
+import { postUtils } from "../utils/e2e-post-utils.js"
 
-const title = "e2e-record-delete-gui-test"
+const title = postUtils.getRandTitle()
 
 let record: Struct
 
 test.beforeEach(async () => {
-	record = await createPost(title, { body: "<b>e2e record delete gui test</b>" })
+	record = await postUtils.create(title, { body: "<b>e2e record delete gui test</b>" })
 })
-test.afterEach(async () => deletePostsByTitle(title))
+test.afterEach(async () => postUtils.deleteByTitle(title))
 
 test("Delete Record", async ({ page }) => {
 	// it throws without above 2 lines, there is no record context, see why

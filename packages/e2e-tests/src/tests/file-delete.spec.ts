@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteTestFile, uploadTestFile } from "../utils/test-file-helpers.js"
+import { fileUtils, uploadTestFile } from "../utils/e2e-file-utils.js"
 import { toRaQuery } from "../utils/test-sdk.js"
 
 const img = "test-image-delete.png"
@@ -9,7 +9,7 @@ const imgName = "test-image-delete"
 test.beforeEach(async ({ request }) =>
 	uploadTestFile({ request, assetsPath: img, customName: imgName }),
 )
-test.afterAll(async () => deleteTestFile(imgName))
+test.afterAll(async () => fileUtils.deleteFile(imgName))
 
 test("Delete single file", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

@@ -1,28 +1,6 @@
-import { ZmajSdk } from "@zmaj-js/client-sdk"
-import {
-	CollectionCreateDto,
-	CollectionMetadata,
-	FieldCreateDto,
-	RelationCreateDto,
-} from "@zmaj-js/common"
-import { deleteTables } from "./deleteTable.js"
-import { getSdk } from "./getSdk.js"
-
-export async function deleteCollectionByTable(
-	tableName: string,
-	sdk?: ZmajSdk,
-): Promise<CollectionMetadata | undefined> {
-	const zmaj = sdk ?? getSdk()
-	const allCollections = await zmaj.infra.getCollections()
-
-	const collection = allCollections.find((c) => c.tableName === tableName)
-	if (!collection) return
-
-	return zmaj.infra.collections.deleteById({ id: collection.id }).catch((e) => {
-		console.log("Problem deleting collection: " + tableName, collection.id)
-		throw e
-	})
-}
+import { CollectionCreateDto, FieldCreateDto, RelationCreateDto } from "@zmaj-js/common"
+import { deleteTables } from "./e2e-delete-tables.js"
+import { getSdk } from "./e2e-get-sdk.js"
 
 export async function deleteTestCollections(): Promise<void> {
 	await deleteTables("posts_tags_plw", "comments_plw", "posts_plw", "tags_plw")

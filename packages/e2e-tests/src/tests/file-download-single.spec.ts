@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteTestFile, uploadTestFile } from "../utils/test-file-helpers.js"
+import { fileUtils, uploadTestFile } from "../utils/e2e-file-utils.js"
 import { toRaQuery } from "../utils/test-sdk.js"
 
 const imgPath = "test-image-download-single.png"
 const imgName = imgPath.split(".")[0]!
 
 test.beforeEach(async ({ request }) => uploadTestFile({ request, assetsPath: imgPath }))
-test.afterAll(async () => deleteTestFile(imgPath))
+test.afterAll(async () => fileUtils.deleteFile(imgPath))
 
 test("Download single file", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

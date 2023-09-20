@@ -1,40 +1,43 @@
 import { expect, test } from "@playwright/test"
-import { Webhook, WebhookCreateDto } from "@zmaj-js/common"
+import { Webhook, WebhookCreateDto, WebhookModel } from "@zmaj-js/common"
+import { getOrm } from "../setup/e2e-orm.js"
+import { getUniqueTitle } from "../setup/e2e-unique-id.js"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { getSdk } from "../utils/getSdk.js"
+import { getSdk } from "../utils/e2e-get-sdk.js"
 import { getIdFromShow } from "../utils/test-sdk.js"
 
-const hookName = "Playwright Update Hook"
-const updatedName = "UpdatedTestName"
+const webhookName = getUniqueTitle()
+const webhookNameUpdated = getUniqueTitle()
+
+const orm = await getOrm()
+const webhookRepo = orm.repoManager.getRepo(WebhookModel)
+
+const createWebhookDto = new WebhookCreateDto({
+	url: "http://localhost:5000",
+	name: webhookName,
+	events: [
+		"create.posts",
+		"create.comments",
+		"update.comments",
+		"delete.tags", //
+	],
+})
 
 let webhook: Webhook
 
 test.beforeAll(async () => {
-	const sdk = getSdk()
-	await sdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
-	await sdk.webhooks.temp__deleteWhere({ filter: { name: updatedName } })
-	webhook = await sdk.webhooks.createOne({
-		data: new WebhookCreateDto({
-			url: "http://localhost:5000",
-			name: hookName,
-			events: [
-				"create.posts",
-				"create.comments",
-				"update.comments",
-				"delete.tags", //
-			],
-		}),
-	})
+	await webhookRepo.deleteWhere({ where: { name: webhookName } })
+	await webhookRepo.deleteWhere({ where: { name: webhookNameUpdated } })
+	webhook = await webhookRepo.createOne({ data: createWebhookDto })
 })
 
 test.afterEach(async () => {
-	const sdk = getSdk()
-	await sdk.webhooks.temp__deleteWhere({ filter: { name: hookName } })
-	await sdk.webhooks.temp__deleteWhere({ filter: { name: updatedName } })
+	await webhookRepo.deleteWhere({ where: { name: webhookName } })
+	await webhookRepo.deleteWhere({ where: { name: webhookNameUpdated } })
 })
 
 test("Update Webhook", async ({ page }) => {
-	await page.goto("http://localhost:7100/admin/")
+	await page.goto("/")
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
 
 	await page.getByRole("link", { name: "Webhooks" }).click()
@@ -44,7 +47,7 @@ test("Update Webhook", async ({ page }) => {
 
 	await page.getByRole("button", { name: /Edit/ }).click()
 
-	await page.getByLabel("Name").fill(updatedName)
+	await page.getByLabel("Name").fill(webhookNameUpdated)
 
 	await page.getByRole("switch", { name: "Enabled" }).click()
 
@@ -84,7 +87,7 @@ test("Update Webhook", async ({ page }) => {
 	const res = await getSdk().webhooks.getById({ id })
 	expect(res).toMatchObject({
 		id,
-		name: updatedName,
+		name: webhookNameUpdated,
 		enabled: true,
 		events: expect.arrayContaining([
 			"create.comments",
