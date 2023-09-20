@@ -1,27 +1,29 @@
 import { expect, test } from "@playwright/test"
 import { UnknownValues, Webhook } from "@zmaj-js/common"
-import { getSdk } from "../utils/e2e-get-sdk.js"
-import { getIdFromShow } from "../utils/test-sdk.js"
+import { HOME_PAGE_REGEX } from "../../setup/e2e-consts.js"
+import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
+import { getIdFromShow } from "../../utils/test-sdk.js"
+import { webhookUtils } from "./webhook-utils.js"
 
-const hookName = "Playwright Created"
+const hookName = getUniqueTitle()
 
 test.beforeAll(async () => {
-	await getSdk().webhooks.temp__deleteWhere({ filter: { name: hookName } })
+	await webhookUtils.deleteByName(hookName)
 })
 
 test.afterEach(async () => {
-	await getSdk().webhooks.temp__deleteWhere({ filter: { name: hookName } })
+	await webhookUtils.deleteByName(hookName)
 })
 
 test("Create Webhook", async ({ page }) => {
-	await page.goto("http://localhost:7100/admin/")
-	await expect(page).toHaveURL("http://localhost:7100/admin/")
+	await page.goto("/")
+	await expect(page).toHaveURL(HOME_PAGE_REGEX)
 
 	await page.getByRole("link", { name: "Webhooks" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajWebhooks")
+	await expect(page).toHaveURL(new RegExp("/admin/#/zmajWebhooks"))
 
 	await page.getByRole("button", { name: /Create record/ }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajWebhooks/create")
+	await expect(page).toHaveURL(new RegExp("/admin/#/zmajWebhooks/create"))
 
 	await page.getByLabel("Name").fill(hookName)
 
@@ -63,15 +65,15 @@ test("Create Webhook", async ({ page }) => {
 
 	await page.getByRole("button", { name: "Save" }).click()
 
-	const created = await getSdk().webhooks.getOne({ filter: { name: hookName } })
+	const created = await webhookUtils.findByName(hookName)
 	// if (!created?.id) {
 	// 	console.log({ created })
 	// 	throwErr("432786")
 	// }
 
-	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajWebhooks/${created?.id}/show`)
+	await expect(page).toHaveURL(new RegExp(`/admin/#/zmajWebhooks/${created?.id}/show`))
 
-	await expect(page.locator(".crud-content")).toContainText("Playwright Created")
+	await expect(page.locator(".crud-content")).toContainText(new RegExp(hookName))
 	await page.getByRole("tab", { name: "Events" }).click()
 	// there should be 6 check marks, since we react on 6 events
 	await expect(page.getByTestId("CheckIcon")).toHaveCount(6)
@@ -79,7 +81,7 @@ test("Create Webhook", async ({ page }) => {
 	const id = getIdFromShow(page.url())
 	expect(created).toEqual({
 		id,
-		name: "Playwright Created",
+		name: hookName,
 		httpMethod: "POST",
 		httpHeaders: customHeaders,
 		description: "This is created by test",

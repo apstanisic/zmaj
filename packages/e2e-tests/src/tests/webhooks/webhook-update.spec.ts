@@ -1,16 +1,12 @@
 import { expect, test } from "@playwright/test"
-import { Webhook, WebhookCreateDto, WebhookModel } from "@zmaj-js/common"
-import { getOrm } from "../setup/e2e-orm.js"
-import { getUniqueTitle } from "../setup/e2e-unique-id.js"
-import { createIdRegex } from "../utils/create-id-regex.js"
-import { getSdk } from "../utils/e2e-get-sdk.js"
-import { getIdFromShow } from "../utils/test-sdk.js"
+import { Webhook, WebhookCreateDto } from "@zmaj-js/common"
+import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
+import { getSdk } from "../../utils/e2e-get-sdk.js"
+import { getIdFromShow } from "../../utils/test-sdk.js"
+import { webhookUtils } from "./webhook-utils.js"
 
 const webhookName = getUniqueTitle()
 const webhookNameUpdated = getUniqueTitle()
-
-const orm = await getOrm()
-const webhookRepo = orm.repoManager.getRepo(WebhookModel)
 
 const createWebhookDto = new WebhookCreateDto({
 	url: "http://localhost:5000",
@@ -26,22 +22,22 @@ const createWebhookDto = new WebhookCreateDto({
 let webhook: Webhook
 
 test.beforeAll(async () => {
-	await webhookRepo.deleteWhere({ where: { name: webhookName } })
-	await webhookRepo.deleteWhere({ where: { name: webhookNameUpdated } })
-	webhook = await webhookRepo.createOne({ data: createWebhookDto })
+	await webhookUtils.deleteByName(webhookName)
+	await webhookUtils.deleteByName(webhookNameUpdated)
+	webhook = await webhookUtils.create(createWebhookDto)
 })
 
 test.afterEach(async () => {
-	await webhookRepo.deleteWhere({ where: { name: webhookName } })
-	await webhookRepo.deleteWhere({ where: { name: webhookNameUpdated } })
+	await webhookUtils.deleteByName(webhookName)
+	await webhookUtils.deleteByName(webhookNameUpdated)
 })
 
 test("Update Webhook", async ({ page }) => {
 	await page.goto("/")
-	await expect(page).toHaveURL("http://localhost:7100/admin/")
+	await expect(page).toHaveURL(new RegExp("/admin"))
 
 	await page.getByRole("link", { name: "Webhooks" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajWebhooks")
+	await expect(page).toHaveURL(new RegExp("/admin/#/zmajWebhooks"))
 
 	await page.getByRole("button", { name: `Show Record ${webhook.id}` }).click()
 
@@ -81,7 +77,7 @@ test("Update Webhook", async ({ page }) => {
 	await page.getByRole("button", { name: "Save" }).click()
 
 	await expect(page.locator("body")).toContainText("Element updated")
-	await expect(page).toHaveURL(createIdRegex("http://localhost:7100/admin/#/zmajWebhooks/$ID/show"))
+	await expect(page).toHaveURL(new RegExp(`/admin/#/zmajWebhooks/${webhook.id}/show`))
 
 	const id = getIdFromShow(page.url())
 	const res = await getSdk().webhooks.getById({ id })
