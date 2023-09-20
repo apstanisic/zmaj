@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test"
 import { ADMIN_ROLE_ID, User, UserCreateDto } from "@zmaj-js/common"
 import { authenticator } from "otplib"
 import { emptyState } from "../state/empty-state.js"
-import { getSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/getSdk.js"
 
 const email = "test-2fa@example.com"
 let user: User

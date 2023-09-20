@@ -2,8 +2,8 @@ import { expect, test } from "@playwright/test"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { times } from "@zmaj-js/common"
 import { TCommentModel, TPostModel, TTagModel } from "@zmaj-js/test-utils"
+import { getSdk } from "../utils/getSdk.js"
 import { namespaceTestCollections } from "../utils/namespace-collection.js"
-import { getSdk } from "../utils/test-sdk.js"
 
 const suffix = "9k8fk3"
 

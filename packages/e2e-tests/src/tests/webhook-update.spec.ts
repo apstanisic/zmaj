@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test"
 import { Webhook, WebhookCreateDto } from "@zmaj-js/common"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { getIdFromShow, getSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/getSdk.js"
+import { getIdFromShow } from "../utils/test-sdk.js"
 
 const hookName = "Playwright Update Hook"
 const updatedName = "UpdatedTestName"

@@ -1,12 +1,14 @@
 import { expect, test } from "@playwright/test"
+import { camel } from "radash"
+import { getRandomTableName } from "../setup/e2e-unique-id.js"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
+import { deleteTables } from "../utils/deleteTable.js"
 
-const tableName = "all_test"
-const collectionName = "allTest"
+const tableName = getRandomTableName()
+const collectionName = camel(tableName)
 
-test.beforeEach(async () => deleteCollectionByTable(tableName))
-test.afterAll(async () => deleteCollectionByTable(tableName))
+test.beforeEach(async () => deleteTables(tableName))
+test.afterAll(async () => deleteTables(tableName))
 
 test("Create Collection and record", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

@@ -1,9 +1,8 @@
 import { expect, test } from "@playwright/test"
-import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { CollectionCreateDto, RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
-import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
-import { getSdk } from "../utils/test-sdk.js"
 import { camel } from "radash"
+import { deleteTables } from "../utils/deleteTable.js"
+import { getSdk } from "../utils/getSdk.js"
 
 const leftTableName = "mtm_left_table_split"
 const rightTableName = "mtm_right_table_split"
@@ -11,15 +10,13 @@ const junctionTableName = "mtm_junction_table_split"
 
 let relation1: RelationDef
 
-async function deleteTables(sdk: ZmajSdk): Promise<void> {
-	await deleteCollectionByTable(junctionTableName, sdk)
-	await deleteCollectionByTable(leftTableName, sdk)
-	await deleteCollectionByTable(rightTableName, sdk)
+async function deleteThisTables(): Promise<void> {
+	await deleteTables(junctionTableName, leftTableName, rightTableName)
 }
 
 test.beforeEach(async () => {
 	const sdk = getSdk()
-	await deleteTables(sdk)
+	await deleteThisTables()
 
 	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({ tableName: leftTableName }),
@@ -48,7 +45,7 @@ test.beforeEach(async () => {
 	})
 })
 
-test.afterEach(async () => deleteTables(getSdk()))
+test.afterEach(async () => deleteThisTables())
 
 test("Split many to many relation", async ({ page }) => {
 	if (!relation1) throwErr()

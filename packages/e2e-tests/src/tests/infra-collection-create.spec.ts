@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex, uuidInsideRegex } from "../utils/create-id-regex.js"
-import { getSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/getSdk.js"
 
 async function deleteCollection(): Promise<void> {
 	const sdk = getSdk()

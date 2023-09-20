@@ -1,7 +1,7 @@
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { TPost, TPostModel } from "@zmaj-js/test-utils"
 import { GetReadFields } from "zmaj"
-import { getSdk } from "./test-sdk.js"
+import { getSdk } from "./getSdk.js"
 
 export async function deletePostsByTitle(title: string, sdk?: ZmajSdk): Promise<void> {
 	try {

@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test"
 import { qsStringify } from "@zmaj-js/common"
 import { TPost } from "@zmaj-js/test-utils"
+import { getSdk } from "../utils/getSdk.js"
 import { createPost, deletePostsByTitle } from "../utils/test-post-helpers.js"
-import { getSdk } from "../utils/test-sdk.js"
 
 const originalPostTitle = "e2e-record-update-gui-test"
 const updatedPostTitle = originalPostTitle + "-updated"

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { Role, sleep } from "@zmaj-js/common"
-import { getSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/getSdk.js"
 
 const roleName = "PlaywrightRoleAddAdvanced"
 let role: Role

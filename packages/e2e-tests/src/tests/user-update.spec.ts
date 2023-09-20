@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { User, UserCreateDto } from "@zmaj-js/common"
-import { getSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/getSdk.js"
 
 const email = "playwright-update@example.com"
 const updatedEmail = "playwright-updated@example.com"

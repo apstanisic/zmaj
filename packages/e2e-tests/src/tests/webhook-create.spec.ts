@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { UnknownValues, Webhook } from "@zmaj-js/common"
-import { getIdFromShow, getSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/getSdk.js"
+import { getIdFromShow } from "../utils/test-sdk.js"
 
 const hookName = "Playwright Created"
 

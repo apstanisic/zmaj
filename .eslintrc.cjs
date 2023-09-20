@@ -72,5 +72,6 @@ module.exports = {
 				allowTypedFunctionExpressions: true,
 			},
 		],
+		"no-empty": "off",
 	},
 }

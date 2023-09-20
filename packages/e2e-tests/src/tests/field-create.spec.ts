@@ -1,21 +1,22 @@
 import { expect, test } from "@playwright/test"
 import { camel } from "radash"
+import { getRandomTableName } from "../setup/e2e-unique-id.js"
 import { createIdRegex, uuidInsideRegex } from "../utils/create-id-regex.js"
-import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
-import { getSdk } from "../utils/test-sdk.js"
+import { deleteTables } from "../utils/deleteTable.js"
+import { getSdk } from "../utils/getSdk.js"
 
-const tableName = "field_test_create_playwright"
+const tableName = getRandomTableName()
 const collectionName = camel(tableName)
 
 test.beforeEach(async () => {
 	const sdk = getSdk()
-	await deleteCollectionByTable(tableName, sdk)
+	await deleteTables(tableName)
 	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName, label: "Test345", collectionName },
 	})
 })
 
-test.afterEach(async () => deleteCollectionByTable(tableName))
+test.afterEach(async () => deleteTables(tableName))
 
 test("Create Field", async ({ page }) => {
 	await page.goto("http://localhost:7100/admin/")

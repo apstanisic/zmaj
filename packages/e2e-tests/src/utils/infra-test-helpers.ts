@@ -5,7 +5,8 @@ import {
 	FieldCreateDto,
 	RelationCreateDto,
 } from "@zmaj-js/common"
-import { getSdk } from "./test-sdk.js"
+import { deleteTables } from "./deleteTable.js"
+import { getSdk } from "./getSdk.js"
 
 export async function deleteCollectionByTable(
 	tableName: string,
@@ -24,10 +25,7 @@ export async function deleteCollectionByTable(
 }
 
 export async function deleteTestCollections(): Promise<void> {
-	await deleteCollectionByTable("posts_tags_plw")
-	await deleteCollectionByTable("comments_plw")
-	await deleteCollectionByTable("posts_plw")
-	await deleteCollectionByTable("tags_plw")
+	await deleteTables("posts_tags_plw", "comments_plw", "posts_plw", "tags_plw")
 }
 
 export async function createTestCollections(): Promise<void> {

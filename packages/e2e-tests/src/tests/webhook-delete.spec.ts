@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { Webhook, WebhookCreateDto } from "@zmaj-js/common"
-import { getSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/getSdk.js"
 
 const hookName = "Playwright Delete Hook"
 let webhook: Webhook

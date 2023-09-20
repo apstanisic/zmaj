@@ -1,18 +1,18 @@
 import { expect, test } from "@playwright/test"
-import { RelationMetadata, RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
-import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
-import { getSdk } from "../utils/test-sdk.js"
+import { RelationCreateDto, RelationDef, RelationMetadata, throwErr } from "@zmaj-js/common"
 import { camel } from "radash"
+import { getRandomTableName } from "../setup/e2e-unique-id.js"
+import { deleteTables } from "../utils/deleteTable.js"
+import { getSdk } from "../utils/getSdk.js"
 
-const leftTableName = "test_rel_update_left"
-const rightTableName = "test_rel_update_right"
+const leftTableName = getRandomTableName()
+const rightTableName = getRandomTableName()
 
 let relation: RelationDef
 
 test.beforeEach(async () => {
 	const sdk = getSdk()
-	await deleteCollectionByTable(leftTableName, sdk)
-	await deleteCollectionByTable(rightTableName, sdk)
+	await deleteTables(leftTableName, rightTableName)
 
 	await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: leftTableName },

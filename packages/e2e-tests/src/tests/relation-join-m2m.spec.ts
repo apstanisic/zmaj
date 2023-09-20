@@ -1,27 +1,25 @@
 import { expect, test } from "@playwright/test"
-import { RelationDef, CollectionCreateDto, RelationCreateDto, throwErr } from "@zmaj-js/common"
-import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
-import { getSdk } from "../utils/test-sdk.js"
-import { ZmajSdk } from "@zmaj-js/client-sdk"
+import { CollectionCreateDto, RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
 import { camel } from "radash"
+import { getRandomTableName } from "../setup/e2e-unique-id.js"
+import { createIdRegex } from "../utils/create-id-regex.js"
+import { deleteTables } from "../utils/deleteTable.js"
+import { getSdk } from "../utils/getSdk.js"
 
-const leftTableName = "mtm_left_table_join"
-const rightTableName = "mtm_right_table_join"
-const junctionTableName = "mtm_junction_table"
+const leftTableName = getRandomTableName()
+const rightTableName = getRandomTableName()
+const junctionTableName = getRandomTableName()
 
 let relation1: RelationDef
 let relation2: RelationDef
 
-async function deleteTables(sdk: ZmajSdk): Promise<void> {
-	await deleteCollectionByTable(junctionTableName, sdk)
-	await deleteCollectionByTable(leftTableName, sdk)
-	await deleteCollectionByTable(rightTableName, sdk)
+async function deleteThisTables(): Promise<void> {
+	await deleteTables(junctionTableName, leftTableName, rightTableName)
 }
 
 test.beforeEach(async () => {
 	const sdk = getSdk()
-	await deleteTables(sdk)
+	await deleteThisTables()
 
 	await sdk.infra.collections.createOne({
 		data: new CollectionCreateDto({ tableName: leftTableName }),
@@ -54,7 +52,7 @@ test.beforeEach(async () => {
 	})
 })
 
-test.afterEach(async () => deleteTables(getSdk()))
+test.afterEach(async () => deleteThisTables())
 
 test("Join relations to many-to-many", async ({ page }) => {
 	if (!relation1 || !relation2) throwErr()

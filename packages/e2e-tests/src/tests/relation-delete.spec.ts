@@ -1,19 +1,19 @@
 import { expect, test } from "@playwright/test"
 import { RelationCreateDto } from "@zmaj-js/common"
 import { camel } from "radash"
-import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
-import { getSdk } from "../utils/test-sdk.js"
+import { getRandomTableName } from "../setup/e2e-unique-id.js"
+import { deleteTables } from "../utils/deleteTable.js"
+import { getSdk } from "../utils/getSdk.js"
 
-const leftTableName = "test_rel_delete_left"
-const rightTableName = "test_rel_delete_right"
+const leftTableName = getRandomTableName()
+const rightTableName = getRandomTableName()
 
 let leftCollectionId: string
 let relationId: string
 
 test.beforeEach(async () => {
 	const sdk = getSdk()
-	await deleteCollectionByTable(leftTableName, sdk)
-	await deleteCollectionByTable(rightTableName, sdk)
+	await deleteTables(leftTableName, rightTableName)
 
 	const col1 = await sdk.infra.collections.createOne({
 		data: { pkColumn: "id", pkType: "auto-increment", tableName: leftTableName },
@@ -43,8 +43,7 @@ test.beforeEach(async () => {
 })
 
 test.afterEach(async () => {
-	await deleteCollectionByTable(leftTableName)
-	await deleteCollectionByTable(rightTableName)
+	await deleteTables(leftTableName, rightTableName)
 })
 
 test("Delete Relation", async ({ page }) => {

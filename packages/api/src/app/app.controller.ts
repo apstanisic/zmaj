@@ -1,5 +1,8 @@
+import { GetUser } from "@api/authentication/get-user.decorator"
+import { throw403 } from "@api/common/throw-http"
+import { OnInfraChangeService } from "@api/infra/on-infra-change.service"
 import { Controller, Get } from "@nestjs/common"
-import { UserModel } from "@zmaj-js/common"
+import { ADMIN_ROLE_ID, AuthUser, UserModel } from "@zmaj-js/common"
 import { RepoManager } from "@zmaj-js/orm"
 import { GlobalConfig } from "./global-app.config"
 
@@ -8,6 +11,7 @@ export class AppController {
 	constructor(
 		private config: GlobalConfig,
 		private rm: RepoManager,
+		private onInfraChange: OnInfraChangeService,
 	) {}
 
 	@Get("/")
@@ -20,6 +24,13 @@ export class AppController {
 		return {
 			name: this.config.name,
 		}
+	}
+
+	@Get("/refresh")
+	async refresh(@GetUser({ required: true }) user: AuthUser): Promise<any> {
+		if (user.roleId !== ADMIN_ROLE_ID) throw403(392309, "Not allowed")
+		await this.onInfraChange.syncAppAndDb()
+		return { success: true }
 	}
 
 	async test(): Promise<any> {

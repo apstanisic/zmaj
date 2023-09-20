@@ -4,7 +4,8 @@ import { throwErr } from "@zmaj-js/common"
 import { readFile } from "fs/promises"
 import path, { dirname } from "path"
 import { fileURLToPath } from "url"
-import { getSdk, playwrightAuthorizationHeader } from "./test-sdk.js"
+import { getSdk } from "./getSdk.js"
+import { playwrightAuthorizationHeader } from "./test-sdk.js"
 
 export async function deleteTestFile(name: string, sdk?: ZmajSdk): Promise<void> {
 	await (sdk ?? getSdk()).files.temp__deleteWhere({ filter: { name } })

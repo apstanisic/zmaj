@@ -3,8 +3,8 @@ import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { Struct, times } from "@zmaj-js/common"
 import { TComment, TCommentModel, TPost, TPostModel, TTag, TTagModel } from "@zmaj-js/test-utils"
 import { createIdRegex } from "../utils/create-id-regex.js"
+import { getSdk } from "../utils/getSdk.js"
 import { namespaceCollection } from "../utils/namespace-collection.js"
-import { getSdk } from "../utils/test-sdk.js"
 
 const suffix = "kdi22jk"
 

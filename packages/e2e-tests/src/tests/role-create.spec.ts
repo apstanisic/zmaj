@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { getSdk } from "../utils/test-sdk.js"
+import { getSdk } from "../utils/getSdk.js"
 
 test.beforeAll(async () => getSdk().roles.temp__deleteWhere({ filter: { name: "TestCreated" } }))
 test.afterEach(async () => getSdk().roles.temp__deleteWhere({ filter: { name: "TestCreated" } }))

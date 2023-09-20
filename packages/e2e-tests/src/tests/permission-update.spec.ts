@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
-import { Permission, PermissionCreateDto, Role, throwErr, UnknownValues } from "@zmaj-js/common"
-import { getSdk } from "../utils/test-sdk.js"
+import { Permission, PermissionCreateDto, Role, UnknownValues, throwErr } from "@zmaj-js/common"
+import { getSdk } from "../utils/getSdk.js"
 
 const roleName = "PermissionsUpdateRole"
 

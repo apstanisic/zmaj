@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test"
-import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteCollectionByTable } from "../utils/infra-test-helpers.js"
-import { getSdk } from "../utils/test-sdk.js"
 import { camel } from "radash"
+import { createIdRegex } from "../utils/create-id-regex.js"
+import { deleteTables } from "../utils/deleteTable.js"
+import { getSdk } from "../utils/getSdk.js"
 
 const leftTableName = "test_rel_create_left"
 const rightTableName = "test_rel_create_right"
@@ -13,8 +13,7 @@ const rightCollectionName = camel(rightTableName)
 let leftCollectionId: string
 
 test.beforeEach(async () => {
-	await deleteCollectionByTable(leftTableName)
-	await deleteCollectionByTable(rightTableName)
+	await deleteTables(leftTableName, rightTableName)
 
 	const sdk = getSdk()
 
@@ -34,9 +33,7 @@ test.beforeEach(async () => {
 })
 
 test.afterEach(async () => {
-	const sdk = getSdk()
-	await deleteCollectionByTable(leftTableName, sdk)
-	await deleteCollectionByTable(rightTableName, sdk)
+	await deleteTables(leftTableName, rightTableName)
 })
 
 test("Create many-to-one relation", async ({ page }) => {

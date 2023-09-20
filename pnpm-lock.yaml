@@ -713,6 +713,9 @@ importers:
 
   packages/e2e-tests:
     dependencies:
+      '@clack/prompts':
+        specifier: ^0.7.0
+        version: 0.7.0
       '@playwright/test':
         specifier: 1.38.0
         version: 1.38.0
@@ -722,18 +725,33 @@ importers:
       '@zmaj-js/common':
         specifier: workspace:*
         version: link:../common
+      '@zmaj-js/orm':
+        specifier: workspace:*
+        version: link:../orm
+      '@zmaj-js/orm-sq':
+        specifier: workspace:*
+        version: link:../orm-sq
       '@zmaj-js/test-utils':
         specifier: workspace:*
         version: link:../test-utils
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
       otplib:
         specifier: ^12.0.1
         version: 12.0.1
       radash:
         specifier: ^11.0.0
         version: 11.0.0
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
       zmaj:
         specifier: workspace:*
         version: link:../zmaj
+      zod:
+        specifier: ^3.22.2
+        version: 3.22.2
 
   packages/email-templates:
     devDependencies:
