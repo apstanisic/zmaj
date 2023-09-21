@@ -14,3 +14,7 @@ export function getRandomTableName(): string {
 export function getUniqueTitle(): string {
 	return `${faker.lorem.words(2)} ${getUniqueId()}`
 }
+
+export function getUniqueEmail(): string {
+	return faker.internet.email({ provider: "example.test" })
+}

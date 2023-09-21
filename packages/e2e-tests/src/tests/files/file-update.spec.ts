@@ -1,17 +1,17 @@
-import { expect, test } from "@playwright/test"
-import { createIdRegex } from "../utils/create-id-regex.js"
-import { fileUtils, uploadTestFile } from "../utils/e2e-file-utils.js"
-import { toRaQuery } from "../utils/test-sdk.js"
+import { expect } from "@playwright/test"
+import { test } from "../../setup/e2e-fixture.js"
+import { createIdRegex } from "../../utils/create-id-regex.js"
+import { uploadTestFile } from "../../utils/e2e-file-utils.js"
+import { toRaQuery } from "../../utils/test-sdk.js"
 
 const img = "test-image-update.png"
 const imgName = "test-image-update"
 
 test.beforeEach(async ({ request }) => uploadTestFile({ request, assetsPath: img }))
-test.afterAll(async () => fileUtils.deleteFile(imgName))
+test.afterEach(async ({ filePage }) => filePage.db.deleteFileByName(imgName))
 
-test("Update file", async ({ page }) => {
-	await page.goto("http://localhost:7100/admin/")
-	await expect(page).toHaveURL("http://localhost:7100/admin/")
+test("Update file", async ({ page, filePage }) => {
+	await filePage.goHome()
 
 	await page.getByRole("link", { name: "Files" }).click()
 	// await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajFiles?${query}`)

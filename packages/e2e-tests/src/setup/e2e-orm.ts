@@ -25,8 +25,8 @@ function createOrm(): Orm {
 }
 
 let orm: Orm
-export async function getOrm(): Promise<Orm> {
-	if (orm) return orm
+export async function getOrm(fresh: boolean = false): Promise<Orm> {
+	if (orm && !fresh) return orm
 
 	orm = createOrm()
 	await orm.init()

@@ -10,7 +10,7 @@ export class RoleModel extends BaseModel {
 		id: f.uuid({ isPk: true }),
 		name: f.text({}),
 		description: f.text({ nullable: true }),
-		requireMfa: f.boolean({ columnName: "require_mfa" }),
+		requireMfa: f.boolean({ columnName: "require_mfa", hasDefault: true }),
 		createdAt: f.createdAt(),
 	}))
 

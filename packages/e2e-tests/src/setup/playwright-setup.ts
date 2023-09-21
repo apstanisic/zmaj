@@ -5,11 +5,12 @@ import { UsersService, __testUtils, predefinedApiConfigs, runServer } from "zmaj
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from "./e2e-consts.js"
 import { initTestProcessEnv, runMake } from "./e2e-env.js"
 import { e2eInitAuthState } from "./e2e-init-auth-state.js"
-import { waitForDatabase } from "./e2e-orm.js"
+import { getOrm, waitForDatabase } from "./e2e-orm.js"
 import { spinner } from "./e2e-spinner.js"
 
 async function globalSetup(config: FullConfig): Promise<() => Promise<void>> {
 	initTestProcessEnv()
+
 	intro("Starting Playwright E2E tests")
 
 	await spinner({
@@ -84,6 +85,9 @@ async function globalSetup(config: FullConfig): Promise<() => Promise<void>> {
 	// returned function will be called in teardown
 	return async () => {
 		intro("Playwright E2E teardown")
+
+		const orm = await getOrm()
+		await orm.destroy()
 
 		await spinner({
 			start: "Stopping CMS...",

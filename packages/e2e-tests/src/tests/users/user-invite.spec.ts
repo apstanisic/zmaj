@@ -1,19 +1,16 @@
-import { expect, test } from "@playwright/test"
-import { createIdRegex } from "../utils/create-id-regex.js"
-import { getSdk } from "../utils/e2e-get-sdk.js"
+import { expect } from "@playwright/test"
+import { test } from "../../setup/e2e-fixture.js"
+import { getUniqueEmail } from "../../setup/e2e-unique-id.js"
 
-const email = "invitation@example.com"
+const email = getUniqueEmail()
 
-test.beforeEach(async () => {
-	await getSdk().users.temp__deleteWhere({ filter: { email } })
-})
-test.afterEach(async () => {
-	await getSdk().users.temp__deleteWhere({ filter: { email } })
-})
+test.beforeEach(async ({ userPage }) => userPage.db.removeByEmail(email))
+test.afterEach(async ({ userPage }) => userPage.db.removeByEmail(email))
 
-test("Invite user", async ({ page, context }) => {
-	await page.goto("http://localhost:7100/admin/#/zmajUsers/create")
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajUsers/create")
+test("Invite user", async ({ page, context, userPage }) => {
+	await userPage.goHome()
+	await userPage.goToList()
+	await userPage.clickCreateButton()
 
 	await page.getByRole("switch", { name: "Confirmed Email" }).click()
 
@@ -25,8 +22,16 @@ test("Invite user", async ({ page, context }) => {
 	await page.locator("form #zmaj_x2o_input_roleId").locator("button").click()
 	await page.getByRole("button", { name: "Admin" }).click()
 
-	await page.getByRole("button", { name: "Save" }).click()
-	await expect(page).toHaveURL(createIdRegex("http://localhost:7100/admin/#/zmajUsers/$ID/show"))
+	await userPage.clickSaveButton()
+
+	let userId = ""
+	await expect(async () => {
+		const user = await userPage.db.findByEmail(email)
+		expect(user).toBeDefined()
+		userId = user!.id
+	}).toPass()
+
+	await userPage.isOnShowPage(userId)
 
 	// logout, since we cannot accept invitation if we are logged in
 	await page.getByRole("button", { name: "More Actions" }).click()

@@ -1,7 +1,6 @@
-import { expect, test } from "@playwright/test"
 import { Webhook, WebhookCreateDto } from "@zmaj-js/common"
+import { test } from "../../setup/e2e-fixture.js"
 import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
-import { webhookUtils } from "./webhook-utils.js"
 
 const hookName = getUniqueTitle()
 
@@ -13,28 +12,22 @@ const createWebhookDto = new WebhookCreateDto({
 	events: ["create.posts", "create.comments", "update.comments", "delete.tags"],
 })
 
-test.beforeAll(async () => {
-	await webhookUtils.deleteByName(hookName)
-	webhook = await webhookUtils.create(createWebhookDto)
+test.beforeAll(async ({ webhookPage: webhookPages }) => {
+	await webhookPages.db.deleteByName(hookName)
+	webhook = await webhookPages.db.create(createWebhookDto)
 })
 
-test.afterEach(async () => {
-	await webhookUtils.deleteByName(hookName)
+test.afterEach(async ({ webhookPage: webhookPages }) => {
+	await webhookPages.db.deleteByName(hookName)
 })
 
-test("Show Webhook", async ({ page }) => {
-	await page.goto("/")
-	await expect(page).toHaveURL(new RegExp("/admin"))
-
-	await page.getByRole("link", { name: "Webhooks" }).click()
-	await expect(page).toHaveURL(new RegExp("/admin/#/zmajWebhooks"))
-
-	await page.getByRole("button", { name: `Show Record ${webhook.id}` }).click()
-
-	await expect(page.locator(".crud-content")).toContainText(hookName)
-	await expect(page.locator(".crud-content")).toContainText("http://example.com")
-
-	await page.getByRole("tab", { name: "Events" }).click()
+test("Show Webhook", async ({ webhookPage: webhookPages }) => {
+	await webhookPages.goHome()
+	await webhookPages.goToList()
+	await webhookPages.goToShow(webhook.id)
+	await webhookPages.hasCrudContent(createWebhookDto.name)
+	await webhookPages.hasCrudContent(createWebhookDto.url)
+	await webhookPages.goToEventsTab()
 	// there should be 4 check marks, since we react on 4 events
-	await expect(page.getByTestId("CheckIcon")).toHaveCount(4)
+	await webhookPages.hasSelectedEventsAmount(4)
 })
