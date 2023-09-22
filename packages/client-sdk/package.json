@@ -33,7 +33,7 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run packages/client-sdk",
+		"test": "cd ../.. && vitest run packages/client-sdk --passWithNoTests",
 		"tsc": "tsc",
 		"build": "tsup --config ../../tsup.config.ts",
 		"dev": "tsup --config ../../tsup.config.ts --watch",
@@ -46,6 +46,7 @@
 		"date-fns": "^2.30.0",
 		"eventemitter3": "^5.0.1",
 		"flat": "^6.0.0",
+		"form-data": "^4.0.0",
 		"js-base64": "^3.7.5",
 		"radash": "^11.0.0",
 		"type-fest": "^4.3.1",

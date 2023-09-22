@@ -12,7 +12,7 @@ const createWebhookDto = new WebhookCreateDto({
 	events: ["create.posts", "create.comments", "update.comments", "delete.tags"],
 })
 
-test.beforeAll(async ({ webhookPage: webhookPages }) => {
+test.beforeEach(async ({ webhookPage: webhookPages }) => {
 	await webhookPages.db.deleteByName(hookName)
 	webhook = await webhookPages.db.create(createWebhookDto)
 })

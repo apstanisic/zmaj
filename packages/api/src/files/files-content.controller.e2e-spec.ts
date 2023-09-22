@@ -154,8 +154,8 @@ describe("FilesContentController e2e", () => {
 			expect(inDb).toMatchObject({
 				id: res.body.data.id,
 				storageProvider: providerName,
-				extension: "txt",
 				mimeType: "text/plain",
+				name: "file.txt",
 				userId: user.id,
 				folderPath: "/",
 			} as FileInfo)

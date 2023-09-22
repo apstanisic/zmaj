@@ -5,6 +5,7 @@ import { TestingModule } from "@nestjs/testing"
 import { asMock, FileInfo } from "@zmaj-js/common"
 import { BaseStorage } from "@zmaj-js/storage-core"
 import { FileStub } from "@zmaj-js/test-utils"
+import { extname, parse } from "path"
 import sharp from "sharp"
 import { Readable } from "stream"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -43,9 +44,8 @@ describe("ImagesService", () => {
 
 		fileStub = FileStub({
 			storageProvider: "pr1",
-			extension: "jpg",
 			mimeType: "image/jpeg",
-			name: "my_file",
+			name: "my_file.jpg",
 		})
 	})
 
@@ -83,17 +83,17 @@ describe("ImagesService", () => {
 			asMock(sharp).mockImplementation(() => ({ toFormat }))
 		})
 		it("should pipe file to sharp", () => {
-			service["generateImageStreams"]({ extension: "jpeg", file: mockFile, sizes: customSizes })
+			service["generateImageStreams"]({ name: "testing.jpeg", file: mockFile, sizes: customSizes })
 			expect(mockFile.pipe).toBeCalledWith({ toFormat })
 		})
 
 		it("should transform to proper format", () => {
-			service["generateImageStreams"]({ extension: "jpeg", file: mockFile, sizes: customSizes })
+			service["generateImageStreams"]({ name: "testing.jpeg", file: mockFile, sizes: customSizes })
 			expect(toFormat).toBeCalledWith("jpeg")
 		})
 
 		it("should resize to proper sizes", () => {
-			service["generateImageStreams"]({ extension: "jpeg", file: mockFile, sizes: customSizes })
+			service["generateImageStreams"]({ name: "testing.jpeg", file: mockFile, sizes: customSizes })
 
 			expect(resize).nthCalledWith(1, {
 				fit: "contain",
@@ -106,7 +106,7 @@ describe("ImagesService", () => {
 
 		it("should have default sizes for original and thumbnail", () => {
 			service["generateImageStreams"]({
-				extension: "jpeg",
+				name: "hello.jpeg",
 				file: mockFile,
 				sizes: service["filesConfig"].imageSizes,
 			})
@@ -115,7 +115,7 @@ describe("ImagesService", () => {
 
 		it("should return size and image stream", () => {
 			const res = service["generateImageStreams"]({
-				extension: "jpeg",
+				name: "hello.jpeg",
 				file: mockFile,
 				sizes: service["filesConfig"].imageSizes,
 			})
@@ -144,7 +144,7 @@ describe("ImagesService", () => {
 		beforeEach(() => {
 			storageService.provider = provider
 			service["getImagePath"] = vi.fn(
-				({ file, size }) => `folder/${file.name}_${size}.${file.extension}`,
+				({ file, size }) => `folder/${parse(file.name).name}_${size}${extname(file.name)}`,
 			)
 			service["generateImageStreams"] = vi.fn(({ file, sizes }) =>
 				sizes.map((size) => ({ size: size.name, stream: `${file}_RESIZED` as any })),
@@ -152,13 +152,13 @@ describe("ImagesService", () => {
 		})
 
 		it("should do nothing if it does not have image extension", async () => {
-			fileStub.extension = "txt"
+			fileStub.name = "test.txt"
 			await service.createImagesFromFile(fileStub)
 			expect(provider).not.toBeCalled()
 		})
 
 		it("should do nothing if it does not have valid mime type", async () => {
-			fileStub.extension = "png"
+			fileStub.name = "test.png"
 			fileStub.mimeType = "application/json"
 			await service.createImagesFromFile(fileStub)
 			expect(provider).not.toBeCalled()
@@ -171,7 +171,7 @@ describe("ImagesService", () => {
 			expect(getFile).toBeCalledWith(fileStub.uri)
 			expect(service["generateImageStreams"]).toBeCalledWith({
 				file: "SOME_FILE",
-				extension: "jpg",
+				name: fileStub.name,
 				sizes: filesConfig.imageSizes,
 			})
 

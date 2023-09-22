@@ -5,7 +5,7 @@ import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
 
 const hookName = getUniqueTitle()
 
-test.beforeAll(async ({ webhookPage }) => {
+test.beforeEach(async ({ webhookPage }) => {
 	await webhookPage.db.deleteByName(hookName)
 })
 

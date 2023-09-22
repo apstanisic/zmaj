@@ -67,7 +67,7 @@ export class FilesClient extends CrudClient<FileModel> {
 	async upload(params: UploadParams): Promise<IdRecord<FileInfo>> {
 		const { signal, file, provider, onProgress } = params
 
-		const data = new window.FormData()
+		const data = params.formData ?? new FormData()
 		data.append("file", file)
 
 		// Only set provider header if provided and not default
@@ -136,4 +136,6 @@ export type UploadParams = {
 	signal?: AbortSignal
 	/** Function to be invoked every time axios emits progress */
 	onProgress?: (progress: AxiosProgressEvent) => void
+	/* WIP NodeJS compatibility */
+	formData?: FormData
 }

@@ -29,7 +29,7 @@ test("Update User", async ({ page, userPage }) => {
 	await userPage.goHome()
 	await userPage.goToList()
 	await userPage.goToShow(user.id)
-	await userPage.clickEditButton(user.id)
+	await userPage.clickEditButtonInList(user.id)
 
 	await page.getByLabel(/^Email$/).fill(updatedEmail)
 	await page.getByLabel("First Name").fill("Changed")

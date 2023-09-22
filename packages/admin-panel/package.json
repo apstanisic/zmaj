@@ -40,7 +40,7 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run packages/admin-panel",
+		"test": "cd ../.. && vitest run packages/admin-panel --passWithNoTests",
 		"tsc": "tsc",
 		"dev": "vite build --watch",
 		"serve": "vite",

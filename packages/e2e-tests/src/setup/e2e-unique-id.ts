@@ -18,3 +18,8 @@ export function getUniqueTitle(): string {
 export function getUniqueEmail(): string {
 	return faker.internet.email({ provider: "example.test" })
 }
+
+export function getUniqueFileName(ext?: string): { noExt: string; withExt: string } {
+	const noExt = getUniqueTitle()
+	return { noExt, withExt: noExt + (ext ? `.${ext}` : "") }
+}

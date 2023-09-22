@@ -2,6 +2,11 @@ import { Locator, Page, expect } from "@playwright/test"
 import { join } from "node:path"
 import { Orm } from "zmaj"
 
+// https://stackoverflow.com/a/9310752
+function escapeRegExp(text: string): string {
+	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+}
+
 export class ZmajPage {
 	constructor(
 		protected page: Page,
@@ -9,26 +14,44 @@ export class ZmajPage {
 		protected rootUrl: string,
 	) {}
 
-	adminUrl = new RegExp("/admin")
+	adminUrl = "/admin"
 
 	urlRegex(url: string = ""): RegExp {
-		return new RegExp(join("/admin", this.rootUrl, url))
+		const fullUrl = escapeRegExp(join(this.adminUrl, this.rootUrl, url))
+		return new RegExp(fullUrl)
 	}
 
 	async toHaveUrl(url: string = ""): Promise<void> {
 		await expect(this.page).toHaveURL(this.urlRegex(url))
 	}
 
+	async urlEndsWith(text: string): Promise<void> {
+		expect(this.page.url().endsWith(text)).toEqual(true)
+	}
+
 	async goHome(): Promise<void> {
 		await this.page.goto("/")
-		expect(this.page).toHaveURL(this.adminUrl)
+		await expect(this.page).toHaveURL(new RegExp(this.adminUrl))
 	}
 
 	async hasCrudContent(text: string | RegExp | null): Promise<void> {
 		await expect(this.page.locator(".crud-content")).toContainText(text ?? "")
 	}
+
+	async notHasCrudContent(text: string | RegExp | null): Promise<void> {
+		await expect(this.page.locator(".crud-content")).not.toContainText(text ?? "")
+	}
+
 	async hasBodyContent(text: string | RegExp): Promise<void> {
 		await expect(this.page.locator("body")).toContainText(text)
+	}
+
+	async hasToast(text: string | RegExp): Promise<void> {
+		await expect(this.page.locator("body")).toContainText(text)
+	}
+
+	async notHasBodyContent(text: string | RegExp): Promise<void> {
+		await expect(this.page.locator("body")).not.toContainText(text)
 	}
 
 	get checkIcons(): Locator {
@@ -42,10 +65,12 @@ export class ZmajPage {
 	async clickDeleteButton(): Promise<void> {
 		await this.page.getByRole("button", { name: /Delete/ }).click()
 	}
+	async clickEditButton(): Promise<void> {
+		await this.page.getByRole("button", { name: /Edit/ }).click()
+	}
 
-	async clickEditButton(id: string): Promise<void> {
-		await this.page.getByRole("button", { name: `Edit record ${id}` }).click()
-		await this.toHaveUrl(id)
+	async clickCancelButton(): Promise<void> {
+		await this.page.getByRole("button", { name: /Cancel/ }).click()
 	}
 
 	async clickCreateButton(): Promise<void> {
@@ -54,6 +79,10 @@ export class ZmajPage {
 
 	async clickSaveButton(): Promise<void> {
 		await this.page.getByRole("button", { name: "Save" }).click()
+	}
+
+	async clickNextButton(): Promise<void> {
+		await this.page.getByRole("button", { name: "Next" }).click()
 	}
 
 	async isOnRootPage(): Promise<void> {

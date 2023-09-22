@@ -1,5 +1,5 @@
-import { createSystemMigration } from "../create-system-migration"
 import { DataTypes } from "sequelize"
+import { createSystemMigration } from "../create-system-migration"
 import { getRequiredColumns } from "../migrations.utils"
 
 const table = "zmaj_files"
@@ -16,7 +16,6 @@ export const CreateFilesTable = createSystemMigration({
 				uri: { type: DataTypes.STRING(1000), allowNull: false },
 				storage_provider: { type: DataTypes.STRING(200), allowNull: false },
 				name: { type: DataTypes.STRING(200) },
-				extension: { type: DataTypes.STRING(100) },
 				description: { type: DataTypes.STRING(1000) },
 				mime_type: { type: DataTypes.STRING(200) },
 				user_id: {

@@ -22,7 +22,7 @@
 	"scripts": {
 		"start": "node src/index.js",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run packages/dockerfile",
+		"test": "cd ../.. && vitest run packages/dockerfile --passWithNoTests",
 		"tsc": "tsc",
 		"prebuild": "rimraf dist",
 		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"

@@ -1,30 +1,19 @@
-import { expect } from "@playwright/test"
+import { faker } from "@faker-js/faker"
 import { test } from "../../setup/e2e-fixture.js"
-import { createIdRegex } from "../../utils/create-id-regex.js"
-import { uploadTestFile } from "../../utils/e2e-file-utils.js"
-import { toRaQuery } from "../../utils/test-sdk.js"
 
-const img = "test-image-delete.png"
-const imgName = "test-image-delete"
+const assetPath = "test-image-delete.png"
+const imgName = faker.system.commonFileName("png")
 
-test.beforeEach(async ({ request }) =>
-	uploadTestFile({ request, assetsPath: img, customName: imgName }),
-)
+test.beforeEach(async ({ filePage }) => filePage.uploadFile(assetPath, imgName))
 test.afterEach(async ({ filePage }) => filePage.db.deleteFileByName(imgName))
 
-test("Delete single file", async ({ filePage, page }) => {
+test("Delete single file", async ({ filePage }) => {
 	await filePage.goHome()
-
-	await filePage.clickLink("Files")
-
-	// await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajFiles?${query}`)
-	const query = toRaQuery({ filter: { name: imgName } })
-	await page.goto(`http://localhost:7100/admin/#/zmajFiles?${query}`)
-	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajFiles?${query}`)
-	await page.getByText(imgName).click()
-	await expect(page).toHaveURL(createIdRegex("http://localhost:7100/admin/#/zmajFiles/$ID/show"))
+	await filePage.goToListWithQuery({ filter: { name: imgName } })
+	await filePage.clickOnFileName(imgName)
+	await filePage.isOnFileShowPage(imgName)
 	await filePage.clickDeleteButton()
 	await filePage.clickConfirmButton()
-	await filePage.isOnRootPage()
-	await filePage.hasBodyContent("Element deleted")
+	await filePage.isOnListPage()
+	await filePage.elementDeletedVisible()
 })

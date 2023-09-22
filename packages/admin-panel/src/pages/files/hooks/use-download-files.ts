@@ -1,7 +1,6 @@
 import { FileInfo, IdRecord } from "@zmaj-js/common"
 import { saveAs as saveFileAs } from "file-saver"
 import { useNotify } from "ra-core"
-import { trim } from "radash"
 import { useCallback } from "react"
 import { useSdk } from "../../../context/sdk-context"
 
@@ -31,7 +30,8 @@ export function useDownloadFiles(files: IdRecord<FileInfo>[]): () => Promise<voi
 				// `path.format` allows extension to ends with dot, and won't add dot by
 				// itself if extension is without a dot
 				// so this is simpler solution, simply trim dots from ends
-				const name = trim(`zmaj_file_${file.id}.${file.extension ?? ""}`, ".")
+				// const name = trim(`zmaj_file_${file.id}.${file.extension ?? ""}`, ".")
+				const name = file.name ?? `zmaj_file_${file.id}`
 
 				// Call browser's save file
 				saveFileAs(result, name)

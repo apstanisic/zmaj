@@ -19,22 +19,22 @@ const createWebhookDto = new WebhookCreateDto({
 
 let webhook: Webhook
 
-test.beforeAll(async ({ webhookPage: webhookPages }) => {
-	await webhookPages.db.deleteByName(webhookName)
-	await webhookPages.db.deleteByName(webhookNameUpdated)
-	webhook = await webhookPages.db.create(createWebhookDto)
+test.beforeEach(async ({ webhookPage }) => {
+	await webhookPage.db.deleteByName(webhookName)
+	await webhookPage.db.deleteByName(webhookNameUpdated)
+	webhook = await webhookPage.db.create(createWebhookDto)
 })
 
-test.afterEach(async ({ webhookPage: webhookPages }) => {
-	await webhookPages.db.deleteByName(webhookName)
-	await webhookPages.db.deleteByName(webhookNameUpdated)
+test.afterEach(async ({ webhookPage }) => {
+	await webhookPage.db.deleteByName(webhookName)
+	await webhookPage.db.deleteByName(webhookNameUpdated)
 })
 
-test("Update Webhook", async ({ webhookPage: webhookPages, page }) => {
-	await webhookPages.goHome()
-	await webhookPages.goToList()
-	await webhookPages.goToShow(webhook.id)
-	await webhookPages.clickEditButton(webhook.id)
+test("Update Webhook", async ({ webhookPage, page }) => {
+	await webhookPage.goHome()
+	await webhookPage.goToList()
+	await webhookPage.goToShow(webhook.id)
+	await webhookPage.clickEditButtonInList(webhook.id)
 
 	await page.getByLabel("Name").fill(webhookNameUpdated)
 	await page.getByRole("switch", { name: "Enabled" }).click()
@@ -51,14 +51,14 @@ test("Update Webhook", async ({ webhookPage: webhookPages, page }) => {
 
 	// there should be 5: start with 4, remove 2, add 3
 	// there should be 5 check marks, since we react on 5 events
-	await webhookPages.hasSelectedEventsAmount(5)
+	await webhookPage.hasSelectedEventsAmount(5)
 
-	await webhookPages.clickSaveButton()
+	await webhookPage.clickSaveButton()
 
-	await webhookPages.hasBodyContent("Element updated")
-	await webhookPages.toHaveUrl(`${webhook.id}/show`)
+	await webhookPage.hasBodyContent("Element updated")
+	await webhookPage.toHaveUrl(`${webhook.id}/show`)
 
-	const updated = await webhookPages.db.findByName(webhookNameUpdated)
+	const updated = await webhookPage.db.findByName(webhookNameUpdated)
 	expect(updated).toMatchObject({
 		id: webhook.id,
 		name: webhookNameUpdated,

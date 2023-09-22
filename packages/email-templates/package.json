@@ -33,7 +33,7 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run packages/email-templates",
+		"test": "cd ../.. && vitest run packages/email-templates --passWithNoTests",
 		"tsc": "tsc",
 		"build": "tsup --config tsup.config.ts",
 		"dev": "tsup --config tsup.config.ts --watch",

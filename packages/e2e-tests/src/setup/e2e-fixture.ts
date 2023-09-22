@@ -1,7 +1,10 @@
 import { test as base } from "@playwright/test"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { Orm } from "zmaj"
+import { AuthPage } from "../tests/auth/auth.pom.js"
+import { FieldPage } from "../tests/db-fields/field.pom.js"
 import { FilePage } from "../tests/files/file.pom.js"
+import { PermissionPage } from "../tests/permissions/permission.pom.js"
 import { RolePage } from "../tests/roles/role.pom.js"
 import { UserPage } from "../tests/users/user.pom.js"
 import { WebhookPages } from "../tests/webhooks/webhook.pom.js"
@@ -15,6 +18,9 @@ type MyFixtures = {
 	filePage: FilePage
 	userPage: UserPage
 	rolePage: RolePage
+	fieldPage: FieldPage
+	permissionPage: PermissionPage
+	authPage: AuthPage
 }
 
 export const test = base.extend<MyFixtures>({
@@ -29,13 +35,22 @@ export const test = base.extend<MyFixtures>({
 	webhookPage: async ({ page, orm }, use) => {
 		await use(new WebhookPages(page, orm))
 	},
-	filePage: async ({ page, orm }, use) => {
-		await use(new FilePage(page, orm))
+	filePage: async ({ page, orm, sdk }, use) => {
+		await use(new FilePage(page, orm, sdk))
 	},
 	userPage: async ({ page, orm }, use) => {
 		await use(new UserPage(page, orm, "/#/zmajUsers"))
 	},
 	rolePage: async ({ page, orm }, use) => {
 		await use(new RolePage(page, orm, "/#/zmajRoles"))
+	},
+	fieldPage: async ({ page, orm, sdk }, use) => {
+		await use(new FieldPage(page, orm, sdk))
+	},
+	permissionPage: async ({ page, orm }, use) => {
+		await use(new PermissionPage(page, orm, "/#/zmajPermissions"))
+	},
+	authPage: async ({ page, orm }, use) => {
+		await use(new AuthPage(page, orm, "/#/"))
 	},
 })

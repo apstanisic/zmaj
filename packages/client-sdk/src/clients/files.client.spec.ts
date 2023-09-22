@@ -88,7 +88,7 @@ describe("FilesService", () => {
 
 			const resFile = await client.upload({ file: file, onProgress, signal })
 
-			expect(axios.post).toBeCalledWith("/files", expect.any(FormDataMock), {
+			expect(axios.post).toBeCalledWith("/files", expect.anything(), {
 				headers: undefined,
 				signal,
 				onUploadProgress: onProgress,

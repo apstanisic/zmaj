@@ -190,7 +190,7 @@ describe("FilesService", () => {
 			vi.useFakeTimers()
 			vi.setSystemTime(date)
 
-			const path = service.generateUri("some-id", "jpg")
+			const path = service.generateUri("some-id", ".jpg")
 			expect(path).toEqual("zmaj/files/2022/01/some-id/some-id.jpg")
 
 			vi.useRealTimers()
@@ -286,7 +286,7 @@ describe("FilesService", () => {
 					fileSize: 10000,
 					mimeType: "image/jpeg",
 					userId: req.user?.userId,
-					extension: "jpg",
+					name: "my_name.jpg",
 				}),
 				{
 					req,

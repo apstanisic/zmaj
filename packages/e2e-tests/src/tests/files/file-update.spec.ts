@@ -1,38 +1,30 @@
-import { expect } from "@playwright/test"
+import { faker } from "@faker-js/faker"
 import { test } from "../../setup/e2e-fixture.js"
-import { createIdRegex } from "../../utils/create-id-regex.js"
-import { uploadTestFile } from "../../utils/e2e-file-utils.js"
-import { toRaQuery } from "../../utils/test-sdk.js"
 
-const img = "test-image-update.png"
-const imgName = "test-image-update"
+const asset = "test-image-update.png"
+const imgName = faker.system.commonFileName("png")
 
-test.beforeEach(async ({ request }) => uploadTestFile({ request, assetsPath: img }))
+test.beforeEach(async ({ filePage }) => {
+	await filePage.uploadFile(asset, imgName)
+})
+
 test.afterEach(async ({ filePage }) => filePage.db.deleteFileByName(imgName))
 
 test("Update file", async ({ page, filePage }) => {
 	await filePage.goHome()
+	await filePage.goToList()
+	await filePage.goToListWithQuery({ filter: { name: imgName } })
+	await filePage.clickOnFileName(imgName)
+	await filePage.isOnFileShowPage(imgName)
+	await filePage.notHasCrudContent(`Description: This is description`)
 
-	await page.getByRole("link", { name: "Files" }).click()
-	// await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajFiles?${query}`)
-	const query = toRaQuery({ filter: { name: imgName } })
-	await page.goto(`http://localhost:7100/admin/#/zmajFiles?${query}`)
-	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajFiles?${query}`)
-
-	await page.getByText(imgName).click()
-
-	await expect(page).toHaveURL(createIdRegex("http://localhost:7100/admin/#/zmajFiles/$ID/show"))
-
-	await expect(page.locator(".crud-content")).not.toContainText(`Description: This is description`)
-
-	await page.getByRole("button", { name: "Edit" }).click()
-
+	await filePage.clickEditButton()
+	await filePage.isOnFileEditPage(imgName)
 	await page.getByLabel("Description").fill("This is description")
+	await filePage.clickSaveButton()
 
-	await page.getByRole("button", { name: "Save" }).click()
+	await filePage.isOnFileShowPage(imgName)
 
-	await expect(page).toHaveURL(createIdRegex("http://localhost:7100/admin/#/zmajFiles/$ID/show"))
-
-	await expect(page.locator(".crud-content")).toContainText(`Name: ${imgName}`)
-	await expect(page.locator(".crud-content")).toContainText(`Description: This is description`)
+	await filePage.hasCrudContent(`Name: ${imgName}`)
+	await filePage.hasCrudContent(`Description: This is description`)
 })

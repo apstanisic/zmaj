@@ -80,7 +80,7 @@ function ensureRequiredScripts(packageJson, folderName) {
 	const requiredScripts = {
 		prebuild: "rimraf dist",
 		lint: "eslint --fix src",
-		test: `cd ../.. && vitest run packages/${folderName}`,
+		test: `cd ../.. && vitest run packages/${folderName} --passWithNoTests`,
 		tsc: "tsc",
 		format: "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
 	}

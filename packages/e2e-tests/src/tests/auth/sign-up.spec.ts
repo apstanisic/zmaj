@@ -1,8 +1,9 @@
-import { expect, test } from "@playwright/test"
+import { expect } from "@playwright/test"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { ChangeSettingsDto } from "@zmaj-js/common"
-import { emptyState } from "../state/empty-state.js"
-import { getSdk } from "../utils/e2e-get-sdk.js"
+import { test } from "../../setup/e2e-fixture.js"
+import { emptyState } from "../../state/empty-state.js"
+import { getSdk } from "../../utils/e2e-get-sdk.js"
 
 test.use({ storageState: emptyState })
 

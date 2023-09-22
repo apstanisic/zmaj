@@ -12,26 +12,26 @@ const createWebhookDto = new WebhookCreateDto({
 	events: ["create.posts", "create.comments", "update.comments", "delete.tags"],
 })
 
-test.beforeAll(async ({ webhookPage: webhookPages }) => {
-	await webhookPages.db.deleteByName(hookName)
-	webhook = await webhookPages.db.create(createWebhookDto)
+test.beforeEach(async ({ webhookPage }) => {
+	await webhookPage.db.deleteByName(hookName)
+	webhook = await webhookPage.db.create(createWebhookDto)
 })
 
-test.afterEach(async ({ webhookPage: webhookPages }) => {
-	await webhookPages.db.deleteByName(hookName)
+test.afterEach(async ({ webhookPage }) => {
+	await webhookPage.db.deleteByName(hookName)
 })
 
-test("Delete Webhook", async ({ webhookPage: webhookPages }) => {
-	await webhookPages.goHome()
-	await webhookPages.goToList()
-	await webhookPages.goToShow(webhook.id)
+test("Delete Webhook", async ({ webhookPage }) => {
+	await webhookPage.goHome()
+	await webhookPage.goToList()
+	await webhookPage.goToShow(webhook.id)
 
-	await webhookPages.clickDeleteButton()
-	await webhookPages.clickConfirmButton()
+	await webhookPage.clickDeleteButton()
+	await webhookPage.clickConfirmButton()
 
-	await webhookPages.hasBodyContent("Element deleted")
-	await webhookPages.isOnRootPage()
+	await webhookPage.hasBodyContent("Element deleted")
+	await webhookPage.isOnRootPage()
 
-	const webhookInDb = await webhookPages.db.findByName(hookName)
+	const webhookInDb = await webhookPage.db.findByName(hookName)
 	expect(webhookInDb).toBeUndefined()
 })

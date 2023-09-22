@@ -13,7 +13,7 @@ export const FileCollection = codeCollection(FileModel, {
 			list: {
 				layout: {
 					gallery: {
-						secondaryTemplate: "{extension}",
+						secondaryTemplate: "{name|extension}",
 						tertiaryTemplate: "{fileSize|toKb} kb",
 					},
 				},
@@ -21,7 +21,7 @@ export const FileCollection = codeCollection(FileModel, {
 				quickFilter: true,
 				defaultSort: { field: "createdAt", order: "DESC" },
 				perPage: { default: 20, options: [10, 20, 50] },
-				sortableFields: ["createdAt", "name", "id", "mimeType", "extension", "fileSize"],
+				sortableFields: ["createdAt", "name", "id", "mimeType", "fileSize"],
 				size: "medium",
 			},
 		}),

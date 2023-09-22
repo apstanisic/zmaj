@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test"
-import { emptyState } from "../state/empty-state.js"
+import { emptyState } from "../../state/empty-state.js"
 
 test.use({ storageState: emptyState })
 

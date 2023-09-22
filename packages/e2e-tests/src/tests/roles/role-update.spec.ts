@@ -18,7 +18,7 @@ test.afterEach(async ({ rolePage }) => {
 test("Update Role", async ({ page, rolePage }) => {
 	await rolePage.goHome()
 	await rolePage.goToList()
-	await rolePage.clickEditButton(role.id)
+	await rolePage.clickEditButtonInList(role.id)
 
 	await rolePage.isOnEditPage(role.id)
 

@@ -19,14 +19,14 @@ export class FileModel extends BaseModel {
 		/**
 		 * Name. Without path, without extension Example: `test-image`
 		 */
-		name: f.text({ nullable: true }),
+		name: f.text({}),
 
 		/**
 		 * File extensions.
 		 * It is possible for file to not have extension, then it's null //it's then empty string
 		 * It should not contain leading dot `"."`
 		 */
-		extension: f.text({ nullable: true, canUpdate: false }),
+		// extension: f.text({ nullable: true, canUpdate: false }),
 
 		/**
 		 * Use as alt text in browser

@@ -1,5 +1,5 @@
 import { ZmajSdk } from "@zmaj-js/client-sdk"
-import { FileInfo, isImageExtension, joinUrl, qsStringify } from "@zmaj-js/common"
+import { FileInfo, isImageExtensionFileName, joinUrl, qsStringify } from "@zmaj-js/common"
 import { clsx } from "clsx"
 import { useSdk } from "../context/sdk-context"
 import { ImagePlaceholder } from "./ImagePlaceholder"
@@ -13,7 +13,8 @@ type Props = {
 export function DisplayZmajFile({ file, size, className }: Props): JSX.Element {
 	const sdk = useSdk()
 
-	const canShow = (file.mimeType?.startsWith("image") && isImageExtension(file.extension)) ?? false
+	const canShow =
+		(file.mimeType?.startsWith("image") && isImageExtensionFileName(file.name ?? "")) ?? false
 
 	if (!canShow || file.id === undefined) {
 		return (
