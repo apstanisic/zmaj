@@ -1,38 +1,28 @@
-import { Permission, PermissionCreateDto, Role } from "@zmaj-js/common"
 import { test } from "../../setup/e2e-fixture.js"
 
-let permission: Permission
-let role: Role
-
-test.beforeEach(async ({ permissionPage }) => {
-	role = await permissionPage.db.createRole()
-	permission = await permissionPage.db.createPermission(
-		new PermissionCreateDto({
-			action: "update",
-			resource: "collections.posts",
-			roleId: role.id,
-			conditions: { title: { $ne: "hello_world" } },
-			fields: ["body", "title"],
-		}),
-	)
+test.beforeEach(async ({ permissionItem, permissionFx }) => {
+	const updated = await permissionFx.update(permissionItem.id, {
+		conditions: { title: { $ne: "hello_world" } },
+		fields: ["body", "title"],
+	})
+	// update existing permissionItem
+	Object.assign(permissionItem, updated)
 })
 
-test.afterEach(async ({ permissionPage }) => permissionPage.db.deleteRole(role.name))
-
-test("Show Permission", async ({ rolePage, permissionPage }) => {
+test("Show Permission", async ({ rolePage, permissionPage, zRole, permissionItem }) => {
 	await rolePage.goHome()
 	await rolePage.goToList()
-	await rolePage.goToShow(role.id)
+	await rolePage.goToShow(permissionItem.roleId)
 
 	// one permission enabled, but it's custom
 	await permissionPage.hasPartialPermissionsAmount(1)
 
-	await permissionPage.openPermissionDialog("update", "collections.posts")
+	await permissionPage.openPermissionDialog(permissionItem.action, permissionItem.resource)
 
-	await permissionPage.hasTextOnBasicTab(permission.id)
-	await permissionPage.hasTextOnBasicTab(permission.action)
-	await permissionPage.hasTextOnBasicTab(role.name)
-	await permissionPage.hasTextOnBasicTab("collections.posts")
+	await permissionPage.hasTextOnBasicTab(permissionItem.id)
+	await permissionPage.hasTextOnBasicTab(permissionItem.action)
+	await permissionPage.hasTextOnBasicTab(zRole.name)
+	await permissionPage.hasTextOnBasicTab(permissionItem.resource)
 
 	await permissionPage.goToFieldsTab()
 
@@ -44,7 +34,7 @@ test("Show Permission", async ({ rolePage, permissionPage }) => {
 
 	await permissionPage.goToConditionsTab()
 
-	await permissionPage.hasCondition(permission.conditions)
+	await permissionPage.hasCondition(permissionItem.conditions)
 
 	await permissionPage.clickCancelButton()
 })

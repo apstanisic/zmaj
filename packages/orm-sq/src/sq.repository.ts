@@ -262,6 +262,8 @@ export class SequelizeRepository<
 				throw new UniqueError(error, 3012)
 			}
 
+			console.log({ error })
+
 			throw new InternalOrmProblem(93100, error)
 		}
 	}

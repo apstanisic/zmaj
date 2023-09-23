@@ -1,16 +1,10 @@
 import { Locator, Page, expect } from "@playwright/test"
+import { escapeRegExp } from "@zmaj-js/common"
 import { join } from "node:path"
-import { Orm } from "zmaj"
-
-// https://stackoverflow.com/a/9310752
-function escapeRegExp(text: string): string {
-	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
-}
 
 export class ZmajPage {
 	constructor(
-		protected page: Page,
-		protected orm: Orm,
+		public page: Page,
 		protected rootUrl: string,
 	) {}
 
@@ -26,7 +20,11 @@ export class ZmajPage {
 	}
 
 	async urlEndsWith(text: string): Promise<void> {
-		expect(this.page.url().endsWith(text)).toEqual(true)
+		const asRegex = new RegExp(escapeRegExp(text) + "$")
+		await expect(this.page).toHaveURL(asRegex)
+		// await expect(() => {
+		// 	expect(this.page.url().endsWith(text)).toEqual(true)
+		// }).toPass()
 	}
 
 	async goHome(): Promise<void> {
@@ -73,7 +71,7 @@ export class ZmajPage {
 		await this.page.getByRole("button", { name: /Cancel/ }).click()
 	}
 
-	async clickCreateButton(): Promise<void> {
+	async clickCreateRecordButton(): Promise<void> {
 		await this.page.getByRole("button", { name: /Create record/ }).click()
 	}
 

@@ -1,16 +1,20 @@
 import { expect } from "@playwright/test"
+import { User } from "zmaj"
 import { test } from "../../setup/e2e-fixture.js"
 import { getUniqueEmail } from "../../setup/e2e-unique-id.js"
 
-const email = getUniqueEmail()
+let user: User
 
-test.beforeEach(async ({ userPage }) => userPage.db.removeByEmail(email))
-test.afterEach(async ({ userPage }) => userPage.db.removeByEmail(email))
+test.afterEach(async ({ userFx }) => {
+	await userFx.removeWhere({ id: user.id })
+})
 
-test("Invite user", async ({ page, context, userPage }) => {
+test("Invite user", async ({ page, context, userPage, userFx }) => {
+	const email = getUniqueEmail()
+
 	await userPage.goHome()
 	await userPage.goToList()
-	await userPage.clickCreateButton()
+	await userPage.clickCreateRecordButton()
 
 	await page.getByRole("switch", { name: "Confirmed Email" }).click()
 
@@ -24,14 +28,13 @@ test("Invite user", async ({ page, context, userPage }) => {
 
 	await userPage.clickSaveButton()
 
-	let userId = ""
 	await expect(async () => {
-		const user = await userPage.db.findByEmail(email)
-		expect(user).toBeDefined()
-		userId = user!.id
+		const dbUser = await userFx.findWhere({ email })
+		expect(dbUser).toBeDefined()
+		user = dbUser!
 	}).toPass()
 
-	await userPage.isOnShowPage(userId)
+	await userPage.isOnShowPage(user.id)
 
 	// logout, since we cannot accept invitation if we are logged in
 	await page.getByRole("button", { name: "More Actions" }).click()

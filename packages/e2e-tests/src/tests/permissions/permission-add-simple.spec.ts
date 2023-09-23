@@ -1,18 +1,10 @@
 import { expect } from "@playwright/test"
-import { Role } from "@zmaj-js/common"
 import { test } from "../../setup/e2e-fixture.js"
 
-let role: Role
-
-test.beforeEach(async ({ permissionPage }) => {
-	role = await permissionPage.db.createRole()
-})
-test.afterEach(async ({ permissionPage }) => permissionPage.db.deleteRole(role.name))
-
-test("Add permission", async ({ page, rolePage, permissionPage }) => {
+test("Add permission", async ({ page, rolePage, permissionPage, zRole, permissionFx }) => {
 	await rolePage.goHome()
 	await rolePage.goToList()
-	await rolePage.goToShow(role.id)
+	await rolePage.goToShow(zRole.id)
 
 	await page.getByRole("tab", { name: "System" }).click()
 
@@ -23,7 +15,7 @@ test("Add permission", async ({ page, rolePage, permissionPage }) => {
 	await page.getByRole("button", { name: "Enable" }).click()
 	await permissionPage.hasToast("Permissions successfully updated")
 
-	const permissions = await permissionPage.db.getAllRolePermissions(role)
+	const permissions = await permissionFx.getAllRolePermissions(zRole)
 	expect(permissions).toHaveLength(1)
 
 	expect(permissions[0]).toMatchObject({

@@ -1,22 +1,30 @@
+import { faker } from "@faker-js/faker"
 import { expect } from "@playwright/test"
+import { User } from "zmaj"
 import { test } from "../../setup/e2e-fixture.js"
-import { getUniqueId } from "../../setup/e2e-unique-id.js"
 
-const email = `${getUniqueId()}@example.com`
+let user: User
 
-test.beforeEach(async ({ userPage }) => userPage.db.removeByEmail(email))
-test.afterEach(async ({ userPage }) => userPage.db.removeByEmail(email))
+test.afterEach(async ({ userFx }) => {
+	await userFx.removeWhere({ id: user.id })
+})
 
-test("Create User", async ({ page, userPage }) => {
+test("Create User", async ({ page, userPage, userFx }) => {
+	const data = {
+		email: faker.internet.email({ provider: "example.test" }),
+		firstName: "Play",
+		lastName: "Wright",
+	}
+
 	await userPage.goHome()
 	await userPage.goToList()
-	await userPage.clickCreateButton()
+	await userPage.clickCreateRecordButton()
 
 	await page.getByRole("switch", { name: "Confirmed Email" }).click()
 
-	await page.getByLabel("First Name").fill("Play")
-	await page.getByLabel("Last Name").fill("Wright")
-	await page.getByLabel(/^Email$/).fill(email)
+	await page.getByLabel("First Name").fill(data.firstName)
+	await page.getByLabel("Last Name").fill(data.lastName)
+	await page.getByLabel(/^Email$/).fill(data.email)
 
 	await page.getByRole("button", { name: /Status/ }).click()
 	await page.getByRole("option", { name: /Disabled/ }).click()
@@ -26,12 +34,11 @@ test("Create User", async ({ page, userPage }) => {
 
 	await userPage.clickSaveButton()
 
-	let userId = ""
 	await expect(async () => {
-		const user = await userPage.db.findByEmail(email)
-		expect(user).toBeDefined()
-		userId = user!.id
+		const dbUser = await userFx.findWhere({ email: data.email })
+		expect(dbUser).toBeDefined()
+		user = dbUser!
 	}).toPass()
 
-	await userPage.toHaveUrl(`${userId}/show`)
+	await userPage.toHaveUrl(`${user.id}/show`)
 })

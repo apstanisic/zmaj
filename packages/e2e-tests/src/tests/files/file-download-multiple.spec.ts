@@ -11,12 +11,13 @@ test.beforeEach(async ({ filePage }) => {
 	await filePage.uploadFile(assetPath1, imgName1)
 	await filePage.uploadFile(assetPath2, imgName2)
 })
-test.afterEach(async ({ filePage }) => {
-	await filePage.db.deleteFileByName(imgName1)
-	await filePage.db.deleteFileByName(imgName2)
+
+test.afterEach(async ({ fileFx }) => {
+	await fileFx.deleteWhere({ name: imgName1 })
+	await fileFx.deleteWhere({ name: imgName2 })
 })
 
-test("Download multiple files", async ({ page, filePage }) => {
+test("Download multiple files", async ({ filePage }) => {
 	await filePage.goHome()
 	// This will display just those 2 files
 	await filePage.goToListWithQuery({ filter: { name: { $in: [imgName1, imgName2] } } })
@@ -26,7 +27,7 @@ test("Download multiple files", async ({ page, filePage }) => {
 
 	// we expect 2 downloads, so we can't simply react to event (i think??)
 	const downloadCounter = filePage.startCountingDownloads()
-	filePage.clickOnDownloadButton()
+	await filePage.clickOnDownloadButton()
 
 	await expect(() => {
 		expect(downloadCounter()).toEqual(2)

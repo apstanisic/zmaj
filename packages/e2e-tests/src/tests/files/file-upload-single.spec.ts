@@ -3,8 +3,7 @@ import { test } from "../../setup/e2e-fixture.js"
 
 const imgName = faker.system.commonFileName("png")
 
-test.beforeEach(async ({ filePage }) => filePage.db.deleteFileByName(imgName))
-test.afterEach(async ({ filePage }) => filePage.db.deleteFileByName(imgName))
+test.afterEach(async ({ fileFx }) => fileFx.deleteWhere({ name: imgName }))
 
 test("Upload single file", async ({ filePage }) => {
 	await filePage.goHome()

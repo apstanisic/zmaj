@@ -1,29 +1,15 @@
 import { Locator, expect } from "@playwright/test"
-import { Permission, PermissionCreateDto, PermissionModel, Role, RoleModel } from "@zmaj-js/common"
-import { OrmRepository } from "zmaj"
+import {
+	Permission,
+	PermissionCreateDto,
+	PermissionModel,
+	PermissionUpdateDto,
+	Role,
+} from "@zmaj-js/common"
+import { Orm, OrmRepository, RepoFilterWhere } from "zmaj"
 import { ZmajPage } from "../../setup/ZmajPage.js"
-import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
 
 export class PermissionPage extends ZmajPage {
-	get repo(): OrmRepository<PermissionModel> {
-		return this.orm.repoManager.getRepo(PermissionModel)
-	}
-
-	get rolesRepo(): OrmRepository<RoleModel> {
-		return this.orm.repoManager.getRepo(RoleModel)
-	}
-	db = {
-		createRole: async (name?: string) =>
-			this.rolesRepo.createOne({ data: { name: name ?? getUniqueTitle() } }),
-		deleteRole: async (name: string) => this.rolesRepo.deleteWhere({ where: { name } }),
-		createPermission: async (data: PermissionCreateDto): Promise<Permission> =>
-			this.repo.createOne({ data }),
-		findPermission: (id: string): Promise<Permission | undefined> =>
-			this.repo.findOne({ where: { id } }),
-		getAllRolePermissions: (role: Role): Promise<Permission[]> =>
-			this.repo.findWhere({ where: { roleId: role.id } }),
-	}
-
 	async hasPartialPermissionsAmount(n: number): Promise<void> {
 		await expect(this.page.getByTestId("SettingsInputComponentIcon")).toHaveCount(n)
 	}
@@ -97,5 +83,31 @@ export class PermissionPage extends ZmajPage {
 
 	async permissionUpdatedToast(): Promise<void> {
 		await this.hasToast("Permissions successfully updated")
+	}
+}
+
+export class PermissionUtilsFx {
+	constructor(private orm: Orm) {}
+	get repo(): OrmRepository<PermissionModel> {
+		return this.orm.repoManager.getRepo(PermissionModel)
+	}
+
+	async removeWhere(where: RepoFilterWhere<PermissionModel>): Promise<void> {
+		await this.repo.deleteWhere({ where })
+	}
+
+	async createPermission(data: PermissionCreateDto): Promise<Permission> {
+		return this.repo.createOne({ data })
+	}
+
+	async update(id: string, changes: PermissionUpdateDto): Promise<Permission> {
+		return this.repo.updateById({ id, changes })
+	}
+
+	async findPermission(id: string): Promise<Permission | undefined> {
+		return this.repo.findOne({ where: { id } })
+	}
+	async getAllRolePermissions(role: Role): Promise<Permission[]> {
+		return this.repo.findWhere({ where: { roleId: role.id } })
 	}
 }

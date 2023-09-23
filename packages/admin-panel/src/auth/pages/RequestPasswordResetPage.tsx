@@ -52,7 +52,12 @@ export function RequestPasswordResetPage(): JSX.Element {
 				defaultValues={{ email: "" }}
 				className="grid w-full gap-y-1"
 			>
-				<ManualInputField source="email" isRequired Component={EmailInputField} />
+				<ManualInputField
+					source="email"
+					isRequired
+					Component={EmailInputField}
+					placeholder="Your email"
+				/>
 
 				<Button className="mt-4" type="submit" disabled={disabled}>
 					Send password reset email

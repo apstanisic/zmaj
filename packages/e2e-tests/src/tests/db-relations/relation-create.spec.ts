@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test"
 import { camel } from "radash"
-import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteTables } from "../utils/e2e-delete-tables.js"
-import { getSdk } from "../utils/e2e-get-sdk.js"
+import { createIdRegex } from "../../utils/create-id-regex.js"
+import { deleteTables } from "../../utils/e2e-delete-tables.js"
+import { getSdk } from "../../utils/e2e-get-sdk.js"
 
 const leftTableName = "test_rel_create_left"
 const rightTableName = "test_rel_create_right"

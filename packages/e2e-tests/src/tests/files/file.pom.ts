@@ -1,36 +1,23 @@
 import { FileChooser, Page, expect } from "@playwright/test"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
-import { FileModel } from "@zmaj-js/common"
+import { FileInfo, FileModel } from "@zmaj-js/common"
 import { FormData } from "formdata-node"
 import { lookup } from "mime-types"
 import { File } from "node:buffer"
 import { readFile } from "node:fs/promises"
 import { extname, join, parse } from "node:path"
-import { Orm, OrmRepository } from "zmaj"
+import { Orm, OrmRepository, RepoFilter } from "zmaj"
 import { ZmajCrudPage } from "../../setup/ZmajCrudPage.js"
 import { e2eRoot } from "../../setup/e2e-env.js"
 import { getUniqueId } from "../../setup/e2e-unique-id.js"
 
-export class FilePage extends ZmajCrudPage {
+export class FilePageFx extends ZmajCrudPage {
 	override title = "Files"
 	constructor(
 		page: Page,
-		orm: Orm,
 		protected sdk: ZmajSdk,
 	) {
-		super(page, orm, "/#/zmajFiles")
-	}
-
-	get repo(): OrmRepository<FileModel> {
-		return this.orm.repoManager.getRepo(FileModel)
-	}
-
-	db = {
-		deleteFileByName: async (name: string) => this.repo.deleteWhere({ where: { name } }),
-		findByName: async (name: string) => this.repo.findOneOrThrow({ where: { name } }),
-		getRandomName(ext: string): string {
-			return `file_${getUniqueId()}${ext}`
-		},
+		super(page, "/#/zmajFiles")
 	}
 
 	async readAsset(
@@ -75,12 +62,10 @@ export class FilePage extends ZmajCrudPage {
 		await this.page.getByText(name).click()
 	}
 
-	async isOnFileShowPage(name: string): Promise<void> {
-		const file = await this.db.findByName(name)
+	async isOnFileShowPage(file: FileInfo): Promise<void> {
 		await this.isOnShowPage(file.id)
 	}
-	async isOnFileEditPage(name: string): Promise<void> {
-		const file = await this.db.findByName(name)
+	async isOnFileEditPage(file: FileInfo): Promise<void> {
 		await this.isOnEditPage(file.id)
 	}
 
@@ -129,5 +114,55 @@ export class FilePage extends ZmajCrudPage {
 		})
 
 		return () => downloadCount
+	}
+}
+
+export class FileUtilsFx {
+	constructor(
+		private orm: Orm,
+		protected sdk: ZmajSdk,
+	) {}
+
+	get repo(): OrmRepository<FileModel> {
+		return this.orm.repoManager.getRepo(FileModel)
+	}
+
+	async deleteFileByName(name: string): Promise<void> {
+		await this.repo.deleteWhere({ where: { name } })
+	}
+
+	async deleteWhere(where: RepoFilter<FileModel>): Promise<void> {
+		await this.repo.deleteWhere({ where })
+	}
+
+	findByName(name: string): Promise<FileInfo> {
+		return this.repo.findOneOrThrow({ where: { name } })
+	}
+
+	getRandomName(ext: string): string {
+		return `file_${getUniqueId()}${ext}`
+	}
+
+	async readAsset(
+		name: string,
+		newName?: string,
+	): Promise<{ buffer: Buffer; name: string; mimeType: string }> {
+		const path = join(e2eRoot, "./assets", name)
+		const fileBuffer = await readFile(path)
+		return {
+			buffer: fileBuffer,
+			mimeType: lookup(extname(name)) || "application/octet-stream",
+			name: newName ?? name,
+		}
+	}
+
+	async uploadFile(assetPath: string, newName?: string): Promise<FileInfo> {
+		const file = await this.readAsset(assetPath, newName)
+		const fileBuffer = new File([file.buffer], file.name, { type: file.mimeType })
+		const result = await this.sdk.files.upload({
+			file: fileBuffer as any, //
+			formData: new FormData() as any, //
+		})
+		return result as FileInfo
 	}
 }

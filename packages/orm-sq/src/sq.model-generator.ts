@@ -64,12 +64,13 @@ export class SequelizeModelsGenerator {
 		fields.forEach(([propertyName, field]) => {
 			const property: ModelAttributes[string] = {
 				// allowNull: true, //field.isNullable,
-				allowNull: ![createdAtField, updatedAtField].includes(propertyName),
+				// allowNull: ![createdAtField, updatedAtField].includes(propertyName),
 				// orm.options.dialect === "sqlite" ? "sqlite" : "postgres",
 				type: this.getType(field.dataType),
 				autoIncrement: field.isAutoIncrement,
 				unique: field.isUnique,
 				primaryKey: field.isPrimaryKey,
+				autoIncrementIdentity: field.isPrimaryKey && field.isAutoIncrement,
 				field: snake(propertyName), // field.columnName, TODO FIXME!!!!!!!!!!!
 				// i'm abusing comment property to notify repository if record can be updated
 				comment: `CAN_CREATE=${field.canCreate};CAN_UPDATE=${field.canUpdate}`,

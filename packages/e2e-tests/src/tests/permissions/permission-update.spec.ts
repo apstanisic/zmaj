@@ -1,33 +1,29 @@
 import { expect } from "@playwright/test"
-import { Permission, PermissionCreateDto, Role } from "@zmaj-js/common"
 import { test } from "../../setup/e2e-fixture.js"
 
-let permission: Permission
-let role: Role
-
-test.beforeEach(async ({ permissionPage }) => {
-	role = await permissionPage.db.createRole()
-	permission = await permissionPage.db.createPermission(
-		new PermissionCreateDto({
-			action: "create",
-			resource: "collections.posts",
-			roleId: role.id,
-			conditions: { title: { $ne: "hello_world" } },
-			fields: ["body", "title"],
-		}),
-	)
+test.beforeEach(async ({ permissionItem, permissionFx }) => {
+	const updated = await permissionFx.update(permissionItem.id, {
+		conditions: { title: { $ne: "hello_world" } },
+		fields: ["body", "title"],
+	})
+	Object.assign(permissionItem, updated)
 })
 
-test.afterEach(async ({ permissionPage }) => permissionPage.db.deleteRole(role.name))
-
-test("Update Permission", async ({ rolePage, permissionPage, page }) => {
+test("Update Permission", async ({
+	rolePage,
+	permissionPage,
+	page,
+	zRole,
+	permissionFx,
+	permissionItem,
+}) => {
 	await rolePage.goHome()
 	await rolePage.goToList()
-	await rolePage.goToShow(role.id)
+	await rolePage.goToShow(zRole.id)
 
 	await permissionPage.hasPartialPermissionsAmount(1)
 
-	await permissionPage.openPermissionDialog(permission.action, permission.resource)
+	await permissionPage.openPermissionDialog(permissionItem.action, permissionItem.resource)
 	await permissionPage.goToFieldsTab()
 	await permissionPage.clickOnSelectAll()
 
@@ -44,8 +40,7 @@ test("Update Permission", async ({ rolePage, permissionPage, page }) => {
 	await permissionPage.hasToast("Permissions successfully updated")
 
 	expect(async () => {
-		const updated = await permissionPage.db.findPermission(permission.id)
-
+		const updated = await permissionFx.findPermission(permissionItem.id)
 		expect(updated).toMatchObject({
 			fields: null,
 			conditions: { title: "updated_title" },

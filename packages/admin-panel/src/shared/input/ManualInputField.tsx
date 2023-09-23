@@ -33,6 +33,7 @@ export const ManualInputField = memo((props: ManualInputFieldProps) => {
 		value: record?.[source],
 		label: props.label ?? title(source),
 		fieldConfig: props.fieldConfig ?? field?.fieldConfig,
+		placeholder: props.placeholder,
 	}
 
 	// if (joined.render) {

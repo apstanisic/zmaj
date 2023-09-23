@@ -1,9 +1,9 @@
-import { expect, test } from "@playwright/test"
+import { expect } from "@playwright/test"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { times } from "@zmaj-js/common"
 import { TCommentModel, TPostModel, TTagModel } from "@zmaj-js/test-utils"
-import { getSdk } from "../utils/e2e-get-sdk.js"
-import { namespaceTestCollections } from "../utils/namespace-collection.js"
+import { test } from "../../setup/e2e-fixture.js"
+import { getSdk } from "../../utils/e2e-get-sdk.js"
 
 const suffix = "9k8fk3"
 
@@ -36,13 +36,10 @@ test.afterEach(async () => {
 	await deletePrevious(sdk)
 })
 
-test("Create record with relations", async ({ page }) => {
-	await namespaceTestCollections({ page, suffix })
-	// it throws without above 2 lines, there is no record context, see why
-	await page.goto("http://localhost:7100/admin/")
-	await expect(page).toHaveURL("http://localhost:7100/admin/")
-
-	await page.goto("http://localhost:7100/admin/#/posts/create")
+test("Create record with relations", async ({ page, postPage }) => {
+	await postPage.goHome()
+	await postPage.goToList()
+	await postPage.clickCreateRecordButton()
 
 	await page.getByLabel("Title").fill("MyTitle")
 	await page.getByLabel("Body").fill("Hello World")

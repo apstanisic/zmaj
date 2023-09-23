@@ -67,12 +67,14 @@ export class BuildTestDbService {
 	async seedRandomData(): Promise<void> {
 		// posts
 		const posts = await this.repoManager.getRepo(TPostModel).createMany({
+			overrideCanCreate: true,
 			data: times(60, () => omitCreatedAt(TPostStub())),
 		})
 		const postIds = posts.map((p) => p.id)
 
 		// tags
 		const tags = await this.repoManager.getRepo(TTagModel).createMany({
+			overrideCanCreate: true,
 			data: unique(
 				times(12, () => TTagStub()),
 				(t) => t.name,
@@ -82,18 +84,21 @@ export class BuildTestDbService {
 
 		// comments
 		const comments = await this.repoManager.getRepo(TCommentModel).createMany({
+			overrideCanCreate: true,
 			data: times(12, () => TCommentStub({ postId: rand(postIds) })),
 		})
 
 		// posts_info
 		const postIdsForPostInfo = shuffle(postIds)
 		const postsInfo = await this.repoManager.getRepo(TPostInfoModel).createMany({
+			overrideCanCreate: true,
 			data: times(25, () => TPostInfoStub({ postId: postIdsForPostInfo.shift() })),
 		})
 
 		// posts_tags
 		// for every post, create between 0 and 8 (inclusive) tag connections
 		const postsTags = await this.repoManager.getRepo(TPostTagModel).createMany({
+			overrideCanCreate: true,
 			data: postIds
 				.map((postId) => {
 					const tIds = shuffle(tagIds)
@@ -105,9 +110,15 @@ export class BuildTestDbService {
 
 	async seedConstData(): Promise<void> {
 		await this.repoManager.getRepo(TPostModel).createMany({ data: mockData.posts as any })
-		await this.repoManager.getRepo(TTagModel).createMany({ data: mockData.tags })
-		await this.repoManager.getRepo(TCommentModel).createMany({ data: mockData.comments })
-		await this.repoManager.getRepo(TPostInfoModel).createMany({ data: mockData.postInfo })
+		await this.repoManager
+			.getRepo(TTagModel)
+			.createMany({ data: mockData.tags, overrideCanCreate: true })
+		await this.repoManager
+			.getRepo(TCommentModel)
+			.createMany({ data: mockData.comments, overrideCanCreate: true })
+		await this.repoManager
+			.getRepo(TPostInfoModel)
+			.createMany({ data: mockData.postInfo, overrideCanCreate: true })
 		await this.repoManager.getRepo(TPostTagModel).createMany({ data: mockData.postsTags })
 	}
 
@@ -211,6 +222,7 @@ export class BuildTestDbService {
 				...pick(getRequiredColumns(), ["id"]),
 				body: { type: DataTypes.TEXT, allowNull: false },
 				post_id: {
+					allowNull: false,
 					type: DataTypes.UUID,
 					references: {
 						model: "posts",

@@ -7,8 +7,7 @@ import { ZmajPage } from "./ZmajPage.js"
 export abstract class ZmajCrudPage extends ZmajPage {
 	abstract title: string
 	async goToList(): Promise<void> {
-		await this.page.getByRole("link", { name: this.title }).click()
-		const vv = { v: this.urlRegex() }
+		await this.page.getByRole("link", { name: this.title, exact: true }).click()
 
 		await expect(this.page).toHaveURL(this.urlRegex())
 	}
@@ -40,6 +39,10 @@ export abstract class ZmajCrudPage extends ZmajPage {
 
 	async isOnEditPage(id: string): Promise<void> {
 		await this.toHaveUrl(id)
+	}
+
+	async isOnCreatePage(): Promise<void> {
+		await this.toHaveUrl("create")
 	}
 
 	async elementDeletedVisible(): Promise<void> {

@@ -121,16 +121,8 @@ function enumString<const Params extends BuildFieldParams & { enum: readonly str
 	return coreBuild(params, "text")
 }
 
-function createdAt(params?: Pick<BuildFieldParams, "columnName">): BuildFieldResult<
-	Date,
-	{
-		readonly canCreate: false
-		readonly canUpdate: false
-		readonly hasDefault: true
-		readonly columnName: string | undefined
-		readonly isCreatedAt: true
-	}
-> {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function createdAt(params?: Pick<BuildFieldParams, "columnName">) {
 	return dateTime({
 		canCreate: false,
 		canUpdate: false,
@@ -140,22 +132,39 @@ function createdAt(params?: Pick<BuildFieldParams, "columnName">): BuildFieldRes
 	})
 }
 
-function updatedAt(params?: Pick<BuildFieldParams, "columnName">): BuildFieldResult<
-	Date,
-	{
-		readonly canCreate: false
-		readonly canUpdate: false
-		readonly hasDefault: true
-		readonly columnName: string | undefined
-		readonly isUpdatedAt: true
-	}
-> {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function updatedAt(params?: Pick<BuildFieldParams, "columnName">) {
 	return dateTime({
 		canCreate: false,
 		canUpdate: false,
 		hasDefault: true,
-		columnName: params?.columnName ?? "created_at",
+		columnName: params?.columnName ?? "updated_at",
 		isUpdatedAt: true,
+	})
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function intPk(params?: Pick<BuildFieldParams, "columnName">) {
+	return int({
+		canCreate: false,
+		canUpdate: false,
+		hasDefault: true,
+		columnName: params?.columnName ?? "id",
+		isAutoIncrement: true,
+		isPk: true,
+		isUnique: true,
+	})
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function uuidPk(params?: Pick<BuildFieldParams, "columnName">) {
+	return uuid({
+		canCreate: false,
+		canUpdate: false,
+		hasDefault: false,
+		columnName: params?.columnName ?? "id",
+		isPk: true,
+		isUnique: true,
 	})
 }
 
@@ -177,6 +186,8 @@ export const createField = {
 	enumString,
 	array,
 	custom,
+	uuidPk,
+	intPk,
 }
 
 /**

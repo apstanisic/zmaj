@@ -1,37 +1,33 @@
-import { expect } from "@playwright/test"
-import { ZmajSdk } from "@zmaj-js/client-sdk"
 import { ChangeSettingsDto } from "@zmaj-js/common"
 import { test } from "../../setup/e2e-fixture.js"
+import { getUniqueEmail } from "../../setup/e2e-unique-id.js"
 import { emptyState } from "../../state/empty-state.js"
-import { getSdk } from "../../utils/e2e-get-sdk.js"
 
 test.use({ storageState: emptyState })
 
-async function deleteCurrentUser(sdk: ZmajSdk): Promise<void> {
-	const users = await sdk.users.getMany({ filter: { email: "test123@example.com" } })
-	const id = users.data.at(0)?.id
-	if (!id) return
-	await sdk.users.deleteById({ id })
-}
+let email: string
 
-test.beforeEach(async () => {
-	const sdk = getSdk()
+test.beforeEach(async ({ sdk }) => {
+	email = getUniqueEmail()
 	await sdk.system.settings.changeSettings(new ChangeSettingsDto({ signUpAllowed: true }))
-	await deleteCurrentUser(sdk)
 })
-test.afterEach(async () => deleteCurrentUser(getSdk()))
 
-test("Sign Up", async ({ page }) => {
-	// Go to http://localhost:7100/admin/#/sign-up
-	await page.goto("http://localhost:7100/admin/#/sign-up")
+test.afterEach(async ({ userFx }) => userFx.removeWhere({ email }))
+
+test("Sign Up", async ({ page, authPage }) => {
+	await page.goto("/")
+	// expect redirect to login page
+	await authPage.isOnLoginPage()
+
+	await authPage.typeSignUpUrl()
 
 	await page.getByLabel("First Name").fill("John")
-	await page.getByLabel("Last Name").fill("John")
+	await page.getByLabel("Last Name").fill("Smith")
 	await page.getByLabel("Email").fill("test123@example.com")
 	await page.getByLabel(/^Password$/).fill("password")
 
 	await page.getByRole("button", { name: "Sign Up" }).click()
 
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/login")
-	await expect(page.locator("body")).toContainText("Sign up successful. Please confirm email")
+	await authPage.isOnLoginPage()
+	await authPage.hasToast("Sign up successful. Please confirm email")
 })

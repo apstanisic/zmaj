@@ -1,42 +1,18 @@
-import { expect, test } from "@playwright/test"
-import { ADMIN_ROLE_ID, User, UserCreateDto } from "@zmaj-js/common"
+import { expect } from "@playwright/test"
 import { authenticator } from "otplib"
+import { test } from "../../setup/e2e-fixture.js"
 import { emptyState } from "../../state/empty-state.js"
-import { getSdk } from "../../utils/e2e-get-sdk.js"
-
-const email = "test-2fa@example.com"
-let user: User
-
-test.beforeAll(async () => {
-	const sdk = getSdk()
-	await sdk.users.temp__deleteWhere({ filter: { email } })
-	user = await sdk.users.createOne({
-		data: new UserCreateDto({
-			email,
-			confirmedEmail: true,
-			status: "active",
-			firstName: "Test",
-			lastName: "Smith",
-			roleId: ADMIN_ROLE_ID,
-			password: "password",
-		}),
-	})
-})
-test.afterAll(async () => {
-	await getSdk().users.temp__deleteWhere({ filter: { email } })
-})
 
 test.use({ storageState: emptyState })
 
-test("Enable 2FA", async ({ page }) => {
-	await page.goto("http://localhost:7100/admin/#/login")
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/login")
+test("Enable 2FA", async ({ page, authPage, userItem }) => {
+	await authPage.goHome()
+	await authPage.isOnLoginPage()
 
-	await page.getByLabel("Email").fill(email)
+	await page.getByLabel("Email").fill(userItem.email)
 	await page.getByLabel(/^Password$/).fill("password") /// pass is not pass
-	await page.getByRole("button", { name: /Sign in$/ }).click()
-
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/")
+	await authPage.signInButton.click()
+	await authPage.isOnHome()
 
 	await page.getByRole("button", { name: "More Actions" }).click()
 	await page.getByRole("menuitem", { name: "Profile" }).click()
@@ -54,8 +30,8 @@ test("Enable 2FA", async ({ page }) => {
 	const code = authenticator.generate(secret)
 
 	await page.getByPlaceholder("123456").fill(code)
-	await page.getByRole("button", { name: "Confirm" }).click()
+	await authPage.clickConfirmButton()
 
-	await expect(page.locator("body")).toContainText("2FA enabled")
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/profile")
+	await authPage.hasBodyContent("2FA enabled")
+	await authPage.urlEndsWith("/#/profile")
 })

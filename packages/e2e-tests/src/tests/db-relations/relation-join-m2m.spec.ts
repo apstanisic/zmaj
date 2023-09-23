@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test"
 import { CollectionCreateDto, RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
 import { camel } from "radash"
-import { getRandomTableName } from "../setup/e2e-unique-id.js"
-import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteTables } from "../utils/e2e-delete-tables.js"
-import { getSdk } from "../utils/e2e-get-sdk.js"
+import { getRandomTableName } from "../../setup/e2e-unique-id.js"
+import { createIdRegex } from "../../utils/create-id-regex.js"
+import { deleteTables } from "../../utils/e2e-delete-tables.js"
+import { getSdk } from "../../utils/e2e-get-sdk.js"
 
 const leftTableName = getRandomTableName()
 const rightTableName = getRandomTableName()

@@ -14,6 +14,7 @@ export const DefaultInputField = memo((props: InputFieldProps<TextInputProps<"in
 		validate: props.validate,
 		type: props.type,
 		className: props.className,
+		placeholder: props.placeholder,
 	})
 
 	// We don't want to prefix value with db default,

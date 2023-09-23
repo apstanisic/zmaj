@@ -1,22 +1,16 @@
 import { expect } from "@playwright/test"
-import { Role } from "@zmaj-js/common"
 import { test } from "../../setup/e2e-fixture.js"
-
-let role: Role
-
-test.beforeEach(async ({ permissionPage }) => {
-	role = await permissionPage.db.createRole()
-})
-test.afterEach(async ({ permissionPage }) => permissionPage.db.deleteRole(role.name))
 
 test("Add permission with custom fields and conditions", async ({
 	page,
 	rolePage,
 	permissionPage,
+	zRole,
+	permissionFx,
 }) => {
 	await rolePage.goHome()
 	await rolePage.goToList()
-	await rolePage.goToShow(role.id)
+	await rolePage.goToShow(zRole.id)
 
 	await page.getByRole("tab", { name: "System" }).click()
 
@@ -48,7 +42,7 @@ test("Add permission with custom fields and conditions", async ({
 	await permissionPage.clickOnEnableButton()
 	await permissionPage.permissionUpdatedToast()
 
-	const permission = await permissionPage.repo.findOne({
+	const permission = await permissionFx.repo.findOne({
 		where: {
 			action: "read",
 			resource: "zmaj.files",

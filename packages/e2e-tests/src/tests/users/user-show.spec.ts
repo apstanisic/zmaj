@@ -1,34 +1,24 @@
-import { User, UserCreateDto } from "@zmaj-js/common"
 import { test } from "../../setup/e2e-fixture.js"
-import { getUniqueEmail } from "../../setup/e2e-unique-id.js"
 
-let user: User
-
-test.beforeEach(async ({ userPage }) => {
-	const email = getUniqueEmail()
-
-	await userPage.db.removeByEmail(email)
-
-	user = await userPage.db.createOne(
-		new UserCreateDto({
-			email,
+test.beforeEach(async ({ userFx, userItem }) => {
+	await userFx.repo.updateById({
+		id: userItem.id,
+		changes: {
 			confirmedEmail: true,
 			status: "active",
 			firstName: "Test",
 			lastName: "Smith",
-		}),
-	)
+		},
+	})
 })
 
-test.afterEach(async ({ userPage }) => userPage.db.removeByEmail(user.email))
-
-test("Show User", async ({ page, userPage }) => {
+test("Show User", async ({ userPage, userItem }) => {
 	await userPage.goHome()
 	await userPage.goToList()
-	await userPage.goToShow(user.id)
+	await userPage.goToShow(userItem.id)
 
-	await userPage.hasCrudContent(user.email)
-	await userPage.hasCrudContent(user.firstName)
-	await userPage.hasCrudContent(user.lastName)
-	await userPage.hasCrudContent(user.status)
+	await userPage.hasCrudContent(userItem.email)
+	await userPage.hasCrudContent(userItem.firstName)
+	await userPage.hasCrudContent(userItem.lastName)
+	await userPage.hasCrudContent(userItem.status)
 })

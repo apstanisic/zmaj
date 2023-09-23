@@ -4,16 +4,12 @@ import { test } from "../../setup/e2e-fixture.js"
 const imgName1 = faker.system.commonFileName("png")
 const imgName2 = faker.system.commonFileName("png")
 
-test.beforeEach(async ({ filePage }) => {
-	await filePage.db.deleteFileByName(imgName1)
-	await filePage.db.deleteFileByName(imgName2)
-})
-test.afterEach(async ({ filePage }) => {
-	await filePage.db.deleteFileByName(imgName1)
-	await filePage.db.deleteFileByName(imgName2)
+test.afterEach(async ({ fileFx }) => {
+	await fileFx.deleteFileByName(imgName1)
+	await fileFx.deleteFileByName(imgName2)
 })
 
-test("Upload multiple files", async ({ page, filePage }) => {
+test("Upload multiple files", async ({ filePage }) => {
 	await filePage.goHome()
 	await filePage.goToList()
 	await filePage.clickUploadButton()

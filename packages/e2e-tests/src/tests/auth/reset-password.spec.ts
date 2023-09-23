@@ -1,69 +1,36 @@
-import { expect, test } from "@playwright/test"
-import { ADMIN_ROLE_ID, UserCreateDto, sleep } from "@zmaj-js/common"
-import { getSdk } from "../../utils/e2e-get-sdk.js"
+import { test } from "../../setup/e2e-fixture.js"
+import { emptyState } from "../../state/empty-state.js"
 
-const email = "reset-password@example.com"
+test.use({ storageState: emptyState })
 
-test.beforeEach(async () => {
-	const sdk = getSdk()
-	await sdk.users.temp__deleteWhere({ filter: { email } })
-	await sdk.users.createOne({
-		data: new UserCreateDto({
-			email,
-			status: "active",
-			confirmedEmail: true,
-			roleId: ADMIN_ROLE_ID,
-		}),
-	})
-})
-test.afterEach(async () => {
-	await getSdk().users.temp__deleteWhere({ filter: { email } })
-})
-
-test("Reset password", async ({ page, context }) => {
-	await page.goto("http://localhost:7100/admin/#/")
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/")
-
-	// logout, since we cannot accept invitation if we are logged in
-	await page.getByRole("button", { name: "More Actions" }).click()
-	await page.getByRole("menuitem", { name: "Logout" }).click()
+test("Reset password", async ({ page, context, userItem, authPage }) => {
+	await authPage.goToLoginPage()
 
 	await page.getByRole("link", { name: "Forgot password? Click here" }).click()
 
-	await page.getByLabel("Email").fill(email)
+	await page.getByPlaceholder("Your email").fill(userItem.email)
 	await page.getByRole("button", { name: /Send password reset email/ }).click()
 
-	// go to MailHog gui
-	await page.goto("http://localhost:7310")
-	// method will always take at least 1500ms, hardcoded
-	await sleep(2000)
+	const emailIframe = await authPage.getLatestEmail(userItem.email, "Reset password")
 
-	await page
-		.getByText(/Reset password/)
-		.first()
-		.click()
+	const newPage = await authPage.waitForNewPage({
+		context,
+		trigger: () => emailIframe.getByRole("link", { name: "Set new password" }).click(),
+	})
 
-	// https://playwright.dev/docs/pages#handling-new-pages
-	const pagePromise = context.waitForEvent("page", { timeout: 6000 })
-	// email is displayed in iframe
-	// https://playwright.dev/docs/frames
-	await page.frameLocator("#preview-html").getByRole("link", { name: "Set new password" }).click()
+	// switch page
+	authPage.page = newPage
 
-	const page2 = await pagePromise
-	await page2.waitForLoadState()
-	// it should take us to invitation page
-	await expect(page2).toHaveURL(/http:\/\/localhost:7100\/admin\/#\/auth\/password-reset/)
+	await authPage.isOnPasswordResetPage()
 
-	await page2.getByLabel(/Password/).fill("password-new")
-	await page2.getByRole("button", { name: /Change Password/ }).click()
+	await newPage.getByLabel(/Password/).fill("password-new")
+	await newPage.getByRole("button", { name: /Change Password/ }).click()
 
-	await expect(page2).toHaveURL("http://localhost:7100/admin/#/login")
+	await authPage.isOnLoginPage()
 
-	await page2.getByLabel(/Email/).fill("admin@example.com")
-	await page2.getByLabel(/Password/).fill("password")
+	await newPage.getByLabel(/Email/).fill("admin@example.com")
+	await newPage.getByLabel(/Password/).fill("password")
 
-	await page2.getByRole("button", { name: /Sign in$/ }).click()
-
-	// we should be signed in
-	await expect(page2).toHaveURL("http://localhost:7100/admin/#/")
+	await authPage.signInButton.click()
+	await authPage.isOnHome()
 })

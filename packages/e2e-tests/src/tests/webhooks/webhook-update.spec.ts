@@ -1,42 +1,27 @@
 import { expect } from "@playwright/test"
-import { Webhook, WebhookCreateDto } from "@zmaj-js/common"
 import { test } from "../../setup/e2e-fixture.js"
 import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
 
-const webhookName = getUniqueTitle()
-const webhookNameUpdated = getUniqueTitle()
-
-const createWebhookDto = new WebhookCreateDto({
-	url: "http://localhost:5000",
-	name: webhookName,
-	events: [
-		"create.posts",
-		"create.comments",
-		"update.comments",
-		"delete.tags", //
-	],
+test.beforeEach(async ({ webhookFx, webhookItem }) => {
+	await webhookFx.update(webhookItem.id, {
+		events: [
+			"create.posts",
+			"create.comments",
+			"update.comments",
+			"delete.tags", //
+		],
+	})
 })
 
-let webhook: Webhook
-
-test.beforeEach(async ({ webhookPage }) => {
-	await webhookPage.db.deleteByName(webhookName)
-	await webhookPage.db.deleteByName(webhookNameUpdated)
-	webhook = await webhookPage.db.create(createWebhookDto)
-})
-
-test.afterEach(async ({ webhookPage }) => {
-	await webhookPage.db.deleteByName(webhookName)
-	await webhookPage.db.deleteByName(webhookNameUpdated)
-})
-
-test("Update Webhook", async ({ webhookPage, page }) => {
+test("Update Webhook", async ({ webhookFx, webhookPage, page, webhookItem }) => {
 	await webhookPage.goHome()
 	await webhookPage.goToList()
-	await webhookPage.goToShow(webhook.id)
-	await webhookPage.clickEditButtonInList(webhook.id)
+	await webhookPage.goToShow(webhookItem.id)
+	await webhookPage.clickEditButtonInList(webhookItem.id)
 
-	await page.getByLabel("Name").fill(webhookNameUpdated)
+	const newName = getUniqueTitle()
+
+	await page.getByLabel("Name").fill(newName)
 	await page.getByRole("switch", { name: "Enabled" }).click()
 	await page.getByRole("button", { name: "Next" }).click()
 
@@ -56,12 +41,12 @@ test("Update Webhook", async ({ webhookPage, page }) => {
 	await webhookPage.clickSaveButton()
 
 	await webhookPage.hasBodyContent("Element updated")
-	await webhookPage.toHaveUrl(`${webhook.id}/show`)
+	await webhookPage.toHaveUrl(`${webhookItem.id}/show`)
 
-	const updated = await webhookPage.db.findByName(webhookNameUpdated)
+	const updated = await webhookFx.findWhere({ id: webhookItem.id })
 	expect(updated).toMatchObject({
-		id: webhook.id,
-		name: webhookNameUpdated,
+		id: webhookItem.id,
+		name: newName,
 		enabled: true,
 		events: expect.arrayContaining([
 			"create.comments",

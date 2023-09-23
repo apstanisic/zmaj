@@ -1,30 +1,13 @@
 import { expect } from "@playwright/test"
-import { Permission, PermissionCreateDto, Role } from "@zmaj-js/common"
 import { test } from "../../setup/e2e-fixture.js"
 
-let permission: Permission
-let role: Role
-
-test.beforeEach(async ({ permissionPage }) => {
-	role = await permissionPage.db.createRole()
-	permission = await permissionPage.db.createPermission(
-		new PermissionCreateDto({
-			action: "create",
-			resource: "collections.posts",
-			roleId: role.id,
-		}),
-	)
-})
-
-test.afterEach(async ({ permissionPage }) => permissionPage.db.deleteRole(role.name))
-
-test("Delete Permission", async ({ rolePage, permissionPage }) => {
+test("Delete Permission", async ({ rolePage, permissionPage, permissionItem, permissionFx }) => {
 	await rolePage.goHome()
 	await rolePage.goToList()
-	await rolePage.goToShow(role.id)
+	await rolePage.goToShow(permissionItem.roleId)
 	await permissionPage.hasAllowedPermissionsAmount(1)
 
-	await permissionPage.openPermissionDialog(permission.action, permission.resource)
+	await permissionPage.openPermissionDialog(permissionItem.action, permissionItem.resource)
 
 	await permissionPage.clickForbidButton()
 	// await expect(async () => {
@@ -33,5 +16,5 @@ test("Delete Permission", async ({ rolePage, permissionPage }) => {
 
 	await permissionPage.hasToast("Successfully removed permission")
 
-	expect(await permissionPage.db.findPermission(permission.id)).toBeUndefined()
+	expect(await permissionFx.findPermission(permissionItem.id)).toBeUndefined()
 })

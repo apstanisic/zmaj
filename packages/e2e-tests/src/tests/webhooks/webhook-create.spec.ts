@@ -5,20 +5,16 @@ import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
 
 const hookName = getUniqueTitle()
 
-test.beforeEach(async ({ webhookPage }) => {
-	await webhookPage.db.deleteByName(hookName)
+test.afterEach(async ({ webhookFx }) => {
+	await webhookFx.deleteWhere({ name: hookName })
 })
 
-test.afterEach(async ({ webhookPage }) => {
-	await webhookPage.db.deleteByName(hookName)
-})
-
-test("Create Webhook", async ({ page, webhookPage }) => {
+test("Create Webhook", async ({ page, webhookPage, webhookFx }) => {
 	await webhookPage.goHome()
 
 	await webhookPage.goToList()
 
-	await webhookPage.clickCreateButton()
+	await webhookPage.clickCreateRecordButton()
 	await webhookPage.toHaveUrl("/create")
 
 	await page.getByLabel("Name").fill(hookName)
@@ -52,7 +48,7 @@ test("Create Webhook", async ({ page, webhookPage }) => {
 
 	await webhookPage.clickSaveButton()
 
-	const created = await webhookPage.db.findByName(hookName)
+	const created = await webhookFx.findWhere({ name: hookName })
 	const id = created?.id
 	expect(id).toBeDefined()
 

@@ -19,7 +19,10 @@ export function getUniqueEmail(): string {
 	return faker.internet.email({ provider: "example.test" })
 }
 
-export function getUniqueFileName(ext?: string): { noExt: string; withExt: string } {
-	const noExt = getUniqueTitle()
-	return { noExt, withExt: noExt + (ext ? `.${ext}` : "") }
+export function getUniqueColumnName(): string {
+	return `col_${getUniqueId()}`
+}
+
+export function getUniqueWord(): string {
+	return `${faker.lorem.word()}${getUniqueId()}`
 }

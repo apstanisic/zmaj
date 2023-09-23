@@ -16,15 +16,10 @@ declare global {
 export async function e2eInitAuthState(): Promise<void> {
 	const sdk = createSdk("e2eSetup")
 
-	const res = await sdk.auth
-		.signIn({
-			email: ADMIN_EMAIL,
-			password: ADMIN_PASSWORD,
-		})
-		.catch((e) => {
-			console.log({ e })
-			throw new Error("qwerty")
-		})
+	const res = await sdk.auth.signIn({
+		email: ADMIN_EMAIL,
+		password: ADMIN_PASSWORD,
+	})
 
 	if (res.status !== "signed-in") throw new Error("E2E user has problem with MFA")
 
