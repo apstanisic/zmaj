@@ -1,30 +1,15 @@
-import { expect, test } from "@playwright/test"
-import { RelationCreateDto, RelationDef, RelationMetadata, throwErr } from "@zmaj-js/common"
-import { camel } from "radash"
-import { getRandomTableName } from "../../setup/e2e-unique-id.js"
-import { deleteTables } from "../../utils/e2e-delete-tables.js"
-import { getSdk } from "../../utils/e2e-get-sdk.js"
-
-const leftTableName = getRandomTableName()
-const rightTableName = getRandomTableName()
+import { expect } from "@playwright/test"
+import { RelationCreateDto, RelationDef } from "@zmaj-js/common"
+import { test } from "../../setup/e2e-fixture.js"
 
 let relation: RelationDef
 
-test.beforeEach(async () => {
-	const sdk = getSdk()
-	await deleteTables(leftTableName, rightTableName)
-
-	await sdk.infra.collections.createOne({
-		data: { pkColumn: "id", pkType: "auto-increment", tableName: leftTableName },
-	})
-	await sdk.infra.collections.createOne({
-		data: { pkColumn: "id", pkType: "auto-increment", tableName: rightTableName },
-	})
-
-	relation = await sdk.infra.relations.createOne({
-		data: new RelationCreateDto({
-			leftCollection: camel(leftTableName),
-			rightCollection: camel(rightTableName),
+test.beforeEach(async ({ relationFxData, relationFx }) => {
+	const [col1, col2] = relationFxData.collections
+	relation = await relationFx.createRelation(
+		new RelationCreateDto({
+			leftCollection: col1.collectionName,
+			rightCollection: col2.collectionName,
 			left: {
 				column: "ref_id",
 				propertyName: "prop1",
@@ -35,49 +20,42 @@ test.beforeEach(async () => {
 			},
 			type: "many-to-one",
 		}),
-	})
+	)
 })
 
-test("Update relation", async ({ page }) => {
-	if (!relation) throwErr()
-
-	await page.goto("http://localhost:7100/admin/")
-	await expect(page).toHaveURL("http://localhost:7100/admin/")
-
-	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
-
-	await page.getByRole("link", { name: "test_rel_update_left" }).click()
-	// await expect(page).toHaveURL(
-	// 	`http://localhost:7100/admin/#/zmajCollectionMetadata/${relation.collectionId}/show`,
-	// )
+test("Update relation", async ({
+	page,
+	relationPage,
+	collectionPage,
+	relationFxData,
+	relationFx,
+}) => {
+	const [col1] = relationFxData.collections
+	await relationPage.goHome()
+	await collectionPage.goToList()
+	await collectionPage.goToCollectionShow(col1)
 
 	await page.getByRole("tab", { name: "Relations" }).click()
 
-	await page.getByRole("link", { name: /test_rel_update_left\.prop1/ }).click()
-	await expect(page).toHaveURL(
-		`http://localhost:7100/admin/#/zmajRelationMetadata/${relation.id}/show`,
-	)
+	await page.getByRole("link", { name: new RegExp(`${col1.tableName}.prop1`) }).click()
+	await relationPage.toHaveUrl(`/zmajRelationMetadata/${relation.id}/show`)
 
-	await page.getByRole("button", { name: /Edit/ }).click()
+	await relationPage.clickEditButton()
 	await expect(page).toHaveURL(`http://localhost:7100/admin/#/zmajRelationMetadata/${relation.id}`)
 
 	await page.getByLabel("Property Name").fill("updatedProp")
 	await page.getByLabel("Label").fill("Updated Label")
 	await page.getByLabel("Template").fill("{id}")
 
-	await page.getByRole("button", { name: "Save" }).click()
-	await expect(page).toHaveURL(
-		`http://localhost:7100/admin/#/zmajRelationMetadata/${relation.id}/show`,
-	)
+	await relationPage.clickSaveButton()
+	await relationPage.toHaveUrl(`/zmajRelationMetadata/${relation.id}/show`)
 
-	// await expect(page.getByRole("alert", { name: /Element updated/ })).toBeVisible()
-
-	const updatedRelation = await getSdk().infra.relations.getById({ id: relation.id })
-	expect(updatedRelation.relation).toMatchObject({
+	const updatedRelation = await relationFx.findWhere({ id: relation.id })
+	// const updatedRelation = await getSdk().infra.relations.getById({ id: relation.id })
+	expect(updatedRelation).toMatchObject({
 		id: relation.id,
 		propertyName: "updatedProp",
 		label: "Updated Label",
 		template: "{id}",
-	} satisfies Partial<RelationMetadata>)
+	} satisfies Partial<typeof updatedRelation>)
 })

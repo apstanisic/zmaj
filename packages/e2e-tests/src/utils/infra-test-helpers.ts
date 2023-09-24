@@ -1,10 +1,5 @@
 import { CollectionCreateDto, FieldCreateDto, RelationCreateDto } from "@zmaj-js/common"
-import { deleteTables } from "./e2e-delete-tables.js"
 import { getSdk } from "./e2e-get-sdk.js"
-
-export async function deleteTestCollections(): Promise<void> {
-	await deleteTables("posts_tags_plw", "comments_plw", "posts_plw", "tags_plw")
-}
 
 export async function createTestCollections(): Promise<void> {
 	const sdk = getSdk()

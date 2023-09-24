@@ -14,7 +14,7 @@ declare global {
 }
 
 export async function e2eInitAuthState(): Promise<void> {
-	const sdk = createSdk("e2eSetup")
+	const sdk = createSdk("e2eSetup", false)
 
 	const res = await sdk.auth.signIn({
 		email: ADMIN_EMAIL,

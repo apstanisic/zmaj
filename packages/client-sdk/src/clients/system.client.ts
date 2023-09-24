@@ -1,5 +1,5 @@
 import { sdkThrow } from "@client-sdk/errors/error-utils"
-import { Data, CollectionDef, Struct } from "@zmaj-js/common"
+import { CollectionDef, Data, Struct } from "@zmaj-js/common"
 import { AxiosInstance } from "axios"
 import { SettingsClient } from "./settings.client"
 
@@ -33,6 +33,13 @@ export class SystemClient {
 		return this.client
 			.get<{ allowed: boolean }>("auth/sign-up/allowed")
 			.then((res) => res.data.allowed)
+			.catch(sdkThrow)
+	}
+
+	async refresh(): Promise<true> {
+		return this.client
+			.get<{ success: true }>("refresh")
+			.then((res) => res.data.success)
 			.catch(sdkThrow)
 	}
 }

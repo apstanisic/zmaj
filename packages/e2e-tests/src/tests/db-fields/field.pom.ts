@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker"
-import { Page } from "@playwright/test"
+import { Locator, Page } from "@playwright/test"
 import { ZmajSdk } from "@zmaj-js/client-sdk"
 import {
 	CollectionMetadata,
@@ -19,6 +19,10 @@ export class FieldPage extends ZmajPage {
 		protected sdk: ZmajSdk,
 	) {
 		super(page, "/#/")
+	}
+
+	get columnNameInput(): Locator {
+		return this.page.getByLabel("Column Name")
 	}
 
 	async goToCollectionsList(): Promise<void> {

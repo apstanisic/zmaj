@@ -75,7 +75,7 @@ export class CollectionMetadataModel extends BaseModel {
 		/**
 		 * I can only guarantee that it will be valid JSON. Validate first with LayoutConfigSchema
 		 */
-		layoutConfig: f.json({}),
+		layoutConfig: f.json({ hasDefault: true }),
 	}))
 	colFields = this.oneToMany(() => FieldMetadataModel, {
 		fkField: "tableName",

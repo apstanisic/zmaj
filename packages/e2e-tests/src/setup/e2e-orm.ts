@@ -9,7 +9,7 @@ import {
 } from "@zmaj-js/test-utils"
 import { Orm } from "zmaj"
 
-function createOrm(): Orm {
+export function createOrm(): Orm {
 	return new Orm({
 		config: {
 			database: process.env.DB_DATABASE,
@@ -24,15 +24,6 @@ function createOrm(): Orm {
 	})
 }
 
-let orm: Orm
-export async function getOrm(fresh: boolean = false): Promise<Orm> {
-	if (orm && !fresh) return orm
-
-	orm = createOrm()
-	await orm.init()
-	return orm
-}
-
 export async function waitForDatabase(): Promise<void> {
 	const orm = createOrm()
 
@@ -41,6 +32,7 @@ export async function waitForDatabase(): Promise<void> {
 		await orm.repoManager.rawQuery("SELECT 1")
 	})
 	if (!success) throw new Error("Database connection not working in E2E")
+	await orm.destroy()
 }
 
 async function waitFor(fn: () => Promise<void>): Promise<boolean> {

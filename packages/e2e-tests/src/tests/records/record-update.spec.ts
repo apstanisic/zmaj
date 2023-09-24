@@ -2,19 +2,15 @@ import { test } from "../../setup/e2e-fixture.js"
 import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
 
 test("Update Record", async ({ page, postPage, postItem }) => {
-	await postPage.goHome()
-	await postPage.goToList()
-	await postPage.goToShow(postItem.id)
-	await postPage.clickEditButton()
+	await postPage.goToHomeUrl()
+	await postPage.sidebarPostsLink.click()
+	await postPage.clickOnShowRecord(postItem.id)
+	await postPage.editButton.click()
 
 	const newTitle = getUniqueTitle()
+	await postPage.titleInput.fill(newTitle)
 
-	await page.getByLabel("Title").fill(newTitle)
-	// Click #body > div:nth-child(2)
-	// await page.locator("input[name=title]").click()
-	// await page.locator("input[name=title]").fill(updatedPostTitle)
-
-	await postPage.clickSaveButton()
-	await postPage.isOnShowPage(postItem.id)
-	await postPage.hasCrudContent(newTitle)
+	await postPage.saveButton.click()
+	await postPage.isOnShowPageUrl(postItem.id)
+	await postPage.hasInBody(newTitle)
 })

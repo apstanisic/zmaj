@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test"
-import { UnknownValues, Webhook } from "@zmaj-js/common"
+import { UnknownValues, Webhook, uuidRegex } from "@zmaj-js/common"
 import { test } from "../../setup/e2e-fixture.js"
 import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
 
@@ -48,9 +48,12 @@ test("Create Webhook", async ({ page, webhookPage, webhookFx }) => {
 
 	await webhookPage.clickSaveButton()
 
-	const created = await webhookFx.findWhere({ name: hookName })
-	const id = created?.id
-	expect(id).toBeDefined()
+	let created: Webhook | undefined
+
+	await expect(async () => {
+		created = await webhookFx.findWhere({ name: hookName })
+		expect(created).toBeDefined()
+	}).toPass()
 
 	await webhookPage.toHaveUrl(`${created!.id}/show`)
 
@@ -61,7 +64,7 @@ test("Create Webhook", async ({ page, webhookPage, webhookFx }) => {
 	await webhookPage.hasSelectedEventsAmount(6)
 
 	expect(created).toEqual({
-		id,
+		id: expect.stringMatching(uuidRegex),
 		name: hookName,
 		httpMethod: "POST",
 		httpHeaders: customHeaders,

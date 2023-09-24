@@ -7,25 +7,25 @@ let post: TPost | undefined
 
 test.afterEach(async ({ postFx }) => postFx.removeWhere({ id: post!.id }))
 
-test("Create Record", async ({ page, postPage, postFx }) => {
+test("Create Record", async ({ postPage, postFx }) => {
 	const title = getUniqueTitle()
 
-	await postPage.goHome()
-	await postPage.goToList()
-	await postPage.clickCreateRecordButton()
+	await postPage.goToHomeUrl()
+	await postPage.sidebarPostsLink.click()
+	await postPage.createRecordButton.click()
 
-	await page.getByLabel("Title").fill(title)
+	await postPage.titleInput.fill(title)
 	// await page.locator("#zmaj_input_body").click()
 	// await page.locator("#zmaj_input_body").type("Some body value")
-	await page.getByLabel("Body").fill("Some body value")
-	await page.getByLabel("Likes").fill("5")
-	await postPage.clickSaveButton()
+	await postPage.bodyInput.fill("Some body value")
+	await postPage.likesInput.fill("5")
+	await postPage.saveButton.click()
 
 	await expect(async () => {
 		post = await postFx.findWhere({ title })
 		expect(post).toBeDefined()
 	}).toPass()
 
-	await postPage.isOnShowPage(post!.id)
-	await postPage.hasCrudContent(title)
+	await postPage.isOnShowPageUrl(post!.id)
+	await postPage.hasInBody(title)
 })

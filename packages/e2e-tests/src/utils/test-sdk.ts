@@ -1,6 +1,4 @@
-import { createBasicToken, qsStringify, Struct, throwErr } from "@zmaj-js/common"
-
-export const playwrightAuthorizationHeader = createBasicToken("admin@example.com", "password")
+import { qsStringify, Struct } from "@zmaj-js/common"
 
 type RaQuery = {
 	filter?: Struct
@@ -9,12 +7,10 @@ type RaQuery = {
 	perPage?: number
 	sort?: string
 }
+/**
+ * @deprecated
+ */
 export function toRaQuery(query: RaQuery): string {
 	const filter = query.filter ? JSON.stringify(query.filter) : {}
 	return qsStringify({ ...query, filter })
-}
-
-export function getIdFromShow(url: string): string {
-	if (!url.includes("/show")) throwErr("478293")
-	return url.replaceAll("/show", "").split("/").at(-1)!
 }

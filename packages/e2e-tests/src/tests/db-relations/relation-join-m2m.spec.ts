@@ -1,111 +1,60 @@
-import { expect, test } from "@playwright/test"
-import { CollectionCreateDto, RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
-import { camel } from "radash"
+import { expect } from "@playwright/test"
+import { CollectionCreateDto, RelationCreateDto, RelationDef } from "@zmaj-js/common"
+import { test } from "../../setup/e2e-fixture.js"
 import { getRandomTableName } from "../../setup/e2e-unique-id.js"
-import { createIdRegex } from "../../utils/create-id-regex.js"
-import { deleteTables } from "../../utils/e2e-delete-tables.js"
-import { getSdk } from "../../utils/e2e-get-sdk.js"
 
-const leftTableName = getRandomTableName()
-const rightTableName = getRandomTableName()
-const junctionTableName = getRandomTableName()
+const junctionName = getRandomTableName()
 
 let relation1: RelationDef
 let relation2: RelationDef
 
-async function deleteThisTables(): Promise<void> {
-	await deleteTables(junctionTableName, leftTableName, rightTableName)
-}
-
-test.beforeEach(async () => {
-	const sdk = getSdk()
-	await deleteThisTables()
-
+test.beforeEach(async ({ sdk, relationFxData }) => {
+	const [col1, col2] = relationFxData.collections
 	await sdk.infra.collections.createOne({
-		data: new CollectionCreateDto({ tableName: leftTableName }),
-	})
-	await sdk.infra.collections.createOne({
-		data: new CollectionCreateDto({ tableName: rightTableName }),
-	})
-	await sdk.infra.collections.createOne({
-		data: new CollectionCreateDto({ tableName: junctionTableName }),
+		data: new CollectionCreateDto({ tableName: junctionName, collectionName: junctionName }),
 	})
 
 	relation1 = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
-			leftCollection: camel(junctionTableName),
-			rightCollection: camel(leftTableName),
-			left: { column: "left_id", propertyName: "propInner" },
-			right: { column: "id", propertyName: "propOuter" },
-			type: "many-to-one",
+			rightCollection: junctionName,
+			leftCollection: col1.collectionName,
+			left: { column: "id", propertyName: "propOuter" },
+			right: { column: "left_id", propertyName: "propInner" },
+			type: "one-to-many",
 		}),
 	})
 
 	relation2 = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
-			leftCollection: camel(junctionTableName),
-			rightCollection: camel(rightTableName),
-			left: { column: "right_id", propertyName: "propInner2" },
-			right: { column: "id", propertyName: "propOuter2" },
-			type: "many-to-one",
+			leftCollection: col2.collectionName,
+			rightCollection: junctionName,
+			left: { column: "id", propertyName: "propOuter2" },
+			right: { column: "right_id", propertyName: "propInner2" },
+			type: "one-to-many",
 		}),
 	})
 })
 
-test.afterEach(async () => deleteThisTables())
+test.afterEach(async ({ relationFx }) => relationFx.removeCollectionByTableName(junctionName))
 
-test("Join relations to many-to-many", async ({ page }) => {
-	if (!relation1 || !relation2) throwErr()
+test("Join relations to many-to-many", async ({
+	relationPage,
+	collectionPage,
+	relationFxData,
+	globalFx,
+}) => {
+	const [col1] = relationFxData.collections
+	await globalFx.goToHomeUrl()
+	await globalFx.sidebarLink("Collections").click()
+	await collectionPage.collectionInList(col1.collectionName).click()
 
-	await page.goto("http://localhost:7100/admin/")
-	await expect(page).toHaveURL("http://localhost:7100/admin/")
+	await collectionPage.relationsTab.click()
+	await collectionPage.relationInListByDef(relation1).click()
 
-	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
+	await relationPage.joinMtmButton.click()
+	await relationPage.confirmButton.click()
 
-	await page.getByRole("link", { name: leftTableName }).click()
-	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
-	)
+	await globalFx.expectAlertWithText("Successfully created M2M relation")
 
-	await page.getByRole("tab", { name: "Relations" }).click()
-
-	await page.getByRole("link", { name: /mtm_left_table_join.propOuter/ }).click()
-	// await expect(page).toHaveURL(
-	// 	`http://localhost:7100/admin/#/zmajRelationMetadata/${relation1.rightRelationId}/show`,
-	// )
-
-	await page.getByRole("button", { name: "Join M2M" }).click()
-
-	// await page.getByText("mtm_left_table_join - mtm_junction_table - mtm_right_table_join").click()
-
-	await page.getByRole("button", { name: "Confirm" }).click()
-
-	await expect(page.getByText("Successfully created M2M relation")).toHaveCount(1)
-	//
-	// const cols = testSdk.infra.collections.getMany({
-	// 	f
-	// })
-	const allState = await getSdk().infra.getCollections()
-
-	const leftCol = allState.find((c) => c.tableName === relation1.otherSide.tableName)
-	const leftMtmValid = Object.values(leftCol?.relations ?? {}).find(
-		(r) => r.type === "many-to-many" && r.relation.fkName === relation1.relation.fkName,
-	)
-	expect(leftMtmValid).toBeDefined()
-
-	const rightCol = allState.find((c) => c.tableName === relation2.otherSide.tableName)
-	const rightMtmValid = Object.values(rightCol?.relations ?? {}).find(
-		(r) => r.type === "many-to-many" && r.relation.fkName === relation2.relation.fkName,
-	)
-	expect(rightMtmValid).toBeDefined()
-
-	// const leftRelation = await testSdk.infra.relations.getById({
-	// 	id: relation1.rightRelationId ?? throwErr(),
-	// })
-	// const rightRelation = await testSdk.infra.relations.getById({
-	// 	id: relation2.rightRelationId ?? throwErr(),
-	// })
-	// expect(leftRelation.type).toEqual("many-to-many")
-	// expect(rightRelation.type).toEqual("many-to-many")
+	await expect(relationPage.splitMtmButton).toBeInViewport()
 })

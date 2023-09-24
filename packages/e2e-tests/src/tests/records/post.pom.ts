@@ -1,10 +1,36 @@
 import { faker } from "@faker-js/faker"
-import { TPost, TPostModel, TTag, TTagModel } from "@zmaj-js/test-utils"
+import { Locator } from "@playwright/test"
+import { times } from "@zmaj-js/common"
+import {
+	TCommentModel,
+	TPost,
+	TPostModel,
+	TPostTagModel,
+	TTag,
+	TTagModel,
+} from "@zmaj-js/test-utils"
 import { GetCreateFields, Orm, OrmRepository, RepoFilterWhere } from "zmaj"
-import { ZmajCrudPage } from "../../setup/ZmajCrudPage.js"
+import { getUniqueWord } from "../../setup/e2e-unique-id.js"
+import { GlobalPageFx } from "../../setup/global.fx.js"
 
-export class PostPageFx extends ZmajCrudPage {
-	override title: string = "posts"
+export class PostPageFx extends GlobalPageFx {
+	get sidebarPostsLink(): Locator {
+		return this.sidebarLink("Posts")
+	}
+
+	get titleInput(): Locator {
+		return this.page.getByLabel("Title")
+	}
+	get bodyInput(): Locator {
+		return this.page.getByLabel("Body")
+	}
+	get likesInput(): Locator {
+		return this.page.getByLabel("Likes")
+	}
+
+	async isOnPostsList(): Promise<void> {
+		await this.isOnListPageUrl("posts")
+	}
 }
 
 export class PostUtilsFx {
@@ -38,5 +64,35 @@ export class PostUtilsFx {
 				...data,
 			},
 		})
+	}
+
+	async crudWithRelationsSetup(prefix: string, post?: TPost) {
+		// create random post to assign comments that do not belong to main post
+		const randomPost = await this.create()
+
+		const tags = await this.orm.repoManager
+			.getRepo(TTagModel)
+			.createMany({ data: times(5, (i) => ({ name: `${prefix}tag${i}${getUniqueWord()}` })) })
+
+		if (post) {
+			// If post does not exist, we cannot add tags
+			await this.orm.repoManager.getRepo(TPostTagModel).createMany({
+				data: tags.slice(0, 3).map((tag) => ({ tagId: tag.id, postId: post.id })),
+			})
+		}
+
+		const comments = await this.orm.repoManager.getRepo(TCommentModel).createMany({
+			data: times(5, (i) => ({
+				body: `${prefix}cm${i}${faker.lorem.paragraph()}`,
+				// if post does not exist, assign all to random post
+				postId: i < 3 ? post?.id ?? randomPost.id : randomPost.id,
+			})),
+		})
+
+		return {
+			comments,
+			tags,
+			randomPost,
+		}
 	}
 }

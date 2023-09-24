@@ -5,7 +5,7 @@ import { UsersService, __testUtils, predefinedApiConfigs, runServer } from "zmaj
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from "./e2e-consts.js"
 import { initTestProcessEnv, runMake } from "./e2e-env.js"
 import { e2eInitAuthState } from "./e2e-init-auth-state.js"
-import { getOrm, waitForDatabase } from "./e2e-orm.js"
+import { waitForDatabase } from "./e2e-orm.js"
 import { spinner } from "./e2e-spinner.js"
 
 async function globalSetup(config: FullConfig): Promise<() => Promise<void>> {
@@ -62,6 +62,8 @@ async function globalSetup(config: FullConfig): Promise<() => Promise<void>> {
 		end: "Admin user created",
 	})
 
+	await e2eInitAuthState()
+
 	await spinner({
 		start: "Creating test tables...",
 		action: async () => {
@@ -86,17 +88,10 @@ async function globalSetup(config: FullConfig): Promise<() => Promise<void>> {
 	return async () => {
 		intro("Playwright E2E teardown")
 
-		const orm = await getOrm()
-		await orm.destroy()
-
 		await spinner({
 			start: "Stopping CMS...",
-			action: async () => {
-				await Promise.race([
-					app.close(), //
-					sleep(8000),
-				])
-			},
+			// wait for app to close, but max for 5 seconds
+			action: async () => Promise.race([app.close(), sleep(5000)]),
 			end: "CMS stopped",
 		})
 

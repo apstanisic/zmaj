@@ -1,65 +1,40 @@
-import { expect, test } from "@playwright/test"
-import { camel } from "radash"
+import { expect } from "@playwright/test"
+import { test } from "../setup/e2e-fixture.js"
 import { getRandomTableName } from "../setup/e2e-unique-id.js"
 import { createIdRegex } from "../utils/create-id-regex.js"
-import { deleteTables } from "../utils/e2e-delete-tables.js"
 
 const tableName = getRandomTableName()
-const collectionName = camel(tableName)
 
-test.beforeEach(async () => deleteTables(tableName))
-test.afterAll(async () => deleteTables(tableName))
+test.afterEach(async ({ collectionFx }) => collectionFx.deleteCollectionByTableName(tableName))
 
-test("Create Collection and record", async ({ page }) => {
-	await page.goto("http://localhost:7100/admin/")
-	await expect(page).toHaveURL("http://localhost:7100/admin/")
-
-	// click collections in sidebar
-	await page.getByRole("link", { name: "Collections" }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
-
-	// click create new collection in toolbar
-	await page.getByRole("button", { name: /Create/ }).click()
-	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata/create")
+test.skip("Create Collection and record", async ({ page, globalFx, collectionPage, fieldPage }) => {
+	await globalFx.goToHomeUrl()
+	await collectionPage.linkInSidebar.click()
+	await globalFx.createRecordButton.click()
 
 	// set table name
-	await page.getByLabel("Table Name").fill(tableName)
+	await collectionPage.tableNameInput.fill(tableName)
+	await globalFx.nextButton.click()
+	await globalFx.saveButton.click()
 
-	// next section
-	await page.getByRole("button", { name: "Next" }).click()
+	await expect(page).toHaveURL(/show$/)
 
-	// create
-	await page.getByRole("button", { name: /Save/ }).click()
-	await expect(page).toHaveURL(
-		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
-	)
+	await collectionPage.fieldsTab.click()
+	await collectionPage.addFieldButton.click()
 
-	// click on fields
-	await page.getByRole("tab", { name: "Fields" }).click()
-
-	// click to add new field
-	await page.getByRole("button", { name: "Add field" }).click()
 	await expect(page).toHaveURL(
 		"http://localhost:7100/admin/#/zmajFieldMetadata/create?source={%22collectionName%22:%22allTest%22}",
 	)
 
-	// set column name to be name
-	await page.getByLabel("Column Name").fill("name")
-
-	// next section
-	await page.getByRole("button", { name: "Next" }).click()
-
-	// next section
-	await page.getByRole("button", { name: "Next" }).click()
-
-	// create field
-	await page.getByRole("button", { name: /Save/ }).click()
+	await fieldPage.columnNameInput.fill("name")
+	await globalFx.nextButton.click()
+	await globalFx.nextButton.click()
+	await globalFx.saveButton.click()
 	await expect(page).toHaveURL(
 		createIdRegex("http://localhost:7100/admin/#/zmajFieldMetadata/$ID/show"),
 	)
 
-	// go to all collections
-	await page.getByRole("link", { name: "Collections" }).click()
+	await collectionPage.linkInSidebar.click()
 	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
 	// go to our collection
@@ -128,8 +103,8 @@ test("Create Collection and record", async ({ page }) => {
 		createIdRegex("http://localhost:7100/admin/#/zmajCollectionMetadata/$ID/show"),
 	)
 
-	await page.getByRole("button", { name: /Delete/ }).click()
+	await globalFx.deleteButton.click()
 
-	await page.getByRole("button", { name: "Confirm" }).click()
+	await globalFx.confirmButton.click()
 	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 })

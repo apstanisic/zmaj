@@ -3,10 +3,11 @@ import { createSdk } from "../setup/e2e-sdk.js"
 
 let sdk: ZmajSdk
 
+/**
+ * @deprecated
+ */
 export function getSdk(): ZmajSdk {
 	if (sdk) return sdk
-	const accessToken = process.env.ACCESS_TOKEN
-	if (!accessToken) throw new Error("Missing access token")
-	sdk = createSdk("TEST_JWT_AUTH", accessToken)
+	sdk = createSdk("TEST_JWT_AUTH")
 	return sdk
 }

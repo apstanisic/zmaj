@@ -18,19 +18,23 @@ import { Orm, Role } from "zmaj"
 import { AuthPage } from "../tests/auth/auth.pom.js"
 import { CollectionPageFx, CollectionUtilsFx } from "../tests/db-collections/collection.pom.js"
 import { FieldPage, FieldUtilsFx } from "../tests/db-fields/field.pom.js"
+import { RelationPage, RelationUtilsFx } from "../tests/db-relations/relations.fx.js"
 import { FilePageFx, FileUtilsFx } from "../tests/files/file.pom.js"
 import { PermissionPage, PermissionUtilsFx } from "../tests/permissions/permission.pom.js"
 import { PostPageFx, PostUtilsFx } from "../tests/records/post.pom.js"
 import { RoleDb, RolePage } from "../tests/roles/role.e2e-utils.js"
 import { UserPage, UserUtilsFx } from "../tests/users/user.pom.js"
 import { WebhookPages, WebhookUtilsFx } from "../tests/webhooks/webhook.pom.js"
-import { getSdk } from "../utils/e2e-get-sdk.js"
-import { getOrm } from "./e2e-orm.js"
+import { createOrm } from "./e2e-orm.js"
+import { createSdk } from "./e2e-sdk.js"
 import { getUniqueEmail, getUniqueTitle } from "./e2e-unique-id.js"
+import { GlobalPageFx } from "./global.fx.js"
 
 type MyFixtures = {
 	orm: Orm
 	sdk: ZmajSdk
+	//
+	globalFx: GlobalPageFx
 	//
 	webhookPage: WebhookPages
 	webhookFx: WebhookUtilsFx
@@ -43,6 +47,10 @@ type MyFixtures = {
 	fieldPage: FieldPage
 	fieldFx: FieldUtilsFx
 	fieldItem: FieldMetadata
+	//
+	relationPage: RelationPage
+	relationFx: RelationUtilsFx
+	relationFxData: { collections: [CollectionMetadata, CollectionMetadata] }
 	//
 	permissionPage: PermissionPage
 	permissionFx: PermissionUtilsFx
@@ -61,7 +69,6 @@ type MyFixtures = {
 	collectionItem: CollectionMetadata
 	collectionFx: CollectionUtilsFx
 	collectionPage: CollectionPageFx
-
 	//
 	postPage: PostPageFx
 	postFx: PostUtilsFx
@@ -70,12 +77,19 @@ type MyFixtures = {
 
 export const test = base.extend<MyFixtures>({
 	orm: async ({ page }, use) => {
-		const orm = await getOrm(true)
+		const orm = createOrm()
+		await orm.init()
 		await use(orm)
 		await orm.destroy()
 	},
 	sdk: async ({ page }, use) => {
-		await use(getSdk())
+		const sdk = createSdk()
+		await use(sdk)
+	},
+	//
+	globalFx: async ({ page }, use) => {
+		const fx = new GlobalPageFx(page)
+		await use(fx)
 	},
 	//
 	webhookPage: async ({ page }, use) => {
@@ -98,7 +112,8 @@ export const test = base.extend<MyFixtures>({
 	},
 	//
 	postPage: async ({ page }, use) => {
-		await use(new PostPageFx(page, "/#/posts"))
+		// await use(new PostPageFx(page, "/#/posts"))
+		await use(new PostPageFx(page))
 	},
 	postFx: async ({ orm }, use) => {
 		await use(new PostUtilsFx(orm))
@@ -162,8 +177,8 @@ export const test = base.extend<MyFixtures>({
 	collectionFx: async ({ orm, sdk }, use) => {
 		await use(new CollectionUtilsFx(orm, sdk))
 	},
-	collectionPage: async ({ page }, use) => {
-		await use(new CollectionPageFx(page, "/#/zmajCollectionMetadata"))
+	collectionPage: async ({ page, globalFx }, use) => {
+		await use(new CollectionPageFx(page, globalFx))
 	},
 	collectionItem: async ({ collectionFx }, use) => {
 		const col = await collectionFx.createCollection()
@@ -203,5 +218,16 @@ export const test = base.extend<MyFixtures>({
 	//
 	authPage: async ({ page }, use) => {
 		await use(new AuthPage(page, "/#/"))
+	},
+	relationFx: async ({ orm, sdk }, use) => {
+		await use(new RelationUtilsFx(orm, sdk))
+	},
+	relationPage: async ({ page }, use) => {
+		await use(new RelationPage(page, "/#/"))
+	},
+	relationFxData: async ({ relationFx }, use) => {
+		const collections = await relationFx.createCollections()
+		await use({ collections })
+		await relationFx.removeCollections(collections)
 	},
 })

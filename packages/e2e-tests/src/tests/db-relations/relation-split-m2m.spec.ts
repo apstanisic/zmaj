@@ -1,34 +1,19 @@
-import { expect, test } from "@playwright/test"
-import { CollectionCreateDto, RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
-import { camel } from "radash"
-import { deleteTables } from "../../utils/e2e-delete-tables.js"
-import { getSdk } from "../../utils/e2e-get-sdk.js"
+import { expect } from "@playwright/test"
+import { RelationCreateDto, RelationDef, throwErr } from "@zmaj-js/common"
+import { test } from "../../setup/e2e-fixture.js"
+import { getRandomTableName } from "../../setup/e2e-unique-id.js"
 
-const leftTableName = "mtm_left_table_split"
-const rightTableName = "mtm_right_table_split"
-const junctionTableName = "mtm_junction_table_split"
+const junctionTableName = getRandomTableName()
 
 let relation1: RelationDef
 
-async function deleteThisTables(): Promise<void> {
-	await deleteTables(junctionTableName, leftTableName, rightTableName)
-}
-
-test.beforeEach(async () => {
-	const sdk = getSdk()
-	await deleteThisTables()
-
-	await sdk.infra.collections.createOne({
-		data: new CollectionCreateDto({ tableName: leftTableName }),
-	})
-	await sdk.infra.collections.createOne({
-		data: new CollectionCreateDto({ tableName: rightTableName }),
-	})
+test.beforeEach(async ({ relationFxData, sdk }) => {
+	const [col1, col2] = relationFxData.collections
 
 	relation1 = await sdk.infra.relations.createOne({
 		data: new RelationCreateDto({
-			leftCollection: camel(leftTableName),
-			rightCollection: camel(rightTableName),
+			leftCollection: col1.collectionName,
+			rightCollection: col2.collectionName,
 			left: {
 				column: "id",
 				propertyName: "leftProp",
@@ -45,10 +30,12 @@ test.beforeEach(async () => {
 	})
 })
 
-test.afterEach(async () => deleteThisTables())
+test.afterEach(async ({ collectionFx }) =>
+	collectionFx.deleteCollectionByTableName(junctionTableName),
+)
 
-test("Split many to many relation", async ({ page }) => {
-	if (!relation1) throwErr()
+test("Split many to many relation", async ({ page, relationFxData, sdk, collectionPage }) => {
+	const [col1, col2] = relationFxData.collections
 
 	await page.goto("http://localhost:7100/admin/")
 	await expect(page).toHaveURL("http://localhost:7100/admin/")
@@ -56,14 +43,14 @@ test("Split many to many relation", async ({ page }) => {
 	await page.getByRole("link", { name: "Collections" }).click()
 	await expect(page).toHaveURL("http://localhost:7100/admin/#/zmajCollectionMetadata")
 
-	await page.getByRole("link", { name: leftTableName }).click()
+	await page.getByRole("link", { name: col1.tableName }).click()
 	// await expect(page).toHaveURL(
 	// 	`http://localhost:7100/admin/#/zmajCollectionMetadata/${relation1.collectionId}/show`,
 	// )
 
 	await page.getByRole("tab", { name: "Relations" }).click()
 
-	await page.getByRole("link", { name: /mtm_left_table_split.leftProp/ }).click()
+	await collectionPage.relationInListByDef(relation1).click()
 	await expect(page).toHaveURL(
 		`http://localhost:7100/admin/#/zmajRelationMetadata/${relation1.id}/show`,
 	)
@@ -75,7 +62,7 @@ test("Split many to many relation", async ({ page }) => {
 	await expect(page.getByText("Successfully splitted relation")).toHaveCount(1)
 
 	//
-	const leftRelation = await getSdk().infra.relations.getById({
+	const leftRelation = await sdk.infra.relations.getById({
 		id: relation1.id ?? throwErr(),
 	})
 	expect(leftRelation.type).toEqual("one-to-many")
