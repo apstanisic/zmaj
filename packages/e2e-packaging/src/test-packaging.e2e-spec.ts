@@ -10,6 +10,7 @@ import {
 	writeExampleEnvFile,
 } from "./packaging-test-utils"
 
+const dockerPull = "docker-compose --env-file .env pull"
 const dockerUp = "docker-compose --env-file .env -p zmaj_example up -d"
 const dockerDown = "docker-compose --env-file .env -p zmaj_example down -v"
 const npmRunDev = "npm run dev"
@@ -28,8 +29,9 @@ describe.sequential.each(exampleProjects)(
 
 		beforeAll(async () => {
 			writeExampleEnvFile(projectPath)
+			await execaCommand(dockerPull, { cwd: projectPath })
 			await execaCommand(dockerDown, { cwd: projectPath })
-		})
+		}, 30_000)
 
 		beforeEach(async () => {
 			execaCommand(dockerUp, { cwd: projectPath, extendEnv: false })
