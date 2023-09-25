@@ -26,8 +26,12 @@ describe.sequential.each(exampleProjects)(
 	(exampleName) => {
 		const projectPath = join(rootFolder, "examples", exampleName)
 
-		beforeEach(async () => {
+		beforeAll(async () => {
 			writeExampleEnvFile(projectPath)
+			await execaCommand(dockerDown, { cwd: projectPath })
+		})
+
+		beforeEach(async () => {
 			execaCommand(dockerUp, { cwd: projectPath, extendEnv: false })
 			await waitForDatabase()
 		})
@@ -36,9 +40,6 @@ describe.sequential.each(exampleProjects)(
 			await execaCommand(dockerDown, { cwd: projectPath })
 		})
 
-		beforeAll(async () => {
-			await execaCommand(dockerDown, { cwd: projectPath })
-		})
 		afterAll(async () => {
 			await execaCommand(dockerDown, { cwd: projectPath })
 		})
