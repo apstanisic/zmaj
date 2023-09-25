@@ -2,7 +2,7 @@
 	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
-	"type": "module",
+	"prettier": "../../.prettierrc.json",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -13,6 +13,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
+	"type": "module",
 	"name": "@zmaj-js/e2e-tests",
 	"version": "0.2.3",
 	"private": true,
@@ -23,12 +24,24 @@
 		"test-gui": "playwright test -c ./playwright.config.ts"
 	},
 	"dependencies": {
-		"@playwright/test": "1.32.2",
+		"@clack/prompts": "^0.7.0",
+		"@faker-js/faker": "^8.1.0",
+		"@ngneat/falso": "^7.1.1",
+		"@playwright/test": "1.38.1",
+		"@types/mime-types": "^2.1.1",
 		"@zmaj-js/client-sdk": "workspace:*",
 		"@zmaj-js/common": "workspace:*",
+		"@zmaj-js/orm": "workspace:*",
+		"@zmaj-js/orm-sq": "workspace:*",
 		"@zmaj-js/test-utils": "workspace:*",
+		"dotenv": "^16.3.1",
+		"formdata-node": "^5.0.1",
+		"mime-types": "^2.1.35",
 		"otplib": "^12.0.1",
-		"radash": "^10.8.1",
-		"zmaj": "workspace:*"
+		"radash": "^11.0.0",
+		"type-fest": "^4.3.1",
+		"uuid": "^9.0.1",
+		"zmaj": "workspace:*",
+		"zod": "^3.22.2"
 	}
 }

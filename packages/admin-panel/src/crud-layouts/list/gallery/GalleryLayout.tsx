@@ -45,9 +45,7 @@ const GalleryLayout = memo(() => {
 					size === "small" ? smallSizeCss : normalSizeCss,
 				)}
 			>
-				{data?.map((record: RaRecord, i) => (
-					<GalleryLayoutItem record={record} key={i} />
-				))}
+				{data?.map((record: RaRecord, i) => <GalleryLayoutItem record={record} key={i} />)}
 			</div>
 		</div>
 	)

@@ -1,24 +1,20 @@
-import { knexQuery } from "@api/database/knex/knex-query"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
+import { knexQuery } from "@api/database/knex-query"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { INestApplication } from "@nestjs/common"
-import { DataTypes } from "sequelize"
 import {
-	DbMigration,
-	DbMigrationCollection,
 	CollectionDef,
-	FieldDef,
-	FieldMetadata,
-	FieldMetadataCollection,
+	DbMigrationModel,
 	FieldCreateDto,
+	FieldDef,
+	FieldMetadataModel,
 	FieldUpdateDto,
 	throwErr,
 	User,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager, SchemaInfoService } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { camel } from "radash"
+import { DataTypes } from "sequelize"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { InfraStateService } from "../infra-state/infra-state.service"
@@ -31,8 +27,8 @@ describe("RelationController e2e", () => {
 	let repoManager: RepoManager
 	let sqService: SequelizeService
 	//
-	let migrationsRepo: OrmRepository<DbMigration>
-	let fieldsRepo: OrmRepository<FieldMetadata>
+	let migrationsRepo: OrmRepository<DbMigrationModel>
+	let fieldsRepo: OrmRepository<FieldMetadataModel>
 	//
 	let user: User
 	let collection: CollectionDef
@@ -52,8 +48,8 @@ describe("RelationController e2e", () => {
 
 		infraStateService = app.get(InfraStateService)
 
-		migrationsRepo = all.repo(DbMigrationCollection)
-		fieldsRepo = all.repo(FieldMetadataCollection)
+		migrationsRepo = all.repo(DbMigrationModel)
+		fieldsRepo = all.repo(FieldMetadataModel)
 	})
 
 	afterAll(async () => {
@@ -94,7 +90,7 @@ describe("RelationController e2e", () => {
 		const newField = "new_field"
 
 		it("should create field", async () => {
-			const hasField = await schemaInfoService.hasColumn(tableName, newField)
+			const hasField = await schemaInfoService.hasColumn({ table: tableName, column: newField })
 			expect(hasField).toEqual(false)
 
 			const res = await supertest(app.getHttpServer())
@@ -103,7 +99,7 @@ describe("RelationController e2e", () => {
 				.send(
 					new FieldCreateDto({
 						columnName: newField,
-						dataType: "long-text",
+						dataType: "text",
 						isNullable: true,
 						collectionName: collectionName,
 					}),
@@ -226,7 +222,7 @@ describe("RelationController e2e", () => {
 			expect(fieldInDb).toBeUndefined()
 
 			// should delete column
-			const exist = await schemaInfoService.hasColumn(tableName, "value")
+			const exist = await schemaInfoService.hasColumn({ table: tableName, column: "value" })
 			expect(exist).toEqual(false)
 
 			// should remove field from repo

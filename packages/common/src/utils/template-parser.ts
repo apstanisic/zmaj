@@ -110,6 +110,7 @@ const basicPipes: Record<string, TemplateParserPipe> = {
 	orUnknown: (value) => (isNil(value) ? "UNKNOWN" : value),
 	camelCase: (v) => camel(String(v)),
 	snakeCase: (v) => snakeCase(String(v)),
+	extension: (v) => String(v).split(".").at(-1) ?? "",
 	fromCents: (v) => {
 		const str = String(v).padStart(3, "0")
 		return str.substring(0, str.length - 2) + "." + str.substring(str.length - 2)

@@ -52,5 +52,8 @@ export const migrationNameRegex = /^2[0-9]{3}_[0-9]{2}_[0-9]{2}_[0-9]{2}_[0-9]{2
  * Also, it looks like underscore is allowed
  * @see https://stackoverflow.com/questions/4814040/allowed-characters-in-filename#comment38006480_4814088
  *
+ *
+ * With starting dot
+ *
  */
-export const fileExtensionRegex = /^([a-z0-9-_]){1,20}$/
+export const fileExtensionRegex = /^\.([a-z0-9-_]){1,20}$/

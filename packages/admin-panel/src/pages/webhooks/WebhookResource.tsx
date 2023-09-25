@@ -7,6 +7,8 @@ import { WebhookCreate } from "./WebhookCreate"
 import { WebhookEdit } from "./WebhookEdit"
 import { WebhookShow } from "./WebhookShow"
 
+const webhook = WebhookCollection
+
 export function webhookResource(props: { authz: Authz }): JSX.Element {
 	const read = checkSystem(props.authz, "webhooks", "read")
 	const edit = checkSystem(props.authz, "webhooks", "update")
@@ -14,13 +16,13 @@ export function webhookResource(props: { authz: Authz }): JSX.Element {
 
 	return (
 		<Resource
-			name={WebhookCollection.collectionName}
+			name={webhook.collectionName}
 			list={read ? GeneratedListPage : undefined}
 			show={read ? WebhookShow : undefined}
 			edit={edit ? WebhookEdit : undefined}
 			create={create ? WebhookCreate : undefined}
 			options={{
-				label: WebhookCollection.label ?? undefined,
+				label: webhook.label ?? undefined,
 				authzResource: systemPermissions.webhooks.resource, //
 			}}
 		/>

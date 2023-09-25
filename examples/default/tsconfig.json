@@ -12,7 +12,5 @@
 		"module": "commonjs"
 	},
 	"include": ["./src"],
-	"ts-node": {
-		"swc": true
-	}
+	"ts-node": {}
 }

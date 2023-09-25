@@ -1,7 +1,6 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { buildTestModule } from "@api/testing/build-test-module"
-import { DbColumn, FieldMetadata, times } from "@zmaj-js/common"
+import { FieldMetadata, FieldMetadataModel, times } from "@zmaj-js/common"
+import { DbColumn, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { DbColumnStub, FieldMetadataStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraService } from "../infra.service"
@@ -11,7 +10,7 @@ describe("InfraSchemaFieldsSyncService", () => {
 	let service: InfraSchemaFieldsSyncService
 	let infraService: InfraService
 	let schemaInfoS: SchemaInfoService
-	let repo: OrmRepository<FieldMetadata>
+	let repo: OrmRepository<FieldMetadataModel>
 
 	let columns: DbColumn[]
 	let fields: FieldMetadata[]

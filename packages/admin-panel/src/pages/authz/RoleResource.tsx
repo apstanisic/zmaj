@@ -9,6 +9,7 @@ import { GeneratedListPage } from "../../generator/pages/GeneratedListPage"
 // import { roleList } from "./roleList"
 import { RoleShow } from "./RoleShow"
 
+const role = RoleCollection
 //
 export function roleResource(props: { authz: Authz }): JSX.Element {
 	const read = checkSystem(props.authz, "authorization", "read")
@@ -16,13 +17,13 @@ export function roleResource(props: { authz: Authz }): JSX.Element {
 
 	return (
 		<Resource
-			name={RoleCollection.collectionName}
+			name={role.collectionName}
 			list={read ? GeneratedListPage : undefined}
 			show={read ? RoleShow : undefined}
 			create={modify ? GeneratedCreatePage : undefined}
 			edit={modify ? GeneratedEditPage : undefined}
 			options={{
-				label: RoleCollection.label ?? undefined,
+				label: role.label ?? undefined,
 				authzResource: systemPermissions.authorization.resource,
 				authzActions: {
 					create: systemPermissions.authorization.actions.modify.key,

@@ -1,4 +1,4 @@
-import { IdType } from "@common/modules/crud-types/id-type.type"
+import { IdType } from "@zmaj-js/orm"
 import { isInt, isString } from "radash"
 import { isUUID } from "./is-uuid"
 

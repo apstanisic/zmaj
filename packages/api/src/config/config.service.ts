@@ -8,6 +8,7 @@ import { join as joinPath } from "path"
 import { camel, isInt, mapKeys, mapValues } from "radash"
 import { z } from "zod"
 import { ConfigModuleConfig } from "./config.config"
+import { Primitive } from "type-fest"
 
 export type ParsedEnvValue = string | number | boolean | Date | null | undefined
 
@@ -68,7 +69,8 @@ export class ConfigService {
 	}
 
 	/** Get value by key. It get's parsed value, not only string */
-	get<T extends ParsedEnvValue = ParsedEnvValue>(key: string): T | undefined {
+	// get<T extends ParsedEnvValue = ParsedEnvValue>(key: string): T | undefined {
+	get<T extends Primitive | Date = Primitive | Date>(key: string): T | undefined {
 		return this.parsed[key] as T | undefined
 	}
 

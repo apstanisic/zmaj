@@ -16,4 +16,4 @@ export const comparisons = Object.freeze([
 	// "$exists", // is not null
 ] as const)
 
-export type Comparison = typeof comparisons[number]
+export type Comparison = (typeof comparisons)[number]

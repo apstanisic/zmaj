@@ -1,5 +1,5 @@
 import { randBoolean, randNumber, randPhrase, randWord } from "@ngneat/falso"
-import { Filter, Struct, UrlQuery, UrlQuerySchema, stub, times } from "@zmaj-js/common"
+import { UrlQuery, UrlQuerySchema, stub, times } from "@zmaj-js/common"
 
 export const ReadUrlQueryStub = stub<UrlQuery>(
 	() => ({
@@ -22,6 +22,7 @@ export const ReadUrlQueryStub = stub<UrlQuery>(
 	UrlQuerySchema,
 )
 
-export const FilterStub = stub<Filter<Struct>>(() => {
+// TODO remove any
+export const FilterStub = stub<any>(() => {
 	return Object.fromEntries(times(6, () => [randWord(), randPhrase()])) //
 })

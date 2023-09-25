@@ -4,34 +4,33 @@ import { throw403, throw404, throw500 } from "@api/common/throw-http"
 import { CrudCreateService } from "@api/crud/crud-create.service"
 import type { CrudFinishEvent } from "@api/crud/crud-event.types"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { emsg } from "@api/errors"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { StorageService } from "@api/storage/storage.service"
 import { HttpException, Injectable, Logger } from "@nestjs/common"
-import { Model } from "sequelize"
 import {
 	AuthUser,
 	FileCollection,
-	fileExtensionRegex,
 	FileInfo,
+	FileModel,
 	FileSchema,
 	throwErr,
 	zodCreate,
 	type UUID,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { FileUploadDisabledError, StorageError } from "@zmaj-js/storage-core"
 import { format } from "date-fns"
 import path from "path"
+import { Model } from "sequelize"
 import { Readable } from "stream"
 import { v4 } from "uuid"
 import { ImagesService } from "./images.service"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 
 @Injectable()
 export class FilesService {
 	logger = new Logger(FilesService.name)
-	repo: OrmRepository<FileInfo>
+	repo: OrmRepository<FileModel>
 	constructor(
 		public readonly crudCreate: CrudCreateService<FileInfo>,
 		private readonly storageService: StorageService,
@@ -40,7 +39,7 @@ export class FilesService {
 		private readonly imagesService: ImagesService,
 		private readonly sqService: SequelizeService,
 	) {
-		this.repo = this.repoManager.getRepo(FileCollection)
+		this.repo = this.repoManager.getRepo(FileModel)
 	}
 
 	/**
@@ -86,6 +85,7 @@ export class FilesService {
 	}
 
 	async getFolders(user?: AuthUser): Promise<string[]> {
+		// Need to use group by
 		const paths = await this.sqService.orm
 			.model(FileCollection.tableName)
 			.findAll<Model<Pick<FileInfo, "folderPath">>>({
@@ -107,7 +107,7 @@ export class FilesService {
 	 */
 	async uploadFile(params: UploadFileParams): Promise<Partial<FileInfo>> {
 		const { file, fileName, mimeType, user, fileSize, folder, storageProvider } = params
-		const { name, ext } = path.parse(fileName)
+		// const { name, ext } = path.parse(fileName)
 
 		const allowed = this.authz.checkSystem("files", "create", {
 			user,
@@ -119,9 +119,7 @@ export class FilesService {
 		})
 		if (!allowed) throw403(492342, emsg.noAuthz)
 
-		const extWithoutDot = ext.substring(1).toLowerCase()
-
-		const extension = fileExtensionRegex.test(extWithoutDot) ? extWithoutDot : null
+		const extension = path.extname(fileName)
 
 		const fileId = v4()
 
@@ -133,12 +131,10 @@ export class FilesService {
 					mimeType,
 					storageProvider,
 					fileSize,
-					name,
+					name: fileName,
 					uri: filePath,
 					userId: user?.userId,
 					folderPath: folder,
-					extension, //remove leading dot. If it's '' it will remain ''
-					// extension: trimStart(ext, "."), //remove leading dot. If it's '' it will remain ''
 					id: fileId,
 				})
 
@@ -147,7 +143,6 @@ export class FilesService {
 				const created = await this.crudCreate.createOne(fileInfo, {
 					collection: FileCollection,
 					req: params.req,
-					// ensure that same id is used, since we delete provided ids in dto
 					factory: () => fileInfo,
 					trx: em,
 					user,
@@ -184,11 +179,11 @@ export class FilesService {
 	 * @param extension without dot
 	 * @returns path where file should be saved
 	 */
-	generateUri(fileId: string, extension: string | null): string {
+	generateUri(fileId: string, extension: string): string {
 		// const { ext } = path.parse(extension)
 		const yearMonth = format(new Date(), "yyyy/MM")
 		const dir = `zmaj/files/${yearMonth}/${fileId}`
-		return path.format({ dir, name: fileId, ext: extension ? `.${extension}` : "" })
+		return path.format({ dir, name: fileId, ext: extension })
 	}
 
 	async removeFileFromStorage(file: FileInfo): Promise<void> {

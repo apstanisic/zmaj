@@ -1,9 +1,8 @@
-import { DefineCollection } from "@common/collection-builder/define-collection"
+import { codeCollection } from "@common/collection-builder/define-collection"
 import { systemPermissions } from "../permissions"
-import { CollectionMetadata } from "./collection-metadata.model"
+import { CollectionMetadataModel } from "./collection-metadata.model"
 
-export const CollectionMetadataCollection = DefineCollection<CollectionMetadata>({
-	tableName: "zmaj_collection_metadata",
+export const CollectionMetadataCollection = codeCollection(CollectionMetadataModel, {
 	options: {
 		authzKey: systemPermissions.infra.resource,
 		label: "Collections",
@@ -22,41 +21,20 @@ export const CollectionMetadataCollection = DefineCollection<CollectionMetadata>
 			},
 		},
 	},
-	fields: {
-		id: { dataType: "uuid", isPrimaryKey: true, columnName: "id", canUpdate: false },
-		tableName: { dataType: "short-text", columnName: "table_name", canUpdate: false },
-		collectionName: { dataType: "short-text", columnName: "collection_name", canUpdate: false },
-		createdAt: {
-			dataType: "datetime",
-			columnName: "created_at",
-			canUpdate: false,
-			canCreate: false,
-		},
-		// description: { dataType: "long-text", columnName: "description" },
-		hidden: { dataType: "boolean", columnName: "hidden" },
-		disabled: { dataType: "boolean", columnName: "disabled" },
-		// createdAtFieldId: { dataType: "uuid", columnName: "created_at_field_id" },
-		// updatedAtFieldId: { dataType: "uuid", columnName: "updated_at_field_id" },
-		// validation: { dataType: "json", columnName: "validation" },
-		// icon: { dataType: "short-text", columnName: "icon" },
-		label: { dataType: "short-text", columnName: "label" },
-		displayTemplate: { dataType: "short-text", columnName: "display_template" },
-		layoutConfig: { dataType: "json", columnName: "layout_config" },
-	},
 	relations: {
+		colFields: {
+			type: "one-to-many",
+			otherColumnName: "tableName",
+			otherPropertyName: "collection",
+			otherTableName: "zmaj_relation_metadata",
+			thisColumnName: "tableName",
+		},
 		relations: {
 			type: "one-to-many",
-			thisColumnName: "table_name",
-			otherColumnName: "table_name",
+			otherColumnName: "tableName",
+			otherPropertyName: "collection",
 			otherTableName: "zmaj_relation_metadata",
-			otherPropertyName: "collection",
-		},
-		fields: {
-			type: "one-to-many",
-			thisColumnName: "table_name",
-			otherColumnName: "table_name",
-			otherTableName: "zmaj_field_metadata",
-			otherPropertyName: "collection",
+			thisColumnName: "tableName",
 		},
 	},
 })

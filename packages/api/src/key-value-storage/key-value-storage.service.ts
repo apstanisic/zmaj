@@ -1,23 +1,21 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
 import { Injectable } from "@nestjs/common"
 import {
-	ignoreErrors,
-	isStruct,
 	KeyValue,
-	KeyValueCollection,
+	KeyValueModel,
 	KeyValueSchema,
 	Struct,
+	ignoreErrors,
+	isStruct,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager, Transaction } from "@zmaj-js/orm"
 import { z } from "zod"
 
 @Injectable()
 export class KeyValueStorageService {
-	private repo: OrmRepository<KeyValue>
+	private repo: OrmRepository<KeyValueModel>
 	constructor(private readonly repoManager: RepoManager) {
-		this.repo = this.repoManager.getRepo(KeyValueCollection)
+		this.repo = this.repoManager.getRepo(KeyValueModel)
 	}
 
 	/**
@@ -63,7 +61,7 @@ export class KeyValueStorageService {
 	 * @param em It accepts EntityManager in case it's in transaction
 	 */
 	async create(data: z.input<typeof KeyValueSchema>, trx?: Transaction): Promise<KeyValue> {
-		const keyVal = zodCreate(KeyValueSchema, data)
+		const keyVal = zodCreate(KeyValueSchema.omit({ createdAt: true, updatedAt: true }), data)
 
 		const saved = await this.repo.createOne({ data: keyVal, trx })
 		return saved
@@ -77,7 +75,7 @@ export class KeyValueStorageService {
 		if (exist) {
 			return this.repo.updateById({
 				id: exist.id,
-				changes: { value: data.value, updatedAt: new Date() },
+				changes: { value: data.value },
 				trx,
 			})
 		} else {

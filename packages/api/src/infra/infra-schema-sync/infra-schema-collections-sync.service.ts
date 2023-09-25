@@ -1,15 +1,14 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
 	CollectionMetadata,
-	CollectionMetadataCollection,
+	CollectionMetadataModel,
 	CollectionMetadataSchema,
 	getFreeValue,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { InfraConfig } from "../infra.config"
 
 @Injectable()
@@ -21,9 +20,9 @@ export class InfraSchemaCollectionsSyncService {
 		private bootstrapRepoManager: BootstrapRepoManager,
 		private config: InfraConfig,
 	) {
-		this.repo = this.bootstrapRepoManager.getRepo(CollectionMetadataCollection)
+		this.repo = this.bootstrapRepoManager.getRepo(CollectionMetadataModel)
 	}
-	repo: OrmRepository<CollectionMetadata>
+	repo: OrmRepository<CollectionMetadataModel>
 
 	/**
 	 * Sync fields and collection with database columns and tables
@@ -73,7 +72,10 @@ export class InfraSchemaCollectionsSyncService {
 					(v) => collections.every((c) => c.collectionName !== v),
 					{ case: this.config.defaultCase },
 				)
-				return zodCreate(CollectionMetadataSchema, { tableName, collectionName })
+				return zodCreate(CollectionMetadataSchema.omit({ createdAt: true }), {
+					tableName,
+					collectionName,
+				})
 			})
 
 		if (missing.length === 0) return

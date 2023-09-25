@@ -1,16 +1,14 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionMetadata,
-	CollectionMetadataCollection,
+	CollectionMetadataModel,
 	FieldMetadata,
-	FieldMetadataCollection,
-	ForeignKey,
+	FieldMetadataModel,
 	RelationMetadata,
-	RelationMetadataCollection,
+	RelationMetadataModel,
 } from "@zmaj-js/common"
+import { ForeignKey, SchemaInfoService, Transaction } from "@zmaj-js/orm"
 import { alphabetical, unique } from "radash"
 
 @Injectable()
@@ -21,15 +19,18 @@ export class InfraService {
 	) {}
 
 	async getCollectionMetadata(trx?: Transaction): Promise<CollectionMetadata[]> {
-		return this.baseRepoManager.getRepo(CollectionMetadataCollection).findWhere({ trx })
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
+		return this.baseRepoManager.getRepo(CollectionMetadataModel).findWhere({ trx })
 	}
 
 	async getFieldMetadata(trx?: Transaction): Promise<FieldMetadata[]> {
-		return this.baseRepoManager.getRepo(FieldMetadataCollection).findWhere({ trx })
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
+		return this.baseRepoManager.getRepo(FieldMetadataModel).findWhere({ trx })
 	}
 
 	async getRelationMetadata(trx?: Transaction): Promise<RelationMetadata[]> {
-		return this.baseRepoManager.getRepo(RelationMetadataCollection).findWhere({ trx })
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
+		return this.baseRepoManager.getRepo(RelationMetadataModel).findWhere({ trx })
 	}
 
 	// sort fks by table, then by it's name. This prevent having multiple fks

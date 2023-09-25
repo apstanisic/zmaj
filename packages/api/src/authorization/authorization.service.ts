@@ -1,3 +1,4 @@
+import { Fields } from "@api/common"
 import { throw403, throw500 } from "@api/common/throw-http"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
@@ -13,15 +14,15 @@ import {
 	ADMIN_ROLE_ID,
 	AllowedAction,
 	AuthUser,
-	Fields,
-	FLAT_DELIMITER,
 	CollectionDef,
+	FLAT_DELIMITER,
+	PUBLIC_ROLE_ID,
+	Permission,
+	Struct,
 	getSystemPermission,
 	isNil,
 	isPrimitiveDbValue,
-	Permission,
-	PUBLIC_ROLE_ID,
-	Struct,
+	isStruct,
 	systemPermissions,
 } from "@zmaj-js/common"
 import flat from "flat"
@@ -36,7 +37,7 @@ import { builtInTransformers } from "./condition-transformers"
 const { flatten, unflatten } = flat
 
 type Action = "create" | "read" | "update" | "delete" | string
-type Resource = string | CollectionDef<any>
+type Resource = string | CollectionDef
 
 type CanParams<T extends Struct = Struct> = {
 	user?: AuthUser
@@ -56,7 +57,7 @@ type PickFieldsParams<T extends Struct = Struct> = Pick<
 	// "resource" | "user" | "record"
 	"user" | "record"
 > & {
-	resource: CollectionDef<any>
+	resource: CollectionDef
 	fields?: Fields<T>
 }
 
@@ -166,7 +167,7 @@ export class AuthorizationService {
 	 */
 	checkSystem<T extends keyof typeof systemPermissions>(
 		resourceKey: T,
-		actionKey: keyof typeof systemPermissions[T]["actions"],
+		actionKey: keyof (typeof systemPermissions)[T]["actions"],
 		params: {
 			user?: AuthUser
 			record?: Struct<any>
@@ -290,8 +291,7 @@ export class AuthorizationService {
 				// this is for getting fields out of relation (relevant for both array and object)
 				// if field value for this property is true, it means give me all sub-values that you can
 				// (same as `undefined` above), so we are passing undefined
-				const fieldsToCheck =
-					fields?.[field] === true ? undefined : (fields?.[field] as Fields<any>)
+				const fieldsToCheck = fields?.[field] === true ? undefined : fields?.[field]
 
 				const rightCollection =
 					this.infraState.getCollection(fullRel?.otherSide.collectionName ?? "_") ?? throw500(78323)
@@ -304,15 +304,15 @@ export class AuthorizationService {
 							record: item,
 							// resource: `collections.${infraProperty.rightCollectionName}`,
 							resource: rightCollection,
-							fields: fieldsToCheck,
+							fields: fieldsToCheck === true ? undefined : fieldsToCheck,
 						}),
 					)
 				} else {
 					// if value is object m2o
 					allowedData[field] = this.pickAllowedData({
 						user,
-						record: value,
-						fields: fieldsToCheck,
+						record: value as Struct,
+						fields: fieldsToCheck === true ? undefined : fieldsToCheck,
 						resource: rightCollection,
 						// resource: `collections.${infraProperty.rightCollectionName}`,
 					})
@@ -448,11 +448,13 @@ export class AuthorizationService {
 		user,
 		permission,
 	}: {
-		permission: Permission
+		permission: Readonly<Permission>
 		user?: AuthUser
 	}): Struct {
 		const delimiter = FLAT_DELIMITER
-		const flatConditions = flatten<Struct, Struct>(permission.conditions ?? {}, { delimiter })
+		const conditions = permission.conditions ?? {}
+		if (!isStruct(conditions)) throw500(3992)
+		const flatConditions = flatten<Struct, Struct>(conditions, { delimiter })
 
 		for (const [key, value] of Object.entries(flatConditions)) {
 			if (typeof value !== "string") continue

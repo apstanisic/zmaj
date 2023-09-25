@@ -2,7 +2,7 @@
 	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
-	"type": "module",
+	"prettier": "../../.prettierrc.json",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -13,6 +13,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
+	"type": "module",
 	"name": "@zmaj-js/full",
 	"version": "0.2.3",
 	"types": "./dist/index.d.ts",
@@ -32,16 +33,17 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/full",
+		"test": "cd ../.. && vitest run packages/full --passWithNoTests",
 		"tsc": "tsc",
 		"build": "tsup --config ../../tsup.config.ts",
-		"dev": "tsup --config ../../tsup.config.ts --watch"
+		"dev": "tsup --config ../../tsup.config.ts --watch",
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
 	},
 	"dependencies": {
-		"@nestjs/serve-static": "^3.0.1",
+		"@nestjs/serve-static": "^4.0.0",
 		"@zmaj-js/admin-panel": "workspace:*",
 		"@zmaj-js/api": "workspace:*",
-		"import-meta-resolve": "^2.2.2"
+		"import-meta-resolve": "^3.0.0"
 	},
 	"description": "Zmaj is a library to make managing your database easier"
 }

@@ -1,4 +1,4 @@
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
+import { AlterSchemaService } from "@zmaj-js/orm"
 import { throw500 } from "@api/common/throw-http"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { ForbiddenException } from "@nestjs/common"

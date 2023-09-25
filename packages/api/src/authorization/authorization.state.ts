@@ -1,19 +1,19 @@
 import type { CrudAfterEvent } from "@api/crud/crud-event.types"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { Injectable, OnModuleInit } from "@nestjs/common"
 import { Cron, CronExpression } from "@nestjs/schedule"
 import {
 	ADMIN_ROLE_ID,
+	PUBLIC_ROLE_ID,
 	Permission,
 	PermissionCollection,
-	PUBLIC_ROLE_ID,
+	PermissionModel,
 	Role,
 	RoleCollection,
+	RoleModel,
 	RoleSchema,
 	zodCreate,
 } from "@zmaj-js/common"
-import { ReadonlyDeep } from "type-fest"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { v4 } from "uuid"
 import { OnCrudEvent } from "../crud/on-crud-event.decorator"
 
@@ -28,17 +28,17 @@ export class AuthorizationState implements OnModuleInit {
 	/** Current version of roles and permissions */
 	cacheVersion = v4()
 	/** All permissions */
-	permissions: ReadonlyDeep<Permission>[] = []
+	permissions: Readonly<Permission>[] = []
 
 	/** All roles */
-	roles: ReadonlyDeep<Role[]> = []
+	roles: Readonly<Role[]> = []
 
-	private rolesRepo: OrmRepository<Role>
-	private permissionsRepo: OrmRepository<Permission>
+	private rolesRepo: OrmRepository<RoleModel>
+	private permissionsRepo: OrmRepository<PermissionModel>
 
 	constructor(private readonly repoManager: RepoManager) {
-		this.rolesRepo = this.repoManager.getRepo(RoleCollection)
-		this.permissionsRepo = this.repoManager.getRepo(PermissionCollection)
+		this.rolesRepo = this.repoManager.getRepo(RoleModel)
+		this.permissionsRepo = this.repoManager.getRepo(PermissionModel)
 	}
 
 	/**
@@ -63,7 +63,7 @@ export class AuthorizationState implements OnModuleInit {
 
 		if (!publicRoleExist) {
 			await this.rolesRepo.createOne({
-				data: zodCreate(RoleSchema, {
+				data: zodCreate(RoleSchema.omit({ createdAt: true }), {
 					name: "Public",
 					description: "Public role",
 					id: PUBLIC_ROLE_ID,
@@ -73,7 +73,7 @@ export class AuthorizationState implements OnModuleInit {
 
 		if (!adminRoleExist) {
 			await this.rolesRepo.createOne({
-				data: zodCreate(RoleSchema, {
+				data: zodCreate(RoleSchema.omit({ createdAt: true }), {
 					name: "Admin",
 					description: "Administrator role",
 					id: ADMIN_ROLE_ID,

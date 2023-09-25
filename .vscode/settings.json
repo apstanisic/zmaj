@@ -3,20 +3,12 @@
 	"typescript.tsdk": "node_modules/typescript/lib",
 	// speeds up eslint
 	"eslint.workingDirectories": [{ "pattern": "packages/**/" }],
-	// Use rome formatter for JS/TS since it's a lot faster
-	"[javascript][javascriptreact][typescript][typescriptreact]": {
-		"editor.defaultFormatter": "rome.rome"
-	},
-	// Use prettier formatter for css/html/json/md
-	"[css][html][json][jsonc][markdown][mjml]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
 	// Tailwind uses @apply
 	"css.lint.unknownAtRules": "ignore",
 	// use nestjs icons
 	"material-icon-theme.activeIconPack": "nest",
 	// Unit Vitest config
-	"vitest.commandLine": "npx vitest watch --config vitest-unit.config.ts ",
+	// "vitest.commandLine": "npx vitest watch --config vitest-unit.config.ts ",
 	// Vitest extension is trying to run Playwright tests
 	"vitest.exclude": [
 		"**/node_modules/**",
@@ -29,6 +21,8 @@
 	// E2E Vitest config. For now there is no better way
 	// "vitest.include": ["**/*.{e2e-spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
 	// "vitest.commandLine": "npx vitest watch --config vitest-e2e.config.ts ",
+	"vitest.commandLine": "npx vitest --config vitest.workspace.ts ",
+
 	"cSpell.ignorePaths": [
 		"package-lock.json",
 		"node_modules",
@@ -38,6 +32,7 @@
 		".vscode-insiders",
 		"pnpm-lock.yaml"
 	],
+	"tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],
 	// Valid words that are not in dictonary
 	"cSpell.words": [
 		"Aleksandar",

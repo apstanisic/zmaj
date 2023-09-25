@@ -1,3 +1,4 @@
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
 import { z } from "zod"
 
 /**
@@ -11,6 +12,10 @@ import { z } from "zod"
  * const TestSchema = ModelSchema<{id: string}>()(z.object({id: z.string()}))
  * ```
  */
-export const ModelSchema = <T>() => {
+export const ModelSchema = <T extends BaseModel>() => {
+	return <S extends z.ZodType<GetModelFields<T>, any, any>>(arg: S) => arg
+}
+
+export const SchemaCheck = <T>() => {
 	return <S extends z.ZodType<T, any, any>>(arg: S) => arg
 }

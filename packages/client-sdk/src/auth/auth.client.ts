@@ -13,7 +13,7 @@ import {
 	SignUpDto,
 } from "@zmaj-js/common"
 import { AxiosInstance } from "axios"
-import EventEmitter from "eventemitter3"
+import { EventEmitter } from "eventemitter3"
 import { isString } from "radash"
 import { AccessTokenClient } from "./access-token.client"
 import { AuthSessionsClient } from "./auth-sessions.client"

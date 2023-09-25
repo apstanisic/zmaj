@@ -1,25 +1,20 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
-import { DataTypes } from "sequelize"
 import {
-	DbColumn,
-	DbMigration,
-	DbMigrationCollection,
-	ForeignKey,
+	DbMigrationModel,
 	RelationCreateDto,
 	RelationDef,
-	RelationMetadata,
-	RelationMetadataCollection,
+	RelationMetadataModel,
 	RelationUpdateDto,
 	throwErr,
 	User,
 	UUID,
 } from "@zmaj-js/common"
+import { DbColumn, ForeignKey, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { camel } from "radash"
+import { DataTypes } from "sequelize"
 import supertest from "supertest"
 import { PartialDeep } from "type-fest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
@@ -40,8 +35,8 @@ describe("RelationController e2e", () => {
 	let infraStateService: InfraStateService
 	let relationsService: RelationsService
 	//
-	let migrationsRepo: OrmRepository<DbMigration>
-	let relationsRepo: OrmRepository<RelationMetadata>
+	let migrationsRepo: OrmRepository<DbMigrationModel>
+	let relationsRepo: OrmRepository<RelationMetadataModel>
 	//
 	let user: User
 	//
@@ -56,8 +51,8 @@ describe("RelationController e2e", () => {
 		infraStateService = app.get(InfraStateService)
 		relationsService = app.get(RelationsService)
 
-		migrationsRepo = all.repo(DbMigrationCollection)
-		relationsRepo = all.repo(RelationMetadataCollection)
+		migrationsRepo = all.repo(DbMigrationModel)
+		relationsRepo = all.repo(RelationMetadataModel)
 	})
 
 	afterAll(async () => {
@@ -151,7 +146,10 @@ describe("RelationController e2e", () => {
 
 				expect(res.statusCode).toEqual(201)
 
-				const createdCol = await schemaInfoService.hasColumn(ownerTableName, dto.left.column)
+				const createdCol = await schemaInfoService.hasColumn({
+					table: ownerTableName,
+					column: dto.left.column,
+				})
 				expect(createdCol).toEqual(true)
 
 				// const fks = await schemaInfoService.getForeignKeys()
@@ -213,7 +211,10 @@ describe("RelationController e2e", () => {
 
 				expect(res.statusCode).toEqual(201)
 
-				const createdCol = await schemaInfoService.hasColumn(ownerTableName, dto.right.column)
+				const createdCol = await schemaInfoService.hasColumn({
+					table: ownerTableName,
+					column: dto.right.column,
+				})
 				expect(createdCol).toEqual(true)
 
 				const createdFk = await schemaInfoService.getForeignKey({
@@ -404,7 +405,7 @@ describe("RelationController e2e", () => {
 
 				expect(res.statusCode).toEqual(201)
 
-				const hasTable = await schemaInfoService.hasTable(junctionTableName)
+				const hasTable = await schemaInfoService.hasTable({ table: junctionTableName })
 				expect(hasTable).toEqual(true)
 
 				const pkCol = await schemaInfoService.getColumn({ table: junctionTableName, column: "id" })

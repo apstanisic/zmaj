@@ -1,14 +1,12 @@
-import { isImageExtension } from "./is-image-extension"
+import { isImageExtensionFileName } from "./is-image-extension"
 
-import { it, expect, describe } from "vitest"
+import { describe, expect, it } from "vitest"
 
 describe("isImageExtension", () => {
 	it("should return true if image", () => {
-		expect(isImageExtension("jpeg")).toBe(true)
-		expect(isImageExtension("jpg")).toBe(true)
-		expect(isImageExtension("png")).toBe(true)
-		expect(isImageExtension("pdf")).toBe(false)
-		expect(isImageExtension(null)).toBe(false)
-		expect(isImageExtension(undefined)).toBe(false)
+		expect(isImageExtensionFileName("test.jpeg")).toBe(true)
+		expect(isImageExtensionFileName("test.jpg")).toBe(true)
+		expect(isImageExtensionFileName("test.png")).toBe(true)
+		expect(isImageExtensionFileName("test.pdf")).toBe(false)
 	})
 })

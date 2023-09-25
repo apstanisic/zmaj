@@ -2,7 +2,7 @@
 	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
-	"type": "module",
+	"prettier": "../../.prettierrc.json",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -13,6 +13,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
+	"type": "module",
 	"name": "@zmaj-js/storage-core",
 	"version": "0.2.2",
 	"types": "./dist/index.d.ts",
@@ -32,20 +33,21 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/storage-core",
+		"test": "cd ../.. && vitest run packages/storage-core --passWithNoTests",
 		"tsc": "tsc",
 		"build": "tsup --config ../../tsup.config.ts",
-		"dev": "tsup --config ../../tsup.config.ts --watch"
+		"dev": "tsup --config ../../tsup.config.ts --watch",
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
 	},
 	"dependencies": {
 		"@zmaj-js/common": "workspace:*",
-		"file-type": "^18.2.1",
+		"file-type": "^18.5.0",
 		"fs-extra": "^11.1.1",
 		"mime": "^3.0.0",
-		"zod": "^3.21.4"
+		"zod": "^3.22.2"
 	},
 	"devDependencies": {
-		"@types/fs-extra": "^11.0.1",
+		"@types/fs-extra": "^11.0.2",
 		"@types/mime": "^3.0.1"
 	}
 }

@@ -1,5 +1,5 @@
 import { Checkbox } from "@admin-panel/ui/Checkbox"
-import { IdType } from "@zmaj-js/common"
+import { IdType } from "@zmaj-js/orm"
 import { clsx } from "clsx"
 import { useListContext } from "ra-core"
 import { memo } from "react"

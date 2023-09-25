@@ -16,7 +16,7 @@ export const FieldCreate = memo(() => {
 		<GeneratedCreatePage transform={transform} onCreate={async () => infra.refetch()}>
 			<ManualInputLayout
 				defaultValues={{
-					dataType: "short-text",
+					dataType: "text",
 					componentName: "short-text",
 					fieldConfig: zodCreate(FieldConfigSchema, { component: {} }),
 				}}

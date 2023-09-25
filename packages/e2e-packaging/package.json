@@ -1,0 +1,50 @@
+{
+	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
+	"homepage": "https://github.com/apstanisic/zmaj#readme",
+	"license": "MIT",
+	"prettier": "../../.prettierrc.json",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/apstanisic/zmaj.git"
+	},
+	"bugs": {
+		"url": "https://github.com/apstanisic/zmaj/issues"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"type": "module",
+	"private": true,
+	"name": "@zmaj-js/e2e-packaging",
+	"version": "0.2.2",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"eslintConfig": {
+		"extends": "../../.eslintrc.cjs"
+	},
+	"scripts": {
+		"prebuild": "rimraf dist",
+		"lint": "eslint --fix src",
+		"test": "cd ../.. && vitest run packages/e2e-packaging --passWithNoTests",
+		"test-packaging": "vitest run",
+		"tsc": "tsc",
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
+	},
+	"dependencies": {
+		"@zmaj-js/orm": "workspace:^",
+		"@zmaj-js/orm-sq": "workspace:^",
+		"axios": "^1.5.0",
+		"dotenv": "^16.3.1",
+		"execa": "^7.1.1",
+		"zod": "^3.22.2"
+	}
+}

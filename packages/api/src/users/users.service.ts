@@ -1,22 +1,21 @@
 import { throw400, throw401, throw403, throw500 } from "@api/common/throw-http"
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
 	AuthUser,
-	Filter,
 	Struct,
 	User,
-	UserCollection,
 	UserCreateDto,
+	UserModel,
 	UserSchema,
 	UserUpdateDto,
 	UserUpdatePasswordDto,
 	UserWithSecret,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoFilterWhere, Transaction } from "@zmaj-js/orm"
+import { omit } from "radash"
 import { EncryptionService } from "../encryption/encryption.service"
 
 type IdOrEmailObject = { id: string } | { email: string }
@@ -27,29 +26,30 @@ export class UsersService {
 		private readonly repoManager: BootstrapRepoManager,
 		private readonly encryptionService: EncryptionService,
 	) {
-		this.repo = this.repoManager.getRepo(UserCollection)
+		this.repo = this.repoManager.getRepo(UserModel)
 	}
 
-	readonly repo: OrmRepository<User>
+	readonly repo: OrmRepository<UserModel>
 
 	/**
 	 * Find user either by ID or by email
 	 */
 	async findUser(where: IdOrEmailObject, trx?: Transaction): Promise<User | undefined> {
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
 		return this.repo.findOne({ where, trx })
 	}
 
 	async findUserWithHiddenFields(
-		filter: Filter<User>,
+		filter: RepoFilterWhere<UserModel>,
 		// userId: string,
 		trx?: Transaction,
 	): Promise<UserWithSecret | undefined> {
 		const users = await this.repo.findWhere({ limit: 1, where: filter, includeHidden: true, trx })
-		const user = users[0]
+		const user = users[0] as UserWithSecret | undefined
 
 		if (user && (user.password === undefined || user.otpToken === undefined)) throw500(3784329)
 
-		return user as UserWithSecret | undefined
+		return user
 	}
 
 	/**
@@ -78,7 +78,7 @@ export class UsersService {
 		return user
 	}
 
-	async createUserFactory(data: Struct): Promise<User> {
+	async createUserFactory(data: Struct): Promise<UserWithSecret> {
 		const validUser = zodCreate(UserSchema, data as any)
 		const passwordHash = await this.encryptionService.hash(validUser.password)
 		validUser.password = passwordHash
@@ -107,7 +107,10 @@ export class UsersService {
 		if (id) {
 			validUser.id = id
 		}
-		return this.repo.createOne({ data: validUser, trx: trx })
+		return this.repo.createOne({
+			data: omit(validUser, ["createdAt"]),
+			trx: trx,
+		})
 	}
 
 	/**

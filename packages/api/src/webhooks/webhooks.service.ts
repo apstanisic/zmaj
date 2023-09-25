@@ -1,9 +1,9 @@
 import type { CrudAfterEvent, CrudFinishEvent } from "@api/crud/crud-event.types"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { HttpClient } from "@api/http-client/http-client.service"
 import { Injectable, OnModuleInit } from "@nestjs/common"
-import { Struct, Webhook, WebhookCollection } from "@zmaj-js/common"
+import { Struct, Webhook, WebhookCollection, WebhookModel } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 
 /**
  * Webhooks CRUD service
@@ -14,18 +14,20 @@ export class WebhooksService implements OnModuleInit {
 	 * All webhooks in the app
 	 */
 	private allWebhooks: Webhook[] = []
+	private repo: OrmRepository<WebhookModel>
 
 	constructor(
 		private readonly http: HttpClient,
 		private readonly repoManager: RepoManager, //
-	) {}
-
-	private repo = this.repoManager.getRepo(WebhookCollection)
+	) {
+		this.repo = this.repoManager.getRepo(WebhookModel)
+	}
 
 	/**
 	 * Get all webhooks on app startup
 	 */
 	async onModuleInit(): Promise<void> {
+		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
 		this.allWebhooks = await this.repo.findWhere({})
 	}
 
@@ -61,7 +63,7 @@ export class WebhooksService implements OnModuleInit {
 						: {},
 					method: webhook.httpMethod,
 					url: webhook.url,
-					headers: webhook.httpHeaders ?? {},
+					headers: (webhook.httpHeaders ?? {}) as Struct<string>,
 					// Cancel after 5 seconds
 					timeout: 5000,
 				})

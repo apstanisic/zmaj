@@ -1,19 +1,18 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
 import { throw400, throw403, throw404 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
 	AuthSession,
-	AuthSessionCollection,
+	AuthSessionModel,
 	AuthUser,
 	GetManyOptions,
-	pageToOffset,
 	PublicAuthSession,
 	UrlQuerySchema,
+	pageToOffset,
 	type UUID,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { isEmpty } from "radash"
 import { AuthSessionsService } from "./auth-sessions.service"
 import { UserAgentService } from "./user-agent.service"
@@ -24,14 +23,14 @@ import { UserAgentService } from "./user-agent.service"
  */
 @Injectable()
 export class AuthSessionsApiService {
-	repo: OrmRepository<AuthSession>
+	repo: OrmRepository<AuthSessionModel>
 	constructor(
 		private readonly repoManager: RepoManager,
 		private readonly authz: AuthorizationService,
 		private readonly userAgentService: UserAgentService,
 		private readonly service: AuthSessionsService,
 	) {
-		this.repo = this.repoManager.getRepo(AuthSessionCollection)
+		this.repo = this.repoManager.getRepo(AuthSessionModel)
 	}
 
 	/**

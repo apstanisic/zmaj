@@ -1,8 +1,8 @@
-import type { CrudFinishEvent } from "@api/crud/crud-event.types"
 import { CreateFinishEventStub } from "@api/crud/__mocks__/create-event.stubs"
 import { CrudFinishEventStub } from "@api/crud/__mocks__/crud-event.mocks"
 import { DeleteFinishEventStub } from "@api/crud/__mocks__/delete-event.stubs"
 import { UpdateFinishEventStub } from "@api/crud/__mocks__/update-event.stubs"
+import type { CrudFinishEvent } from "@api/crud/crud-event.types"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { InternalServerErrorException } from "@nestjs/common"
 import { ActivityLog, ADMIN_ROLE_ID, AuthUser } from "@zmaj-js/common"
@@ -105,7 +105,7 @@ describe("ActivityLogService", () => {
 				itemId: "5",
 				resource: "collections.posts",
 				userId,
-				createdAt: now,
+				// createdAt: now,
 				embeddedUserInfo: {
 					email: "test@example.com",
 					roleId: ADMIN_ROLE_ID,

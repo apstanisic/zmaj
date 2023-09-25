@@ -58,14 +58,11 @@ import { LayoutConfig } from "./layout/layout-config.type"
 // 	properties: Struct<FieldDef | RelationDef>
 // }
 
-export type CollectionDef<T extends Struct = Struct> = Except<
+export type CollectionDef = Except<
 	CollectionMetadata,
-	"fields" | "relations" | "layoutConfig"
+	"layoutConfig"
+	// "colFields" | "relations" | "layoutConfig"
 > & {
-	/**
-	 * Collection name (camel cased table: super_users => superUsers)
-	 */
-	// collectionName: string
 	/**
 	 * Key for checking authorization
 	 */
@@ -100,8 +97,4 @@ export type CollectionDef<T extends Struct = Struct> = Except<
 	relations: Struct<RelationDef>
 
 	layoutConfig: LayoutConfig
-
-	__$type?: T
 }
-
-// export type CollectionDef<T extends Struct = Struct> = CollectionDef<T>

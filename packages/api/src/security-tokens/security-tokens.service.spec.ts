@@ -1,4 +1,4 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
+import { OrmRepository } from "@zmaj-js/orm"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { add } from "date-fns"
 import { v4 } from "uuid"

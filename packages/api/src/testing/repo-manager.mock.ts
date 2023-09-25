@@ -1,7 +1,7 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { FactoryProvider } from "@nestjs/common"
-import { CollectionDef, Struct } from "@zmaj-js/common"
+import { CollectionDef, Struct, snakeCase } from "@zmaj-js/common"
+import { BaseModel, Class, RepoManager } from "@zmaj-js/orm"
 import { vi } from "vitest"
 
 export const mockRepoManagers = (): [FactoryProvider, FactoryProvider] => {
@@ -10,11 +10,10 @@ export const mockRepoManagers = (): [FactoryProvider, FactoryProvider] => {
 	const repos: Struct = {}
 	const factory = (): any => ({
 		// return skeleton, you should to mock other things
-		getRepo: vi.fn((col: CollectionDef) => {
-			const testId = `REPO_${col.tableName}`
-			repos[testId] ??= {
-				testId: `REPO_${col.tableName}`,
-			}
+		getRepo: vi.fn((col: CollectionDef | Class<BaseModel>) => {
+			const table = typeof col === "function" ? snakeCase(new col().getTableName()) : col.tableName
+			const testId = `REPO_${table}`
+			repos[testId] ??= { testId }
 			return repos[testId]
 		}),
 		transaction: (params: { fn: (em: any) => any }) => {

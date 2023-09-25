@@ -7,6 +7,6 @@ export const CsvComponents = DefineCrudField({
 	Show: CsvShowField,
 	Input: CsvInputField,
 	// List: CsvListField,
-	availableFor: ["short-text", "long-text"],
+	availableFor: ["text"],
 	// FieldConfig: () => <EnumChooser />,
 })

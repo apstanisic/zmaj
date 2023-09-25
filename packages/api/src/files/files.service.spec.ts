@@ -4,8 +4,6 @@ import { CrudRequest } from "@api/common/decorators/crud-request.type"
 import { DeleteFinishEventStub } from "@api/crud/__mocks__/delete-event.stubs"
 import { CrudCreateService } from "@api/crud/crud-create.service"
 import { DeleteFinishEvent } from "@api/crud/crud-event.types"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { StorageService } from "@api/storage/storage.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import {
@@ -16,6 +14,8 @@ import {
 } from "@nestjs/common"
 import { TestingModule } from "@nestjs/testing"
 import { AuthUser, FileCollection, FileInfo, Struct, UUID, asMock, times } from "@zmaj-js/common"
+import { RepoManager } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { BaseStorage } from "@zmaj-js/storage-core"
 import { AuthUserStub, FileStub } from "@zmaj-js/test-utils"
 import { set } from "date-fns"
@@ -190,7 +190,7 @@ describe("FilesService", () => {
 			vi.useFakeTimers()
 			vi.setSystemTime(date)
 
-			const path = service.generateUri("some-id", "jpg")
+			const path = service.generateUri("some-id", ".jpg")
 			expect(path).toEqual("zmaj/files/2022/01/some-id/some-id.jpg")
 
 			vi.useRealTimers()
@@ -286,7 +286,7 @@ describe("FilesService", () => {
 					fileSize: 10000,
 					mimeType: "image/jpeg",
 					userId: req.user?.userId,
-					extension: "jpg",
+					name: "my_name.jpg",
 				}),
 				{
 					req,

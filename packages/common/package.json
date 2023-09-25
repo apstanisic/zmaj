@@ -2,7 +2,7 @@
 	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
-	"type": "module",
+	"prettier": "../../.prettierrc.json",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -13,6 +13,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
+	"type": "module",
 	"name": "@zmaj-js/common",
 	"version": "0.2.2",
 	"types": "./dist/index.d.ts",
@@ -32,23 +33,25 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/common",
+		"test": "cd ../.. && vitest run packages/common --passWithNoTests",
 		"tsc": "tsc",
 		"build": "tsup --config ../../tsup.config.ts",
-		"dev": "tsup --config ../../tsup.config.ts --watch"
+		"dev": "tsup --config ../../tsup.config.ts --watch",
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
 	},
 	"dependencies": {
-		"date-fns": "^2.29.3",
-		"flat": "^5.0.2",
-		"qs": "^6.11.1",
-		"radash": "^10.8.1",
-		"type-fest": "^3.7.2",
+		"@zmaj-js/orm": "workspace:*",
+		"date-fns": "^2.30.0",
+		"flat": "^6.0.1",
+		"qs": "^6.11.2",
+		"radash": "^11.0.0",
+		"type-fest": "^4.3.1",
 		"url-join": "^4.0.1",
-		"uuid": "^9.0.0",
-		"zod": "^3.21.4"
+		"uuid": "^9.0.1",
+		"zod": "^3.22.2"
 	},
 	"devDependencies": {
-		"@types/qs": "^6.9.7",
+		"@types/qs": "^6.9.8",
 		"@types/url-join": "^4.0.1"
 	}
 }

@@ -16,7 +16,7 @@ function injectValues<T extends Record<string, string> = Record<string, string>>
 }
 
 // We do not have access to templates.json
-let templates: typeof import("./jsx-templates/all")["allTemplates"]
+let templates: (typeof import("./jsx-templates/all"))["allTemplates"]
 try {
 	templates = JSON.parse(
 		readFileSync(join(__dirname, "../dist/templates.json"), { encoding: "utf-8" }),

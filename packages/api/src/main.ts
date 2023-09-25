@@ -21,7 +21,7 @@ class Playground {
 	}
 }
 
-@Module({	controllers:  [Playground]})
+@Module({ controllers: [Playground] })
 class DevModule {}
 
 /**

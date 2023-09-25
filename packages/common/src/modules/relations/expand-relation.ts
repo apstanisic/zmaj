@@ -1,12 +1,13 @@
 import { getAuthzKey, isIn } from "@common/utils/mod"
+import { OrmLogger } from "@zmaj-js/orm"
 import { objectify } from "radash"
 import { CompositeUniqueKey } from "../database/composite-unique-key.type"
 import { ForeignKey } from "../database/foreign-key.type"
 import { CollectionDef } from "../infra-collections/collection-def.type"
 import { CollectionMetadata } from "../infra-collections/collection-metadata.model"
+import { FieldMetadata, nestByTableAndColumnName } from "../infra-fields"
 import { RelationDef } from "./relation-def.type"
 import { RelationMetadata } from "./relation-metadata.model"
-import { FieldMetadata, nestByTableAndColumnName } from "../infra-fields"
 
 type ExpandRelationParams = {
 	allRelations: readonly RelationMetadata[]
@@ -15,6 +16,7 @@ type ExpandRelationParams = {
 	fields: FieldMetadata[]
 	compositeUniqueKeys: readonly CompositeUniqueKey[]
 	onError: (code: number) => never
+	logger?: OrmLogger
 }
 
 /**
@@ -26,7 +28,7 @@ export function expandRelation(
 	relation: RelationMetadata,
 	rest: ExpandRelationParams,
 ): RelationDef {
-	const { fks, allRelations, compositeUniqueKeys, onError } = rest
+	const { fks, allRelations, compositeUniqueKeys, onError, logger } = rest
 	const collections = objectify(rest.collections, (c) => c.tableName)
 	const fields = nestByTableAndColumnName(rest.fields)
 

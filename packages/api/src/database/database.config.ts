@@ -1,6 +1,7 @@
 import { ConfigService } from "@api/config/config.service"
 import { Inject, Injectable } from "@nestjs/common"
 import { ZodDto } from "@zmaj-js/common"
+import { DatabaseConfig as OrmDatabaseConfig } from "@zmaj-js/orm"
 import { z } from "zod"
 import { MODULE_OPTIONS_TOKEN } from "./database.module-definition"
 
@@ -22,7 +23,7 @@ const DatabaseConfigSchema = z.object({
 export type DatabaseConfigParams = Partial<z.infer<typeof DatabaseConfigSchema>>
 
 @Injectable()
-export class DatabaseConfig extends ZodDto(DatabaseConfigSchema) {
+export class DatabaseConfig extends ZodDto(DatabaseConfigSchema) implements OrmDatabaseConfig {
 	constructor(
 		@Inject(MODULE_OPTIONS_TOKEN) params: DatabaseConfigParams,
 		appConfig: ConfigService,

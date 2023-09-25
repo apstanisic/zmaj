@@ -8,5 +8,5 @@ export const PasswordComponents = DefineCrudField({
 	Show: PasswordShowField,
 	Input: PasswordInputField,
 	List: PasswordListField,
-	availableFor: ["short-text", "long-text"],
+	availableFor: ["text"],
 })

@@ -1,12 +1,13 @@
 import { PermissionCollection, systemPermissions } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 
+const perm = PermissionCollection
 export function permissionResource(): JSX.Element {
 	return (
 		<Resource
-			name={PermissionCollection.collectionName}
+			name={perm.collectionName}
 			options={{
-				label: PermissionCollection.label ?? "Permissions",
+				label: perm.label ?? "Permissions",
 				authzResource: systemPermissions.authorization.resource,
 				authzActions: {
 					create: systemPermissions.authorization.actions.modify.key,

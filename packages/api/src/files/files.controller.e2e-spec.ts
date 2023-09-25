@@ -1,18 +1,18 @@
 import { CrudRequestStub } from "@api/common/decorators/crud-request.stub"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { StorageService } from "@api/storage/storage.service"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
 import {
 	AuthUser,
-	FileCollection,
 	FileInfo,
+	FileModel,
 	FileUpdateDto,
 	qsStringify,
 	times,
 	User,
 } from "@zmaj-js/common"
+import { OrmRepository } from "@zmaj-js/orm"
 import { Readable } from "node:stream"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
@@ -33,7 +33,7 @@ describe("FilesController e2e", () => {
 	let all: TestBundle
 	let app: INestApplication
 	//
-	let filesRepo: OrmRepository<FileInfo>
+	let filesRepo: OrmRepository<FileModel>
 	let filesService: FilesService
 	let storageService: StorageService
 	//
@@ -63,7 +63,7 @@ describe("FilesController e2e", () => {
 		all = await getE2ETestModuleExpanded()
 		app = all.app
 
-		filesRepo = all.repo(FileCollection)
+		filesRepo = all.repo(FileModel)
 		filesService = app.get(FilesService)
 		storageService = app.get(StorageService)
 

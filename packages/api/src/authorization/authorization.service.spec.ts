@@ -6,25 +6,25 @@ import { ForbiddenException, InternalServerErrorException } from "@nestjs/common
 import { rand } from "@ngneat/falso"
 import {
 	ADMIN_ROLE_ID,
-	asMock,
 	AuthUser,
-	camelCaseKeys,
-	DefineCollection,
-	EntityRef,
-	Permission,
 	PUBLIC_ROLE_ID,
+	Permission,
+	asMock,
+	camelCaseKeys,
+	codeCollection,
 	times,
 } from "@zmaj-js/common"
+import { BaseModel } from "@zmaj-js/orm"
 import {
 	AuthUserStub,
 	CollectionDefStub,
-	mockCollectionDefs,
 	TComment,
 	TCommentStub,
 	TPost,
 	TPostInfo,
 	TPostInfoStub,
 	TPostStub,
+	mockCollectionDefs,
 } from "@zmaj-js/test-utils"
 import { addDays, differenceInHours } from "date-fns"
 import { pick } from "radash"
@@ -77,9 +77,11 @@ describe("AuthorizationService", () => {
 		})
 
 		it("should get resource name infra collection", () => {
-			const col = DefineCollection({
-				tableName: "world",
-				fields: {},
+			class WorldModel extends BaseModel {
+				name = "world"
+				fields = this.buildFields((f) => ({}))
+			}
+			const col = codeCollection(WorldModel, {
 				relations: {},
 				options: { authzKey: "test.me" },
 			})
@@ -659,7 +661,7 @@ describe("AuthorizationService", () => {
 					postId: postStub.id,
 				})
 
-				postStub.postInfo = postInfoStub as EntityRef<TPostInfo>
+				postStub.postInfo = postInfoStub
 
 				service.check = vi.fn((v) => {
 					if (v.resource === "collections.posts") {
@@ -755,7 +757,7 @@ describe("AuthorizationService", () => {
 						TCommentStub({ body: "hello1", postId: postStub.id }),
 						TCommentStub({ body: "hello2", postId: postStub.id }),
 					]
-					postStub.comments = comments as EntityRef<TComment>[]
+					postStub.comments = comments
 				})
 
 				it("should check every property if value is array", () => {

@@ -28,12 +28,12 @@ module.exports = {
 		themes: [
 			{
 				light: {
-					...require("daisyui/src/colors/themes")["[data-theme=corporate]"],
+					...require("daisyui/src/theming/themes")["[data-theme=corporate]"],
 					...daisyShapeVars,
 					"base-content": "rgb(51 65 85)",
 				},
 				dark: {
-					...require("daisyui/src/colors/themes")["[data-theme=business]"],
+					...require("daisyui/src/theming/themes")["[data-theme=business]"],
 					...daisyShapeVars,
 				},
 			},

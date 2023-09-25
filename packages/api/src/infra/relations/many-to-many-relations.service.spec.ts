@@ -1,15 +1,15 @@
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException } from "@nestjs/common"
 import { makeWritable, RelationDef } from "@zmaj-js/common"
+import { AlterSchemaService } from "@zmaj-js/orm"
 import {
-	RelationMetadataStub,
 	mockCompositeUniqueKeyId,
 	mockFkNames,
 	mockRelationDefs,
 	mockRelationsConsts,
 	RelationDefStub,
+	RelationMetadataStub,
 } from "@zmaj-js/test-utils"
 import { Writable } from "type-fest"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -189,7 +189,7 @@ describe("ManyToManyRelationsService", () => {
 				},
 			})
 			service["alterSchema"].dropUniqueKey = vi.fn()
-			service["alterSchema"].dropFk = vi.fn()
+			service["alterSchema"].dropForeignKey = vi.fn()
 			service["repo"].deleteWhere = vi.fn()
 		})
 
@@ -203,14 +203,14 @@ describe("ManyToManyRelationsService", () => {
 				trx: "TEST_TRX",
 			})
 
-			expect(service["alterSchema"].dropFk).nthCalledWith(1, {
+			expect(service["alterSchema"].dropForeignKey).nthCalledWith(1, {
 				fkTable: "jt",
 				fkColumn: "ljc",
 				indexName: "fk1",
 				trx: "TEST_TRX",
 			})
 
-			expect(service["alterSchema"].dropFk).nthCalledWith(2, {
+			expect(service["alterSchema"].dropForeignKey).nthCalledWith(2, {
 				fkTable: "jt",
 				fkColumn: "rjc",
 				indexName: "fk2",

@@ -1,0 +1,13 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": "./",
+		"outDir": "./dist",
+		"incremental": false,
+		"paths": {
+			"@orm/*": ["src/*"]
+		}
+	},
+	"exclude": ["./dist"],
+	"include": ["src"]
+}

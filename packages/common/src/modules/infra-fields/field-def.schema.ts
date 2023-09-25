@@ -1,11 +1,11 @@
-import { ModelSchema, DbFieldSchema } from "@common/zod"
+import { DbFieldSchema, SchemaCheck } from "@common/zod"
 import { z } from "zod"
 import { ColumnDataTypeSchema } from "./column-data-type.schema"
 import { FieldConfigSchema } from "./field-config.schema"
 import { FieldDef } from "./field-def.type"
 import { FieldMetadataSchema } from "./field-metadata.schema"
 
-export const FieldDefSchema = ModelSchema<FieldDef>()(
+export const FieldDefSchema = SchemaCheck<FieldDef>()(
 	FieldMetadataSchema.omit({ fieldConfig: true }).extend({
 		fieldConfig: FieldConfigSchema,
 		collectionName: DbFieldSchema,

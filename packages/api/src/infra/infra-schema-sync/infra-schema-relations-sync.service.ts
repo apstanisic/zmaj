@@ -1,17 +1,16 @@
 import { throw500 } from "@api/common/throw-http"
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
 	RelationDef,
 	RelationMetadata,
-	RelationMetadataCollection,
+	RelationMetadataModel,
 	RelationMetadataSchema,
 	getFreeValue,
 	zodCreate,
 } from "@zmaj-js/common"
+import { GetCreateFields, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { title, unique } from "radash"
 import { InitialDbState } from "../infra-state/InitialDbState"
 
@@ -32,9 +31,9 @@ export class InfraSchemaRelationsSyncService {
 		private readonly schemaInfo: SchemaInfoService,
 		private bootstrapRepoManager: BootstrapRepoManager,
 	) {
-		this.repo = this.bootstrapRepoManager.getRepo(RelationMetadataCollection)
+		this.repo = this.bootstrapRepoManager.getRepo(RelationMetadataModel)
 	}
-	repo: OrmRepository<RelationMetadata>
+	repo: OrmRepository<RelationMetadataModel>
 
 	/** Sync relations with database */
 	async sync(): Promise<void> {
@@ -138,7 +137,7 @@ export class InfraSchemaRelationsSyncService {
 	 * It will always create m2o-o2m combo, never m2m
 	 */
 	private async createMissingRelations(data: DbState): Promise<RelationMetadata[]> {
-		const missingRelations: RelationMetadata[] = []
+		const missingRelations: GetCreateFields<RelationMetadataModel, false>[] = []
 
 		for (const fk of data.fks) {
 			// many side (side where fk is located)
@@ -162,7 +161,7 @@ export class InfraSchemaRelationsSyncService {
 				)
 
 				missingRelations.push(
-					zodCreate(RelationMetadataSchema, {
+					zodCreate(RelationMetadataSchema.omit({ createdAt: true }), {
 						propertyName,
 						fkName: fk.fkName,
 						mtmFkName: null,
@@ -196,7 +195,7 @@ export class InfraSchemaRelationsSyncService {
 						data,
 					)
 					missingRelations.push(
-						zodCreate(RelationMetadataSchema, {
+						zodCreate(RelationMetadataSchema.omit({ createdAt: true }), {
 							propertyName,
 							fkName: fk.fkName,
 							mtmFkName: null,

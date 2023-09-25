@@ -4,15 +4,32 @@ import {
 	endpoints,
 	getEndpoints,
 	RelationCreateDto,
-	RelationUpdateDto,
 	RelationDef,
+	RelationMetadataModel,
+	RelationUpdateDto,
 } from "@zmaj-js/common"
+import { BaseModel } from "@zmaj-js/orm"
 import { AxiosInstance } from "axios"
 import { CrudClient } from "./crud.client"
 
 const ep = getEndpoints((ep) => ep.infraRelations)
 
-export class RelationsClient extends CrudClient<RelationDef, RelationCreateDto, RelationUpdateDto> {
+/**
+ * TODO!!!! Not correct
+ */
+class RelationDefModel extends BaseModel {
+	name = "relations"
+	fields = this.buildFields((f) => ({
+		...new RelationMetadataModel().fields,
+	}))
+}
+
+export class RelationsClient extends CrudClient<
+	RelationDefModel,
+	RelationDef,
+	RelationCreateDto,
+	RelationUpdateDto
+> {
 	constructor(http: AxiosInstance) {
 		super(http, endpoints.infraRelations.$base)
 	}

@@ -2,9 +2,13 @@
 	"$schema": "https://turbo.build/schema.json",
 	"globalDependencies": ["tsconfig.json"],
 	"pipeline": {
-		"//#format": {},
+		"format": {
+			"inputs": ["../../.prettierrc.json", "../../.prettierignore", "src/**/*"],
+			"outputs": []
+		},
 		"tsc": {
-			"inputs": ["src/**", "../../tsconfig.json", "tsconfig.json", "tsconfig.build.json"],
+			"dependsOn": ["^tsc"],
+			"inputs": ["src/**", "tsconfig.json", "tsconfig.build.json"],
 			"outputs": []
 		},
 		"lint": {
@@ -12,16 +16,15 @@
 			"outputs": ["src/**"]
 		},
 		"test": {
-			"dependsOn": ["//#format"],
-			"inputs": ["src/**", "../../vitest-unit.config.ts", "tsconfig.json", "../../tsconfig.json"],
+			"inputs": ["src/**", "../../vitest.workspace.ts", "tsconfig.json"],
 			"outputs": []
 		},
-		"//#test-e2e-api": {
-			"dependsOn": ["//#format"],
+		"test-e2e-api": {
+			"dependsOn": [],
 			"outputs": []
 		},
 		"//#test-e2e-gui": {
-			"dependsOn": ["//#format"],
+			"dependsOn": [],
 			"outputs": ["playwright-report/**"]
 		},
 		"prebuild": {
@@ -29,8 +32,12 @@
 			"outputs": ["dist/**", "build/**"]
 		},
 		"build": {
-			"dependsOn": ["//#format", "^build"],
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "tsconfig.json"],
 			"outputs": ["dist/**", "build/**"]
+		},
+		"test-packaging": {
+			"dependsOn": ["build"]
 		}
 	}
 }

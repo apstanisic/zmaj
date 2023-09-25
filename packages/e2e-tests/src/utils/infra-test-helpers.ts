@@ -1,34 +1,5 @@
-import { ZmajSdk } from "@zmaj-js/client-sdk"
-import {
-	CollectionCreateDto,
-	CollectionMetadata,
-	FieldCreateDto,
-	RelationCreateDto,
-} from "@zmaj-js/common"
-import { getSdk } from "./test-sdk.js"
-
-export async function deleteCollectionByTable(
-	tableName: string,
-	sdk?: ZmajSdk,
-): Promise<CollectionMetadata | undefined> {
-	const zmaj = sdk ?? getSdk()
-	const allCollections = await zmaj.infra.getCollections()
-
-	const collection = allCollections.find((c) => c.tableName === tableName)
-	if (!collection) return
-
-	return zmaj.infra.collections.deleteById({ id: collection.id }).catch((e) => {
-		console.log("Problem deleting collection: " + tableName, collection.id)
-		throw e
-	})
-}
-
-export async function deleteTestCollections(): Promise<void> {
-	await deleteCollectionByTable("posts_tags_plw")
-	await deleteCollectionByTable("comments_plw")
-	await deleteCollectionByTable("posts_plw")
-	await deleteCollectionByTable("tags_plw")
-}
+import { CollectionCreateDto, FieldCreateDto, RelationCreateDto } from "@zmaj-js/common"
+import { getSdk } from "./e2e-get-sdk.js"
 
 export async function createTestCollections(): Promise<void> {
 	const sdk = getSdk()
@@ -46,14 +17,15 @@ export async function createTestCollections(): Promise<void> {
 		data: new FieldCreateDto({
 			collectionName: "postsPlw",
 			columnName: "title",
-			dataType: "short-text",
+			dataType: "text",
 		}),
 	})
 	await sdk.infra.fields.createOne({
 		data: new FieldCreateDto({
 			collectionName: "postsPlw",
 			columnName: "body",
-			dataType: "long-text",
+			dataType: "text",
+			componentName: "long-text",
 		}),
 	})
 	await sdk.infra.fields.createOne({
@@ -77,7 +49,8 @@ export async function createTestCollections(): Promise<void> {
 		data: new FieldCreateDto({
 			collectionName: "commentsPlw",
 			columnName: "body",
-			dataType: "long-text",
+			dataType: "text",
+			componentName: "long-text",
 		}),
 	})
 
@@ -94,7 +67,7 @@ export async function createTestCollections(): Promise<void> {
 		data: new FieldCreateDto({
 			collectionName: "tagsPlw",
 			columnName: "name",
-			dataType: "short-text",
+			dataType: "text",
 		}),
 	})
 

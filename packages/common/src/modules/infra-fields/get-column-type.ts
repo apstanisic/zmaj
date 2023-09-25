@@ -6,7 +6,7 @@ import { ColumnDataType } from "./column-data-type.schema"
 export function getColumnType(columnType?: string | null): ColumnDataType {
 	const type = (columnType ?? "").toLowerCase()
 
-	if (type.endsWith("[]")) return "array"
+	if (type.endsWith("[]")) return "array.text"
 
 	if (type.includes("bool")) return "boolean"
 
@@ -30,9 +30,9 @@ export function getColumnType(columnType?: string | null): ColumnDataType {
 
 	// character varying
 	// No longer valid, since I'm using varchar for all
-	if (type.includes("var") && type.includes("char")) return "short-text"
+	if (type.includes("var") && type.includes("char")) return "text"
 
-	if (type.includes("text")) return "long-text"
+	if (type.includes("text")) return "text"
 
-	return "short-text"
+	return "text"
 }

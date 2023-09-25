@@ -58,7 +58,7 @@ const Content = memo(() => {
 	// Every component provides
 	const FieldConfig = fieldComponents.get(
 		record?.componentName,
-		record?.dataType ?? "short-text",
+		record?.dataType ?? "text",
 	).ShowFieldConfig
 
 	const sections = ["Main", "Advanced", "Input Config"]

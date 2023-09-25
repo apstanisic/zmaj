@@ -7,18 +7,19 @@ import { CollectionEdit } from "./CollectionEdit"
 import { CollectionList } from "./CollectionList"
 import { CollectionShow } from "./CollectionShow"
 
+const col = CollectionMetadataCollection
 export function collectionResource(props: { authz: Authz }): JSX.Element {
 	const read = checkSystem(props.authz, "infra", "read")
 	const modify = checkSystem(props.authz, "infra", "modify")
 	return (
 		<Resource
-			name={CollectionMetadataCollection.collectionName}
+			name={col.collectionName}
 			show={read ? CollectionShow : undefined}
 			list={read ? CollectionList : undefined}
 			edit={modify ? CollectionEdit : undefined}
 			create={modify ? CollectionCreate : undefined}
 			options={{
-				label: CollectionMetadataCollection.label ?? "Collections",
+				label: col.label ?? "Collections",
 				authzResource: systemPermissions.infra.resource,
 			}}
 		/>

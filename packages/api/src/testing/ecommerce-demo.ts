@@ -1,14 +1,13 @@
-import { SequelizeRepoManager } from "@api/sequelize/sequelize.repo-manager"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import {
 	CollectionMetadata,
-	CollectionMetadataCollection,
-	DefineCollection,
+	CollectionMetadataModel,
 	FieldMetadata,
-	FieldMetadataCollection,
+	FieldMetadataModel,
 	RelationMetadata,
-	RelationMetadataCollection,
+	RelationMetadataModel,
 } from "@zmaj-js/common"
+import { BaseModel, Class } from "@zmaj-js/orm"
+import { SequelizeRepoManager, SequelizeService } from "@zmaj-js/orm-sq"
 import { DataTypes, QueryInterface } from "sequelize"
 
 export async function eCommerceSchema(qi: QueryInterface, transaction: any): Promise<void> {
@@ -1031,92 +1030,93 @@ export function eCommerceInfra(): {
 export async function initECommerce(sq: SequelizeService, trx: any): Promise<void> {
 	await eCommerceSchema(sq.qi, trx)
 	const data = eCommerceInfra()
-	const rm = new SequelizeRepoManager(sq)
+	const rm = new SequelizeRepoManager(sq, sq["modelsStore"])
 	const createdCols = await rm
-		.getRepo(CollectionMetadataCollection)
+		.getRepo(CollectionMetadataModel)
 		.createMany({ data: data.collections, trx })
 	console.log({ createdCols })
 
-	const createdFields = await rm
-		.getRepo(FieldMetadataCollection)
-		.createMany({ data: data.fields, trx })
+	const createdFields = await rm.getRepo(FieldMetadataModel).createMany({ data: data.fields, trx })
 	console.log({ createdFields })
 	const createdRels = await rm
-		.getRepo(RelationMetadataCollection)
+		.getRepo(RelationMetadataModel)
 		.createMany({ data: data.relations, trx })
 	console.log({ createdRels })
 }
 
-export const storeCollectionDefs = [
-	DefineCollection({
-		tableName: "categories",
-		fields: {
-			id: { dataType: "uuid", isPrimaryKey: true },
-			name: { dataType: "short-text" },
-		},
-		relations: {},
-	}),
-	DefineCollection({
-		tableName: "tags",
-		fields: {
-			id: { dataType: "uuid", isPrimaryKey: true },
-			name: { dataType: "short-text" },
-		},
-		relations: {},
-	}),
-	DefineCollection({
-		tableName: "products",
-		fields: {
-			id: { dataType: "uuid", isPrimaryKey: true },
-			name: { dataType: "short-text" },
-			price: { dataType: "int" },
-			categoryId: { dataType: "uuid", columnName: "category_id" },
-			description: { dataType: "long-text" },
-			fileId: { dataType: "uuid", columnName: "file_id" },
-		},
-		relations: {},
-	}),
-	DefineCollection({
-		tableName: "reviews",
-		fields: {
-			id: { dataType: "uuid", isPrimaryKey: true },
-			userId: { dataType: "uuid", columnName: "user_id" },
-			productId: { dataType: "uuid", columnName: "product_id" },
-			review: { dataType: "long-text" },
-		},
-		relations: {},
-	}),
-	DefineCollection({
-		tableName: "orders",
-		fields: {
-			id: { dataType: "uuid", isPrimaryKey: true },
-			userId: { dataType: "uuid", columnName: "user_id" },
-			status: { dataType: "short-text" },
-			discount: { dataType: "int" },
-			totalPrice: { dataType: "int", columnName: "total_price" },
-		},
-		relations: {},
-	}),
-	DefineCollection({
-		tableName: "products_tags",
-		options: { pkType: "auto-increment" },
-		fields: {
-			id: { dataType: "int", isPrimaryKey: true, isAutoIncrement: true },
-			tagId: { dataType: "uuid", columnName: "tag_id" },
-			productId: { dataType: "uuid", columnName: "product_id" },
-		},
-		relations: {},
-	}),
+class CategoryModel extends BaseModel {
+	name = "categories"
+	fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		name: f.text({}),
+	}))
+}
 
-	DefineCollection({
-		tableName: "order_products",
-		fields: {
-			id: { dataType: "uuid", isPrimaryKey: true },
-			orderId: { dataType: "uuid", columnName: "order_id" },
-			productId: { dataType: "uuid", columnName: "product_id" },
-			amount: { dataType: "uuid", columnName: "amount" },
-			totalPrice: { dataType: "uuid", columnName: "total_price" },
-		},
-		relations: {},
-	}),
+class TagModel extends BaseModel {
+	name = "tags"
+	fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		name: f.text({}),
+	}))
+}
+class ProductModel extends BaseModel {
+	name = "products"
+	fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		name: f.text({}),
+		price: f.int({}),
+		categoryId: f.uuid({ columnName: "category_id" }),
+		description: f.text({}),
+		fileId: f.uuid({ columnName: "file_id" }),
+	}))
+}
+class ReviewModel extends BaseModel {
+	name = "reviews"
+	fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		userId: f.uuid({ columnName: "user_id" }),
+		productId: f.uuid({ columnName: "product_id" }),
+		review: f.text({}),
+	}))
+}
+
+class OrderModel extends BaseModel {
+	name = "orders"
+	fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		userId: f.uuid({ columnName: "user_id" }),
+		status: f.text({}),
+		discount: f.int({}),
+		totalPrice: f.int({ columnName: "total_price" }),
+	}))
+}
+
+class ProductTagModel extends BaseModel {
+	name = "products_tags"
+	fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		productId: f.uuid({ columnName: "product_id" }),
+		tagId: f.uuid({ columnName: "tag_id" }),
+	}))
+}
+
+class OrderProductTagModel extends BaseModel {
+	name = "order_products"
+	fields = this.buildFields((f) => ({
+		id: f.uuid({ isPk: true }),
+		productId: f.uuid({ columnName: "product_id" }),
+		orderId: f.uuid({ columnName: "order_id" }),
+		amount: f.int({}),
+		totalPrice: f.int({}),
+	}))
+}
+
+export const storeExampleModels: Class<BaseModel>[] = [
+	CategoryModel,
+	TagModel,
+	ProductModel,
+	ReviewModel,
+	OrderModel,
+	ProductTagModel,
+	OrderProductTagModel,
 ]

@@ -1,12 +1,13 @@
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { KeyValueStorageService } from "@api/key-value-storage/key-value-storage.service"
 import { SettingsKey } from "@api/key-value-storage/key-value.consts"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { UsersService } from "@api/users/users.service"
 import { INestApplication } from "@nestjs/common"
-import { ADMIN_ROLE_ID, SignUpDto, UserCollection, uuidRegex } from "@zmaj-js/common"
+import { ADMIN_ROLE_ID, SignUpDto, UserModel, uuidRegex } from "@zmaj-js/common"
+import { RepoManager } from "@zmaj-js/orm"
 import supertest from "supertest"
 import {
+	SpyInstance,
 	afterAll,
 	afterEach,
 	beforeAll,
@@ -14,7 +15,6 @@ import {
 	describe,
 	expect,
 	it,
-	SpyInstance,
 	vi,
 } from "vitest"
 
@@ -71,7 +71,7 @@ describe("InitializeAdminController e2e", () => {
 				.delete(SettingsKey.ADMIN_USER_INITED, SettingsKey.NAMESPACE)
 			await app
 				.get(RepoManager)
-				.getRepo(UserCollection)
+				.getRepo(UserModel)
 				.deleteWhere({ where: { roleId: ADMIN_ROLE_ID } })
 		})
 

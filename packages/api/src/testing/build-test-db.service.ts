@@ -1,74 +1,80 @@
 import { GlobalConfig } from "@api/app/global-app.config"
+import { mixedColDef } from "@api/collection-to-model-config"
 import { throw500 } from "@api/common/throw-http"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { MigrationsConfig } from "@api/migrations/migrations.config"
 import { MigrationsService } from "@api/migrations/migrations.service"
 import { MigrationsUmzugStorage } from "@api/migrations/migrations.umzug-storage"
 import { getRequiredColumns } from "@api/migrations/migrations.utils"
-import { SequelizeSchemaInfoService } from "@api/sequelize/sequelize-schema-info.service"
-import { SequelizeRepoManager } from "@api/sequelize/sequelize.repo-manager"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { Injectable } from "@nestjs/common"
 import { rand } from "@ngneat/falso"
 import {
 	ADMIN_ROLE_ID,
-	FileCollection,
-	RoleCollection,
-	systemCollections,
-	times,
+	FileModel,
+	RoleModel,
 	User,
-	UserCollection,
+	UserModel,
+	systemCollections,
+	systemModels,
+	times,
 } from "@zmaj-js/common"
+import { RepoManager } from "@zmaj-js/orm"
+import { SequelizeRepoManager, SequelizeSchemaInfoService, SequelizeService } from "@zmaj-js/orm-sq"
 import {
+	TCommentModel,
+	TCommentStub,
+	TPostInfoModel,
+	TPostInfoStub,
+	TPostModel,
+	TPostStub,
+	TPostTagModel,
+	TPostTagStub,
+	TTagModel,
+	TTagStub,
 	allMockCollectionDefs,
 	createBlogDemo,
 	eCommerceDemo,
 	mockCompositeUniqueKeyId,
-	TComment,
-	TCommentStub,
-	TPost,
-	TPostInfo,
-	TPostInfoStub,
-	TPostStub,
-	TPostTag,
-	TPostTagStub,
-	TTag,
-	TTagStub,
 } from "@zmaj-js/test-utils"
-import { draw, pick, random, shuffle, unique } from "radash"
+import { draw, omit, pick, random, shuffle, unique } from "radash"
 import { DataTypes, QueryInterface } from "sequelize"
 import { configureBlogInfra } from "./blog-demo"
 import mockData from "./const-mocks.json"
-import { initECommerce, storeCollectionDefs } from "./ecommerce-demo"
+import { initECommerce, storeExampleModels } from "./ecommerce-demo"
 
 type Trx = any // Transaction | SqTrx
 
 @Injectable()
 export class BuildTestDbService {
 	qi: QueryInterface
-	repoManager: SequelizeRepoManager
+	repoManager: RepoManager
 	schemaInfo: SequelizeSchemaInfoService
 	constructor(private sq: SequelizeService) {
 		this.qi = this.sq.orm.getQueryInterface()
-		this.repoManager = new SequelizeRepoManager(this.sq)
+		this.repoManager = new SequelizeRepoManager(this.sq, sq["modelsStore"])
 		this.schemaInfo = new SequelizeSchemaInfoService(this.sq)
 	}
 
 	async initSqWithMocks(): Promise<void> {
-		await this.sq.init([...systemCollections, ...allMockCollectionDefs, ...storeCollectionDefs])
+		this.sq.generateModels(
+			mixedColDef([...systemModels, ...allMockCollectionDefs, ...storeExampleModels]),
+		)
+		await this.sq.init()
 	}
 
 	private exampleProjectTables = ["posts", "comments", "tags", "posts_tags", "posts_info"] as const
 
 	async seedRandomData(): Promise<void> {
 		// posts
-		const posts = await this.repoManager.getRepo<TPost>("posts").createMany({
-			data: times(60, () => TPostStub()),
+		const posts = await this.repoManager.getRepo(TPostModel).createMany({
+			overrideCanCreate: true,
+			data: times(60, () => omitCreatedAt(TPostStub())),
 		})
 		const postIds = posts.map((p) => p.id)
 
 		// tags
-		const tags = await this.repoManager.getRepo<TTag>("tags").createMany({
+		const tags = await this.repoManager.getRepo(TTagModel).createMany({
+			overrideCanCreate: true,
 			data: unique(
 				times(12, () => TTagStub()),
 				(t) => t.name,
@@ -77,19 +83,22 @@ export class BuildTestDbService {
 		const tagIds = tags.map((p) => p.id)
 
 		// comments
-		const comments = await this.repoManager.getRepo<TComment>("comments").createMany({
+		const comments = await this.repoManager.getRepo(TCommentModel).createMany({
+			overrideCanCreate: true,
 			data: times(12, () => TCommentStub({ postId: rand(postIds) })),
 		})
 
 		// posts_info
 		const postIdsForPostInfo = shuffle(postIds)
-		const postsInfo = await this.repoManager.getRepo<TPostInfo>("postsInfo").createMany({
+		const postsInfo = await this.repoManager.getRepo(TPostInfoModel).createMany({
+			overrideCanCreate: true,
 			data: times(25, () => TPostInfoStub({ postId: postIdsForPostInfo.shift() })),
 		})
 
 		// posts_tags
 		// for every post, create between 0 and 8 (inclusive) tag connections
-		const postsTags = await this.repoManager.getRepo<TPostTag>("postsTags").createMany({
+		const postsTags = await this.repoManager.getRepo(TPostTagModel).createMany({
+			overrideCanCreate: true,
 			data: postIds
 				.map((postId) => {
 					const tIds = shuffle(tagIds)
@@ -100,11 +109,17 @@ export class BuildTestDbService {
 	}
 
 	async seedConstData(): Promise<void> {
-		await this.repoManager.getRepo<TPost>("posts").createMany({ data: mockData.posts as any })
-		await this.repoManager.getRepo<TTag>("tags").createMany({ data: mockData.tags })
-		await this.repoManager.getRepo<TComment>("comments").createMany({ data: mockData.comments })
-		await this.repoManager.getRepo<TPostInfo>("postsInfo").createMany({ data: mockData.postInfo })
-		await this.repoManager.getRepo<TPostTag>("postsTags").createMany({ data: mockData.postsTags })
+		await this.repoManager.getRepo(TPostModel).createMany({ data: mockData.posts as any })
+		await this.repoManager
+			.getRepo(TTagModel)
+			.createMany({ data: mockData.tags, overrideCanCreate: true })
+		await this.repoManager
+			.getRepo(TCommentModel)
+			.createMany({ data: mockData.comments, overrideCanCreate: true })
+		await this.repoManager
+			.getRepo(TPostInfoModel)
+			.createMany({ data: mockData.postInfo, overrideCanCreate: true })
+		await this.repoManager.getRepo(TPostTagModel).createMany({ data: mockData.postsTags })
 	}
 
 	async dropSystemTables(trx?: Trx): Promise<void> {
@@ -207,6 +222,7 @@ export class BuildTestDbService {
 				...pick(getRequiredColumns(), ["id"]),
 				body: { type: DataTypes.TEXT, allowNull: false },
 				post_id: {
+					allowNull: false,
 					type: DataTypes.UUID,
 					references: {
 						model: "posts",
@@ -285,7 +301,8 @@ export class BuildTestDbService {
 			secretKey: process.env["SECRET_KEY"] ?? throw500(423789423),
 		} as GlobalConfig).hash("password")
 
-		return this.repoManager.getRepo(UserCollection).createOne({
+		const repo = this.repoManager.getRepo<UserModel>(UserModel)
+		return repo.createOne({
 			data: {
 				email: "admin@example.com",
 				password,
@@ -297,8 +314,8 @@ export class BuildTestDbService {
 	}
 
 	async seedECommerceDemo(): Promise<void> {
-		const roleRepo = this.repoManager.getRepo(RoleCollection)
-		const userRepo = this.repoManager.getRepo(UserCollection)
+		const roleRepo = this.repoManager.getRepo(RoleModel)
+		const userRepo = this.repoManager.getRepo(UserModel)
 		const tagRepo = this.repoManager.getRepo("tags")
 		const productRepo = this.repoManager.getRepo("products")
 		const reviewRepo = this.repoManager.getRepo("reviews")
@@ -320,11 +337,14 @@ export class BuildTestDbService {
 				await roleRepo.deleteWhere({ where: { name: { $eq: "Shopper" } } })
 
 				const images = await this.repoManager
-					.getRepo(FileCollection)
+					.getRepo(FileModel)
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 
-				await roleRepo.createMany({ data: eCommerceDemo.roles, trx })
-				await userRepo.createMany({ data: eCommerceDemo.users, trx })
+				await roleRepo.createMany({
+					data: eCommerceDemo.roles.map(omitCreatedAt),
+					trx,
+				})
+				await userRepo.createMany({ data: eCommerceDemo.users.map(omitCreatedAt), trx })
 				await categoryRepo.createMany({ data: eCommerceDemo.categories, trx })
 				await tagRepo.createMany({ data: eCommerceDemo.tags, trx })
 				await productRepo.createMany({
@@ -341,8 +361,8 @@ export class BuildTestDbService {
 	}
 
 	async buildBlogDemo(): Promise<void> {
-		const roleRepo = this.repoManager.getRepo(RoleCollection)
-		const userRepo = this.repoManager.getRepo(UserCollection)
+		const roleRepo = this.repoManager.getRepo(RoleModel)
+		const userRepo = this.repoManager.getRepo(UserModel)
 		const tagRepo = this.repoManager.getRepo("tags")
 		const postsRepo = this.repoManager.getRepo("posts")
 		const commentsRepo = this.repoManager.getRepo("comments")
@@ -360,14 +380,14 @@ export class BuildTestDbService {
 				await roleRepo.deleteWhere({ where: { name: { $nin: ["Admin", "Public"] } } })
 
 				const images = await this.repoManager
-					.getRepo(FileCollection)
+					.getRepo(FileModel)
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 
-				await roleRepo.createMany({ data: data.roles, trx })
-				await userRepo.createMany({ data: data.users, trx })
+				await roleRepo.createMany({ data: data.roles.map(omitCreatedAt), trx })
+				await userRepo.createMany({ data: data.users.map(omitCreatedAt), trx })
 				await tagRepo.createMany({ data: data.tags, trx })
 				await postsRepo.createMany({
-					data: data.posts.map((p) => ({ ...p, coverFileId: draw(images)?.id })),
+					data: data.posts.map((p) => ({ ...p, coverFileId: draw(images)?.["id"] })),
 					trx,
 				})
 
@@ -376,4 +396,8 @@ export class BuildTestDbService {
 			},
 		})
 	}
+}
+
+const omitCreatedAt = <T extends { createdAt: any }>(data: T): Omit<T, "createdAt"> => {
+	return omit(data, ["createdAt"])
 }

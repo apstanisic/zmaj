@@ -1,12 +1,10 @@
 import { throw400, throw401, throw403, throw500 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
 import { emsg } from "@api/errors"
 import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
-import { AuthUser, OtpEnableDto, Role, RoleCollection } from "@zmaj-js/common"
+import { AuthUser, OtpEnableDto, RoleModel } from "@zmaj-js/common"
+import { OrmRepository, RepoManager, Transaction } from "@zmaj-js/orm"
 import { isString } from "radash"
 import { z } from "zod"
 import { MfaService } from "./mfa.service"
@@ -20,14 +18,14 @@ const OtpJwtSchema = z.object({
 
 @Injectable()
 export class UsersMfaService {
-	roleRepo: OrmRepository<Role>
+	roleRepo: OrmRepository<RoleModel>
 	constructor(
 		private readonly usersService: UsersService,
 		private readonly jwt: JwtService,
 		private readonly mfa: MfaService,
 		private readonly repoManager: RepoManager,
 	) {
-		this.roleRepo = this.repoManager.getRepo(RoleCollection)
+		this.roleRepo = this.repoManager.getRepo(RoleModel)
 	}
 
 	async requestToEnableOtp(userId: string): Promise<RequestMfaPrompt> {
@@ -52,7 +50,11 @@ export class UsersMfaService {
 		const valid = await this.mfa.checkMfa(secret, code)
 		if (!valid) throw400(84923, emsg.mfaInvalid)
 		const otpToken = await this.mfa.encryptSecret(secret)
-		await this.usersService.repo.updateById({ id: dbUser.id, changes: { otpToken } })
+		await this.usersService.repo.updateById({
+			id: dbUser.id,
+			changes: { otpToken },
+			overrideCanUpdate: true,
+		})
 	}
 
 	async disableOtp(authUser: AuthUser, password: string): Promise<void> {
@@ -63,7 +65,11 @@ export class UsersMfaService {
 		if (!validPassword) throw400(789993, emsg.invalidPassword)
 		const user = await this.usersService.findActiveUser({ id: authUser.userId })
 		if (user.otpToken === null) throw400(789933, emsg.mfaDisabled)
-		await this.usersService.repo.updateById({ id: authUser.userId, changes: { otpToken: null } })
+		await this.usersService.repo.updateById({
+			id: authUser.userId,
+			changes: { otpToken: null },
+			overrideCanUpdate: true,
+		})
 	}
 
 	async hasMfa(user: AuthUser, trx?: Transaction): Promise<boolean> {

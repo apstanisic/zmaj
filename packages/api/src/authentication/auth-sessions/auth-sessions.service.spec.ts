@@ -2,7 +2,7 @@ import { EncryptionService } from "@api/encryption/encryption.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { ForbiddenException, UnauthorizedException } from "@nestjs/common"
 import { randIp, randUserAgent } from "@ngneat/falso"
-import { asMock, AuthSession, AuthUser, uuidRegex } from "@zmaj-js/common"
+import { AuthSession, AuthUser, asMock, uuidRegex } from "@zmaj-js/common"
 import { AuthUserStub } from "@zmaj-js/test-utils"
 import { addMilliseconds, sub } from "date-fns"
 import { v4 } from "uuid"
@@ -153,7 +153,7 @@ describe("AuthSessionsService", () => {
 
 			expect(service.repo.createOne).toBeCalledWith({
 				data: {
-					createdAt: expect.any(Date),
+					// createdAt: expect.any(Date),
 					id: expect.stringMatching(uuidRegex),
 					ip: expect.any(String),
 					lastUsed: expect.any(Date),

@@ -1,5 +1,5 @@
 import { spinner } from "@clack/prompts"
-import { SequelizeService, __testUtils } from "@zmaj-js/api"
+import { SequelizeService, __testUtils, createModelsStore } from "@zmaj-js/api"
 import { readFile } from "node:fs/promises"
 import pc from "picocolors"
 import { processExit } from "../prompt-utils.js"
@@ -76,15 +76,19 @@ async function createExampleSchema(params: {
 		}),
 	)
 
-	const sq = new SequelizeService({
-		database: envValues["DB_DATABASE"]!,
-		host: envValues["DB_HOST"]!,
-		port: Number(envValues["DB_PORT"]!),
-		username: envValues["DB_USERNAME"]!,
-		password: envValues["DB_PASSWORD"]!,
-		type: "postgres",
-		logging: false,
-	})
+	const sq = new SequelizeService(
+		{
+			database: envValues["DB_DATABASE"]!,
+			host: envValues["DB_HOST"]!,
+			port: Number(envValues["DB_PORT"]!),
+			username: envValues["DB_USERNAME"]!,
+			password: envValues["DB_PASSWORD"]!,
+			type: "postgres",
+			logging: false,
+		},
+		console,
+		createModelsStore(),
+	)
 	try {
 		const service = new __testUtils.BuildTestDbService(sq)
 		await service.initSqWithMocks()

@@ -15,7 +15,10 @@ type NotificationProps = {
 }
 export function Notification(props: NotificationProps): JSX.Element {
 	return (
-		<div className={clsx("du-alert w-auto rounded-md shadow", classes[props.type ?? "standard"])}>
+		<div
+			className={clsx("du-alert w-auto rounded-md shadow", classes[props.type ?? "standard"])}
+			data-testid="alert"
+		>
 			{props.children}
 		</div>
 	)

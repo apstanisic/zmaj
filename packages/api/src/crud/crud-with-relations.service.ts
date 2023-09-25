@@ -1,18 +1,16 @@
 import { throw400, throw403, throw404, throw500 } from "@api/common/throw-http"
 import type { CrudCreateParams, CrudUpdateParams, SharedParams } from "@api/crud/crud-event.types"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionDef,
-	IdType,
+	RelationDef,
 	Struct,
 	ToManyChange,
 	ToManyChangeSchema,
-	RelationDef,
 } from "@zmaj-js/common"
+import { IdType, RepoManager, Transaction } from "@zmaj-js/orm"
 import { z } from "zod"
 import { CrudCreateService } from "./crud-create.service"
 import { CrudDeleteService } from "./crud-delete.service"
@@ -61,11 +59,11 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 
 	separateFieldAndRelationChanges(
 		data: Struct,
-		collection: string | CollectionDef<Item>,
+		collection: string | CollectionDef,
 	): {
 		fields: Struct<unknown>
 		relations: Struct<z.infer<typeof ToManyChangeSchema>>
-		collection: CollectionDef<Item>
+		collection: CollectionDef
 	} {
 		const col = this.state.getCollection(collection) ?? throw404(9324833, emsg.notFound())
 
@@ -96,7 +94,7 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 		return {
 			fields: fieldData,
 			relations: toManyData,
-			collection: col as CollectionDef<Item>,
+			collection: col as CollectionDef,
 		}
 	}
 

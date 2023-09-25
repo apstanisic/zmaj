@@ -11,7 +11,7 @@ import {
 } from "@zmaj-js/common"
 import { clsx } from "clsx"
 import { useResourceDefinitions } from "ra-core"
-import { memo, ReactNode, useMemo } from "react"
+import { ReactNode, memo, useMemo } from "react"
 import {
 	MdHome,
 	MdPermMedia,

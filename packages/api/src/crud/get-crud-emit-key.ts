@@ -2,7 +2,7 @@ import { CollectionDef, Struct } from "@zmaj-js/common"
 import { isString } from "radash"
 
 export type GetEmitKeyParams<T extends Struct = any> = {
-	collection: CollectionDef<T> | "*" | string
+	collection: CollectionDef | "*" | string
 	action: "read" | "update" | "delete" | "create" | "*"
 	type: "before" | "start" | "finish" | "after" | "*"
 }

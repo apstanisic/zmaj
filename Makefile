@@ -35,7 +35,7 @@ dev_build:
 test_unit:
 	@npx vitest run --config vitest-unit.config.ts
 test_e2e_api:
-	@npx vitest run --config vitest-e2e.config.ts
+	@npx turbo test-e2e-api
 test_e2e_gui:
 	@pnpm --filter=@zmaj-js/e2e-tests run test-gui
 generate_videos:

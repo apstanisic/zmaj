@@ -1,20 +1,17 @@
-import { ResponseWithCount } from "@api/common"
+import { Fields, Filter, ResponseWithCount } from "@api/common"
 import { throw400, throw403, throw404, throw500 } from "@api/common/throw-http"
-import { FindManyOptions } from "@api/database/orm-specs/find/FindManyOptions"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
-	Fields,
 	CollectionDef,
 	FieldDef,
-	IdType,
-	isStruct,
-	pageToOffset,
 	Struct,
 	UrlQuerySchema,
+	isStruct,
+	pageToOffset,
 	zodCreate,
-	Filter,
 } from "@zmaj-js/common"
+import { BaseModel, FindManyOptions, GetReadFields, IdType } from "@zmaj-js/orm"
 import { isEmpty, isString } from "radash"
 import { Except, PartialDeep } from "type-fest"
 import { v4 } from "uuid"
@@ -44,7 +41,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 
 	async findWhere(params: CrudReadParams<Item>): Promise<ResponseWithCount<Item>> {
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection)
+		const repo = this.repoManager.getRepo(collection.collectionName)
 		const options = zodCreate(UrlQuerySchema, params.options ?? {})
 
 		const afterEmit1 = await this.emit<ReadBeforeEvent<Item>>(
@@ -88,7 +85,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 				if (invalidSort) throw400(7756711, emsg.invalidSort(invalidSort))
 			}
 
-			const queryParams: FindManyOptions<Struct, typeof fields> = {
+			const queryParams: FindManyOptions<BaseModel, any, false> = {
 				trx: em,
 				limit,
 				fields,
@@ -98,7 +95,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 					filter.type === "id" ? [filter.id] : filter.type === "ids" ? filter.ids : filter.where,
 			}
 
-			let items: Item[]
+			let items: GetReadFields<BaseModel, false>[]
 			let counted: number | undefined
 
 			// Only count if requested. This is needed because react-admin required it
@@ -109,7 +106,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 			}
 
 			const afterEmit3 = await this.emit<ReadFinishEvent<Item>>(
-				{ ...afterEmit2, result: items, count: counted, type: "finish" }, //
+				{ ...afterEmit2, result: items as Item[], count: counted, type: "finish" }, //
 			)
 			return this.omitTrx(afterEmit3)
 		})
@@ -132,9 +129,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 	 * @returns field that are string type
 	 */
 	private getQuickFilterFields(collection: CollectionDef): FieldDef[] {
-		return Object.values(collection.fields).filter(
-			(f) => f.dataType === "short-text" || f.dataType === "long-text",
-		)
+		return Object.values(collection.fields).filter((f) => f.dataType === "text")
 	}
 
 	/**

@@ -1,21 +1,16 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import {
-	FieldMetadataCollection,
-	CollectionMetadataCollection,
-	RelationMetadataCollection,
-	RelationUpdateDto,
-} from "@zmaj-js/common"
-import { TPost, TComment, TPostInfo } from "@zmaj-js/test-utils"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { CollectionMetadataModel, FieldMetadataModel, RelationMetadataModel } from "@zmaj-js/common"
 
 export async function configureBlogInfra(repoManager: BootstrapRepoManager, trx: any) {
-	const repo = repoManager.getRepo(FieldMetadataCollection)
-	const repoCol = repoManager.getRepo(CollectionMetadataCollection)
-	const repoRel = repoManager.getRepo(RelationMetadataCollection)
+	const repo = repoManager.getRepo(FieldMetadataModel)
+	const repoCol = repoManager.getRepo(CollectionMetadataModel)
+	const repoRel = repoManager.getRepo(RelationMetadataModel)
 
 	console.log("running")
 
 	await repoCol.createMany({
 		trx,
+		overrideCanCreate: true,
 		data: [
 			{
 				id: "9016e056-f094-4476-a62b-53b246ff4bd2",
@@ -77,6 +72,7 @@ export async function configureBlogInfra(repoManager: BootstrapRepoManager, trx:
 
 	await repo.createMany({
 		trx,
+		overrideCanCreate: true,
 		data: [
 			{
 				id: "29076deb-56eb-4119-941f-6ed34ff61861",
@@ -371,6 +367,7 @@ export async function configureBlogInfra(repoManager: BootstrapRepoManager, trx:
 
 	await repoRel.createMany({
 		trx,
+		overrideCanCreate: true,
 		data: [
 			{
 				id: "a653e54a-6f42-445f-9694-050cfa58464b",

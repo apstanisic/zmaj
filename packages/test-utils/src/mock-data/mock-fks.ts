@@ -1,9 +1,9 @@
-import { ForeignKey } from "@zmaj-js/common"
+import { ForeignKey } from "@zmaj-js/orm"
 import { ForeignKeyStub } from "../stubs/foreign-key.stub.js"
 import {
 	mockCollectionConsts as c,
-	mockFieldsConsts as p,
 	mockFkNames,
+	mockFieldsConsts as p,
 } from "./infra-mock-consts.js"
 
 const idCol = "id"

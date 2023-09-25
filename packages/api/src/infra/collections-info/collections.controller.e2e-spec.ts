@@ -1,27 +1,24 @@
-import { knexQuery } from "@api/database/knex/knex-query"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
+import { knexQuery } from "@api/database/knex-query"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
-import { INestApplication, InternalServerErrorException } from "@nestjs/common"
-import { DataTypes } from "sequelize"
+import { INestApplication } from "@nestjs/common"
 import {
-	DbMigration,
-	DbMigrationCollection,
+	CollectionCreateDto,
 	CollectionDef,
 	CollectionMetadata,
-	CollectionMetadataCollection,
-	CollectionCreateDto,
+	CollectionMetadataModel,
 	CollectionUpdateDto,
+	DbMigrationModel,
 	throwErr,
 	User,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager, SchemaInfoService, ZmajOrmError } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
+import { camel } from "radash"
+import { DataTypes } from "sequelize"
 import supertest from "supertest"
 import { v4 } from "uuid"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { InfraStateService } from "../infra-state/infra-state.service"
-import { camel } from "radash"
 
 const tableName = "test_table_collection_metadata"
 
@@ -32,8 +29,8 @@ describe("CollectionsController e2e", () => {
 	let infraStateService: InfraStateService
 	let repoManager: RepoManager
 	//
-	let migrationsRepo: OrmRepository<DbMigration>
-	let collectionsRepo: OrmRepository<CollectionMetadata>
+	let migrationsRepo: OrmRepository<DbMigrationModel>
+	let collectionsRepo: OrmRepository<CollectionMetadataModel>
 	//
 	let user: User
 	let collection: CollectionDef
@@ -49,8 +46,8 @@ describe("CollectionsController e2e", () => {
 
 		infraStateService = app.get(InfraStateService)
 
-		migrationsRepo = all.repo(DbMigrationCollection)
-		collectionsRepo = all.repo(CollectionMetadataCollection)
+		migrationsRepo = all.repo(DbMigrationModel)
+		collectionsRepo = all.repo(CollectionMetadataModel)
 
 		user = await all.createUser()
 	})
@@ -133,7 +130,7 @@ describe("CollectionsController e2e", () => {
 			expect(colInDb).toBeDefined()
 
 			// pk exist, means that table exists
-			const pk = await schemaInfoService.getPrimaryKey(tableName)
+			const pk = await schemaInfoService.getPrimaryKey({ table: tableName })
 			expect(pk).toBeDefined()
 			// pk should have name and type provided
 			expect(pk?.columnName).toEqual("id2")
@@ -200,7 +197,7 @@ describe("CollectionsController e2e", () => {
 			// don't initialize repo if collection disabled
 			expect(() => {
 				return repoManager.getRepo(collection.tableName)
-			}).toThrow(InternalServerErrorException)
+			}).toThrow(ZmajOrmError)
 		})
 	})
 
@@ -222,7 +219,7 @@ describe("CollectionsController e2e", () => {
 			expect(colInDb).toBeUndefined()
 
 			// there should be no table
-			const exist = await schemaInfoService.hasTable(tableName)
+			const exist = await schemaInfoService.hasTable({ table: tableName })
 			expect(exist).toEqual(false)
 
 			// there should be no collection in state
@@ -230,7 +227,7 @@ describe("CollectionsController e2e", () => {
 			expect(colInState).toBeUndefined()
 
 			// there should be no repo
-			expect(() => repoManager.getRepo(tableName)).toThrow(InternalServerErrorException)
+			expect(() => repoManager.getRepo(tableName)).toThrow(ZmajOrmError)
 
 			// TODO not creating migrations currently
 			// there should be migration that does this, and reverts

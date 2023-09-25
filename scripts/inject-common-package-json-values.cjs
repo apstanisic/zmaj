@@ -18,6 +18,7 @@ async function main() {
 		homepage: "https://github.com/apstanisic/zmaj#readme",
 		license: "MIT",
 		// type: "module",
+		prettier: "../../.prettierrc.json",
 		repository: {
 			type: "git",
 			url: "https://github.com/apstanisic/zmaj.git",
@@ -33,13 +34,13 @@ async function main() {
 	const rootPackageJsonPath = path.join(root, "./package.json")
 	const rootPackageJson = await readJSON(rootPackageJsonPath)
 
-	const { engines: _engines, ...forRoot } = requiredPackageJsonValues
+	const { engines: _engines, prettier, ...forRoot } = requiredPackageJsonValues
 	await writeJSON(
 		rootPackageJsonPath,
 		{
 			...rootPackageJson,
 			...forRoot,
-			engines: { ..._engines, pnpm: ">=7.0.0" },
+			engines: { ..._engines, pnpm: ">=8.0.0" },
 		},
 		{ spaces: "\t" },
 	)
@@ -78,10 +79,10 @@ main()
 function ensureRequiredScripts(packageJson, folderName) {
 	const requiredScripts = {
 		prebuild: "rimraf dist",
-		// lint: "eslint --fix --ext .ts,.tsx,.cts,.mts,.js,.cjs,.mjs src",
 		lint: "eslint --fix src",
-		test: `cd ../.. && vitest run --config vitest-unit.config.ts projects/${folderName}`,
+		test: `cd ../.. && vitest run packages/${folderName} --passWithNoTests`,
 		tsc: "tsc",
+		format: "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
 	}
 
 	if (folderName === "docs") {

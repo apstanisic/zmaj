@@ -1,8 +1,8 @@
 import { CrudRequest } from "@api/common/decorators/crud-request.decorator"
-import { Transaction } from "@api/database/orm-specs/Transaction"
-import { AuthUser, CollectionDef, IdType, Struct, UrlQuery, UrlQuerySchema } from "@zmaj-js/common"
+import { AuthUser, CollectionDef, Struct, UrlQuery, UrlQuerySchema } from "@zmaj-js/common"
+import { IdType, Transaction } from "@zmaj-js/orm"
 import { ReadonlyDeep, SetRequired } from "type-fest"
-import { z, ZodSchema } from "zod"
+import { ZodSchema, z } from "zod"
 
 type Result<T = Struct> = { result: T[] }
 type RequiredTrx = { readonly trx: Transaction }
@@ -18,7 +18,7 @@ type Filter = {
 ///
 
 export type SharedParams<T extends Struct = Struct> = {
-	collection: string | CollectionDef<T>
+	collection: string | CollectionDef
 	user?: AuthUser
 	trx?: Transaction
 	// make this optional
@@ -48,7 +48,7 @@ type BaseEvent<T extends Struct = Struct<any>> = {
 	readonly action: "create" | "update" | "delete" | "read"
 	readonly trx?: Transaction
 	readonly req: SetRequired<Partial<CrudRequest>, "ip">
-	collection: CollectionDef<T>
+	collection: CollectionDef
 	resMeta?: Struct
 	//
 	// authz?: { resource: string; action: string }

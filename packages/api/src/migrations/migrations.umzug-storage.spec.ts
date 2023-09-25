@@ -1,6 +1,6 @@
 import { buildTestModule } from "@api/testing/build-test-module"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { RepoManager } from "../database/orm-specs/RepoManager"
+import { RepoManager } from "@zmaj-js/orm"
 import { MigrationsUmzugStorage } from "./migrations.umzug-storage"
 
 describe("MigrationsUmzugStorage", () => {

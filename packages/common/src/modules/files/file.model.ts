@@ -1,79 +1,73 @@
-import { EntityRef } from "../crud-types/entity-ref.type"
-import { User } from "../users/user.model"
+import { BaseModel, GetModelFields } from "@zmaj-js/orm"
+import { UserModel } from "../users/user.model"
 
-/**
- * File
- *
- * `File` is already a class in JS, so I added info (since this is info about file)
- */
-export type FileInfo = {
-	/**
-	 * File ID
-	 */
-	id: string
+export class FileModel extends BaseModel {
+	override name = "zmajFiles"
+	override tableName = "zmaj_files"
 
-	/**
-	 * When is file created
-	 */
-	createdAt: Date
+	override fields = this.buildFields((f) => ({
+		/**
+		 * File ID
+		 */
+		id: f.uuid({ isPk: true }),
 
-	/**
-	 * Name. Without path, without extension Example: `test-image`
-	 */
-	name: string | null
+		/**
+		 * When is file created
+		 */
+		createdAt: f.createdAt({}),
 
-	/**
-	 * File extensions.
-	 * It is possible for file to not have extension, then it's null //it's then empty string
-	 * It should not contain leading dot `"."`
-	 */
-	extension: string | null
+		/**
+		 * Name. Without path, without extension Example: `test-image`
+		 */
+		name: f.text({}),
 
-	/**
-	 * Use as alt text in browser
-	 */
-	description: string | null
+		/**
+		 * File extensions.
+		 * It is possible for file to not have extension, then it's null //it's then empty string
+		 * It should not contain leading dot `"."`
+		 */
+		// extension: f.text({ nullable: true, canUpdate: false }),
 
-	/**
-	 * Owner. It's possible to have file without owner
-	 */
-	userId: string | null
+		/**
+		 * Use as alt text in browser
+		 */
+		description: f.text({ nullable: true }),
 
-	/**
-	 * Folder
-	 * It currently does nothing, but it will be used to display nested folders
-	 * It should have it's own permissions (public can access only where folder 'Public'...)
-	 */
-	folderPath: string
+		/**
+		 * Owner. It's possible to have file without owner
+		 */
+		userId: f.uuid({ nullable: true }),
 
-	/**
-	 * Mime type (image/png, text/plain)
-	 */
-	mimeType: string
+		/**
+		 * Folder
+		 * It currently does nothing, but it will be used to display nested folders
+		 * It should have it's own permissions (public can access only where folder 'Public'...)
+		 */
+		folderPath: f.text({}),
 
-	/**
-	 * File size in bytes
-	 */
-	fileSize: number
+		/**
+		 * Mime type (image/png, text/plain)
+		 */
+		mimeType: f.text({ canUpdate: false }),
 
-	/**
-	 * Path where file is stored. This is provider specific.
-	 * It's not public url, it's path for provider service to access
-	 */
-	uri: string
+		/**
+		 * File size in bytes
+		 */
+		fileSize: f.int({ canUpdate: false }),
 
-	/**
-	 * Storage name that is used. config for storage is in .env
-	 */
-	storageProvider: string
+		/**
+		 * Path where file is stored. This is provider specific.
+		 * It's not public url, it's path for provider service to access
+		 */
+		uri: f.text({ canUpdate: false }),
 
-	/**
-	 * User relation that is owner
-	 */
-	user?: EntityRef<User>
+		/**
+		 * Storage name that is used. config for storage is in .env
+		 */
+		storageProvider: f.text({ canUpdate: false }),
+	}))
 
-	/**
-	 * If file is image, we will generate images of different sizes
-	 */
-	// images?: EntityRef<ImageInfo>[]
+	user = this.manyToOne(() => UserModel, { fkField: "userId" })
 }
+
+export type FileInfo = GetModelFields<FileModel>

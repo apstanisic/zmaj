@@ -2,7 +2,7 @@
 	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
-	"type": "module",
+	"prettier": "../../.prettierrc.json",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -13,6 +13,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
+	"type": "module",
 	"name": "@zmaj-js/rich-input",
 	"version": "0.2.2",
 	"types": "./dist/index.d.ts",
@@ -32,24 +33,25 @@
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"lint": "eslint --fix src",
-		"test": "cd ../.. && vitest run --config vitest-unit.config.ts projects/rich-input",
+		"test": "cd ../.. && vitest run packages/rich-input --passWithNoTests",
 		"tsc": "tsc",
 		"build": "tsup --config ../../tsup.config.ts",
-		"dev": "tsup --config ../../tsup.config.ts --watch"
+		"dev": "tsup --config ../../tsup.config.ts --watch",
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
 	},
 	"peerDependencies": {
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0"
 	},
 	"dependencies": {
-		"@tiptap/extension-bold": "2.0.2",
-		"@tiptap/extension-image": "2.0.2",
-		"@tiptap/extension-link": "2.0.2",
-		"@tiptap/extension-placeholder": "2.0.2",
-		"@tiptap/extension-text-align": "2.0.2",
-		"@tiptap/extension-underline": "2.0.2",
-		"@tiptap/pm": "2.0.2",
-		"@tiptap/react": "2.0.2",
-		"@tiptap/starter-kit": "2.0.2"
+		"@tiptap/extension-bold": "2.1.11",
+		"@tiptap/extension-image": "2.1.11",
+		"@tiptap/extension-link": "2.1.11",
+		"@tiptap/extension-placeholder": "2.1.11",
+		"@tiptap/extension-text-align": "2.1.11",
+		"@tiptap/extension-underline": "2.1.11",
+		"@tiptap/pm": "2.1.11",
+		"@tiptap/react": "2.1.11",
+		"@tiptap/starter-kit": "2.1.11"
 	}
 }

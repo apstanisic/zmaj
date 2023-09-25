@@ -1,6 +1,6 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { throw403 } from "@api/common/throw-http"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { RepoManager } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { KeyValueStorageService } from "@api/key-value-storage/key-value-storage.service"
 import { SettingsKey } from "@api/key-value-storage/key-value.consts"

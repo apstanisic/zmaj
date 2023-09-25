@@ -1,24 +1,17 @@
 import { AppModule } from "@api/app/app.module"
 import { AppService } from "@api/app/app.service"
 import { ConfigureAppParams } from "@api/app/configure-app-params.type"
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { OnInfraChangeService } from "@api/infra/on-infra-change.service"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { UsersService } from "@api/users/users.service"
 import { INestApplication } from "@nestjs/common"
 import { NestExpressApplication } from "@nestjs/platform-express"
 import { Test } from "@nestjs/testing"
-import {
-	ADMIN_ROLE_ID,
-	CollectionDef,
-	CollectionMetadataCollection,
-	merge,
-	Struct,
-	User,
-	UserCreateDto,
-} from "@zmaj-js/common"
+import { ADMIN_ROLE_ID, CollectionMetadataModel, User, UserCreateDto, merge } from "@zmaj-js/common"
+import { BaseModel, OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
+import { join } from "node:path"
+import { Class } from "type-fest"
 import { v4 } from "uuid"
 import { predefinedApiConfigs } from "../predefined-configs-const"
 import { TestingUtilsModule } from "./testing-utils.module"
@@ -26,7 +19,10 @@ import { TestingUtilsModule } from "./testing-utils.module"
 export async function getE2ETestModule(
 	override: Partial<ConfigureAppParams> = {},
 ): Promise<INestApplication> {
+	const envPath = join(__dirname, "../../../..", ".env.test")
 	const combined: ConfigureAppParams = merge(predefinedApiConfigs.test, override ?? {})
+	combined.config ??= {}
+	combined.config.envPath = envPath
 	const module = await Test.createTestingModule({
 		imports: [AppModule.register(combined), TestingUtilsModule],
 	}).compile()
@@ -47,9 +43,7 @@ export async function getE2ETestModuleExpanded(
 	createUser: () => Promise<User>
 	deleteUser: (user: User) => Promise<void>
 	syncInfra: () => Promise<void>
-	repo: <T extends Struct<unknown> = Struct<unknown>>(
-		table: string | CollectionDef<T>,
-	) => OrmRepository<T>
+	repo: <T extends BaseModel = BaseModel>(table: string | Class<T>) => OrmRepository<T>
 	dropTableAndSync: (tableName: string) => Promise<void>
 	dropTable: (tableName: string) => Promise<void>
 	changeInfra: (fn: () => Promise<void>) => Promise<void>
@@ -75,7 +69,7 @@ export async function getE2ETestModuleExpanded(
 		await usersService.repo.deleteById({ id: user.id })
 	}
 
-	const repo = <T extends Struct = Struct>(table: string | CollectionDef<T>): OrmRepository<T> =>
+	const repo = <T extends BaseModel = BaseModel>(table: string | Class<T>): OrmRepository<T> =>
 		app.get(RepoManager).getRepo(table)
 
 	const server = (): any => app.getHttpServer()
@@ -100,7 +94,7 @@ export async function getE2ETestModuleExpanded(
 
 	const dropTable = async (tableName: string): Promise<void> => {
 		const qi = app.get(SequelizeService).orm.getQueryInterface()
-		const colRepo = app.get(BootstrapRepoManager).getRepo(CollectionMetadataCollection)
+		const colRepo = app.get(BootstrapRepoManager).getRepo(CollectionMetadataModel)
 
 		await qi.dropTable(tableName, { cascade: true })
 		await colRepo.deleteWhere({ where: { tableName } })

@@ -1,5 +1,5 @@
 import { SecurityConfig } from "@api/app/security.config"
-import { Injectable } from "@nestjs/common"
+import { Injectable, RequestMethod } from "@nestjs/common"
 import { NestExpressApplication } from "@nestjs/platform-express"
 import { qsParse } from "@zmaj-js/common"
 import cookieParser from "cookie-parser"
@@ -9,7 +9,10 @@ import { GlobalConfig } from "./global-app.config"
 
 @Injectable()
 export class AppService {
-	constructor(private config: GlobalConfig, private securityConfig: SecurityConfig) {}
+	constructor(
+		private config: GlobalConfig,
+		private securityConfig: SecurityConfig,
+	) {}
 
 	configureApp(app: NestExpressApplication): void {
 		// use custom query parser (qs with custom params)
@@ -30,7 +33,12 @@ export class AppService {
 			}),
 		)
 
-		app.setGlobalPrefix("api")
+		app.setGlobalPrefix("api", {
+			exclude: [
+				{ method: RequestMethod.GET, path: "/" }, //
+				{ method: RequestMethod.GET, path: "/api" }, //
+			],
+		})
 
 		if (this.config.log !== true) {
 			app.useLogger(this.config.log)

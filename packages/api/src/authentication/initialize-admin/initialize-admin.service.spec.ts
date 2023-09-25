@@ -1,17 +1,17 @@
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { KeyValueStorageService } from "@api/key-value-storage/key-value-storage.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { UsersService } from "@api/users/users.service"
 import { ForbiddenException, Logger } from "@nestjs/common"
 import {
 	ADMIN_ROLE_ID,
-	asMock,
 	AuthUser,
-	makeWritable,
 	SignUpDto,
 	User,
-	UserCollection,
+	UserModel,
+	asMock,
+	makeWritable,
 } from "@zmaj-js/common"
+import { RepoManager } from "@zmaj-js/orm"
 import { SignUpDtoStub, UserStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { AuthenticationConfig } from "../authentication.config"
@@ -37,8 +37,7 @@ describe("InitializeAdminService", () => {
 		authnConfig.allowAdminInitialize = true
 		//
 		usersService = module.get(UsersService)
-		makeWritable(usersService).repo = module.get(RepoManager).getRepo(UserCollection)
-		// usersService.repo = module.get(RepoManager).getRepo(UserCollection)
+		makeWritable(usersService).repo = module.get(RepoManager).getRepo(UserModel)
 		usersService.createUser = vi.fn(async () => adminUser)
 	})
 

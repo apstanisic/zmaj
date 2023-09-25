@@ -3,7 +3,7 @@ import { AuthenticationConfig } from "@api/authentication/authentication.config"
 import { AuthenticationService } from "@api/authentication/authentication.service"
 import { ForbiddenException, Injectable } from "@nestjs/common"
 import { PassportStrategy } from "@nestjs/passport"
-import { Profile, Strategy, StrategyOption, VerifyFunction } from "passport-facebook"
+import { Profile, Strategy, StrategyOptions, VerifyFunction } from "passport-facebook"
 
 /**
  * This is ugly, but it's only way for type safe
@@ -29,7 +29,7 @@ export class FacebookOAuthStrategy
 			clientID: authnConfig.oauth.facebook?.clientId ?? "invalid",
 			clientSecret: authnConfig.oauth.facebook?.clientSecret ?? "invalid",
 			scope: ["email", "profile"],
-		} as StrategyOption)
+		} satisfies StrategyOptions)
 	}
 
 	/**

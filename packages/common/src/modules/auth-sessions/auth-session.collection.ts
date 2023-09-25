@@ -1,38 +1,23 @@
 import { zodCreate } from "@common/zod"
-import { DefineCollection } from "../../collection-builder/define-collection"
+import { codeCollection } from "../../collection-builder/define-collection"
 import { LayoutConfigSchema } from "../infra-collections"
-import { AuthSession } from "./auth-session.model"
+import { AuthSessionModel } from "./auth-session.model"
 
-export const AuthSessionCollection = DefineCollection<AuthSession>({
-	tableName: "zmaj_auth_sessions",
-
+export const AuthSessionCollection = codeCollection(AuthSessionModel, {
 	fields: {
-		id: { dataType: "uuid", isPrimaryKey: true, columnName: "id", canUpdate: false },
 		createdAt: {
-			dataType: "datetime",
-			columnName: "created_at",
-			canUpdate: false,
 			label: "Logged In At",
 		},
-		ip: { dataType: "short-text", columnName: "ip" },
-		lastUsed: {
-			dataType: "datetime",
-			columnName: "last_used",
-			isUpdatedAt: true,
-		},
-		refreshToken: { dataType: "short-text", columnName: "refresh_token", canRead: false },
-		userAgent: { dataType: "short-text", columnName: "user_agent" },
-		validUntil: { dataType: "datetime", columnName: "valid_until" },
-		userId: { dataType: "uuid", columnName: "user_id", isForeignKey: true },
+		userId: { isForeignKey: true },
 	},
 	relations: {
 		user: {
-			thisColumnName: "user_id",
 			label: "User",
-			otherTableName: "zmaj_users",
-			otherColumnName: "id",
-			type: "many-to-one",
 			otherPropertyName: "authSessions",
+			otherColumnName: "id",
+			otherTableName: "zmaj_users",
+			thisColumnName: "user_id",
+			type: "many-to-one",
 		},
 	},
 	options: {

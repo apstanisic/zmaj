@@ -1,14 +1,14 @@
 export {
 	ADMIN_ROLE_ID,
 	AuthUser,
-	DefineCollection,
 	LayoutConfigSchema,
 	PUBLIC_ROLE_ID,
+	ZodDto,
+	defineCollection,
 	qsParse,
 	qsStringify,
 	systemCollections,
 	systemPermissions,
-	ZodDto,
 	type AuthSession,
 	type AuthUserType,
 	type CollectionDef,
@@ -22,6 +22,8 @@ export {
 	type ZodDtoClass,
 	type ZodDtoInput,
 } from "@zmaj-js/common"
+export * from "@zmaj-js/orm"
+export { SequelizeService } from "@zmaj-js/orm-sq"
 export { BaseStorage, LocalStorageConfig } from "@zmaj-js/storage-core"
 export type { ProviderConfig as StorageProviderConfig } from "@zmaj-js/storage-core"
 export { S3StorageConfig } from "@zmaj-js/storage-s3"
@@ -60,7 +62,6 @@ export type {
 } from "./crud/crud-event.types"
 export { CrudService } from "./crud/crud.service"
 export { OnCrudEvent } from "./crud/on-crud-event.decorator"
-export { RepoManager } from "./database/orm-specs/RepoManager"
 export { EncryptionService } from "./encryption/encryption.service"
 export { InfraStateService } from "./infra/infra-state/infra-state.service"
 export { KeyValueStorageService } from "./key-value-storage/key-value-storage.service"
@@ -69,7 +70,6 @@ export { MigrationsService } from "./migrations/migrations.service"
 export { predefinedApiConfigs } from "./predefined-configs-const"
 export { buildApi, runApi, type ZmajApplication } from "./run-app"
 export { RuntimeSettingsService } from "./runtime-settings/runtime-settings.service"
-export { SequelizeService } from "./sequelize/sequelize.service"
 export { StorageService } from "./storage/storage.service"
 //
 export { __testUtils } from "./testing/test-utils-export"

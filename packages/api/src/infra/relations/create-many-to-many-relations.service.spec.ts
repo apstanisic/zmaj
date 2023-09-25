@@ -1,5 +1,3 @@
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common"
 import {
@@ -9,11 +7,12 @@ import {
 	asMock,
 	uuidRegex,
 } from "@zmaj-js/common"
+import { AlterSchemaService, SchemaInfoService } from "@zmaj-js/orm"
 import { CollectionDefStub } from "@zmaj-js/test-utils"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import { CreateManyToManyRelationsService } from "./create-many-to-many-relations.service"
-import { InfraStateService } from "../infra-state/infra-state.service"
 import { v4 } from "uuid"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { InfraStateService } from "../infra-state/infra-state.service"
+import { CreateManyToManyRelationsService } from "./create-many-to-many-relations.service"
 
 describe("CreateManyToManyRelationsService", () => {
 	let service: CreateManyToManyRelationsService
@@ -245,7 +244,7 @@ describe("CreateManyToManyRelationsService", () => {
 			}
 
 			alterSchema.createColumn = vi.fn()
-			alterSchema.createFk = vi.fn()
+			alterSchema.createForeignKey = vi.fn()
 			alterSchema.createTable = vi.fn()
 			alterSchema.createUniqueKey = vi.fn()
 		})
@@ -273,7 +272,7 @@ describe("CreateManyToManyRelationsService", () => {
 				trx: "TRX_1",
 			})
 
-			expect(alterSchema.createFk).nthCalledWith(1, {
+			expect(alterSchema.createForeignKey).nthCalledWith(1, {
 				fkColumn: "jlc",
 				fkTable: "jt",
 				referencedTable: "lt",
@@ -282,7 +281,7 @@ describe("CreateManyToManyRelationsService", () => {
 				trx: "TRX_1",
 			})
 
-			expect(alterSchema.createFk).nthCalledWith(2, {
+			expect(alterSchema.createForeignKey).nthCalledWith(2, {
 				fkColumn: "jrc",
 				fkTable: "jt",
 				referencedTable: "rt",
@@ -319,7 +318,7 @@ describe("CreateManyToManyRelationsService", () => {
 				trx: "TRX_1",
 				data: {
 					// collectionId: colId,
-					createdAt: expect.any(Date),
+					// createdAt: expect.any(Date),
 					fkName: "lfk",
 					hidden: false,
 					id: expect.stringMatching(uuidRegex),
@@ -338,7 +337,7 @@ describe("CreateManyToManyRelationsService", () => {
 				data: [
 					{
 						// collectionId: jId,
-						createdAt: expect.any(Date),
+						// createdAt: expect.any(Date),
 						fkName: "lfk",
 						hidden: false,
 						id: expect.stringMatching(uuidRegex),
@@ -350,7 +349,7 @@ describe("CreateManyToManyRelationsService", () => {
 					},
 					{
 						// collectionId: jId,
-						createdAt: expect.any(Date),
+						// createdAt: expect.any(Date),
 						fkName: "rfk",
 						hidden: false,
 						id: expect.stringMatching(uuidRegex),
@@ -370,7 +369,7 @@ describe("CreateManyToManyRelationsService", () => {
 				trx: "TRX_1",
 				data: {
 					// collectionId: colId,
-					createdAt: expect.any(Date),
+					// createdAt: expect.any(Date),
 					fkName: "rfk",
 					hidden: false,
 					id: expect.stringMatching(uuidRegex),

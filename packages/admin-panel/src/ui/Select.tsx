@@ -38,7 +38,12 @@ export function Select(props: SelectProps): JSX.Element {
 		...rest //
 	} = props
 
-	const { x, y, reference, floating, strategy } = useFloating({
+	const {
+		x,
+		y,
+		refs: { setFloating, setReference },
+		strategy,
+	} = useFloating({
 		middleware: [offset(props.helperText ? -30 : 0), flip(), shift()],
 		placement: "bottom",
 		strategy: "absolute",
@@ -63,7 +68,7 @@ export function Select(props: SelectProps): JSX.Element {
 	return (
 		<Listbox {...rest}>
 			<InputWrapper
-				ref={reference}
+				ref={setReference}
 				required={props.required}
 				error={props.error}
 				labelPosition={props.labelPosition}
@@ -94,7 +99,7 @@ export function Select(props: SelectProps): JSX.Element {
 				/>
 
 				<Listbox.Options
-					ref={floating}
+					ref={setFloating}
 					style={{
 						position: strategy,
 						top: y ?? 0,

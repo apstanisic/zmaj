@@ -1,29 +1,29 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
 import { HttpClient } from "@api/http-client/http-client.service"
 import { getE2ETestModuleExpanded, TestBundle } from "@api/testing/e2e-test-module"
-import { fixTestDate } from "@api/testing/stringify-date"
 import { INestApplication } from "@nestjs/common"
 import {
 	qsStringify,
 	times,
 	User,
 	Webhook,
-	WebhookCollection,
 	WebhookCreateDto,
+	WebhookModel,
 	WebhookUpdateDto,
 } from "@zmaj-js/common"
+import { OrmRepository } from "@zmaj-js/orm"
+import { WebhookStub } from "@zmaj-js/test-utils"
+import { omit } from "radash"
 import supertest from "supertest"
 import { v4 } from "uuid"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { WebhooksService } from "./webhooks.service"
-import { WebhookStub } from "@zmaj-js/test-utils"
 
 describe("WebhooksController e2e", () => {
 	let all: TestBundle
 	let app: INestApplication
 	//
 	let webhookService: WebhooksService
-	let webhooksRepo: OrmRepository<Webhook>
+	let webhooksRepo: OrmRepository<WebhookModel>
 	//
 	let httpClient: HttpClient
 	//
@@ -36,7 +36,7 @@ describe("WebhooksController e2e", () => {
 		webhookService = app.get(WebhooksService)
 		httpClient = app.get(HttpClient)
 		//
-		webhooksRepo = all.repo(WebhookCollection)
+		webhooksRepo = all.repo(WebhookModel)
 	})
 
 	afterAll(async () => {
@@ -60,7 +60,7 @@ describe("WebhooksController e2e", () => {
 	describe("GET /system/webhooks", () => {
 		it("should get webhooks", async () => {
 			const webhooksStubs = times(12, () => WebhookStub({}))
-			await webhooksRepo.createMany({ data: webhooksStubs })
+			await webhooksRepo.createMany({ data: webhooksStubs, overrideCanCreate: true })
 
 			const query = qsStringify({ limit: 5, count: true })
 			const res = await supertest(all.server())
@@ -82,13 +82,13 @@ describe("WebhooksController e2e", () => {
 	describe("GET /system/webhooks/:id", () => {
 		it("should get webhook by id", async () => {
 			const webhook = WebhookStub()
-			await webhooksRepo.createOne({ data: webhook })
+			await webhooksRepo.createOne({ data: webhook, overrideCanCreate: true })
 
 			const res = await supertest(all.server())
 				.get(`/api/system/webhooks/${webhook.id}`)
 				.auth(user.email, "password")
 
-			expect(res.body.data).toEqual(fixTestDate(webhook))
+			expect(res.body.data).toEqual({ ...webhook, createdAt: expect.any(String) })
 		})
 	})
 
@@ -102,7 +102,7 @@ describe("WebhooksController e2e", () => {
 				url: "http://example.com",
 				sendData: false,
 			})
-			await webhooksRepo.createOne({ data: webhook })
+			await webhooksRepo.createOne({ data: webhook, overrideCanCreate: true })
 			await webhookService.onModuleInit()
 
 			const tagRes = await supertest(app.getHttpServer())
@@ -127,13 +127,13 @@ describe("WebhooksController e2e", () => {
 				.auth(user.email, "password")
 
 			expect(res.statusCode).toBe(200)
-			expect(res.body.data).toEqual(fixTestDate(webhook))
+			expect(res.body.data).toEqual({ ...webhook, createdAt: expect.any(String) })
 
 			const inDb = await webhooksRepo.findOne({ where: { id: webhook.id } })
 			expect(inDb).toBeUndefined()
 
 			const inState = webhookService["allWebhooks"].find((wh) => wh.id === webhook.id)
-			expect(inState).toBeUndefined
+			expect(inState).toBeUndefined()
 
 			await supertest(app.getHttpServer())
 				.post("/api/collections/tags")
@@ -211,7 +211,7 @@ describe("WebhooksController e2e", () => {
 				url: "http://example.com",
 				sendData: false,
 			})
-			await webhooksRepo.createOne({ data: webhook })
+			await webhooksRepo.createOne({ data: omit(webhook, ["createdAt"]) })
 			await webhookService.onModuleInit()
 		})
 
@@ -234,7 +234,11 @@ describe("WebhooksController e2e", () => {
 
 			// updated webhook is returned
 			expect(res.statusCode).toEqual(200)
-			expect(res.body.data).toMatchObject(fixTestDate({ ...webhook, enabled: true }))
+			expect(res.body.data).toMatchObject({
+				...webhook,
+				enabled: true,
+				createdAt: expect.any(String),
+			})
 
 			// webhook is updated in db
 			const inDb = await webhooksRepo.findById({ id: res.body.data.id })

@@ -16,10 +16,7 @@ const colors: Record<Color, string> = {
 	normal: "bg-neutral",
 }
 
-type ProgressBarProps = Except<
-	Except<AriaProgressBarProps, "label">,
-	"minValue" | "maxValue" | "showValueLabel"
-> & {
+type ProgressBarProps = Except<AriaProgressBarProps, "label" | "minValue" | "maxValue"> & {
 	className?: string
 	variant?: Color
 	showLabel?: boolean
@@ -35,7 +32,8 @@ export const ProgressBar = (props: ProgressBarProps): JSX.Element => {
 		...rest,
 		maxValue: 100,
 		minValue: 0,
-		showValueLabel: false,
+		// showValueLabel: false,
+		valueLabel: null,
 		value,
 	})
 

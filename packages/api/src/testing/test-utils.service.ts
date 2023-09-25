@@ -1,16 +1,16 @@
 import { InitializeAdminService } from "@api/authentication/initialize-admin/initialize-admin.service"
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { OnInfraChangeService } from "@api/infra/on-infra-change.service"
 import { RelationsService } from "@api/infra/relations/relations.service"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { Injectable } from "@nestjs/common"
 import {
-	CollectionMetadataCollection,
-	FieldMetadataCollection,
-	RelationMetadataCollection,
+	CollectionMetadataModel,
+	FieldMetadataModel,
+	RelationMetadataModel,
 	RelationUpdateDto,
-	UserCollection,
+	UserModel,
 } from "@zmaj-js/common"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { TComment, TPost, TPostInfo } from "@zmaj-js/test-utils"
 import { BuildTestDbService } from "./build-test-db.service"
 
@@ -29,9 +29,7 @@ export class TestingUtilsService {
 
 	async createTestAdmin(): Promise<void> {
 		// delete if exist
-		await this.repoManager
-			.getRepo(UserCollection)
-			.deleteWhere({ where: { email: "admin@example.com" } })
+		await this.repoManager.getRepo(UserModel).deleteWhere({ where: { email: "admin@example.com" } })
 		await this.adminInit.createAdmin({
 			email: "admin@example.com",
 			firstName: "Test",
@@ -48,9 +46,9 @@ export class TestingUtilsService {
 	 *
 	 */
 	async configureExampleProjectForAdminPanel(): Promise<void> {
-		const repo = this.repoManager.getRepo(FieldMetadataCollection)
-		const repoCol = this.repoManager.getRepo(CollectionMetadataCollection)
-		const repoRel = this.repoManager.getRepo(RelationMetadataCollection)
+		const repo = this.repoManager.getRepo(FieldMetadataModel)
+		const repoCol = this.repoManager.getRepo(CollectionMetadataModel)
+		const repoRel = this.repoManager.getRepo(RelationMetadataModel)
 
 		// posts
 

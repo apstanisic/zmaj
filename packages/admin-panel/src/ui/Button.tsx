@@ -61,7 +61,6 @@ export const Button = forwardRef<any, ButtonProps>((props, ref) => {
 			elementType: Component,
 			onPress: onClick ?? rest.onPress,
 			isDisabled,
-			children,
 		},
 		domRef,
 	)

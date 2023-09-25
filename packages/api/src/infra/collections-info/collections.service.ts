@@ -1,29 +1,26 @@
 import { throw403, throw404 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionCreateDto,
 	CollectionMetadata,
-	CollectionMetadataCollection,
+	CollectionMetadataModel,
 	CollectionMetadataSchema,
 	CollectionUpdateDto,
-	FieldMetadata,
-	FieldMetadataCollection,
+	FieldMetadataModel,
 	FieldMetadataSchema,
 	UUID,
 	zodCreate,
 } from "@zmaj-js/common"
+import { AlterSchemaService, OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { InfraConfig } from "../infra.config"
 import { OnInfraChangeService } from "../on-infra-change.service"
 
 @Injectable()
 export class CollectionsService {
-	repo: OrmRepository<CollectionMetadata>
-	fieldsRepo: OrmRepository<FieldMetadata>
+	repo: OrmRepository<CollectionMetadataModel>
+	fieldsRepo: OrmRepository<FieldMetadataModel>
 	constructor(
 		private readonly repoManager: RepoManager,
 		private readonly appInfraSync: OnInfraChangeService,
@@ -31,8 +28,8 @@ export class CollectionsService {
 		private readonly infraState: InfraStateService,
 		private readonly infraConfig: InfraConfig,
 	) {
-		this.repo = this.repoManager.getRepo(CollectionMetadataCollection)
-		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataCollection)
+		this.repo = this.repoManager.getRepo(CollectionMetadataModel)
+		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataModel)
 	}
 
 	async createCollection(dto: CollectionCreateDto): Promise<CollectionMetadata> {
@@ -41,7 +38,7 @@ export class CollectionsService {
 				fn: async (trx) => {
 					const created = await this.repo.createOne({
 						trx,
-						data: zodCreate(CollectionMetadataSchema, {
+						data: zodCreate(CollectionMetadataSchema.omit({ createdAt: true }), {
 							...dto,
 							collectionName: dto.collectionName ?? this.infraConfig.toCase(dto.tableName),
 						}),
@@ -49,7 +46,7 @@ export class CollectionsService {
 
 					await this.fieldsRepo.createOne({
 						trx,
-						data: zodCreate(FieldMetadataSchema, {
+						data: zodCreate(FieldMetadataSchema.omit({ createdAt: true }), {
 							columnName: dto.pkColumn,
 							tableName: dto.tableName,
 							fieldName: this.infraConfig.toCase(dto.pkColumn),

@@ -1,5 +1,5 @@
 import { AuthUser, getJwtContent } from "@zmaj-js/common"
-import EventEmitter from "eventemitter3"
+import { EventEmitter } from "eventemitter3"
 import { AuthEventFn } from "./auth/auth.client"
 import { BaseStorage } from "./storage/base-storage.type"
 import { storage } from "./storage/storage"

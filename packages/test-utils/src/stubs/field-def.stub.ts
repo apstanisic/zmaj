@@ -4,7 +4,7 @@ import { camel } from "radash"
 import { FieldMetadataStub } from "./field-metadata.stub.js"
 
 export const FieldDefStub = stub<FieldDef>((modify) => {
-	const base = FieldMetadataStub(modify)
+	const base = FieldMetadataStub(modify as any)
 	const type = randDatabaseType()
 
 	const defaultValue = randBoolean() ? randWord() : null

@@ -2,8 +2,8 @@ import { throw400, throw500 } from "@api/common/throw-http"
 import { emsg } from "@api/errors"
 import { StorageService } from "@api/storage/storage.service"
 import { Injectable } from "@nestjs/common"
-import { FileInfo, ImageExtension, isImageExtension, notNil } from "@zmaj-js/common"
-import path from "path"
+import { FileInfo, isImageExtensionFileName, notNil } from "@zmaj-js/common"
+import path, { extname } from "path"
 import sharp from "sharp"
 import { Readable } from "stream"
 import { FilesConfig, ImageSizeConfig } from "./files.config"
@@ -77,10 +77,8 @@ export class ImagesService {
 	 * @returns undefined if images cannot be generated for provided file
 	 */
 	async createImagesFromFile(fileInfo: FileInfo, sizes?: string[]): Promise<string[] | undefined> {
-		const extension = fileInfo.extension
-
 		// do nothing if not image
-		if (!isImageExtension(extension)) return
+		if (!isImageExtensionFileName(fileInfo.name)) return
 		if (!fileInfo.mimeType.startsWith("image")) return
 
 		const provider = this.storage.provider(fileInfo.storageProvider)
@@ -94,7 +92,7 @@ export class ImagesService {
 
 		const resizingStreams = this.generateImageStreams({
 			file: fileStream,
-			extension,
+			name: fileInfo.name,
 			sizes: sizeConfigs,
 		})
 
@@ -112,13 +110,14 @@ export class ImagesService {
 
 	private generateImageStreams({
 		file,
-		extension,
+		name,
 		sizes,
 	}: {
 		file: Readable
-		extension: ImageExtension
+		name: string
 		sizes: ImageSizeConfig[]
 	}): { stream: Readable; size: string }[] {
+		const ext = extname(name).substring(1)
 		// https://github.com/lovell/sharp/issues/235#issuecomment-114483993
 		const factory = sharp()
 		file.pipe(factory)
@@ -131,13 +130,17 @@ export class ImagesService {
 			// } else if (extension === '')
 			return {
 				size: size.name,
-				stream: factory.toFormat(extension).clone().resize({
-					fit: size.fit,
-					height: size.height,
-					width: size.width,
-					withoutEnlargement: !size.shouldEnlarge,
-					withoutReduction: false,
-				}),
+				// TODO
+				stream: factory
+					.toFormat(ext as any)
+					.clone()
+					.resize({
+						fit: size.fit,
+						height: size.height,
+						width: size.width,
+						withoutEnlargement: !size.shouldEnlarge,
+						withoutReduction: false,
+					}),
 			}
 		})
 

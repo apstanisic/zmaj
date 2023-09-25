@@ -1,31 +1,30 @@
 import { CrudRequest } from "@api/common/decorators/crud-request.decorator"
 import { throw401, throw403 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import { Cron, CronExpression } from "@nestjs/schedule"
 import {
 	AuthSession,
-	AuthSessionCollection,
+	AuthSessionModel,
 	AuthSessionSchema,
 	AuthUser,
 	zodCreate,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { addMilliseconds, isPast, subYears } from "date-fns"
 import { v4 } from "uuid"
 import { AuthenticationConfig } from "../authentication.config"
 
 @Injectable()
 export class AuthSessionsService {
-	repo: OrmRepository<AuthSession>
+	repo: OrmRepository<AuthSessionModel>
 	constructor(
 		private readonly encryption: EncryptionService,
 		private readonly repoManager: RepoManager,
 		private readonly config: AuthenticationConfig,
 	) {
-		this.repo = this.repoManager.getRepo(AuthSessionCollection)
+		this.repo = this.repoManager.getRepo(AuthSessionModel)
 	}
 
 	/**
@@ -43,7 +42,7 @@ export class AuthSessionsService {
 	): Promise<string> {
 		const rt = await this.generateRefreshToken()
 
-		const session = zodCreate(AuthSessionSchema, {
+		const session = zodCreate(AuthSessionSchema.omit({ createdAt: true }), {
 			userAgent: params.userAgent,
 			ip: params.ip,
 			userId: user.userId,

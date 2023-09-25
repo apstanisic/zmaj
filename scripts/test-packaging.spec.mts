@@ -9,26 +9,39 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 const sleep = promisify(setTimeout)
 
+async function waitFor(fn: () => Promise<void>): Promise<boolean> {
+	const amount = 30
+
+	for (let i = 0; i < amount; i++) {
+		try {
+			await fn()
+			return true
+		} catch (error) {
+			await sleep(500)
+		}
+	}
+	return false
+}
+
 const cliCommands = {
 	dockerUp: "docker-compose --env-file .env -p zmaj_example up -d",
 	// dockerDown: "docker-compose --env-file .env -p zmaj_example down -v",
 	dockerDown: "docker-compose -p zmaj_example --env-file .env -p kill",
 	dockerRm: "docker-compose -p zmaj_example --env-file .env -p rm -fsv",
-	startApi: "npm run dev",
+	startApiDev: "npm run dev",
 }
 
-const dir = dirname(fileURLToPath(import.meta.url))
-const repoRootPath = join(dir, "..")
-const examplesFolderPath = join(repoRootPath, "examples")
-const examples = readdirSync(examplesFolderPath)
+const rootFolder = join(dirname(fileURLToPath(import.meta.url)), "..")
+const exampleProjects = readdirSync(join(rootFolder, "examples"))
 
 /**
  * Depends on `npx turbo build`
  */
-describe.each(examples)(
+describe.each(exampleProjects)(
 	'Testing example project "%s"',
 	(example) => {
-		const cwd = join(repoRootPath, "examples", example)
+		const projectPath = join(rootFolder, "examples", example)
+		const cwd = projectPath
 		let zmajProcess: ExecaChildProcess | undefined
 		let port: number = 17100
 
@@ -96,7 +109,8 @@ describe.each(examples)(
 			const responseAdminPanelRaw = await fetch(`http://localhost:${env.APP_PORT}/admin`)
 			const responseAdminPanelText = await responseAdminPanelRaw.text()
 			expect(responseAdminPanelRaw.ok).toEqual(true)
-			expect(responseAdminPanelText.startsWith("<!DOCTYPE html>")).toEqual(true)
+			const responseHtmlStart = responseAdminPanelText.substring(0, 20).toLowerCase()
+			expect(responseHtmlStart.startsWith("<!DOCTYPE html>".toLowerCase())).toEqual(true)
 		}, 60_000)
 
 		it("should build project and start it successfully", async () => {
@@ -127,7 +141,8 @@ describe.each(examples)(
 			const responseAdminPanelRaw = await fetch(`http://localhost:${env.APP_PORT}/admin`)
 			const responseAdminPanelText = await responseAdminPanelRaw.text()
 			expect(responseAdminPanelRaw.ok).toEqual(true)
-			expect(responseAdminPanelText.startsWith("<!DOCTYPE html>")).toEqual(true)
+			const responseHtmlStart = responseAdminPanelText.substring(0, 20).toLowerCase()
+			expect(responseHtmlStart.startsWith("<!DOCTYPE html>".toLowerCase())).toEqual(true)
 		}, 60_000)
 	},
 	{ timeout: 500_000 },

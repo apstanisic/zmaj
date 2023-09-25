@@ -1,4 +1,6 @@
-import { ColumnDataType, Comparison, FieldDef } from "@zmaj-js/common"
+import { Comparison, FieldDef } from "@zmaj-js/common"
+import { ColumnDataType } from "@zmaj-js/orm"
+import { ReactNode } from "react"
 import { InputFieldProps } from "./InputFieldProps"
 import { ListFieldProps } from "./ListFieldProps"
 import { ShowFieldProps } from "./ShowFieldProps"
@@ -15,21 +17,21 @@ export type CrudComponentDefinition = {
 	/**
 	 * Component to render for input
 	 */
-	readonly Input: (props: InputFieldProps) => JSX.Element | null
+	readonly Input: (props: InputFieldProps) => ReactNode
 	/**
 	 * Component to render for list
 	 */
-	readonly List: (props: ListFieldProps) => JSX.Element | null
+	readonly List: (props: ListFieldProps) => ReactNode
 	/**
 	 * Component to render for show
 	 *
 	 */
-	readonly Show: (props: ShowFieldProps) => JSX.Element | null
+	readonly Show: (props: ShowFieldProps) => ReactNode
 	/**
 	 * Used when there is little space, for example for filter. We can't put big text area there,
 	 * we must have something single line
 	 */
-	readonly SmallInput: (props: InputFieldProps) => JSX.Element | null
+	readonly SmallInput: (props: InputFieldProps) => ReactNode
 	/**
 	 * What comparisons can be used for this component
 	 * For example, string can use $ends, but number can't
@@ -45,7 +47,7 @@ export type CrudComponentDefinition = {
 	/**
 	 * Render field config values
 	 */
-	readonly ShowFieldConfig?: () => JSX.Element | null
+	readonly ShowFieldConfig?: () => ReactNode
 
 	/**
 	 * Render input for config values
@@ -54,11 +56,11 @@ export type CrudComponentDefinition = {
 	 * uuid can specify version. This property adds ability to provide react component to render with option
 	 *
 	 */
-	readonly InputFieldConfig?: () => JSX.Element | null
+	readonly InputFieldConfig?: () => ReactNode
 
 	// TODO
-	// ShowConfig?: () => JSX.Element | null
-	// ChangeConfig?: () => JSX.Element | null
+	// ShowConfig?: () => ReactNode
+	// ChangeConfig?: () => ReactNode
 
 	/**
 	 * Every component can have function that validates it's value (value is never null or undefined)

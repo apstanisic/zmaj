@@ -1,4 +1,5 @@
-import { CacheInterceptor, ExecutionContext, Inject, Injectable } from "@nestjs/common"
+import { CacheInterceptor } from "@nestjs/cache-manager"
+import { ExecutionContext, Inject, Injectable } from "@nestjs/common"
 import { AuthUser } from "@zmaj-js/common"
 import { Request } from "express"
 import { CacheConfig } from "./cache.config"

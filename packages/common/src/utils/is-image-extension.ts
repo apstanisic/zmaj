@@ -1,5 +1,4 @@
-import { ImageExtension } from "@common/modules/files/image-extension.type"
-
-export function isImageExtension(extension?: string | null): extension is ImageExtension {
-	return ["jpeg", "jpg", "png", "svg", "gif", "webp", "avif"].includes(extension ?? "")
+export function isImageExtensionFileName(fileName: string): boolean {
+	const ext = fileName.split(".").at(-1) ?? ""
+	return [".jpeg", ".jpg", ".png", ".svg", ".gif", ".webp", ".avif"].includes(`.${ext}`)
 }

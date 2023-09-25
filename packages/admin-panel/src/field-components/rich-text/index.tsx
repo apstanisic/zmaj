@@ -13,5 +13,5 @@ export const RichTextComponents = DefineCrudField({
 	// Maybe render a button to display pop up
 	Show: RichTextShowField,
 	SmallInput: TextInputField,
-	availableFor: ["long-text"],
+	availableFor: ["text"],
 })

@@ -1,27 +1,32 @@
 import { throw400 } from "@api/common/throw-http"
 import type { CreateFinishEvent } from "@api/crud/crud-event.types"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { emsg } from "@api/errors"
 import { SecurityTokensService } from "@api/security-tokens/security-tokens.service"
 import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
-import { ConfirmUserInvitationDto, getEndpoints, User, UserCollection } from "@zmaj-js/common"
+import {
+	ConfirmUserInvitationDto,
+	getEndpoints,
+	User,
+	UserCollection,
+	UserModel,
+} from "@zmaj-js/common"
 import { emailTemplates } from "@zmaj-js/email-templates"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { addMonths } from "date-fns"
 
 const USED_FOR_USER_INVITATION = "USED_FOR_USER_INVITATION"
 
 @Injectable()
 export class UserInvitationsService {
-	readonly repo: OrmRepository<User>
+	readonly repo: OrmRepository<UserModel>
 	constructor(
 		private repoManager: RepoManager,
 		private tokensService: SecurityTokensService, //
 		private usersService: UsersService, //
 	) {
-		this.repo = this.repoManager.getRepo(UserCollection)
+		this.repo = this.repoManager.getRepo(UserModel)
 	}
 
 	async acceptInvitation(params: ConfirmUserInvitationDto): Promise<{ email: string }> {

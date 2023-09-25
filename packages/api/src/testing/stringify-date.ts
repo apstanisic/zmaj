@@ -4,9 +4,7 @@ import { isDate } from "radash"
 
 const { flatten, unflatten } = flat
 
-export function fixTestDate<T>(
-	obj: T,
-): {
+export function fixTestDate<T>(obj: T): {
 	[key in keyof T]: T[key] extends Date | undefined | null ? string : T[key]
 } {
 	// const cloned = cloneDeep(obj)

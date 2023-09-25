@@ -1,5 +1,3 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { fixTestDate } from "@api/testing/stringify-date"
 import { UsersService } from "@api/users/users.service"
@@ -7,12 +5,13 @@ import { INestApplication } from "@nestjs/common"
 import {
 	ADMIN_ROLE_ID,
 	AuthSession,
-	AuthSessionCollection,
+	AuthSessionModel,
 	PublicAuthSession,
 	qsStringify,
 	times,
 	User,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { UserStub } from "@zmaj-js/test-utils"
 import { omit } from "radash"
 import supertest from "supertest"
@@ -26,7 +25,7 @@ const userAgentStub =
 describe("AuthSessionsController e2e", () => {
 	let app: INestApplication
 	//
-	let sessionRepo: OrmRepository<AuthSession>
+	let sessionRepo: OrmRepository<AuthSessionModel>
 	//
 	let usersService: UsersService
 	//
@@ -36,7 +35,7 @@ describe("AuthSessionsController e2e", () => {
 		app = await getE2ETestModule()
 
 		usersService = app.get(UsersService)
-		sessionRepo = app.get(RepoManager).getRepo(AuthSessionCollection)
+		sessionRepo = app.get(RepoManager).getRepo(AuthSessionModel)
 	})
 
 	afterAll(async () => {
@@ -64,7 +63,7 @@ describe("AuthSessionsController e2e", () => {
 	describe("GET /auth/sessions", () => {
 		it("should get user sessions", async () => {
 			const sessions = times(12, () =>
-				AuthSessionStub({ userId: user.id, userAgent: userAgentStub }),
+				omit(AuthSessionStub({ userId: user.id, userAgent: userAgentStub }), ["createdAt"]),
 			)
 			await sessionRepo.createMany({ data: sessions })
 
@@ -90,7 +89,7 @@ describe("AuthSessionsController e2e", () => {
 	describe("GET /auth/sessions/:id", () => {
 		it("should get session by id", async () => {
 			const session = await sessionRepo.createOne({
-				data: AuthSessionStub({ userId: user.id, userAgent: userAgentStub }),
+				data: omit(AuthSessionStub({ userId: user.id, userAgent: userAgentStub }), ["createdAt"]),
 			})
 
 			const res = await supertest(app.getHttpServer())
@@ -118,7 +117,7 @@ describe("AuthSessionsController e2e", () => {
 	describe("DELETE /auth/sessions/:id", () => {
 		it("should remove session by ID", async () => {
 			const session = await sessionRepo.createOne({
-				data: AuthSessionStub({ userId: user.id, userAgent: userAgentStub }),
+				data: omit(AuthSessionStub({ userId: user.id, userAgent: userAgentStub }), ["createdAt"]),
 			})
 
 			const res = await supertest(app.getHttpServer())

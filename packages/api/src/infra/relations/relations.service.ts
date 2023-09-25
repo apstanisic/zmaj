@@ -1,16 +1,14 @@
 import { throw400, throw404, throw500 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
-	RelationMetadata,
-	RelationMetadataCollection,
 	RelationCreateDto,
-	RelationUpdateDto,
 	RelationDef,
+	RelationMetadataModel,
+	RelationUpdateDto,
 	UUID,
 } from "@zmaj-js/common"
+import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { OnInfraChangeService } from "../on-infra-change.service"
 import { DirectRelationService } from "./direct-relations.service"
@@ -27,10 +25,10 @@ export class RelationsService {
 		private readonly directRelationsService: DirectRelationService,
 		private readonly mtmService: ManyToManyRelationsService,
 	) {
-		this.repo = this.repoManger.getRepo(RelationMetadataCollection)
+		this.repo = this.repoManger.getRepo(RelationMetadataModel)
 	}
 
-	private repo: OrmRepository<RelationMetadata>
+	private repo: OrmRepository<RelationMetadataModel>
 
 	ensureFreeProperty(collectionName: string, property: string): void {
 		const col = this.infraState.getCollection(collectionName)

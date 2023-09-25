@@ -2,6 +2,7 @@
 	"author": "Aleksandar Stanisic <aleksandar@tuta.io>",
 	"homepage": "https://github.com/apstanisic/zmaj#readme",
 	"license": "MIT",
+	"prettier": "../../.prettierrc.json",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/apstanisic/zmaj.git"
@@ -28,18 +29,18 @@
 		"typecheck": "tsc"
 	},
 	"dependencies": {
-		"@docusaurus/core": "2.4.0",
-		"@docusaurus/preset-classic": "2.4.0",
+		"@docusaurus/core": "2.4.3",
+		"@docusaurus/preset-classic": "2.4.3",
 		"@mdx-js/react": "^1.6.22",
 		"@zmaj-js/api": "workspace:*",
-		"clsx": "^1.2.1",
+		"clsx": "^2.0.0",
 		"prism-react-renderer": "^1.3.5",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2"
 	},
 	"devDependencies": {
-		"@docusaurus/module-type-aliases": "2.4.0",
-		"@tsconfig/docusaurus": "^1.0.7"
+		"@docusaurus/module-type-aliases": "2.4.3",
+		"@tsconfig/docusaurus": "^2.0.1"
 	},
 	"browserslist": {
 		"production": [

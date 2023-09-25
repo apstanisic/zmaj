@@ -1,12 +1,12 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { get, title } from "radash"
-import { memo, ReactNode } from "react"
+import { ReactNode, memo } from "react"
 import { ShowFieldProps } from "../../field-components/types/ShowFieldProps"
 import { DefaultShowField } from "./DefaultShowField"
 import { RenderShowField } from "./RenderShowField"
 
 type ManualShowFieldProps = {
-	Component?: (props: ShowFieldProps) => JSX.Element | null
+	Component?: (props: ShowFieldProps) => ReactNode
 } & Partial<ShowFieldProps> & {
 		source: string
 		render?: (props: ShowFieldProps) => ReactNode

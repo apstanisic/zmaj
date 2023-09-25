@@ -4,9 +4,9 @@ import { now } from "@common/utils/now"
 import { ModelSchema } from "@common/zod"
 import { v4 } from "uuid"
 import { z } from "zod"
-import { AuthSession } from "./auth-session.model"
+import { AuthSessionModel } from "./auth-session.model"
 
-export const AuthSessionSchema = ModelSchema<AuthSession>()(
+export const AuthSessionSchema = ModelSchema<AuthSessionModel>()(
 	z.object({
 		id: z.string().uuid().default(v4),
 		createdAt: z.date().default(now),

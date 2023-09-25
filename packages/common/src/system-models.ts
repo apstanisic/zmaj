@@ -1,0 +1,33 @@
+import {
+	ActivityLogModel,
+	AuthSessionModel,
+	CollectionMetadataModel,
+	DbMigrationModel,
+	FieldMetadataModel,
+	FileModel,
+	KeyValueModel,
+	PermissionModel,
+	RelationMetadataModel,
+	RoleModel,
+	SecurityTokenModel,
+	TranslationModel,
+	UserModel,
+	WebhookModel,
+} from "./modules"
+
+export const systemModels = [
+	UserModel,
+	RoleModel,
+	PermissionModel,
+	WebhookModel,
+	AuthSessionModel,
+	TranslationModel,
+	SecurityTokenModel,
+	KeyValueModel,
+	CollectionMetadataModel,
+	FieldMetadataModel,
+	FileModel,
+	ActivityLogModel,
+	RelationMetadataModel,
+	DbMigrationModel,
+] as const

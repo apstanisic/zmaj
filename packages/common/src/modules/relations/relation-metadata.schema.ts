@@ -1,10 +1,10 @@
 import { now } from "@common/utils/now"
-import { ModelSchema, DbFieldSchema } from "@common/zod"
+import { DbFieldSchema, ModelSchema } from "@common/zod"
 import { v4 } from "uuid"
 import { z } from "zod"
-import { RelationMetadata } from "./relation-metadata.model"
+import { RelationMetadataModel } from "./relation-metadata.model"
 
-export const RelationMetadataSchema = ModelSchema<RelationMetadata>()(
+export const RelationMetadataSchema = ModelSchema<RelationMetadataModel>()(
 	z.object({
 		id: z.string().uuid().default(v4),
 		createdAt: z.date().default(now),

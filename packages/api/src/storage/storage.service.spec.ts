@@ -9,9 +9,8 @@ import { StorageService } from "./storage.service"
 
 vi.mock("@zmaj-js/storage-s3")
 vi.mock("@zmaj-js/storage-core", async () => {
-	const actual = await vi.importActual<typeof import("@zmaj-js/storage-core")>(
-		"@zmaj-js/storage-core",
-	)
+	const actual =
+		await vi.importActual<typeof import("@zmaj-js/storage-core")>("@zmaj-js/storage-core")
 	return {
 		BaseStorage: actual.BaseStorage,
 		BaseStorageConfigSchema: actual.BaseStorageConfigSchema,

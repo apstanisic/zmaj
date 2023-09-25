@@ -60,6 +60,8 @@ tsconfig.tsbuildinfo
 /packages/*/dist/
 /packages/*/build/
 /examples/*/dist
+dist
+build
 
 # Uploaded files during dev
 /packages/api/files/
@@ -99,16 +101,6 @@ nohup.out
 *.jpg
 *.png
 *.svg
-
-# Using Rome for formating JS since it's a lot faster, so I ignore all js/ts files
-*.js
-*.jsx
-*.ts
-*.tsx
-*.mjs
-*.mts
-*.cjs
-*.cts
 
 # Do not format generated files
 pnpm-lock.yaml

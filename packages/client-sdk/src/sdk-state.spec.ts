@@ -1,6 +1,6 @@
 import { AuthUser } from "@zmaj-js/common"
 import { AuthUserStub } from "@zmaj-js/test-utils"
-import EventEmitter from "eventemitter3"
+import { EventEmitter } from "eventemitter3"
 import type { Writable } from "type-fest"
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest"
 import { SdkState } from "./sdk-state"

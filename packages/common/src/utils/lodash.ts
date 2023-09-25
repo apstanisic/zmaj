@@ -69,3 +69,11 @@ export function isBoolean(val: any): val is boolean {
 export function isError(err: any): err is Error {
 	return err instanceof Error
 }
+
+// https://stackoverflow.com/a/9310752
+// from lodash
+export function escapeRegExp(string: string): string {
+	const reRegExpChar = /[\\^$.*+?()[\]{}|]/g
+	const reHasRegExpChar = RegExp(reRegExpChar.source)
+	return reHasRegExpChar.test(string) ? string.replace(reRegExpChar, "\\$&") : string
+}

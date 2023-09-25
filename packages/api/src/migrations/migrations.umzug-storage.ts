@@ -1,7 +1,7 @@
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { Injectable } from "@nestjs/common"
-import { DbMigration, DbMigrationCollection } from "@zmaj-js/common"
+import { DbMigration, DbMigrationModel } from "@zmaj-js/common"
+import { OrmRepository } from "@zmaj-js/orm"
 import { SnakeCasedProperties } from "type-fest"
 import { MigrationParams, UmzugStorage } from "umzug"
 import { MigrationRunnerContext } from "./migrations.types"
@@ -16,9 +16,9 @@ export type SnakeCaseMigration = SnakeCasedProperties<DbMigration>
  */
 @Injectable()
 export class MigrationsUmzugStorage implements UmzugStorage<MigrationRunnerContext> {
-	repo: OrmRepository<DbMigration>
+	repo: OrmRepository<DbMigrationModel>
 	constructor(private repoManager: BootstrapRepoManager) {
-		this.repo = this.repoManager.getRepo(DbMigrationCollection)
+		this.repo = this.repoManager.getRepo(DbMigrationModel)
 	}
 
 	/**

@@ -1,26 +1,26 @@
 import { throw400, throw500 } from "@api/common/throw-http"
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionDef,
-	CollectionMetadata,
-	CollectionMetadataCollection,
+	CollectionMetadataModel,
 	CollectionMetadataSchema,
-	FieldMetadata,
-	FieldMetadataCollection,
+	FieldMetadataModel,
 	FieldMetadataSchema,
 	JunctionRelationCreateDto2,
 	RelationCreateDto,
 	RelationMetadata,
-	RelationMetadataCollection,
+	RelationMetadataModel,
 	RelationMetadataSchema,
 	zodCreate,
 } from "@zmaj-js/common"
+import {
+	AlterSchemaService,
+	OrmRepository,
+	RepoManager,
+	SchemaInfoService,
+	Transaction,
+} from "@zmaj-js/orm"
 import { v4 } from "uuid"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { InfraConfig } from "../infra.config"
@@ -34,14 +34,14 @@ export class CreateManyToManyRelationsService {
 		private infraState: InfraStateService,
 		private config: InfraConfig,
 	) {
-		this.relationsRepo = this.repoManager.getRepo(RelationMetadataCollection)
-		this.collectionsRepo = this.repoManager.getRepo(CollectionMetadataCollection)
-		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataCollection)
+		this.relationsRepo = this.repoManager.getRepo(RelationMetadataModel)
+		this.collectionsRepo = this.repoManager.getRepo(CollectionMetadataModel)
+		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataModel)
 	}
 
-	private relationsRepo: OrmRepository<RelationMetadata>
-	private collectionsRepo: OrmRepository<CollectionMetadata>
-	private fieldsRepo: OrmRepository<FieldMetadata>
+	private relationsRepo: OrmRepository<RelationMetadataModel>
+	private collectionsRepo: OrmRepository<CollectionMetadataModel>
+	private fieldsRepo: OrmRepository<FieldMetadataModel>
 
 	private async validateDtoWithSchema(dto: RelationCreateDto): Promise<JunctionRelationCreateDto2> {
 		const leftCol =
@@ -98,7 +98,7 @@ export class CreateManyToManyRelationsService {
 		collections: [CollectionDef, CollectionDef]
 	}): Promise<string> {
 		if (params.junctionTable) {
-			const exist = await this.schemaInfo.hasTable(params.junctionTable)
+			const exist = await this.schemaInfo.hasTable({ table: params.junctionTable })
 			if (exist) throw400(5392864, emsg.collectionExists(params.junctionTable))
 			return params.junctionTable
 		}
@@ -107,7 +107,7 @@ export class CreateManyToManyRelationsService {
 
 		for (let i = 1; i < 30; i++) {
 			const name = baseName + (i === 1 ? "" : `_${i}`)
-			const exist = await this.schemaInfo.hasTable(name)
+			const exist = await this.schemaInfo.hasTable({ table: name })
 			if (!exist) return name
 		}
 		return `${baseName}_${v4().substring(24)}`
@@ -135,7 +135,7 @@ export class CreateManyToManyRelationsService {
 			trx,
 		})
 
-		await this.alterSchema.createFk({
+		await this.alterSchema.createForeignKey({
 			fkTable: dto.junction.table,
 			fkColumn: dto.junction.left.column,
 			referencedTable: dto.left.table,
@@ -144,7 +144,7 @@ export class CreateManyToManyRelationsService {
 			trx,
 		})
 
-		await this.alterSchema.createFk({
+		await this.alterSchema.createForeignKey({
 			fkTable: dto.junction.table,
 			fkColumn: dto.junction.right.column,
 			referencedTable: dto.right.table,
@@ -172,7 +172,7 @@ export class CreateManyToManyRelationsService {
 
 		const mainRelation = await this.relationsRepo.createOne({
 			trx,
-			data: zodCreate(RelationMetadataSchema, {
+			data: zodCreate(RelationMetadataSchema.omit({ createdAt: true }), {
 				tableName: dto.left.table,
 				// collectionId,
 				fkName: dto.left.fkName,
@@ -187,7 +187,7 @@ export class CreateManyToManyRelationsService {
 			// const collectionId = this.infraState.findCollection(dto.rightTable)?.id ?? throw500(789532)
 			await this.relationsRepo.createOne({
 				trx,
-				data: zodCreate(RelationMetadataSchema, {
+				data: zodCreate(RelationMetadataSchema.omit({ createdAt: true }), {
 					tableName: dto.right.table,
 					// collectionId,
 					fkName: dto.right.fkName,
@@ -202,7 +202,7 @@ export class CreateManyToManyRelationsService {
 		await this.relationsRepo.createMany({
 			trx,
 			data: [
-				zodCreate(RelationMetadataSchema, {
+				zodCreate(RelationMetadataSchema.omit({ createdAt: true }), {
 					tableName: dto.junction.table,
 					// collectionId: junctionCollectionId,
 					fkName: dto.left.fkName,
@@ -210,7 +210,7 @@ export class CreateManyToManyRelationsService {
 					propertyName: dto.junction.left.propertyName,
 					template: dto.junction.left.template,
 				}),
-				zodCreate(RelationMetadataSchema, {
+				zodCreate(RelationMetadataSchema.omit({ createdAt: true }), {
 					tableName: dto.junction.table,
 					// collectionId: junctionCollectionId,
 					fkName: dto.right.fkName,
@@ -229,7 +229,7 @@ export class CreateManyToManyRelationsService {
 	): Promise<void> {
 		await this.collectionsRepo.createOne({
 			trx,
-			data: zodCreate(CollectionMetadataSchema, {
+			data: zodCreate(CollectionMetadataSchema.omit({ createdAt: true }), {
 				tableName: dto.junction.table,
 				collectionName: this.config.toCase(dto.junction.table),
 				hidden: true,
@@ -238,7 +238,7 @@ export class CreateManyToManyRelationsService {
 
 		await this.fieldsRepo.createOne({
 			trx,
-			data: zodCreate(FieldMetadataSchema, {
+			data: zodCreate(FieldMetadataSchema.omit({ createdAt: true }), {
 				columnName: "id",
 				tableName: dto.junction.table,
 				fieldName: "id",
@@ -247,7 +247,7 @@ export class CreateManyToManyRelationsService {
 
 		await this.fieldsRepo.createOne({
 			trx,
-			data: zodCreate(FieldMetadataSchema, {
+			data: zodCreate(FieldMetadataSchema.omit({ createdAt: true }), {
 				columnName: dto.junction.left.column,
 				tableName: dto.junction.table,
 				fieldName: this.config.toCase(dto.junction.left.column),
@@ -256,7 +256,7 @@ export class CreateManyToManyRelationsService {
 
 		await this.fieldsRepo.createOne({
 			trx,
-			data: zodCreate(FieldMetadataSchema, {
+			data: zodCreate(FieldMetadataSchema.omit({ createdAt: true }), {
 				columnName: dto.junction.right.column,
 				tableName: dto.junction.table,
 				fieldName: this.config.toCase(dto.junction.right.column),

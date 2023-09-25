@@ -1,16 +1,13 @@
+import { mixedColDef } from "@api/collection-to-model-config"
 import { ConfigModuleConfig } from "@api/config/config.config"
+import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { DatabaseConfig } from "@api/database/database.config"
-import { BootstrapRepoManager } from "@api/database/orm-specs/BootstrapRepoManager"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
-import { SequelizeAlterSchemaService } from "@api/sequelize/sequelize-alter-schema.service"
-import { SequelizeSchemaInfoService } from "@api/sequelize/sequelize-schema-info.service"
-import { SequelizeRepoManager } from "@api/sequelize/sequelize.repo-manager"
-import { SequelizeService } from "@api/sequelize/sequelize.service"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { getTestEnvValues } from "@api/testing/get-test-env-values"
-import { DbMigration, DbMigrationCollection, systemCollections, uuidRegex } from "@zmaj-js/common"
+import { DbMigration, DbMigrationModel, systemModels, uuidRegex } from "@zmaj-js/common"
+import { AlterSchemaService, RepoManager, SchemaInfoService, createModelsStore } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
+import { join } from "node:path"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { ConfigService } from "../config/config.service"
 import { type UserMigration } from "./migrations.types"
@@ -32,21 +29,29 @@ describe("MigrationsService e2e", () => {
 	let repoManager: BootstrapRepoManager
 	//
 	beforeAll(async () => {
-		getTestEnvValues()
+		const root = join(process.cwd(), "../..")
+		console.log({ root })
+
+		getTestEnvValues(root)
 		sq = new SequelizeService(
 			new DatabaseConfig(
 				{},
-				new ConfigService(new ConfigModuleConfig({ useEnvFile: true, envPath: ".env.test" })),
+				new ConfigService(
+					new ConfigModuleConfig({ useEnvFile: true, envPath: join(root, ".env.test") }),
+				),
 			),
+			console,
+			createModelsStore(),
 		)
-		await sq.init(systemCollections)
-		schemaInfo = new SequelizeSchemaInfoService(sq)
-		alterSchema = new SequelizeAlterSchemaService(sq, schemaInfo)
-		repoManager = new SequelizeRepoManager(sq)
+		sq.generateModels(mixedColDef([...systemModels]))
+		await sq.init()
+		schemaInfo = sq.schemaInfo
+		alterSchema = sq.alterSchema
+		repoManager = sq.repoManager
 	})
 	afterAll(async () => {
 		await alterSchema.dropTable({ tableName })
-		await repoManager.getRepo(DbMigrationCollection).deleteWhere({ where: {} })
+		await repoManager.getRepo(DbMigrationModel).deleteWhere({ where: {} })
 		await sq.onModuleDestroy()
 	})
 
@@ -65,11 +70,11 @@ describe("MigrationsService e2e", () => {
 			})
 			const migrations = await api
 				.get(RepoManager)
-				.getRepo(DbMigrationCollection)
+				.getRepo(DbMigrationModel)
 				.findWhere({ where: { type: "user" } })
 			await api.close()
 
-			const created = await schemaInfo.hasTable(tableName)
+			const created = await schemaInfo.hasTable({ table: tableName })
 			expect(created).toEqual(true)
 			expect(migrations).toEqual<DbMigration[]>([
 				{

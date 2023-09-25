@@ -13,7 +13,7 @@ import { OneToManyField } from "../../generator/one-to-many/OneToManyField"
  */
 export function RoleUsers(): JSX.Element {
 	const col = useCollectionContext()
-	const rel = col.relations["users" satisfies keyof Role]
+	const rel = col.relations["users"]
 	const role = useRecord<Role>()
 	if (!rel) return <></>
 

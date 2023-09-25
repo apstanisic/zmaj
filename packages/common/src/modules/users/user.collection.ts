@@ -1,12 +1,11 @@
-import { DefineCollection } from "@common/collection-builder/define-collection"
+import { codeCollection } from "@common/collection-builder/define-collection"
 import { zodCreate } from "@common/zod"
 import { LayoutConfigSchema } from "../infra-collections/layout/layout-config.schema"
 import { systemPermissions } from "../permissions"
 import { PUBLIC_ROLE_ID } from "../roles"
-import { User } from "./user.model"
+import { UserModel } from "./user.model"
 
-export const UserCollection = DefineCollection<User>({
-	tableName: "zmaj_users",
+export const UserCollection = codeCollection(UserModel, {
 	options: {
 		authzKey: systemPermissions.users.resource,
 		pkColumn: "id",
@@ -40,27 +39,14 @@ export const UserCollection = DefineCollection<User>({
 		}),
 	},
 	fields: {
-		id: { dataType: "uuid", columnName: "id", isPrimaryKey: true },
-		confirmedEmail: { dataType: "boolean", columnName: "confirmed_email", isNullable: false },
 		email: {
-			dataType: "short-text",
-			columnName: "email",
-			isNullable: false,
 			componentName: "email",
 		},
-		firstName: { dataType: "short-text", columnName: "first_name" },
-		lastName: { dataType: "short-text", columnName: "last_name" },
 		otpToken: {
-			canRead: false,
-			dataType: "short-text",
-			columnName: "otp_token",
 			fieldConfig: { createHidden: true, editHidden: true },
 		},
 		status: {
-			dataType: "short-text",
-			columnName: "status",
 			componentName: "dropdown",
-			isNullable: false,
 			dbDefaultValue: "disabled",
 			fieldConfig: {
 				component: {
@@ -78,59 +64,33 @@ export const UserCollection = DefineCollection<User>({
 			},
 		},
 		roleId: {
-			dataType: "uuid",
-			columnName: "role_id",
-			isNullable: false,
 			isForeignKey: true,
 			dbDefaultValue: PUBLIC_ROLE_ID,
-			hasDefaultValue: true,
-		},
-		// photoUrl: {
-		//   dataType: "long-text",
-		//   columnName: "photo_url",
-		//   fieldConfig: { showHidden: true, editHidden: true, createHidden: true },
-		// },
-		// passwordExpiresAt: { dataType: "datetime", columnName: "password_expires_at" },
-		createdAt: {
-			dataType: "datetime",
-			columnName: "created_at",
-			canUpdate: false,
-			canCreate: false,
-			// beforeCreate: ["CURRENT_DATE"],
-		},
-		password: {
-			dataType: "short-text",
-			columnName: "password",
-			canCreate: true,
-			canUpdate: false,
-			canRead: false,
-			// fieldConfig: {}
-			componentName: "password",
 		},
 	},
 	relations: {
 		authSessions: {
-			hidden: true,
-			thisColumnName: "id",
-			otherColumnName: "user_id",
+			otherColumnName: "userId",
 			otherTableName: "zmaj_auth_sessions",
+			thisColumnName: "id",
 			type: "one-to-many",
+			hidden: true,
 			otherPropertyName: "user",
 		},
 		files: {
-			hidden: true,
-			thisColumnName: "id",
-			otherColumnName: "user_id",
+			otherColumnName: "userId",
 			otherTableName: "zmaj_files",
+			thisColumnName: "id",
 			type: "one-to-many",
+			hidden: true,
 			otherPropertyName: "user",
 		},
 		role: {
-			thisColumnName: "role_id",
-			label: "Role",
 			otherColumnName: "id",
 			otherTableName: "zmaj_roles",
+			thisColumnName: "role_id",
 			type: "many-to-one",
+			label: "Role",
 			otherPropertyName: "user",
 		},
 	},

@@ -1,6 +1,6 @@
 import { merge } from "@zmaj-js/common"
-import { ConfigureAppParams } from "./app/configure-app-params.type"
 import { hoursToMilliseconds } from "date-fns"
+import { ConfigureAppParams } from "./app/configure-app-params.type"
 
 const defaultUserConfig: ConfigureAppParams = {
 	authentication: {
@@ -44,7 +44,7 @@ const devConfig: ConfigureAppParams = merge(defaultUserConfig, {
 } as ConfigureAppParams)
 
 const testConfig: ConfigureAppParams = merge(devConfig, {
-	config: { envPath: ".env.test", throwOnNoEnvFile: true },
+	config: { envPath: ".env.test", throwOnNoEnvFile: false },
 	global: { log: ["warn", "error"] },
 	database: { logging: false },
 	migrations: { autoRunMigrations: false },

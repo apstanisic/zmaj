@@ -1,5 +1,6 @@
 import { shortTextDbColumnValidation } from "@admin-panel/shared/db-column-form-validation"
-import { allColumnDataTypes, ignoreErrors, times } from "@zmaj-js/common"
+import { ignoreErrors, times } from "@zmaj-js/common"
+import { columnTypes } from "@zmaj-js/orm"
 import { memo, useMemo } from "react"
 import { useWatch } from "react-hook-form"
 import { useActionContext } from "../../../context/action-context"
@@ -57,7 +58,9 @@ const Step1 = memo(() => {
 				fieldConfig={{
 					component: {
 						dropdown: {
-							choices: allColumnDataTypes.map((type) => ({ value: type })),
+							choices: columnTypes
+								.filter((t) => !t.startsWith("array"))
+								.map((type) => ({ value: type })),
 						},
 					},
 				}}

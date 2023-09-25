@@ -1,11 +1,10 @@
-import { OrmRepository } from "@api/database/orm-specs/OrmRepository"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { InfraService } from "@api/infra/infra.service"
 import { buildTestModule } from "@api/testing/build-test-module"
-import { CollectionMetadata } from "@zmaj-js/common"
+import { CollectionMetadataModel } from "@zmaj-js/common"
+import { OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import {
-	allMockCollectionMetadata,
 	CollectionMetadataStub,
+	allMockCollectionMetadata,
 	mockCollectionConsts,
 } from "@zmaj-js/test-utils"
 import { v4 } from "uuid"
@@ -16,7 +15,7 @@ describe("InfraSchemaCollectionsSyncService ", () => {
 	let service: InfraSchemaCollectionsSyncService
 	let infraS: InfraService
 	let schemaS: SchemaInfoService
-	let repo: OrmRepository<CollectionMetadata>
+	let repo: OrmRepository<CollectionMetadataModel>
 
 	beforeEach(async () => {
 		const module = await buildTestModule(InfraSchemaCollectionsSyncService).compile()

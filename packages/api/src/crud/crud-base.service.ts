@@ -1,21 +1,12 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
 import { throw400, throw403, throw404, throw500 } from "@api/common/throw-http"
-import { RepoManager } from "@api/database/orm-specs/RepoManager"
-import { Transaction } from "@api/database/orm-specs/Transaction"
+import { Filter } from "@api/common/types"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { ForbiddenException, HttpException, Injectable, Logger } from "@nestjs/common"
 import { EventEmitter2 } from "@nestjs/event-emitter"
-import {
-	CollectionDef,
-	Filter,
-	isError,
-	isIdType,
-	isNil,
-	isStruct,
-	notNil,
-	Struct,
-} from "@zmaj-js/common"
+import { CollectionDef, Struct, isError, isIdType, isNil, isStruct, notNil } from "@zmaj-js/common"
+import { RepoManager, Transaction } from "@zmaj-js/orm"
 import { isEmpty, omit } from "radash"
 import { PartialDeep } from "type-fest"
 import {
@@ -26,7 +17,7 @@ import {
 	ReadBeforeEvent,
 } from "./crud-event.types"
 import { CrudConfig } from "./crud.config"
-import { getCrudEmitKey, GetEmitKeyParams } from "./get-crud-emit-key"
+import { GetEmitKeyParams, getCrudEmitKey } from "./get-crud-emit-key"
 
 /**
  * Base CRUD service that provides basic functionality to extending services
@@ -105,6 +96,7 @@ export class CrudBaseService<Item extends Struct> {
 
 		// User is trying to filter by unknown property
 		const isUnknownFieldError = error.message.toLowerCase().endsWith("does not exist")
+		if (isUnknownFieldError) console.log(error)
 
 		if (isUnknownFieldError) throw400(901732, emsg.noProperty)
 
@@ -142,7 +134,9 @@ export class CrudBaseService<Item extends Struct> {
 		}
 		const queryFilter = this.filterToWhere(event.filter, event.collection)
 
-		return { $and: [queryFilter, authzFilter].filter(notNil).filter((v) => !isEmpty(v)) }
+		return {
+			$and: [queryFilter, authzFilter].filter(notNil).filter((v): v is Filter => !isEmpty(v)),
+		}
 	}
 
 	protected getAllowedData(event: CrudAfterEvent<Item>): PartialDeep<Item>[] {
@@ -173,7 +167,7 @@ export class CrudBaseService<Item extends Struct> {
 	 * @throws if collection does not exist
 	 * @returns Relevant collection
 	 */
-	protected getCollection(tableOrCollection?: string | CollectionDef<Item>): CollectionDef<Item> {
+	protected getCollection(tableOrCollection?: string | CollectionDef): CollectionDef {
 		if (tableOrCollection === undefined) throw500(96233562)
 		if (typeof tableOrCollection !== "string") return tableOrCollection
 
@@ -181,7 +175,7 @@ export class CrudBaseService<Item extends Struct> {
 			this.infraState.getCollection(tableOrCollection) ?? throw404(97767, emsg.recordNotFound)
 		// don't allow disabled ext
 		if (col.disabled) throw404(73829, emsg.recordNotFound)
-		return col as CollectionDef<Item>
+		return col as CollectionDef
 	}
 
 	/**
@@ -216,10 +210,7 @@ export class CrudBaseService<Item extends Struct> {
 		return cloned
 	}
 
-	protected filterToWhere(
-		filter: ReadBeforeEvent<Item>["filter"],
-		col: CollectionDef<Item>,
-	): Struct {
+	protected filterToWhere(filter: ReadBeforeEvent<Item>["filter"], col: CollectionDef): Struct {
 		if (filter.type === "ids" && isEmpty(filter.ids)) throw400(3689292, emsg.invalidPayload)
 		if (filter.type === "id" && !isIdType(filter.id)) throw400(965323, emsg.invalidPayload)
 

@@ -22,7 +22,7 @@ export default defineConfig({
 	fullyParallel: true,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env["CI"],
-	/* Retry on CI only */
+	/* Retry once both on CI and local */
 	retries: process.env["CI"] ? 1 : 1,
 	/* Opt out of parallel tests on CI. */
 	workers: process.env["CI"] ? 1 : undefined,
@@ -42,12 +42,13 @@ export default defineConfig({
 		launchOptions: { slowMo: 50 },
 	},
 	/* Global setup */
-	globalSetup: `${e2ePackage}/playwright-setup`,
+	globalSetup: `${e2ePackage}/setup/playwright-setup`,
 
 	/* Configure projects for major browsers */
 	projects: [
 		{ name: "chromium", use: { ...devices["Desktop Chrome"] } },
-		{ name: "webkit", use: { ...devices["Desktop Safari"] } },
+		// TODO Return this
+		// { name: "webkit", use: { ...devices["Desktop Safari"] } },
 		// Comment out until this issues are resolved
 		// https://github.com/microsoft/playwright/issues/20993
 		// https://github.com/microsoft/playwright/issues/21995
@@ -57,25 +58,3 @@ export default defineConfig({
 	// Limit the number of failures on CI to save resources
 	maxFailures: process.env["CI"] ? 10 : undefined,
 })
-
-/**
- * Config to use to record videos for docs
- */
-// const recordConfig: PlaywrightTestConfig = {
-// 	...config,
-// 	/* Maximum time one test can run for. Set to 10 min */
-// 	timeout: 600 * 1000,
-// 	use: {
-// 		...config.use,
-// 		// slow down, so user can see what is happening
-// 		launchOptions: { ...config.use?.launchOptions, slowMo: 1000 },
-// 		// record video
-// 		video: { mode: "on" },
-// 	},
-// 	// only chromium. No need to record for all
-// 	projects: [config.projects!.filter((p) => p.name === "chromium")[0]!],
-// }
-
-// const toExport = process.env["ZMAJ_RECORD_PW_DOCS"] !== "true" ? config : recordConfig
-
-// export default toExport

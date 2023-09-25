@@ -1,5 +1,3 @@
-import { AlterSchemaService } from "@api/database/schema/alter-schema.service"
-import { SchemaInfoService } from "@api/database/schema/schema-info.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import {
 	BadRequestException,
@@ -13,6 +11,7 @@ import {
 	RelationDef,
 	makeWritable,
 } from "@zmaj-js/common"
+import { AlterSchemaService, SchemaInfoService } from "@zmaj-js/orm"
 import { CollectionDefStub, RelationDefStub, RelationMetadataStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InfraStateService } from "../infra-state/infra-state.service"
@@ -238,7 +237,7 @@ describe("DirectRelationsService", () => {
 			service["repo"].createOne = createOne
 			service["fieldsRepo"].createOne = createOneField
 			alterSchemaService.createColumn = vi.fn()
-			alterSchemaService.createFk = vi.fn()
+			alterSchemaService.createForeignKey = vi.fn()
 		})
 
 		it("should create unique column if relation is one-to-one", async () => {
@@ -262,7 +261,7 @@ describe("DirectRelationsService", () => {
 				unique: false,
 				trx: "TEST_TRX",
 			})
-			expect(alterSchemaService.createFk).toBeCalledWith({
+			expect(alterSchemaService.createForeignKey).toBeCalledWith({
 				fkColumn: "comment_id",
 				fkTable: "posts",
 				onDelete: "CASCADE",
@@ -333,7 +332,7 @@ describe("DirectRelationsService", () => {
 				// fkColumn: "fk_column",
 			})
 			service["repo"].deleteWhere = deleteWhere
-			alterSchemaService.dropFk = vi.fn()
+			alterSchemaService.dropForeignKey = vi.fn()
 		})
 		//
 
@@ -355,7 +354,7 @@ describe("DirectRelationsService", () => {
 
 		it("should remove fk from schema", async () => {
 			await service.deleteRelation(relation)
-			expect(alterSchemaService.dropFk).toBeCalledWith({
+			expect(alterSchemaService.dropForeignKey).toBeCalledWith({
 				fkColumn: "fk_column",
 				fkTable: "fk_table",
 				indexName: "hello",

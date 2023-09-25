@@ -1,4 +1,5 @@
 import { throw403, throw404, throw500 } from "@api/common/throw-http"
+import { Filter } from "@api/common/types"
 import type {
 	CrudDeleteParams,
 	DeleteAfterEvent,
@@ -8,7 +9,8 @@ import type {
 } from "@api/crud/crud-event.types"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
-import { Filter, IdType, Struct } from "@zmaj-js/common"
+import { Struct } from "@zmaj-js/common"
+import { IdType } from "@zmaj-js/orm"
 import { Except, ReadonlyDeep } from "type-fest"
 import { CrudBaseService } from "./crud-base.service"
 
@@ -28,7 +30,7 @@ export class CrudDeleteService<Item extends Struct = Struct> extends CrudBaseSer
 	async deleteWhere(params: CrudDeleteParams<Item>): Promise<Partial<Item>[]> {
 		const { trx } = params
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection)
+		const repo = this.repoManager.getRepo(collection.collectionName)
 
 		const afterEmit1 = await this.emit<DeleteBeforeEvent<Item>>(
 			{ ...params, collection, action: "delete", type: "before" }, //
