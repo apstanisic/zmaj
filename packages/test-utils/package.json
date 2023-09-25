@@ -41,7 +41,7 @@
 		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
 	},
 	"dependencies": {
-		"@ngneat/falso": "^7.1.0",
+		"@ngneat/falso": "^7.1.1",
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/orm": "workspace:*",
 		"date-fns": "^2.30.0",

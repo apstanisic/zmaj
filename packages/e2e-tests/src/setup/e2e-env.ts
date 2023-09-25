@@ -2,7 +2,6 @@
 import dotenv from "dotenv"
 import { ExecaChildProcess, execa } from "execa"
 import { dirname, join } from "node:path"
-import { env } from "node:process"
 import { fileURLToPath } from "node:url"
 import { z } from "zod"
 import { e2eConfigSchema } from "./e2eConfigSchema.js"
@@ -24,5 +23,5 @@ export function initTestProcessEnv(): z.infer<typeof e2eConfigSchema> {
 }
 
 export function runMake(...params: string[]): ExecaChildProcess<string> {
-	return execa("make", [...params], { cwd: repoRoot, env })
+	return execa("make", [...params], { cwd: repoRoot, env: process.env })
 }
