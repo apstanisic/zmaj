@@ -25,7 +25,6 @@ describe.sequential.each(exampleProjects)(
 	'Testing example project "%s"',
 	(exampleName) => {
 		const projectPath = join(rootFolder, "examples", exampleName)
-		const port = 17100
 
 		beforeEach(async () => {
 			writeExampleEnvFile(projectPath)
