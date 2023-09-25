@@ -90,7 +90,5 @@ export async function waitForDatabase(): Promise<void> {
 
 export function writeExampleEnvFile(folder: string): void {
 	const envPath = join(folder, ".env")
-	console.log({ envPath })
-
 	writeFileSync(envPath, serializedEnv, { encoding: "utf-8" })
 }
