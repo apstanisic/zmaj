@@ -16,7 +16,7 @@
 		"test-unit": "vitest run",
 		"test-e2e-api": "npx turbo test-e2e-api",
 		"test-e2e-gui": "pnpm --filter '@zmaj-js/e2e-tests' test-gui",
-		"test-packaging": "cd scripts && vitest run test-packaging.spec.mts",
+		"test-packaging": "npx turbo test-packaging",
 		"dev": "npx mprocs",
 		"bump-version": "lerna version --sync-workspace-lock",
 		"publish-packages": "pnpm publish --r --access=public",
