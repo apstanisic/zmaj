@@ -39,7 +39,7 @@ test("Update Permission", async ({
 
 	await permissionPage.hasToast("Permissions successfully updated")
 
-	expect(async () => {
+	await expect(async () => {
 		const updated = await permissionFx.findPermission(permissionItem.id)
 		expect(updated).toMatchObject({
 			fields: null,
