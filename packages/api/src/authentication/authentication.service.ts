@@ -5,7 +5,7 @@ import { emsg } from "@api/errors"
 import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
-import { AuthUser, isEmail, SignInDto, SignInResponse, UserWithSecret } from "@zmaj-js/common"
+import { AuthUser, SignInDto, SignInResponse, UserWithSecret, isEmail } from "@zmaj-js/common"
 import { isString } from "radash"
 import { v4 } from "uuid"
 import { AuthSessionsService } from "./auth-sessions/auth-sessions.service"
@@ -61,7 +61,8 @@ export class AuthenticationService {
 		// verify mfa if exists
 		await this.verifyOtp(user, dto.otpToken)
 		// check if role requires mfa
-		if (this.authzService.roleRequireMfa(user.roleId) && !user.otpToken) {
+		const requireMfa = await this.authzService.roleRequireMfa(AuthUser.fromUser(user))
+		if (requireMfa && !user.otpToken) {
 			return { status: "must-create-mfa", data: await this.mfa.generateParamsToEnable(dto.email) }
 		}
 		// sign in user

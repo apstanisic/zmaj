@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common"
 import { ZodDto } from "@zmaj-js/common"
 import { z } from "zod"
 import { MODULE_OPTIONS_TOKEN } from "./authorization.module-definition"
-import { AuthzConditionTransformer } from "./condition-transformer.type"
+import { AuthzConditionTransformer } from "./db-authorization/condition-transformers/condition-transformer.type"
 
 const Schema = z.object({
 	/**

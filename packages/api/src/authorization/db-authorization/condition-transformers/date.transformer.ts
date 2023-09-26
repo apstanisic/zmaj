@@ -1,7 +1,7 @@
 import { throw500 } from "@api/common/throw-http"
 import { intRegex } from "@zmaj-js/common"
 import { fromUnixTime } from "date-fns"
-import { AuthzConditionTransformer } from "../condition-transformer.type"
+import { AuthzConditionTransformer } from "./condition-transformer.type"
 
 /**
  * Convert string date to date object so it can be compared

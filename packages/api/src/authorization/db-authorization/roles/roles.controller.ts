@@ -10,16 +10,16 @@ import { Controller, Delete, Get, Post, Put } from "@nestjs/common"
 import {
 	ADMIN_ROLE_ID,
 	Data,
-	endpoints as allEndpoints,
 	PUBLIC_ROLE_ID,
 	Role,
 	RoleCollection,
 	RoleCreateDto,
 	RoleSchema,
 	RoleUpdateDto,
+	endpoints as allEndpoints,
 } from "@zmaj-js/common"
 import { PartialDeep } from "type-fest"
-import { SetSystemPermission } from "../set-system-permission.decorator"
+import { SetSystemPermission } from "../../set-system-permission.decorator"
 
 const { roles: endpoints } = allEndpoints
 

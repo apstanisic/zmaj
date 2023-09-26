@@ -15,7 +15,7 @@ import {
 } from "@zmaj-js/common"
 import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { v4 } from "uuid"
-import { OnCrudEvent } from "../crud/on-crud-event.decorator"
+import { OnCrudEvent } from "../../crud/on-crud-event.decorator"
 
 /**
  * Service that keeps roles in permissions in memory so we can have easy access

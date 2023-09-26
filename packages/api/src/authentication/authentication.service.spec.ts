@@ -1,9 +1,10 @@
+import { AuthorizationService } from "@api/authorization/authorization.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { UsersService } from "@api/users/users.service"
 import { BadRequestException, ForbiddenException, UnauthorizedException } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import { TestingModule } from "@nestjs/testing"
-import { asMock, AuthUser, SignInDto, User, UserWithSecret, uuidRegex } from "@zmaj-js/common"
+import { AuthUser, SignInDto, User, UserWithSecret, asMock, uuidRegex } from "@zmaj-js/common"
 import { AuthUserStub, UserStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { AuthSessionStub } from "./auth-sessions/auth-session.stub"
@@ -12,7 +13,6 @@ import { AuthenticationConfig } from "./authentication.config"
 import { AuthenticationService } from "./authentication.service"
 import { MfaService } from "./mfa/mfa.service"
 import { SignUpService } from "./sign-up/sign-up.service"
-import { AuthorizationService } from "@api/authorization/authorization.service"
 
 describe("AuthenticationService", () => {
 	let module: TestingModule
@@ -72,7 +72,7 @@ describe("AuthenticationService", () => {
 				accessToken: "my_at",
 				refreshToken: "my_rt",
 			}))
-			authzService.roleRequireMfa = vi.fn(() => false)
+			authzService.roleRequireMfa = vi.fn(async () => false)
 
 			// service.verifyOtp = vi.fn(async () => {})
 			jwtService.signAsync = vi.fn().mockResolvedValue("jwt-token")
@@ -120,7 +120,7 @@ describe("AuthenticationService", () => {
 		})
 
 		it("should return info that role requires mfa enabled with data to enable it", async () => {
-			vi.mocked(authzService.roleRequireMfa).mockReturnValue(true)
+			vi.mocked(authzService.roleRequireMfa).mockResolvedValue(true)
 			const res = await service.emailAndPasswordSignIn(dto, { ip, userAgent })
 			expect(res).toEqual({ status: "must-create-mfa", data: expect.any(Object) })
 		})

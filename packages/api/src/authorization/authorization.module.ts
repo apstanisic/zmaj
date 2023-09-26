@@ -3,22 +3,16 @@ import { AuthorizationConfig } from "./authorization.config"
 import { AuthorizationController } from "./authorization.controller"
 import { ConfigurableModuleClass } from "./authorization.module-definition"
 import { AuthorizationService } from "./authorization.service"
-import { AuthorizationState } from "./authorization.state"
-import { PermissionsModule } from "./permissions/permissions.module"
-import { RolesModule } from "./roles/roles.module"
+import { DbAuthorizationModule } from "./db-authorization/db-authorization.module"
+import { DbAuthorizationRules } from "./db-authorization/db-authorization.rules"
 
 export type { AuthorizationParams } from "./authorization.config"
 
 @Global()
 @Module({
-	imports: [RolesModule, PermissionsModule],
+	imports: [DbAuthorizationModule],
 	controllers: [AuthorizationController],
-	providers: [
-		AuthorizationService,
-		AuthorizationState,
-		AuthorizationConfig,
-		// { provide: APP_GUARD, useClass: AuthorizationGuard,  },
-	],
-	exports: [AuthorizationService],
+	providers: [AuthorizationService, AuthorizationConfig, DbAuthorizationRules],
+	exports: [AuthorizationService, AuthorizationConfig],
 })
 export class AuthorizationModule extends ConfigurableModuleClass {}

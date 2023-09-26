@@ -2,7 +2,7 @@ import { throw500 } from "@api/common/throw-http"
 import { addMilliseconds } from "date-fns"
 import ms from "ms"
 import { isInt } from "radash"
-import { AuthzConditionTransformer } from "../condition-transformer.type"
+import { AuthzConditionTransformer } from "./condition-transformer.type"
 
 export const currentDateTransformer: AuthzConditionTransformer<Date> = {
 	key: "CURRENT_DATE",

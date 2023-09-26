@@ -2,39 +2,24 @@ import { Fields } from "@api/common"
 import { throw403, throw500 } from "@api/common/throw-http"
 import { emsg } from "@api/errors"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
-import {
-	AbilityBuilder,
-	AnyMongoAbility,
-	createAliasResolver,
-	createMongoAbility,
-	defineAbility,
-} from "@casl/ability"
+import { AnyMongoAbility, defineAbility } from "@casl/ability"
 import { Injectable } from "@nestjs/common"
 import {
 	ADMIN_ROLE_ID,
 	AllowedAction,
 	AuthUser,
 	CollectionDef,
-	FLAT_DELIMITER,
-	PUBLIC_ROLE_ID,
-	Permission,
 	Struct,
+	castArray,
 	getSystemPermission,
 	isNil,
 	isPrimitiveDbValue,
-	isStruct,
 	systemPermissions,
 } from "@zmaj-js/common"
-import flat from "flat"
 import { isEmpty, isString } from "radash"
 import { PartialDeep } from "type-fest"
-import { v4 } from "uuid"
 import { AuthorizationConfig } from "./authorization.config"
-import { AuthorizationState } from "./authorization.state"
-import { AuthzConditionTransformer } from "./condition-transformer.type"
-import { builtInTransformers } from "./condition-transformers"
-
-const { flatten, unflatten } = flat
+import { DbAuthorizationRules } from "./db-authorization/db-authorization.rules"
 
 type Action = "create" | "read" | "update" | "delete" | string
 type Resource = string | CollectionDef
@@ -61,10 +46,6 @@ type PickFieldsParams<T extends Struct = Struct> = Pick<
 	fields?: Fields<T>
 }
 
-const resolveAction = createAliasResolver({
-	modify: ["update", "delete", "create"],
-})
-
 const allAllowed = defineAbility((can) => can("manage", "all"))
 
 /**
@@ -73,31 +54,18 @@ const allAllowed = defineAbility((can) => can("manage", "all"))
  */
 @Injectable()
 export class AuthorizationService {
-	private cache = {
-		version: v4(),
-		values: new Map<string, AnyMongoAbility>(),
-	}
-
-	/**
-	 * Transformers that will be run
-	 * Since it's property, we can easily push to add custom transformers, and is easier to test
-	 */
-	private readonly conditionTransformers: AuthzConditionTransformer[]
-
 	/**
 	 * @param authzState Used for access to roles, permissions
 	 * @param infraState
 	 */
 	constructor(
-		private readonly authzState: AuthorizationState,
 		private readonly infraState: InfraStateService,
 		private readonly config: AuthorizationConfig,
-	) {
-		this.conditionTransformers = [...builtInTransformers, ...config.customConditionTransformers]
-	}
+		private readonly authRules: DbAuthorizationRules,
+	) {}
 
-	roleRequireMfa(roleId: string): boolean {
-		return this.authzState.roles.find((r) => r.id === roleId)?.requireMfa ?? false
+	async roleRequireMfa(user: AuthUser): Promise<boolean> {
+		return this.authRules.requireMfa(user)
 	}
 
 	/**
@@ -201,10 +169,15 @@ export class AuthorizationService {
 
 		// this.checkSystem("account", "readPermissions", { user }) || throw403(89234)
 
+		return this.getRules(user).rules.map((rule) => ({
+			action: rule.action,
+			fields: rule.fields === undefined ? null : castArray(rule.fields),
+			resource: rule.subject,
+		}))
 		// all permissions that are tied to current role
-		return this.authzState.permissions
-			.filter((p) => p.roleId === (user?.roleId ?? PUBLIC_ROLE_ID))
-			.map((p) => ({ fields: p.fields, action: p.action, resource: p.resource }))
+		// return this.authzState.permissions
+		// 	.filter((p) => p.roleId === (user?.roleId ?? PUBLIC_ROLE_ID))
+		// 	.map((p) => ({ fields: p.fields, action: p.action, resource: p.resource }))
 	}
 
 	/**
@@ -373,113 +346,8 @@ export class AuthorizationService {
 	 * @returns Rules that user is allowed
 	 */
 	getRules(user?: AuthUser): AnyMongoAbility {
-		// if disabled, simply allow everything
+		// if authz is disabled, return rule that allows everything
 		if (this.config.disable) return allAllowed
-		if (user?.roleId === ADMIN_ROLE_ID) return allAllowed
-
-		// Cache invalidation here
-		if (this.cache.version !== this.authzState.cacheVersion) {
-			this.cache.version = this.authzState.cacheVersion
-			this.cache.values.clear()
-		}
-
-		// get value from cache if exist
-		const fromCache = this.cache.values.get(user?.userId ?? "public")
-		if (fromCache) return fromCache
-
-		// no cache
-
-		const abilities = new AbilityBuilder(createMongoAbility)
-		// Users's role ID, or public role for non registered users
-		const roleId = user?.roleId ?? PUBLIC_ROLE_ID
-
-		// Only permissions for current role
-		const relevantPermissions = this.authzState.permissions.filter((p) => p.roleId === roleId)
-
-		// buildAuthorization(
-		//   relevantPermissions.map((permission) => ({
-		//     ...permission,
-		//     conditions: this.injectDynamicValues({ user, permission }),
-		//   })),
-		// )
-		for (const permission of relevantPermissions) {
-			// If no field is allowed, don't add permission
-			if (permission.fields && permission.fields.length === 0) continue
-
-			// Parsed conditions with dynamic values
-			const conditions = this.injectDynamicValues({ user, permission })
-
-			// fields are readonly, so we have to copy the array, since abilities requires mutable array
-			abilities.can(
-				permission.action,
-				// TODO This prevents user from having table named all
-				// This prevents user from naming collection "all" and gaining access to everything
-				permission.resource === "all" ? "collections.all" : permission.resource,
-				// convert readonly version to normal array, since it's required by casl
-				// this is for ts mostly. If it's undefined all fields are allowed
-				permission.fields?.concat() ?? undefined,
-				conditions,
-			)
-		}
-
-		const result = abilities.build({
-			detectSubjectType: (data) => data["__caslType"],
-			resolveAction,
-		})
-		// cache value
-		this.cache.values.set(user?.userId ?? "public", result)
-		return result
-	}
-
-	/**
-	 * Inject runtime values to condition
-	 *
-	 * Because conditions are serialized, we have to convert placeholders to real value.
-	 * We can't store if conditions in database, so we have to use transformer.
-	 * For example: $CURRENT_TIME to new Date(), $CURRENT_USER for current user id
-	 *
-	 * For example, it transforms bellow condition:
-	 * ```js
-	 * { createdAt: { $lte: '$CURRENT_DATE:2d' } // from
-	 * { createdAt: { $lte: new Date() + "add 2 days" } // to
-	 * ```
-	 */
-	private injectDynamicValues({
-		user,
-		permission,
-	}: {
-		permission: Readonly<Permission>
-		user?: AuthUser
-	}): Struct {
-		const delimiter = FLAT_DELIMITER
-		const conditions = permission.conditions ?? {}
-		if (!isStruct(conditions)) throw500(3992)
-		const flatConditions = flatten<Struct, Struct>(conditions, { delimiter })
-
-		for (const [key, value] of Object.entries(flatConditions)) {
-			if (typeof value !== "string") continue
-
-			if (value.startsWith("_$")) {
-				flatConditions[key] = value.substring(1)
-				continue
-			}
-
-			if (!value.startsWith("$")) continue
-
-			const transformer = this.conditionTransformers.find((hook) =>
-				`${value}`.startsWith("$" + hook.key),
-			)
-			// Should we throw here?
-			// Transformer could be removed and then invalid value will be returned
-			if (!transformer) throw500(4837268)
-			// if (!transformer) continue
-
-			// It will return everything after ":", or undefined if there is no ":"
-			const modifier = `${value}`.split(":")[1]
-
-			flatConditions[key] = transformer.transform({ user, modifier })
-		}
-
-		return unflatten<Struct, Struct>(flatConditions, { delimiter })
+		return this.authRules.getRules(user)
 	}
 }
