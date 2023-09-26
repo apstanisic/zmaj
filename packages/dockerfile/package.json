@@ -15,7 +15,7 @@
 	},
 	"type": "module",
 	"name": "@zmaj-js/dockerfile",
-	"version": "0.2.3",
+	"version": "0.3.0",
 	"eslintConfig": {
 		"extends": "../../.eslintrc.cjs"
 	},

@@ -15,7 +15,7 @@
 	},
 	"type": "module",
 	"name": "@zmaj-js/api",
-	"version": "0.2.3",
+	"version": "0.3.0",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
@@ -119,6 +119,6 @@
 		"@types/qrcode": "^1.5.2",
 		"@types/sharp": "^0.31.1",
 		"@types/ua-parser-js": "^0.7.37",
-		"@zmaj-js/test-utils": "workspace:^0.2.2"
+		"@zmaj-js/test-utils": "workspace:^0.3.0"
 	}
 }

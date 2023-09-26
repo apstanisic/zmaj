@@ -16,7 +16,7 @@
 	"type": "module",
 	"private": true,
 	"name": "@zmaj-js/orm-playground",
-	"version": "0.2.2",
+	"version": "0.3.0",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
