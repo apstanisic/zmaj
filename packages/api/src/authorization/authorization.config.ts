@@ -14,6 +14,10 @@ const Schema = z.object({
 	 * Disable authorization
 	 */
 	disable: z.boolean().default(false),
+	/**
+	 * @deprecated Should I allow this? It's useful for custom transformers,
+	 * but I think there must be better way
+	 */
 	customConditionTransformers: z.array(z.custom<AuthzConditionTransformer>()).default([]),
 })
 

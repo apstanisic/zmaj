@@ -4,16 +4,13 @@ import { Cron, CronExpression } from "@nestjs/schedule"
 import {
 	ADMIN_ROLE_ID,
 	PUBLIC_ROLE_ID,
-	Permission,
 	PermissionCollection,
-	PermissionModel,
-	Role,
 	RoleCollection,
 	RoleModel,
 	RoleSchema,
 	zodCreate,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { OrmRepository, RepoManager, ReturnedProperties } from "@zmaj-js/orm"
 import { v4 } from "uuid"
 import { OnCrudEvent } from "../../crud/on-crud-event.decorator"
 
@@ -27,18 +24,14 @@ import { OnCrudEvent } from "../../crud/on-crud-event.decorator"
 export class AuthorizationState implements OnModuleInit {
 	/** Current version of roles and permissions */
 	cacheVersion = v4()
-	/** All permissions */
-	permissions: Readonly<Permission>[] = []
 
 	/** All roles */
-	roles: Readonly<Role[]> = []
+	roles: Record<string, ReturnedProperties<RoleModel, { $fields: true; permissions: true }>> = {}
 
 	private rolesRepo: OrmRepository<RoleModel>
-	private permissionsRepo: OrmRepository<PermissionModel>
 
 	constructor(private readonly repoManager: RepoManager) {
 		this.rolesRepo = this.repoManager.getRepo(RoleModel)
-		this.permissionsRepo = this.repoManager.getRepo(PermissionModel)
 	}
 
 	/**
@@ -47,19 +40,24 @@ export class AuthorizationState implements OnModuleInit {
 	 * On every app startup if roles do not exist, insert them
 	 */
 	async onModuleInit(): Promise<void> {
-		this.permissions = await this.permissionsRepo.findWhere({})
-		this.roles = await this.rolesRepo.findWhere({})
-
+		await this.updateRoles()
 		await this.ensureRequiredRolesExist()
 		this.cacheVersion = v4()
+	}
+
+	async updateRoles(): Promise<void> {
+		const roles = await this.rolesRepo.findWhere({
+			fields: { $fields: true, permissions: true }, //
+		})
+		this.roles = Object.fromEntries(roles.map((r) => [r.id, r] as const))
 	}
 
 	/**
 	 * Ensure that Public and Admin roles exists
 	 */
 	private async ensureRequiredRolesExist(): Promise<void> {
-		const publicRoleExist = this.roles.some((r) => r.id === PUBLIC_ROLE_ID)
-		const adminRoleExist = this.roles.some((r) => r.id === ADMIN_ROLE_ID)
+		const publicRoleExist = this.roles[PUBLIC_ROLE_ID]
+		const adminRoleExist = this.roles[ADMIN_ROLE_ID]
 
 		if (!publicRoleExist) {
 			await this.rolesRepo.createOne({
@@ -83,7 +81,7 @@ export class AuthorizationState implements OnModuleInit {
 
 		// Update roles if changed. No need for permissions, cause they will be empty
 		if (!adminRoleExist || !publicRoleExist) {
-			this.roles = await this.rolesRepo.findWhere({})
+			await this.updateRoles()
 		}
 	}
 

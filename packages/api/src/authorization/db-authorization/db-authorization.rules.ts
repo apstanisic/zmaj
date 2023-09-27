@@ -1,4 +1,5 @@
-import { throw500 } from "@api/common/throw-http"
+import { throw401, throw500 } from "@api/common/throw-http"
+import { emsg } from "@api/errors"
 import {
 	AbilityBuilder,
 	AnyMongoAbility,
@@ -17,9 +18,8 @@ import {
 	isStruct,
 } from "@zmaj-js/common"
 import flat from "flat"
-import { v4 } from "uuid"
 import { AuthorizationConfig } from "../authorization.config"
-import { AuthorizationRules } from "../rule-providers/authorization-rules.provider"
+import { AuthorizationRules } from "../authorization.rules"
 import { AuthorizationState } from "./authorization.state"
 import { builtInTransformers } from "./condition-transformers"
 import { AuthzConditionTransformer } from "./condition-transformers/condition-transformer.type"
@@ -39,53 +39,38 @@ export class DbAuthorizationRules extends AuthorizationRules {
 		readonly authzConfig: AuthorizationConfig,
 	) {
 		super()
-		this.conditionTransformers = [
-			...builtInTransformers,
-			...authzConfig.customConditionTransformers,
-		]
+		this.conditionTransformers = Object.fromEntries(
+			[...builtInTransformers, ...authzConfig.customConditionTransformers].map((tr) => [
+				tr.key,
+				tr,
+			]),
+		)
 	}
 	async requireMfa(user: AuthUser): Promise<boolean> {
-		return this.authzState.roles.find((r) => r.id === user?.roleId)?.requireMfa ?? false
+		return this.authzState.roles[user.roleId]?.requireMfa ?? false
 	}
 
 	// getRules(user?: AuthUser | undefined): AnyMongoAbility {
 	// 	return this.getRules(user)
 	// }
 
-	private cache = {
-		version: v4(),
-		values: new Map<string, AnyMongoAbility>(),
-	}
-
 	/**
 	 * Transformers that will be run
 	 * Since it's property, we can easily push to add custom transformers, and is easier to test
 	 */
-	private readonly conditionTransformers: AuthzConditionTransformer[]
+	private readonly conditionTransformers: Record<string, AuthzConditionTransformer>
 
 	getRules(user?: AuthUser): AnyMongoAbility {
 		if (user?.roleId === ADMIN_ROLE_ID) return allAllowed
 
-		// Cache invalidation here
-		if (this.cache.version !== this.authzState.cacheVersion) {
-			this.cache.version = this.authzState.cacheVersion
-			this.cache.values.clear()
-		}
-
-		// get value from cache if exist
-		const fromCache = this.cache.values.get(user?.userId ?? "public")
-		if (fromCache) return fromCache
-
-		// no cache
-
 		const abilities = new AbilityBuilder(createMongoAbility)
 		// Users's role ID, or public role for non registered users
 		const roleId = user?.roleId ?? PUBLIC_ROLE_ID
+		const role = this.authzState.roles[roleId]
+		// If role no longer exist, require user to sign in again
+		if (!role) throw401(70039, emsg.sessionExpired)
 
-		// Only permissions for current role
-		const relevantPermissions = this.authzState.permissions.filter((p) => p.roleId === roleId)
-
-		for (const permission of relevantPermissions) {
+		for (const permission of role.permissions) {
 			// If no field is allowed, don't add permission
 			if (permission.fields && permission.fields.length === 0) continue
 
@@ -95,12 +80,9 @@ export class DbAuthorizationRules extends AuthorizationRules {
 			// fields are readonly, so we have to copy the array, since abilities requires mutable array
 			abilities.can(
 				permission.action,
-				// TODO This prevents user from having table named all
 				// This prevents user from naming collection "all" and gaining access to everything
 				permission.resource === "all" ? "collections.all" : permission.resource,
-				// convert readonly version to normal array, since it's required by casl
-				// this is for ts mostly. If it's undefined all fields are allowed
-				permission.fields?.concat() ?? undefined,
+				permission.fields ?? undefined,
 				conditions,
 			)
 		}
@@ -109,8 +91,6 @@ export class DbAuthorizationRules extends AuthorizationRules {
 			detectSubjectType: (data) => data["__caslType"],
 			resolveAction,
 		})
-		// cache value
-		this.cache.values.set(user?.userId ?? "public", result)
 		return result
 	}
 
@@ -149,18 +129,18 @@ export class DbAuthorizationRules extends AuthorizationRules {
 
 			if (!value.startsWith("$")) continue
 
-			const transformer = this.conditionTransformers.find((hook) =>
-				`${value}`.startsWith("$" + hook.key),
-			)
+			const valueSections = value.substring(1).split(":")
+			const trKey = valueSections[0]!
+			const transformer = this.conditionTransformers[trKey]
 			// Should we throw here?
 			// Transformer could be removed and then invalid value will be returned
 			if (!transformer) throw500(4837268)
 			// if (!transformer) continue
 
 			// It will return everything after ":", or undefined if there is no ":"
-			const modifier = `${value}`.split(":")[1]
+			const modifier = valueSections[1]
 
-			flatConditions[key] = transformer.transform({ user, modifier })
+			flatConditions[trKey] = transformer.transform({ user, modifier })
 		}
 
 		return unflatten<Struct, Struct>(flatConditions, { delimiter })

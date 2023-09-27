@@ -19,7 +19,7 @@ import {
 import { isEmpty, isString } from "radash"
 import { PartialDeep } from "type-fest"
 import { AuthorizationConfig } from "./authorization.config"
-import { DbAuthorizationRules } from "./db-authorization/db-authorization.rules"
+import { AuthorizationRules } from "./authorization.rules"
 
 type Action = "create" | "read" | "update" | "delete" | string
 type Resource = string | CollectionDef
@@ -54,14 +54,10 @@ const allAllowed = defineAbility((can) => can("manage", "all"))
  */
 @Injectable()
 export class AuthorizationService {
-	/**
-	 * @param authzState Used for access to roles, permissions
-	 * @param infraState
-	 */
 	constructor(
 		private readonly infraState: InfraStateService,
 		private readonly config: AuthorizationConfig,
-		private readonly authRules: DbAuthorizationRules,
+		private readonly authRules: AuthorizationRules,
 	) {}
 
 	async roleRequireMfa(user: AuthUser): Promise<boolean> {
@@ -76,8 +72,6 @@ export class AuthorizationService {
 	 */
 	private getResourceName(resource: Resource): string {
 		return isString(resource) ? resource : resource.authzKey
-		// const value = isString(resource) ? resource : resource.tableName
-		// return camelCase(value)
 	}
 
 	/**
@@ -88,13 +82,12 @@ export class AuthorizationService {
 	 *
 	 * ```js
 	 * const allowedSpecificRecordToUpdate = service.canChangeRecord({
-	 *   user: jwtUser,
+	 *   user: someAuthUser,
 	 *   changes: { name: "Test" },
 	 *   resource: "test_table",
 	 *   action: "update",
 	 *   data: { id: 5, name: "Example" }
 	 * })
-	 *
 	 * ```
 	 */
 	canModifyRecord(params: CanChangeRecordParams): boolean {
@@ -341,8 +334,7 @@ export class AuthorizationService {
 	 * Get rules for provided user
 	 *
 	 * @param user User that need to be checked to have permissions.
-	 * If user is not provided, it will provide rules for public role,
-	 * and conditions that require user id will be mocked with random UUID, so they are always `false`
+	 * If user is not provided, it will provide rules for public role
 	 * @returns Rules that user is allowed
 	 */
 	getRules(user?: AuthUser): AnyMongoAbility {
