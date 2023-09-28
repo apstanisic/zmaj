@@ -103,7 +103,9 @@ export class CantBecomeNonNullableError extends ZmajOrmError {
 	override httpCode: number = 400
 	override errorCode: number = 9378
 	constructor(table: string, column: string) {
-		super(`Column '${column}' in '${table}' can't be non nullable since there are nullable values.`)
+		super(
+			`Column '${column}' in '${table}' can't be non nullable since there are nullable values.`,
+		)
 	}
 }
 
@@ -126,3 +128,27 @@ const compositeUnique = (fields: string[], values: string[]): string =>
 	`You can't create record since there is already record with fields '${fields.join(
 		",",
 	)} and values ${values.join(",")}'`
+
+export class FieldCreateForbiddenError extends ZmajOrmError {
+	constructor(field: string, code?: number) {
+		super(`You cannot provide value for creating "${field} field"`, code)
+	}
+}
+
+export class FieldUpdateForbiddenError extends ZmajOrmError {
+	constructor(field: string, code?: number) {
+		super(`You cannot provide value for updating "${field} field"`, code)
+	}
+}
+
+export class NoChangesProvidedError extends ZmajOrmError {
+	constructor(code?: number) {
+		super(`You must provide changes`, code)
+	}
+}
+
+export class NoFieldsSelectedError extends ZmajOrmError {
+	constructor(code?: number) {
+		super(`You must select at least 1 field if you are passing fields object`, code)
+	}
+}

@@ -8,10 +8,10 @@ import { OrmRepository } from "./OrmRepository"
 class Repo<T extends BaseModel> extends OrmRepository<T> {}
 
 describe("Fields", () => {
-	const postRepo = new Repo<PostModel>()
-	const commentsRepo = new Repo<CommentModel>()
-	const postInfoRepo = new Repo<PostInfoModel>()
-	const tagsRepo = new Repo<TagModel>()
+	const postRepo = new Repo<PostModel>({} as never)
+	const commentsRepo = new Repo<CommentModel>({} as never)
+	const postInfoRepo = new Repo<PostInfoModel>({} as never)
+	const tagsRepo = new Repo<TagModel>({} as never)
 
 	beforeEach(() => {
 		postRepo.findOneOrThrow = vi.fn().mockResolvedValue({})
@@ -220,12 +220,24 @@ describe("Fields", () => {
 		it("should override can create", () => {
 			postRepo.createOne({
 				// @ts-expect-error
-				data: { createdAt: new Date(), body: "hello", likes: 5, title: "", writerId: "uuid" },
+				data: {
+					createdAt: new Date(),
+					body: "hello",
+					likes: 5,
+					title: "",
+					writerId: "uuid",
+				},
 			})
 
 			postRepo.createOne({
 				overrideCanCreate: true,
-				data: { createdAt: new Date(), body: "hello", likes: 5, title: "", writerId: "uuid" },
+				data: {
+					createdAt: new Date(),
+					body: "hello",
+					likes: 5,
+					title: "",
+					writerId: "uuid",
+				},
 			})
 		})
 	})

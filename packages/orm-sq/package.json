@@ -49,6 +49,7 @@
 		"zod": "^3.22.2"
 	},
 	"devDependencies": {
+		"@faker-js/faker": "^8.1.0",
 		"@zmaj-js/test-utils": "workspace:*"
 	}
 }

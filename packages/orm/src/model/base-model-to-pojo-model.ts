@@ -15,6 +15,7 @@ export function baseModelToPojoModel(
 		return {
 			name: model.name,
 			tableName: model.tableName ?? model.name,
+			idField: model.getPkField(),
 			fields: convertAllModelFieldsFromClassToPojo(model.fields),
 			relations: convertAllModelRelationsFromClassToPojo(ModelClass, getOne),
 			disabled: model.disabled,
@@ -39,7 +40,9 @@ function convertAllModelRelationsFromClassToPojo(
 		const otherSidePk =
 			otherSide instanceof BaseModel
 				? otherSide.getPkField()
-				: Object.entries(otherSide.fields).find(([field, config]) => config.isPrimaryKey)?.[0]
+				: Object.entries(otherSide.fields).find(
+						([field, config]) => config.isPrimaryKey,
+				  )?.[0]
 
 		if (!otherSidePk) throw new ZmajOrmError("No PK")
 

@@ -1,45 +1,35 @@
 import {
 	Comparison,
-	IdArraySchema,
 	Struct,
-	filterStruct,
 	getFirstKey,
 	getFirstProperty,
 	isIdType,
 	isNil,
 	isStruct,
-	notNil,
 } from "@zmaj-js/common"
 import {
 	BaseModel,
 	CountOptions,
 	CreateParams,
-	CursorPaginationResponse,
-	DeleteByIdParams,
 	DeleteManyParams,
 	FindAndCountOptions,
-	FindByIdOptions,
-	FindManyCursor,
 	FindManyOptions,
-	FindOneOptions,
 	FkDeleteError,
 	IdType,
 	InternalOrmProblem,
+	NoFieldsSelectedError,
 	NoPropertyError,
 	OrmRepository,
-	PaginatedResponse,
+	PojoModel,
 	RawQueryOptions,
-	RecordNotFoundError,
 	RepoFilter,
 	ReturnedProperties,
 	SelectProperties,
 	UndefinedModelError,
 	UniqueError,
 	UpdateManyOptions,
-	UpdateOneOptions,
-	ZmajOrmError,
 } from "@zmaj-js/orm"
-import { get, isArray, isEmpty, mapValues, pick, set } from "radash"
+import { get, isEmpty, mapValues, set } from "radash"
 import {
 	ForeignKeyConstraintError,
 	IncludeOptions,
@@ -67,14 +57,11 @@ const symbolComparisons: Record<Comparison | "$and" | "$or", symbol> = {
 export class SequelizeRepository<
 	TModel extends BaseModel = BaseModel,
 > extends OrmRepository<TModel> {
-	// collectionName: string
 	constructor(
 		private orm: SequelizeService,
-		private collectionName: string,
+		pojoModel: PojoModel,
 	) {
-		//private modelConfig: ModelConfig) {
-		super()
-		// this.collectionName = modelConfig.collectionName
+		super(pojoModel)
 	}
 
 	/**
@@ -82,59 +69,6 @@ export class SequelizeRepository<
 	 */
 	async rawQuery(query: string, params?: RawQueryOptions): Promise<unknown> {
 		const res = await this.orm.rawQuery(query, params)
-		return res
-	}
-
-	/**
-	 *
-	 */
-	async findOne<
-		TFields extends SelectProperties<TModel> | undefined = undefined,
-		TIncludeHidden extends boolean = false,
-	>(
-		params: FindOneOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<ReturnedProperties<TModel, TFields, TIncludeHidden> | undefined> {
-		const [item] = await this.findWhere({
-			trx: params.trx,
-			fields: params.fields,
-			orderBy: params.orderBy,
-			where: params.where,
-			limit: 1,
-			includeHidden: params.includeHidden,
-		})
-		return item
-	}
-
-	/**
-	 *
-	 */
-	async findOneOrThrow<
-		TFields extends SelectProperties<TModel> | undefined = undefined,
-		TIncludeHidden extends boolean = false,
-	>(
-		params: FindOneOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<ReturnedProperties<TModel, TFields, TIncludeHidden>> {
-		const item = await this.findOne(params)
-		if (!item) throw new RecordNotFoundError(this.model.name)
-		return item
-		// return item ?? throw404(532125, emsg.recordNotFound)
-	}
-
-	/**
-	 *
-	 */
-	async findById<
-		TFields extends SelectProperties<TModel> | undefined = undefined,
-		TIncludeHidden extends boolean = false,
-	>(
-		params: FindByIdOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<ReturnedProperties<TModel, TFields, TIncludeHidden>> {
-		const res = await this.findOneOrThrow({
-			fields: params.fields,
-			trx: params.trx,
-			where: params.id,
-			includeHidden: params.includeHidden,
-		})
 		return res
 	}
 
@@ -150,7 +84,7 @@ export class SequelizeRepository<
 		const raw = params.includeHidden === true
 		const filterAndFields = this.filterAndFields(params.where, params.fields)
 
-		const res = await this.model.findAll({
+		const res = await this.sequelizeModel.findAll({
 			raw,
 			limit: params.limit,
 			offset: params.offset,
@@ -179,7 +113,7 @@ export class SequelizeRepository<
 	): Promise<[ReturnedProperties<TModel, TFields, TIncludeHidden>[], number]> {
 		const fieldsAndFilter = this.filterAndFields(params.where, params.fields)
 
-		const res = await this.model.findAndCountAll({
+		const res = await this.sequelizeModel.findAndCountAll({
 			transaction: params.trx as any,
 			limit: params.limit,
 			offset: params.offset,
@@ -199,30 +133,12 @@ export class SequelizeRepository<
 		]
 	}
 
-	paginate<
-		TFields extends SelectProperties<TModel> | undefined = undefined,
-		TIncludeHidden extends boolean = false,
-	>(
-		params: FindManyOptions<TModel, TFields, TIncludeHidden>,
-	): Promise<PaginatedResponse<ReturnedProperties<TModel, TFields, TIncludeHidden>>> {
-		throw new ZmajOrmError("Not implemented")
-	}
-
-	cursor<
-		TFields extends SelectProperties<TModel> | undefined = undefined,
-		TIncludeHidden extends boolean = false,
-	>(
-		params: FindManyCursor<TModel, TFields, TIncludeHidden>,
-	): Promise<CursorPaginationResponse<ReturnedProperties<TModel, TFields, TIncludeHidden>>> {
-		throw new ZmajOrmError("Not implemented")
-	}
-
 	/**
 	 *
 	 */
 	async count(params: CountOptions<TModel>): Promise<number> {
 		const fieldsAndFilter = this.filterAndFields(params.where)
-		const res = await this.model.count({
+		const res = await this.sequelizeModel.count({
 			transaction: params.trx as any,
 			where: fieldsAndFilter.where,
 			include: fieldsAndFilter.include,
@@ -233,36 +149,23 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async createOne<OverrideCanCreate extends boolean>(
-		params: CreateParams<TModel, OverrideCanCreate, "one">,
-	): Promise<ReturnedProperties<TModel, undefined>> {
-		const result = await this.createMany({ data: [params.data], trx: params.trx })
-		if (result.length !== 1) throw new InternalOrmProblem(39534) //throw500(39534)
-		return result[0]!
-	}
-
-	/**
-	 *
-	 */
 	async createMany<OverrideCanCreate extends boolean>(
 		params: CreateParams<TModel, OverrideCanCreate, "many">,
 	): Promise<ReturnedProperties<TModel, undefined>[]> {
+		const parsed = this.parseCreateData(params.data, params.overrideCanCreate)
 		try {
-			// do not pass null values when creating record, since that replaces default value
-			// idk why sequelize sends it. On update, it should work normally
-			const data = this.getWritableData("create", params.data as any[]) //
-				.map((row) => filterStruct(row, (v) => notNil(v)))
-
-			const created = await this.model.bulkCreate(data as any[], {
-				transaction: params.trx as any, //
-			})
-			return created.map((v) => v.get({ plain: true }))
+			const created = await this.sequelizeModel.bulkCreate(
+				parsed, //
+				{ transaction: params.trx as any },
+			)
+			// Must find since SQLite does not return all data (data that has default value)
+			// TODO Maybe add check for PG
+			return this.findWhere({ where: created.map((c) => c.getDataValue(this.pk)) })
+			// return created.map((v) => v.get({ plain: true }))
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
 				throw new UniqueError(error, 3012)
 			}
-
-			console.log({ error })
 
 			throw new InternalOrmProblem(93100, error)
 		}
@@ -271,33 +174,12 @@ export class SequelizeRepository<
 	/**
 	 *
 	 */
-	async updateById<OverrideCanUpdate extends boolean>(
-		params: UpdateOneOptions<TModel, OverrideCanUpdate>,
-	): Promise<ReturnedProperties<TModel, undefined>> {
-		const [updated] = await this.updateWhere({
-			trx: params.trx,
-			changes: params.changes,
-			where: params.id,
-		})
-		if (!updated) throw new RecordNotFoundError(this.model.name, params.id)
-		return updated
-	}
-
-	/**
-	 *
-	 */
 	async updateWhere<OverrideCanUpdate extends boolean>(
 		params: UpdateManyOptions<TModel, OverrideCanUpdate>,
 	): Promise<ReturnedProperties<TModel, undefined, false>[]> {
-		const changes = params.overrideCanUpdate
-			? params.changes
-			: this.getWritableData("update", params.changes)
+		const changes = this.parseUpdateData(params.changes, params.overrideCanUpdate)
 
-		// do nothing if no change is passed
-		if (Object.keys(changes).length === 0) {
-			return this.findWhere<undefined>({ where: params.where, trx: params.trx, fields: undefined })
-		}
-
+		// TODO Can I do this without this find?
 		const rows = await this.findWhere({
 			trx: params.trx,
 			where: params.where,
@@ -305,28 +187,15 @@ export class SequelizeRepository<
 			fields: { [this.pk]: true } as any,
 		})
 
-		const ids = this.getIdsFromRows(rows)
+		const ids = rows.map((r) => r[this.pk]) as IdType[]
 
-		await this.model.update(changes as any, {
+		await this.sequelizeModel.update(changes as any, {
 			transaction: params.trx as any,
 			where: this.parseFilter(ids).where,
-			// fields: this.getNonReadonlyFields("update", params.overrideCanUpdate),
+			// This has support only for PG, I want to try to support more engines
+			// returning: true
 		})
 		return this.findWhere<undefined>({ where: ids, trx: params.trx })
-	}
-
-	/**
-	 *
-	 */
-	async deleteById(
-		params: DeleteByIdParams<TModel>,
-	): Promise<ReturnedProperties<TModel, undefined>> {
-		const [deleted] = await this.deleteWhere({
-			trx: params.trx,
-			where: params.id,
-		})
-		if (!deleted) throw new RecordNotFoundError(this.model.name, params.id)
-		return deleted
 	}
 
 	/**
@@ -335,78 +204,30 @@ export class SequelizeRepository<
 	async deleteWhere(
 		params: DeleteManyParams<TModel>,
 	): Promise<ReturnedProperties<TModel, undefined>[]> {
-		// return all top level fields
-		const res = await this.findWhere({
+		// return all top level fields, this values will be returned
+		const toDelete = await this.findWhere({
 			trx: params.trx,
 			where: params.where,
 		})
-		const ids = this.getIdsFromRows(res)
-		await this.model
+		const ids = toDelete.map((row) => row[this.pk]) as IdType[]
+		await this.sequelizeModel
 			.destroy({ where: this.parseFilter(ids).where, transaction: params.trx as any })
 			.catch((e) => {
 				if (e instanceof ForeignKeyConstraintError) throw new FkDeleteError()
 				throw e
 			})
 
-		return res as any as ReturnedProperties<TModel, undefined>[]
-	}
-
-	private getWritableData<T extends Struct | Struct[]>(action: "update" | "create", data: T): T {
-		const fields = this.getNonReadonlyFields(action)
-		return (
-			isArray(data)
-				? data.map((item) => pick(item, fields)) //
-				: pick(data as Struct, fields)
-		) as T
+		return toDelete as any as ReturnedProperties<TModel, undefined>[]
 	}
 
 	/**
-	 * Find way to memoize this. Model is getter, so we have to pass it as param,
-	 * and that model should have some kinda id. It also didn't work for second param, idk why
+	 * We do not want to have model reference, since model will change when schema is changed,
+	 * and we do not want to keep track. SO we use dynamic getter.
 	 */
-	private getNonReadonlyFields(
-		action: "update" | "create",
-		overrideHidden: boolean = false,
-	): string[] {
-		return Object.entries(this.model.getAttributes())
-			.filter(([_, attribute]) => {
-				if (overrideHidden) return true
-				const forbidden: boolean =
-					attribute.comment?.includes(
-						action === "create" ? "CAN_CREATE=false" : "CAN_UPDATE=false",
-					) ?? false
-				return !forbidden
-			})
-			.map(([fieldName]) => fieldName)
-	}
-
-	/**
-	 * Get only pks from records
-	 */
-	private getIdsFromRows<Id extends IdType = IdType>(rows: Struct[]): Id[] {
-		return IdArraySchema.parse(rows.map((row) => get(row, this.pk) ?? undefined)) as Id[]
-	}
-
-	/**
-	 * We do not want to have model reference, since model will change schema is changed,
-	 * and we do not want to keep track
-	 */
-	private get model(): ModelStatic<Model<any, any>> {
-		const model = this.orm.models[this.collectionName]
+	private get sequelizeModel(): ModelStatic<Model<any, any>> {
+		const model = this.orm.models[this.pojoModel.name]
 		if (!model) throw new InternalOrmProblem(3910)
 		return model
-		// return (
-		// 	this.orm.models[this.collectionName] ?? throw500(19732, emsg.noModel(this.collectionName))
-		// )
-	}
-
-	get pk(): string {
-		return this.model.primaryKeyAttribute
-		// const pks = this.model.modelDefinition.primaryKeysAttributeNames
-		// const [pk, ...rest] = pks
-		// if (pk === undefined) throw500(398991)
-		// if (rest.length > 0) throw500(97992)
-		// return pk
 	}
 
 	private filterAndFields(
@@ -418,7 +239,7 @@ export class SequelizeRepository<
 		const fieldsAndRelations = this.parseFields({
 			// fields: params.fields,
 			fields: fields,
-			collection: this.collectionName,
+			collection: this.pojoModel.name,
 			filterRelations: whereResult.toAdd,
 		})
 		return { where: whereResult.where, ...fieldsAndRelations }
@@ -433,7 +254,7 @@ export class SequelizeRepository<
 		} else if (Array.isArray(where)) {
 			return { where: { [this.pk]: { [Op.in]: where } } as any as WhereOptions<TModel> }
 		} else {
-			return this.parseWhereFilter(where ?? {}, this.model)
+			return this.parseWhereFilter(where ?? {}, this.sequelizeModel)
 		}
 	}
 
@@ -461,17 +282,25 @@ export class SequelizeRepository<
 		// subQuery?: boolean
 	}): Pick<IncludeOptions, "attributes" | "include" | "association" | "through"> {
 		// clone since filter relations will mutate this value
-		fields = structuredClone(fields ?? ({} as F))
+		// if it's nill, default to all fields
+		fields = isNil(fields) ? ({ $fields: true } as never) : structuredClone(fields ?? ({} as F))
 
 		const model = this.orm.models[collection] // ?? throw500(378324, emsg.noModel(collection))
 		if (!model) throw new UndefinedModelError(collection, 3001)
 		// if fields is empty, get all columns
 		// we need to specify here, since if filter add join, we don't know what fields to fetch
 		// so if it's empty, get all
-		if (isEmpty(fields) || fields?.$fields) {
+		if (JSON.stringify(fields) === "{}") {
+			throw new NoFieldsSelectedError(93000)
+		}
+		if (fields?.$fields) {
 			// `getAttributes` returns column property as key, and it's data.
 			// we are simply taking all property names and settings them to true
-			fields = mapValues(model.getAttributes(), (v) => true) as F
+			// if $fields, we can have other relations
+			fields = {
+				...fields, // This will contain other relations
+				...(mapValues(model.getAttributes(), () => true) as F), // all fields are set to true
+			}
 		}
 		filterRelations?.forEach((relation) => {
 			const alreadyAdded = get(fields, relation)
@@ -588,7 +417,10 @@ export class SequelizeRepository<
 					if (prefix !== "") toAdd.push(together.slice(0, together.lastIndexOf(".")))
 
 					const forSq = prefix === "" ? key : `$${together}$`
-					if (isStruct(val) && Object.hasOwn(symbolComparisons, getFirstKey(val) ?? "_")) {
+					if (
+						isStruct(val) &&
+						Object.hasOwn(symbolComparisons, getFirstKey(val) ?? "_")
+					) {
 						const [comp, compValue] = getFirstProperty(val)!
 						cloned[forSq] = { [symbolComparisons[comp as never]]: compValue }
 					} else {

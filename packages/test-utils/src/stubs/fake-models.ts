@@ -14,6 +14,8 @@ export class TPostModel extends BaseModel {
 		junctionModel: () => TPostTagModel,
 		junctionFields: ["postId", "tagId"],
 	})
+
+	comments = this.oneToMany(() => TCommentModel, { fkField: "postId" })
 }
 
 export class TTagModel extends BaseModel {
@@ -36,6 +38,8 @@ export class TCommentModel extends BaseModel {
 		body: f.text({}),
 		postId: f.uuid({ columnName: "post_id" }),
 	}))
+
+	post = this.manyToOne(() => TPostModel, { fkField: "postId" })
 }
 
 export class TPostTagModel extends BaseModel {

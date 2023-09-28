@@ -48,7 +48,9 @@ export class SequelizeRepoManager extends RepoManager {
 		const repo = this.repositories[name]
 		if (repo) return repo as OrmRepository<TModel>
 
-		const created = new SequelizeRepository<TModel>(this.sq, name)
+		const pojoModel = this.models.getByNameAsPojo(name)
+
+		const created = new SequelizeRepository<TModel>(this.sq, pojoModel)
 		this.repositories[name] = created as OrmRepository<any>
 		return created as OrmRepository<TModel>
 	}

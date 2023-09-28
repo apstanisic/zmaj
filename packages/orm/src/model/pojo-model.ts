@@ -53,6 +53,7 @@ export type PojoModel = {
 	/** We will use name as tableName if tableName is undefined **/
 	tableName: string
 	disabled: boolean
+	idField: string
 	fields: Record<string, PojoModelField>
 	relations: Record<string, PojoModelRelation>
 }
