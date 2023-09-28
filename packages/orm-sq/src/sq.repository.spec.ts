@@ -320,7 +320,7 @@ describe("SequelizeRepository", () => {
 			// This should return empty object
 			it("should throw an error if empty fields object is provided", async () => {
 				await createPost()
-				await expect(postsRepo.findWhere({ fields: {} })).rejects.toThrow(
+				await expect(postsRepo.findWhere({ fields: {} as never })).rejects.toThrow(
 					NoFieldsSelectedError,
 				)
 			})

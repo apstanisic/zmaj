@@ -32,6 +32,13 @@ it("should forbid non exiting", () => {
 	})
 })
 
+it("should require at least one field to be provided", () => {
+	// @ts-expect-error
+	assertType<SelectProperties<CommentModel>>({})
+	//
+	assertType<SelectProperties<CommentModel>>({ id: true })
+})
+
 it("should extract fields nested", () => {
 	assertType<SelectProperties<PostModel>>({
 		comments: {

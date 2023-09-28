@@ -1,6 +1,6 @@
 import { RelationBuilderResult } from "@orm/model/relations/relation-builder-result"
 import { ModelPropertyKeys } from "@orm/model/types/model-property-keys"
-import { Simplify } from "type-fest"
+import { RequireAtLeastOne, Simplify } from "type-fest"
 import { BaseModel } from "../../model/base-model"
 
 type All = { $fields?: true }
@@ -16,14 +16,16 @@ type All = { $fields?: true }
 // 		: true
 // } // & All
 
-export type SelectProperties<TModel extends BaseModel> = Simplify<
-	{
-		[key in ModelPropertyKeys<TModel>]?: key extends keyof TModel["fields"]
-			? true
-			: key extends keyof TModel
-			? TModel[key] extends RelationBuilderResult<infer TInnerModel, any, any>
-				? true | SelectProperties<TInnerModel>
+export type SelectProperties<TModel extends BaseModel> = RequireAtLeastOne<
+	Simplify<
+		{
+			[key in ModelPropertyKeys<TModel>]?: key extends keyof TModel["fields"]
+				? true
+				: key extends keyof TModel
+				? TModel[key] extends RelationBuilderResult<infer TInnerModel, any, any>
+					? true | SelectProperties<TInnerModel>
+					: never
 				: never
-			: never
-	} & All
+		} & All
+	>
 >
