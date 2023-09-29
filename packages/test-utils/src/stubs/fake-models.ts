@@ -16,6 +16,8 @@ export class TPostModel extends BaseModel {
 	})
 
 	comments = this.oneToMany(() => TCommentModel, { fkField: "postId" })
+
+	info = this.oneToOneRef(() => TPostInfoModel, { fkField: "postId" })
 }
 
 export class TTagModel extends BaseModel {
@@ -63,4 +65,6 @@ export class TPostInfoModel extends BaseModel {
 		postId: f.uuid({ columnName: "post_id", isUnique: true }),
 		additionalInfo: f.custom<Record<string, any>>()({}),
 	}))
+
+	post = this.oneToOneOwner(() => TPostModel, { fkField: "postId" })
 }

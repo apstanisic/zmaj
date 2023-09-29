@@ -46,6 +46,7 @@ import {
 	TComment,
 	TCommentModel,
 	TPost,
+	TPostInfo,
 	TPostInfoModel,
 	TPostModel,
 	TPostStub,
@@ -65,6 +66,7 @@ describe("SequelizeRepository", () => {
 	let orm: Orm
 	let sq: SequelizeService
 	let postsRepo: OrmRepository<TPostModel>
+	let postsInfoRepo: OrmRepository<TPostInfoModel>
 	let tagsRepo: OrmRepository<TTagModel>
 	let commentsRepo: OrmRepository<TCommentModel>
 
@@ -160,6 +162,7 @@ describe("SequelizeRepository", () => {
 		postsRepo = orm.repoManager.getRepo(TPostModel)
 		tagsRepo = orm.repoManager.getRepo(TTagModel)
 		commentsRepo = orm.repoManager.getRepo(TCommentModel)
+		postsInfoRepo = orm.repoManager.getRepo(TPostInfoModel)
 	})
 	afterEach(async () => {
 		// await sq.orm.getQueryInterface().dropAllTables()
@@ -320,7 +323,8 @@ describe("SequelizeRepository", () => {
 			// This should return empty object
 			it("should throw an error if empty fields object is provided", async () => {
 				await createPost()
-				await expect(postsRepo.findWhere({ fields: {} as never })).rejects.toThrow(
+				// @ts-expect-error
+				await expect(postsRepo.findWhere({ fields: {} })).rejects.toThrow(
 					NoFieldsSelectedError,
 				)
 			})
@@ -469,7 +473,210 @@ describe("SequelizeRepository", () => {
 					postId: comment.postId,
 				})
 			})
+
+			it("should work recursively", async () => {
+				const result = await commentsRepo.findOne({
+					where: {},
+					fields: {
+						postId: true,
+						post: {
+							id: true,
+							comments: { id: true, post: true },
+						},
+					},
+				})
+				expect(result).toEqual({
+					postId: post.id,
+					post: {
+						id: post.id,
+						comments: [{ id: comment.id, post }],
+					},
+				})
+			})
 		})
+
+		describe("owner one to one", () => {
+			let post: TPost
+			let info: TPostInfo
+
+			class RefModel extends BaseModel {
+				name = "ref"
+				fields = {
+					id: this.field.intPk({}),
+				}
+				main = this.oneToOneRef(() => NullableOwnerModel, { fkField: "rightId" })
+			}
+			class NullableOwnerModel extends BaseModel {
+				name = "owner"
+				fields = {
+					id: this.field.intPk({}),
+					rightId: this.field.uuid({ columnName: "right_id", nullable: true }),
+				}
+				other = this.oneToOneOwner(() => RefModel, { fkField: "rightId" })
+			}
+
+			beforeEach(async () => {
+				post = await createPost()
+				info = await postsInfoRepo.createOne({
+					data: { additionalInfo: { hello: "world" }, postId: post.id },
+				})
+
+				await sq.qi.createTable("ref", {
+					id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+				})
+
+				await sq.qi.createTable("owner", {
+					id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+					right_id: {
+						type: DataTypes.INTEGER,
+						references: { model: "ref", key: "id" },
+					},
+				})
+				sq.generateModels([...models, RefModel, NullableOwnerModel])
+			})
+
+			it("should join properly", async () => {
+				const res = await postsInfoRepo.findById({
+					id: info.id,
+					fields: { id: true, additionalInfo: true, postId: true, post: true },
+				})
+				expect(res).toEqual({ ...info, post })
+			})
+
+			it("should work with $fields", async () => {
+				const res = await postsInfoRepo.findById({
+					id: info.id,
+					fields: { $fields: true, post: true },
+				})
+				expect(res).toEqual({ ...info, post })
+			})
+
+			it("should work specified fields", async () => {
+				const res = await postsInfoRepo.findById({
+					id: info.id,
+					fields: { additionalInfo: true, post: true },
+				})
+				expect(res).toEqual({ post, additionalInfo: info.additionalInfo })
+			})
+
+			it("should work without selected fields", async () => {
+				const res = await postsInfoRepo.findById({
+					id: info.id,
+					fields: { post: true },
+				})
+				expect(res).toEqual({ post })
+			})
+
+			it("should return null if relation does not exist ", async () => {
+				// this can happen if FK column is null
+				const created = await repo(NullableOwnerModel).createOne({ data: {} })
+				const res = await repo(NullableOwnerModel).findById({
+					id: created.id,
+					fields: { other: true, id: true },
+				})
+				expect(res).toEqual({ id: created.id, other: null })
+			})
+
+			it("should work recursively", async () => {
+				const result = await postsInfoRepo.findOne({
+					where: {},
+					fields: {
+						id: true,
+						post: {
+							likes: true,
+							info: {
+								postId: true,
+								post: true,
+							},
+						},
+					},
+				})
+				expect(result).toEqual({
+					id: info.id,
+					post: {
+						likes: post.likes,
+						info: {
+							postId: info.postId,
+							post: post,
+						},
+					},
+				})
+			})
+		})
+
+		describe("ref one to one", () => {
+			let post: TPost
+			let info: TPostInfo
+			beforeEach(async () => {
+				post = await createPost()
+				info = await postsInfoRepo.createOne({
+					data: { postId: post.id, additionalInfo: { hello: "world" } },
+				})
+			})
+
+			it("should return relation", async () => {
+				const res = await postsRepo.findById({
+					id: post.id,
+					fields: { id: true, info: true },
+				})
+				expect(res).toEqual({ id: post.id, info })
+			})
+
+			it("should return null if there is no relation", async () => {
+				await postsInfoRepo.deleteById({ id: info.id })
+
+				const res = await postsRepo.findById({
+					id: post.id,
+					fields: { id: true, info: true },
+				})
+				expect(res).toEqual({ id: post.id, info: null })
+			})
+
+			it("should work with $fields", async () => {
+				const res = await postsRepo.findById({
+					id: post.id,
+					fields: { $fields: true, info: true },
+				})
+				expect(res).toEqual({ ...post, info })
+			})
+
+			it("should work with no fields", async () => {
+				const res = await postsRepo.findById({
+					id: post.id,
+					fields: { info: true },
+				})
+				expect(res).toEqual({ info })
+			})
+
+			it("should work with specified fields", async () => {
+				const res = await postsRepo.findById({
+					id: post.id,
+					fields: { info: true, likes: true },
+				})
+				expect(res).toEqual({ info, likes: post.likes })
+			})
+
+			it("should allow recursion", async () => {
+				const res = await postsRepo.findById({
+					id: post.id,
+					fields: { likes: true, info: { post: { id: true }, postId: true, id: true } },
+				})
+				expect(res).toEqual({
+					likes: post.likes,
+					info: {
+						postId: post.id,
+						id: info.id,
+						post: {
+							id: post.id,
+						},
+					},
+				})
+				//
+			})
+		})
+
+		describe.todo("one to many", () => {})
+		describe.todo("many to many", () => {})
 	})
 
 	// 	describe("one-to-one", () => {

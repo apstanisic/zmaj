@@ -11,7 +11,7 @@ export type AddOptionalNullableFkRelation<
 	? TModel[TKey] extends RelationBuilderResult<any, any, infer FKey>
 		? FKey extends keyof TModel["fields"]
 			? TModel["fields"][FKey]["_nullable"] extends true
-				? undefined
+				? null //undefined
 				: never
 			: never
 		: never

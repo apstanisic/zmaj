@@ -20,7 +20,13 @@ export type ReturnedProperties<
 				TFields,
 				TIncludeHidden,
 				key,
-				NonNullable<TFields>["$fields"] extends true ? true : false
+				// Used to work with just this line, but it does not work since adding require at least one
+				// NonNullable<TFields>["$fields"] extends true ? true : false
+				"$fields" extends keyof NonNullable<TFields>
+					? NonNullable<TFields>["$fields"] extends true
+						? true
+						: false
+					: false
 		  >
 		: key extends keyof TModel
 		? TModel[key] extends RelationBuilderResult<infer TInner, infer TRelType, any>
@@ -28,12 +34,22 @@ export type ReturnedProperties<
 				? // If relation
 				  TFields[key] extends SelectProperties<TInner>
 					?
-							| ReturnedRelationProperties<TInner, TFields[key], TIncludeHidden, TRelType>
+							| ReturnedRelationProperties<
+									TInner,
+									TFields[key],
+									TIncludeHidden,
+									TRelType
+							  >
 							| AddOptionalNullableFkRelation<key, TModel>
 							| AddOptionalToRefOneToOne<TRelType>
 					: TFields[key] extends true
 					?
-							| ReturnedRelationProperties<TInner, undefined, TIncludeHidden, TRelType>
+							| ReturnedRelationProperties<
+									TInner,
+									undefined,
+									TIncludeHidden,
+									TRelType
+							  >
 							| AddOptionalNullableFkRelation<key, TModel>
 							| AddOptionalToRefOneToOne<TRelType>
 					: never

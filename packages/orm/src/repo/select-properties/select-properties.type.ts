@@ -3,7 +3,8 @@ import { ModelPropertyKeys } from "@orm/model/types/model-property-keys"
 import { RequireAtLeastOne, Simplify } from "type-fest"
 import { BaseModel } from "../../model/base-model"
 
-type All = { $fields?: true }
+// TODO Maybe add `{ $id?: true }`, that will return ID field (only if it's possible to be type safe)
+type AllFields = { $fields?: true }
 // It does not work without 2 NonNullable
 // TODO Disable passing fields that user cannot read (unless includeHidden is passed)
 // $fields is special key that means get me all fields. It is useful if we need to get some relation
@@ -26,6 +27,6 @@ export type SelectProperties<TModel extends BaseModel> = RequireAtLeastOne<
 					? true | SelectProperties<TInnerModel>
 					: never
 				: never
-		} & All
+		} & AllFields
 	>
 >

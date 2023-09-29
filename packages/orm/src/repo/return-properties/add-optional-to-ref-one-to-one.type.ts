@@ -5,5 +5,5 @@ import { RefOneToOne, RelationType } from "@orm/model/relations/relation-type.ty
  * For o2m, we can return empty array, here we have to return undefined
  */
 export type AddOptionalToRefOneToOne<TRelType extends RelationType> = TRelType extends RefOneToOne
-	? undefined
+	? null // undefined // Switched to null since that is what Sequelize return
 	: never

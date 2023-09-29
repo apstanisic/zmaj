@@ -293,7 +293,7 @@ export class SequelizeRepository<
 		if (JSON.stringify(fields) === "{}") {
 			throw new NoFieldsSelectedError(93000)
 		}
-		if (fields?.$fields) {
+		if ((fields as Struct)?.["$fields"]) {
 			// `getAttributes` returns column property as key, and it's data.
 			// we are simply taking all property names and settings them to true
 			// if $fields, we can have other relations
