@@ -27,7 +27,7 @@ export class TTagModel extends BaseModel {
 		name: f.text({}),
 	}))
 
-	posts = this.manyToMany(() => TTagModel, {
+	posts = this.manyToMany(() => TPostModel, {
 		junctionModel: () => TPostTagModel,
 		junctionFields: ["tagId", "postId"],
 	})

@@ -1,30 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-// import { throwErr, uuidRegex } from "@zmaj-js/common"
-// import { Orm, createModelsStore } from "@zmaj-js/orm"
-// import {
-// 	TComment,
-// 	TCommentModel,
-// 	TPost,
-// 	TPostInfo,
-// 	TPostInfoModel,
-// 	TPostModel,
-// 	TPostStub,
-// 	TPostTag,
-// 	TPostTagModel,
-// 	TTag,
-// 	TTagModel,
-// 	allMockCollectionDefs,
-// 	createBlogTables,
-// 	mockConstData,
-// 	modifyTestInfra,
-// } from "@zmaj-js/test-utils"
-// import { alphabetical, isObject, sort } from "radash"
-// import { v4 } from "uuid"
-// import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
-// import { SequelizeRepository } from "./sq.repository"
-// import { SequelizeService } from "./sq.service"
-// import { sqOrmEngine } from "./sq.orm-engine"
-
 import { faker } from "@faker-js/faker"
 import { times, uuidRegex } from "@zmaj-js/common"
 import {
@@ -50,7 +24,9 @@ import {
 	TPostInfoModel,
 	TPostModel,
 	TPostStub,
+	TPostTag,
 	TPostTagModel,
+	TTag,
 	TTagModel,
 	createBlogTables,
 } from "@zmaj-js/test-utils"
@@ -65,17 +41,18 @@ import { SequelizeService } from "./sq.service"
 describe("SequelizeRepository", () => {
 	let orm: Orm
 	let sq: SequelizeService
-	let postsRepo: OrmRepository<TPostModel>
-	let postsInfoRepo: OrmRepository<TPostInfoModel>
-	let tagsRepo: OrmRepository<TTagModel>
-	let commentsRepo: OrmRepository<TCommentModel>
+	let postRepo: OrmRepository<TPostModel>
+	let postInfoRepo: OrmRepository<TPostInfoModel>
+	let tagRepo: OrmRepository<TTagModel>
+	let commentRepo: OrmRepository<TCommentModel>
+	let postTagRepo: OrmRepository<TPostTagModel>
 
 	function repo<TModel extends BaseModel>(model: Class<TModel>): OrmRepository<TModel> {
 		return orm.repoManager.getRepo(model)
 	}
 
 	function createPost(data?: Partial<TPost>): Promise<TPost> {
-		return postsRepo.createOne({
+		return postRepo.createOne({
 			data: omit(TPostStub(data), ["id", "createdAt"]),
 		})
 	}
@@ -88,7 +65,6 @@ describe("SequelizeRepository", () => {
 			name: f.text({ columnName: "name" }),
 			default: f.text({ hasDefault: true }),
 			noRead: f.text({ columnName: "no_read", canRead: false }),
-			// noCreate: f.text({ columnName: "no_create", canCreate: false }),
 			noUpdate: f.text({ columnName: "no_update", canUpdate: false }),
 			noCreateDefault: f.text({
 				columnName: "no_create_default",
@@ -159,10 +135,11 @@ describe("SequelizeRepository", () => {
 				await createBlogTables(sq.orm.getQueryInterface(), trx)
 			},
 		})
-		postsRepo = orm.repoManager.getRepo(TPostModel)
-		tagsRepo = orm.repoManager.getRepo(TTagModel)
-		commentsRepo = orm.repoManager.getRepo(TCommentModel)
-		postsInfoRepo = orm.repoManager.getRepo(TPostInfoModel)
+		postRepo = orm.repoManager.getRepo(TPostModel)
+		tagRepo = orm.repoManager.getRepo(TTagModel)
+		postTagRepo = orm.repoManager.getRepo(TPostTagModel)
+		commentRepo = orm.repoManager.getRepo(TCommentModel)
+		postInfoRepo = orm.repoManager.getRepo(TPostInfoModel)
 	})
 	afterEach(async () => {
 		// await sq.orm.getQueryInterface().dropAllTables()
@@ -183,13 +160,13 @@ describe("SequelizeRepository", () => {
 		describe("where", () => {
 			it("should find by id", async () => {
 				const post = await createPost()
-				const res = await postsRepo.findWhere({ where: post.id })
+				const res = await postRepo.findWhere({ where: post.id })
 				expect(res).toEqual([post])
 			})
 
 			it("should find by ids", async () => {
 				const posts = await Promise.all(times(2, (i) => createPost({ likes: i })))
-				const res = await postsRepo.findWhere({
+				const res = await postRepo.findWhere({
 					where: [posts[0]!.id, posts[1]!.id],
 					orderBy: { createdAt: "ASC" },
 				})
@@ -198,7 +175,7 @@ describe("SequelizeRepository", () => {
 
 			it("should find by equal filter", async () => {
 				const post = await createPost({ body: uuid })
-				const res = await postsRepo.findWhere({
+				const res = await postRepo.findWhere({
 					where: { body: post.body },
 				})
 				expect(res).toEqual([post])
@@ -213,7 +190,7 @@ describe("SequelizeRepository", () => {
 						}),
 					),
 				)
-				const res = await postsRepo.findWhere({
+				const res = await postRepo.findWhere({
 					where: { body: uuid, likes: 1 },
 				})
 				expect(res).toEqual([posts[1]])
@@ -228,7 +205,7 @@ describe("SequelizeRepository", () => {
 						}),
 					),
 				)
-				const withUuid = await postsRepo.findWhere({
+				const withUuid = await postRepo.findWhere({
 					where: {
 						body: { $like: "%" + uuid },
 					},
@@ -246,7 +223,7 @@ describe("SequelizeRepository", () => {
 					),
 				)
 
-				const withUuid = await postsRepo.findWhere({
+				const withUuid = await postRepo.findWhere({
 					where: {
 						body: uuid,
 						likes: { $lte: 100_003 },
@@ -260,7 +237,7 @@ describe("SequelizeRepository", () => {
 					times(6, (i) => createPost({ likes: i, body: uuid })),
 				)
 
-				const res = await postsRepo.findWhere({
+				const res = await postRepo.findWhere({
 					where: {
 						$and: [{ likes: 3 }, { body: uuid }],
 					},
@@ -273,7 +250,7 @@ describe("SequelizeRepository", () => {
 					times(6, (i) => createPost({ likes: i, body: uuid })),
 				)
 
-				const res = await postsRepo.findWhere({
+				const res = await postRepo.findWhere({
 					where: {
 						$or: [{ likes: 3 }, { likes: 5 }],
 					},
@@ -289,7 +266,7 @@ describe("SequelizeRepository", () => {
 			it("should sort", async () => {
 				await Promise.all(times(5, (i) => createPost({ likes: i })))
 
-				const res = await postsRepo.findWhere({
+				const res = await postRepo.findWhere({
 					orderBy: { likes: "DESC" },
 				})
 				expect(res.map((p) => p.likes)).toEqual([4, 3, 2, 1, 0])
@@ -300,7 +277,7 @@ describe("SequelizeRepository", () => {
 			it("should limit", async () => {
 				await Promise.all(times(5, () => createPost()))
 
-				const res = await postsRepo.findWhere({
+				const res = await postRepo.findWhere({
 					limit: 2,
 				})
 				expect(res).toHaveLength(2)
@@ -311,7 +288,7 @@ describe("SequelizeRepository", () => {
 			it("should offset", async () => {
 				await Promise.all(times(5, (i) => createPost({ likes: i })))
 
-				const res = await postsRepo.findWhere({
+				const res = await postRepo.findWhere({
 					offset: 3,
 					orderBy: { likes: "ASC" },
 				})
@@ -324,20 +301,20 @@ describe("SequelizeRepository", () => {
 			it("should throw an error if empty fields object is provided", async () => {
 				await createPost()
 				// @ts-expect-error
-				await expect(postsRepo.findWhere({ fields: {} })).rejects.toThrow(
+				await expect(postRepo.findWhere({ fields: {} })).rejects.toThrow(
 					NoFieldsSelectedError,
 				)
 			})
 
 			it("should return whole object if fields is undefined", async () => {
 				const post = await createPost()
-				const res = await postsRepo.findWhere({ fields: undefined })
+				const res = await postRepo.findWhere({ fields: undefined })
 				expect(res).toEqual([post])
 			})
 
 			it("should return specified fields", async () => {
 				const post = await createPost()
-				const res = await postsRepo.findWhere({
+				const res = await postRepo.findWhere({
 					fields: { body: true, likes: true }, //
 				})
 				expect(res).toEqual([pick(post, ["body", "likes"])])
@@ -345,7 +322,7 @@ describe("SequelizeRepository", () => {
 
 			it("should have no special treatment for id", async () => {
 				const post = await createPost()
-				const res = await postsRepo.findWhere({ fields: { likes: true } })
+				const res = await postRepo.findWhere({ fields: { likes: true } })
 				expect(res).toEqual([pick(post, ["likes"])])
 			})
 
@@ -419,7 +396,7 @@ describe("SequelizeRepository", () => {
 
 			beforeEach(async () => {
 				post = await createPost()
-				comment = await commentsRepo.createOne({
+				comment = await commentRepo.createOne({
 					data: { body: faker.lorem.paragraph(), postId: post.id },
 				})
 			})
@@ -427,7 +404,7 @@ describe("SequelizeRepository", () => {
 			it("should be possible to get fk value without relation", async () => {
 				// some ORMs (I think it was MikroORM), replace FK with relation
 				// this test is in for just in case, we switch underlying ORM engine
-				const com = await commentsRepo.findWhere({ where: { id: comment.id } })
+				const com = await commentRepo.findWhere({ where: { id: comment.id } })
 				expect(com).toEqual([
 					{
 						body: comment.body,
@@ -438,7 +415,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should be possible to get relation without returning any other field", async () => {
-				const com = await commentsRepo.findOne({
+				const com = await commentRepo.findOne({
 					where: { id: comment.id },
 					fields: { post: true }, //
 				})
@@ -446,7 +423,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should be possible to get relation without returning FK", async () => {
-				const com = await commentsRepo.findOne({
+				const com = await commentRepo.findOne({
 					where: { id: comment.id },
 					fields: { post: true }, //
 				})
@@ -454,7 +431,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should be possible to get relation without returning with some other field", async () => {
-				const com = await commentsRepo.findOne({
+				const com = await commentRepo.findOne({
 					where: { id: comment.id },
 					fields: { body: true, post: true }, //
 				})
@@ -462,7 +439,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should be possible to get relation and $fields", async () => {
-				const com = await commentsRepo.findOneOrThrow({
+				const com = await commentRepo.findOneOrThrow({
 					where: { id: comment.id },
 					fields: { post: true, $fields: true }, //
 				})
@@ -475,7 +452,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should work recursively", async () => {
-				const result = await commentsRepo.findOne({
+				const result = await commentRepo.findOne({
 					where: {},
 					fields: {
 						postId: true,
@@ -517,7 +494,7 @@ describe("SequelizeRepository", () => {
 
 			beforeEach(async () => {
 				post = await createPost()
-				info = await postsInfoRepo.createOne({
+				info = await postInfoRepo.createOne({
 					data: { additionalInfo: { hello: "world" }, postId: post.id },
 				})
 
@@ -536,7 +513,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should join properly", async () => {
-				const res = await postsInfoRepo.findById({
+				const res = await postInfoRepo.findById({
 					id: info.id,
 					fields: { id: true, additionalInfo: true, postId: true, post: true },
 				})
@@ -544,7 +521,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should work with $fields", async () => {
-				const res = await postsInfoRepo.findById({
+				const res = await postInfoRepo.findById({
 					id: info.id,
 					fields: { $fields: true, post: true },
 				})
@@ -552,7 +529,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should work specified fields", async () => {
-				const res = await postsInfoRepo.findById({
+				const res = await postInfoRepo.findById({
 					id: info.id,
 					fields: { additionalInfo: true, post: true },
 				})
@@ -560,7 +537,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should work without selected fields", async () => {
-				const res = await postsInfoRepo.findById({
+				const res = await postInfoRepo.findById({
 					id: info.id,
 					fields: { post: true },
 				})
@@ -578,7 +555,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should work recursively", async () => {
-				const result = await postsInfoRepo.findOne({
+				const result = await postInfoRepo.findOne({
 					where: {},
 					fields: {
 						id: true,
@@ -609,13 +586,13 @@ describe("SequelizeRepository", () => {
 			let info: TPostInfo
 			beforeEach(async () => {
 				post = await createPost()
-				info = await postsInfoRepo.createOne({
+				info = await postInfoRepo.createOne({
 					data: { postId: post.id, additionalInfo: { hello: "world" } },
 				})
 			})
 
 			it("should return relation", async () => {
-				const res = await postsRepo.findById({
+				const res = await postRepo.findById({
 					id: post.id,
 					fields: { id: true, info: true },
 				})
@@ -623,9 +600,9 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should return null if there is no relation", async () => {
-				await postsInfoRepo.deleteById({ id: info.id })
+				await postInfoRepo.deleteById({ id: info.id })
 
-				const res = await postsRepo.findById({
+				const res = await postRepo.findById({
 					id: post.id,
 					fields: { id: true, info: true },
 				})
@@ -633,7 +610,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should work with $fields", async () => {
-				const res = await postsRepo.findById({
+				const res = await postRepo.findById({
 					id: post.id,
 					fields: { $fields: true, info: true },
 				})
@@ -641,7 +618,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should work with no fields", async () => {
-				const res = await postsRepo.findById({
+				const res = await postRepo.findById({
 					id: post.id,
 					fields: { info: true },
 				})
@@ -649,7 +626,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should work with specified fields", async () => {
-				const res = await postsRepo.findById({
+				const res = await postRepo.findById({
 					id: post.id,
 					fields: { info: true, likes: true },
 				})
@@ -657,7 +634,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should allow recursion", async () => {
-				const res = await postsRepo.findById({
+				const res = await postRepo.findById({
 					id: post.id,
 					fields: { likes: true, info: { post: { id: true }, postId: true, id: true } },
 				})
@@ -675,206 +652,239 @@ describe("SequelizeRepository", () => {
 			})
 		})
 
-		describe.todo("one to many", () => {})
-		describe.todo("many to many", () => {})
+		describe("one to many", () => {
+			let post: TPost
+			let comments: TComment[]
+			beforeEach(async () => {
+				post = await createPost()
+				// order is important for assertions
+				comments = await Promise.all([
+					commentRepo.createOne({
+						data: { body: faker.lorem.sentence(), postId: post.id },
+					}),
+					commentRepo.createOne({
+						data: { body: faker.lorem.sentence(), postId: post.id },
+					}),
+				])
+			})
+
+			it("should return joined relation", async () => {
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { id: true, comments: true },
+				})
+				expect(result).toEqual({
+					id: post.id,
+					comments,
+				})
+			})
+			it("should return empty array when there is no items", async () => {
+				await commentRepo.deleteWhere({
+					where: { id: { $in: comments.map((c) => c.id) } },
+				})
+
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { id: true, comments: true },
+				})
+
+				expect(result).toEqual({
+					id: post.id,
+					comments: [],
+				})
+			})
+			it("should work with no fields", async () => {
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { comments: true },
+				})
+				expect(result).toEqual({
+					comments,
+				})
+			})
+
+			it("should work with $fields", async () => {
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { $fields: true, comments: true },
+				})
+				expect(result).toEqual({
+					...post,
+					comments,
+				})
+			})
+			it("should work with specified fields", async () => {
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { id: true, body: true, comments: true },
+				})
+				expect(result).toEqual({
+					id: post.id,
+					body: post.body,
+					comments,
+				})
+			})
+			it("should work recursively", async () => {
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: {
+						id: true,
+						body: true,
+						comments: {
+							id: true,
+							post: { createdAt: true, comments: { postId: true } },
+						},
+					},
+				})
+				expect(result).toEqual({
+					id: post.id,
+					body: post.body,
+					comments: comments.map((c) => ({
+						id: c.id,
+						post: {
+							createdAt: post.createdAt,
+							comments: comments.map((c) => ({ postId: c.postId })),
+						},
+					})),
+				})
+			})
+			// THIS IS IMPORTANT
+			it.todo("canRead should be used for nested")
+		})
+		describe("many to many", () => {
+			let post: TPost
+			let tags: TTag[]
+			let postTags: TPostTag[]
+			beforeEach(async () => {
+				post = await createPost()
+				tags = await tagRepo.createMany({
+					data: times(4, (i) => ({ name: faker.lorem.word() + i })),
+				})
+				postTags = await postTagRepo.createMany({
+					data: tags.slice(0, 2).map((t) => ({ postId: post.id, tagId: t.id })),
+				})
+			})
+
+			it("should return joined relation", async () => {
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { id: true, tags: true },
+				})
+				expect(result).toEqual({
+					id: post.id,
+					tags: tags.slice(0, 2),
+				})
+			})
+			it("should return empty array when there is no items", async () => {
+				await postTagRepo.deleteWhere({
+					where: { postId: post.id },
+				})
+
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { id: true, comments: true },
+				})
+
+				expect(result).toEqual({
+					id: post.id,
+					comments: [],
+				})
+			})
+
+			it("should work with no fields", async () => {
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { tags: true },
+				})
+				expect(result).toEqual({
+					tags: tags.slice(0, 2),
+				})
+			})
+
+			it("should work with $fields", async () => {
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { $fields: true, tags: true },
+				})
+				expect(result).toEqual({
+					...post,
+					tags: tags.slice(0, 2),
+				})
+			})
+			it("should work with specified fields ", async () => {
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: { id: true, body: true, tags: true },
+				})
+				expect(result).toEqual({
+					id: post.id,
+					body: post.body,
+					tags: tags.slice(0, 2),
+				})
+			})
+			it("should work recursively", async () => {
+				const thisTags = tags.slice(0, 2)
+				const result = await postRepo.findById({
+					id: post.id,
+					fields: {
+						id: true,
+						tags: {
+							id: true,
+							posts: { id: true },
+						},
+					},
+				})
+
+				expect(result).toEqual({
+					id: post.id,
+					tags: thisTags.map((t) => ({
+						id: t.id,
+						posts: [{ id: post.id }],
+					})),
+				})
+			})
+			// TODO FIXME THIS IS IMPORTANT
+			it.todo("canRead should be used for nested")
+		})
 	})
-
-	// 	describe("one-to-one", () => {
-	// 		const postInfo = mockData.postInfo[0]!
-	// 		const post = mockData.posts.find((p) => p.id === postInfo.postId) ?? throw500(13212223)
-
-	// 		let piRepo: SequelizeRepository<TPostInfo>
-
-	// 		beforeEach(() => {
-	// 			piRepo = new SequelizeRepository<TPostInfo>(sqService, "postsInfo")
-	// 		})
-
-	// 		describe("owner", () => {
-	// 			it("get o2o relation", async () => {
-	// 				const res = await postsRepo.findWhere({ fields: { postInfo: true }, where: post.id })
-	// 				expect(fixTestDate(res[0]!)).toEqual({ postInfo })
-	// 			})
-	// 		})
-
-	// 		describe("ref-one-to-one", () => {
-	// 			it("get fk property without getting relation", async () => {
-	// 				const res = await piRepo.findWhere({ fields: { postId: true }, where: postInfo.id })
-	// 				expect(fixTestDate(res[0]!)).toEqual({ postId: postInfo.postId })
-	// 			})
-
-	// 			it("get should not set relation property to it's FK", async () => {
-	// 				const res = await piRepo.findWhere({ where: postInfo.id })
-	// 				expect(fixTestDate(res[0]!).post).toBeUndefined()
-	// 			})
-
-	// 			it("get relation without getting fk working", async () => {
-	// 				// this is a problem with mikro-orm
-	// 				// but we are fixing result
-	// 				const res = await piRepo.findWhere({ fields: { post: true }, where: postInfo.id })
-	// 				expect(fixTestDate(res[0]!)).toEqual({ post })
-	// 			})
-	// 		})
-	// 	})
-
-	// 	describe("one-to-many", () => {
-	// 		const post = mockData.posts[0]!
-	// 		const comments = alphabetical(
-	// 			mockData.comments.filter((c) => c.postId === post.id),
-	// 			(c) => c.body,
-	// 		)
-	// 		//
-	// 		it("should join properly", async () => {
-	// 			const res = await postsRepo.findWhere({
-	// 				fields: { comments: true },
-	// 				where: post.id,
-	// 			})
-	// 			const dbPost = res[0]!
-	// 			const dbComments = alphabetical(dbPost.comments, (c) => c.body)
-	// 			expect(dbComments.map((c) => fixTestDate(c))).toEqual(comments)
-	// 		})
-
-	// 		it("join get only specified fields", async () => {
-	// 			const res = await postsRepo.findWhere({
-	// 				fields: { comments: { body: true, postId: true, id: true } },
-	// 				where: post.id,
-	// 			})
-	// 			const dbPost = res[0]!
-	// 			const dbComments = alphabetical(dbPost.comments, (c) => c.body)
-	// 			expect(dbComments).toEqual(
-	// 				comments.map((c) => ({ body: c.body, postId: c.postId, id: c.id })),
-	// 			)
-	// 		})
-
-	// 		// it("join get always get id", async () => {
-	// 		//   const res = await repo.findWhere({
-	// 		//     fields: { comments: { postId: true } },
-	// 		//     where: post.id,
-	// 		//   })
-	// 		//   const dbPost = res[0]!
-	// 		//   const dbComments = sortBy(dbPost.comments, (c) => c.id)
-	// 		//   expect(dbComments).toEqual(comments.map((c) => ({ postId: c.postId, id: c.id })))
-	// 		// })
-
-	// 		it("should not get FK from child as it's needed to join", async () => {
-	// 			// fixed with postprocessing. By default it does provide
-	// 			const res = await postsRepo.findWhere({
-	// 				fields: { comments: { body: true } },
-	// 				where: post.id,
-	// 			})
-	// 			const dbPost = res[0]!
-	// 			const dbComments = alphabetical(dbPost.comments, (c) => c.body)
-	// 			expect(dbComments).toEqual(comments.map((c) => ({ body: c.body })))
-	// 		})
-	// 	})
-
-	// 	describe("many-to-many", () => {
-	// 		const post = mockData.posts[0]!
-	// 		const postTags = mockData.postsTags.filter((c) => c.postId === post.id)
-	// 		const tags = alphabetical(
-	// 			mockData.tags.filter((t) => postTags.some((pt) => pt.tagId === t.id)),
-	// 			(t) => t.id,
-	// 		)
-
-	// 		it("should join m2m properly", async () => {
-	// 			const res = await postsRepo.findWhere({ fields: { tags: true }, where: post.id })
-	// 			const dbPost = res[0]!
-	// 			const dbTags = alphabetical(dbPost.tags, (t) => t.id)
-	// 			expect(dbTags).toEqual(tags)
-	// 		})
-
-	// 		it("should always get pk", async () => {
-	// 			const res = await postsRepo.findWhere({ fields: { tags: { name: true } }, where: post.id })
-	// 			const dbPost = res[0]!
-	// 			// FIXME???
-	// 			const dbTags = alphabetical(dbPost.tags, (t) => t.id ?? "----")
-	// 			expect(dbTags).toEqual(tags.map((t) => ({ id: t.id, name: t.name })))
-	// 		})
-
-	// 		it("should get specified fields", async () => {
-	// 			const res = await postsRepo.findWhere({ fields: { tags: { id: true } }, where: post.id })
-	// 			const dbPost = res[0]!
-	// 			const dbTags = alphabetical(dbPost.tags, (t) => t.id)
-	// 			expect(dbTags).toEqual(tags.map((t) => ({ id: t.id })))
-	// 		})
-	// 	})
-
-	// 	describe("recursively", () => {
-	// 		// it didn't work in mikro orm but should work in sq
-	// 		it.skip("should work recursively", async () => {
-	// 			// it's not working properly
-	// 			// it's reusing records from relations, so it's always selecting rows first selected field.
-	// 			// that's not good for type safety
-	// 			// and only way is to generate ast of relations, take all fields that are requested.
-	// 			// then pass to mikro orm, and in the end handle redundant fields
-	// 			// it only is invalid when same entity is referenced multiple times
-	// 			const res = await postsRepo.findWhere({
-	// 				where: stub.post.id,
-	// 				fields: {
-	// 					body: true,
-	// 					tags: { posts: { id: true, body: true, postInfo: true } },
-	// 					comments: { post: true },
-	// 					postInfo: { id: true, post: true },
-	// 					// postInfo: true,
-	// 				},
-	// 			})
-	// 			const dbPost = res[0]!
-
-	// 			expect(dbPost.postInfo).toEqual({
-	// 				id: stub.postInfo.id,
-	// 				post: stub.post,
-	// 				// postId: stub.post.id,
-	// 			})
-	// 			// expect(dbPost.postInfo.post).toEqual(dbPost)
-	// 		})
-
-	// 		it("should filter", async () => {
-	// 			const res = await postsRepo.findWhere({
-	// 				fields: { body: true, postInfo: true },
-	// 				// where: { comments: { body: "HELLO WORLD" } },
-	// 				where: { comments: { id: v4() } },
-	// 			})
-	// 			expect(res).toBeDefined()
-	// 		})
-	// 	})
-	// })
 
 	describe("create", () => {
 		describe("createOne", () => {
 			beforeEach(() => {
-				postsRepo.createMany = vi.fn()
+				postRepo.createMany = vi.fn()
 			})
 
 			it("should call createMany", async () => {
-				vi.mocked(postsRepo.createMany).mockImplementation(async () => ["RESULT" as never])
-				const res = await postsRepo.createOne({
+				vi.mocked(postRepo.createMany).mockImplementation(async () => ["RESULT" as never])
+				const res = await postRepo.createOne({
 					data: { likes: 5 } as never,
 					// @ts-expect-error
 					test: "ME",
 				})
 				expect(res).toEqual("RESULT")
-				expect(postsRepo.createMany).toBeCalledWith({
+				expect(postRepo.createMany).toBeCalledWith({
 					data: [{ likes: 5 }],
 					test: "ME",
 				})
 			})
 
 			it("should throw if params data is array", async () => {
-				vi.mocked(postsRepo.createMany).mockResolvedValue([])
-				await expect(postsRepo.createOne({ data: [] as never })).rejects.toThrow(
+				vi.mocked(postRepo.createMany).mockResolvedValue([])
+				await expect(postRepo.createOne({ data: [] as never })).rejects.toThrow(
 					ZmajOrmError,
 				)
 			})
 
 			it("should throw if params data is not object", async () => {
-				vi.mocked(postsRepo.createMany).mockResolvedValue([])
-				await expect(postsRepo.createOne({ data: "hello" as never })).rejects.toThrow(
+				vi.mocked(postRepo.createMany).mockResolvedValue([])
+				await expect(postRepo.createOne({ data: "hello" as never })).rejects.toThrow(
 					ZmajOrmError,
 				)
 			})
 
 			it("should throw if result is not single record", async () => {
-				vi.mocked(postsRepo.createMany).mockResolvedValue([])
-				await expect(postsRepo.createOne({ data: {} as never })).rejects.toThrow(
+				vi.mocked(postRepo.createMany).mockResolvedValue([])
+				await expect(postRepo.createOne({ data: {} as never })).rejects.toThrow(
 					InternalOrmProblem,
 				)
 			})
@@ -896,19 +906,19 @@ describe("SequelizeRepository", () => {
 
 			it("should create many record", async () => {
 				const data = times(3, () => randPostStub())
-				await postsRepo.createMany({ data })
-				const res = await postsRepo.findWhere({})
+				await postRepo.createMany({ data })
+				const res = await postRepo.findWhere({})
 				expect(res).toMatchObject(data)
 			})
 
 			it("should return created records", async () => {
 				const data = times(3, () => randPostStub())
-				const res = await postsRepo.createMany({ data })
+				const res = await postRepo.createMany({ data })
 				expect(sort(res, (p) => p.likes)).toMatchObject(sort(data, (p) => p.likes))
 			})
 
 			it("should use createdAt", async () => {
-				const res = await postsRepo.createMany({
+				const res = await postRepo.createMany({
 					data: [randPostStub()],
 				})
 				const savedYear = res[0]!.createdAt
@@ -917,7 +927,7 @@ describe("SequelizeRepository", () => {
 
 			it("should throw if createdAt value is provided", async () => {
 				await expect(
-					postsRepo.createMany({
+					postRepo.createMany({
 						data: [{ ...randPostStub(), createdAt: y2020 as never }],
 					}),
 				).rejects.toThrow(FieldCreateForbiddenError)
@@ -985,7 +995,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should handle setting UUID", async () => {
-				const [first] = await postsRepo.createMany({
+				const [first] = await postRepo.createMany({
 					data: [{ body: "Hello", likes: 5, title: "World" }],
 				})
 				expect(first?.id).toMatch(uuidRegex)
@@ -993,7 +1003,7 @@ describe("SequelizeRepository", () => {
 
 			it("should allow for user to provide it's uuid", async () => {
 				const uuid = v4()
-				const [first] = await postsRepo.createMany({
+				const [first] = await postRepo.createMany({
 					overrideCanCreate: true,
 					data: [{ body: "Hello", likes: 5, title: "World", id: uuid }],
 				})
@@ -1001,7 +1011,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should return dates as Date object", async () => {
-				const [first] = await postsRepo.createMany({
+				const [first] = await postRepo.createMany({
 					data: [{ body: "Hello", likes: 5, title: "World" }],
 				})
 				expect(first?.createdAt).toBeInstanceOf(Date)
@@ -1011,7 +1021,7 @@ describe("SequelizeRepository", () => {
 				await sq.repoManager
 					.transaction({
 						fn: async (trx) => {
-							await postsRepo.createMany({
+							await postRepo.createMany({
 								data: [{ body: "Hello", likes: 5, title: "World" }],
 								trx,
 							})
@@ -1019,7 +1029,7 @@ describe("SequelizeRepository", () => {
 						},
 					})
 					.catch(() => {})
-				const inDb = await postsRepo.findWhere({})
+				const inDb = await postRepo.findWhere({})
 				expect(inDb).toHaveLength(0)
 			})
 		})
@@ -1030,17 +1040,17 @@ describe("SequelizeRepository", () => {
 			const id = v4()
 
 			beforeEach(async () => {
-				postsRepo.updateWhere = vi.fn(async () => [{ test: id } as any])
+				postRepo.updateWhere = vi.fn(async () => [{ test: id } as any])
 			})
 
 			it("should call updateWhere in proper format", async () => {
-				await postsRepo.updateById({
+				await postRepo.updateById({
 					id,
 					trx: "TRX" as never,
 					changes: { body: "hello" },
 					overrideCanUpdate: false,
 				})
-				expect(postsRepo.updateWhere).toBeCalledWith({
+				expect(postRepo.updateWhere).toBeCalledWith({
 					where: id,
 					trx: "TRX",
 					changes: { body: "hello" },
@@ -1048,14 +1058,14 @@ describe("SequelizeRepository", () => {
 				})
 			})
 			it("should throw NotFound if item does not exist", async () => {
-				vi.mocked(postsRepo.updateWhere).mockResolvedValue([])
+				vi.mocked(postRepo.updateWhere).mockResolvedValue([])
 				await expect(
-					postsRepo.updateById({ id, changes: { body: "hello" } }),
+					postRepo.updateById({ id, changes: { body: "hello" } }),
 				).rejects.toThrow(RecordNotFoundError)
 			})
 
 			it("should return response from findWhere", async () => {
-				const result = await postsRepo.updateById({
+				const result = await postRepo.updateById({
 					id,
 					changes: { body: "hello" },
 				})
@@ -1074,12 +1084,12 @@ describe("SequelizeRepository", () => {
 			it("should update records", async () => {
 				const uuid = v4()
 
-				await postsRepo.updateWhere({
+				await postRepo.updateWhere({
 					changes: { body: uuid },
 					where: { id: { $ne: v4() } },
 				})
 
-				const found = await postsRepo.findWhere({
+				const found = await postRepo.findWhere({
 					orderBy: { likes: "ASC" }, //
 				})
 				expect(found).toMatchObject(posts.map((p) => ({ ...p, body: uuid })))
@@ -1087,7 +1097,7 @@ describe("SequelizeRepository", () => {
 			it("should return updated records", async () => {
 				const uuid = v4()
 
-				const updated = await postsRepo.updateWhere({
+				const updated = await postRepo.updateWhere({
 					changes: { body: uuid },
 					where: { id: { $ne: v4() } },
 				})
@@ -1154,22 +1164,22 @@ describe("SequelizeRepository", () => {
 			const id = v4()
 
 			beforeEach(async () => {
-				postsRepo.deleteWhere = vi.fn(async () => [{ test: id } as any])
+				postRepo.deleteWhere = vi.fn(async () => [{ test: id } as any])
 			})
 
 			it("should call deleteWhere in proper format", async () => {
-				await postsRepo.deleteById({ id, trx: "TRX" as never })
-				expect(postsRepo.deleteWhere).toBeCalledWith({ where: id, trx: "TRX" })
+				await postRepo.deleteById({ id, trx: "TRX" as never })
+				expect(postRepo.deleteWhere).toBeCalledWith({ where: id, trx: "TRX" })
 			})
 			it("should throw NotFound if item does not exist", async () => {
-				vi.mocked(postsRepo.deleteWhere).mockResolvedValue([])
-				await expect(postsRepo.deleteById({ id, trx: "TRX" as never })).rejects.toThrow(
+				vi.mocked(postRepo.deleteWhere).mockResolvedValue([])
+				await expect(postRepo.deleteById({ id, trx: "TRX" as never })).rejects.toThrow(
 					RecordNotFoundError,
 				)
 			})
 
 			it("should return response from findWhere", async () => {
-				const result = await postsRepo.deleteById({ id, trx: "TRX" as never })
+				const result = await postRepo.deleteById({ id, trx: "TRX" as never })
 				expect(result).toEqual({ test: id })
 			})
 		})
@@ -1182,13 +1192,13 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should delete items", async () => {
-				await postsRepo.deleteWhere({ where: { likes: { $lte: 1 } } })
-				const remaining = await postsRepo.findWhere({})
+				await postRepo.deleteWhere({ where: { likes: { $lte: 1 } } })
+				const remaining = await postRepo.findWhere({})
 				expect(remaining).toHaveLength(2)
 			})
 
 			it("should return deleted items", async () => {
-				const deleted = await postsRepo.deleteWhere({ where: { likes: { $gte: 2 } } })
+				const deleted = await postRepo.deleteWhere({ where: { likes: { $gte: 2 } } })
 
 				expect(deleted).toMatchObject(posts.slice(2))
 			})
@@ -1197,12 +1207,12 @@ describe("SequelizeRepository", () => {
 				await sq.repoManager
 					.transaction({
 						fn: async (trx) => {
-							await postsRepo.deleteWhere({ where: { likes: 0 }, trx })
+							await postRepo.deleteWhere({ where: { likes: 0 }, trx })
 							throw new Error("Prevent deleting")
 						},
 					})
 					.catch(() => {})
-				const inDb = await postsRepo.findWhere({})
+				const inDb = await postRepo.findWhere({})
 				expect(inDb).toHaveLength(posts.length)
 			})
 
@@ -1214,16 +1224,16 @@ describe("SequelizeRepository", () => {
 	describe("findOne", () => {
 		it("should call findMany with correct params", async () => {
 			const mockPost = TPostStub()
-			postsRepo.findWhere = vi.fn(async () => [mockPost as never])
+			postRepo.findWhere = vi.fn(async () => [mockPost as never])
 
-			const res = await postsRepo.findOne({
+			const res = await postRepo.findOne({
 				fields: { body: true, tags: { id: true } },
 				orderBy: { likes: "ASC" },
 				where: { body: { $ne: "Hello" } },
 				trx: "TRX" as any,
 			})
 			expect(res).toEqual(mockPost)
-			expect(postsRepo.findWhere).toBeCalledWith({
+			expect(postRepo.findWhere).toBeCalledWith({
 				fields: { body: true, tags: { id: true } },
 				orderBy: { likes: "ASC" },
 				where: { body: { $ne: "Hello" } },
@@ -1233,8 +1243,8 @@ describe("SequelizeRepository", () => {
 		})
 		it("should return undefined if there is no record", async () => {
 			//
-			postsRepo.findWhere = vi.fn(async () => [])
-			const res = await postsRepo.findOne({})
+			postRepo.findWhere = vi.fn(async () => [])
+			const res = await postRepo.findOne({})
 			expect(res).toBeUndefined()
 		})
 	})
@@ -1242,16 +1252,16 @@ describe("SequelizeRepository", () => {
 	describe("findOneOrThrow", () => {
 		it("should call findOne with correct params", async () => {
 			const mockPost = TPostStub()
-			postsRepo.findOne = vi.fn(async () => mockPost as never)
+			postRepo.findOne = vi.fn(async () => mockPost as never)
 
-			const res = await postsRepo.findOneOrThrow("any_params" as never)
+			const res = await postRepo.findOneOrThrow("any_params" as never)
 			expect(res).toEqual(mockPost)
-			expect(postsRepo.findOne).toBeCalledWith("any_params")
+			expect(postRepo.findOne).toBeCalledWith("any_params")
 		})
 
 		it("should throw if there is no record", async () => {
-			postsRepo.findOne = vi.fn(async () => undefined)
-			await expect(postsRepo.findOneOrThrow({})).rejects.toThrow()
+			postRepo.findOne = vi.fn(async () => undefined)
+			await expect(postRepo.findOneOrThrow({})).rejects.toThrow()
 		})
 	})
 
@@ -1261,12 +1271,12 @@ describe("SequelizeRepository", () => {
 		})
 
 		it("should not make any modification to response", async () => {
-			const res = await postsRepo.rawQuery("select * from posts;")
+			const res = await postRepo.rawQuery("select * from posts;")
 			expect(res).toMatchObject([{ created_at: expect.any(String) }])
 		})
 
 		it("should not transform casing", async () => {
-			const res = await postsRepo.rawQuery("select * from posts;")
+			const res = await postRepo.rawQuery("select * from posts;")
 			expect(res).not.toMatchObject([{ createdAt: expect.anything() }])
 		})
 	})
