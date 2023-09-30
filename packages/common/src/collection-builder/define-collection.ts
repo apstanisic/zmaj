@@ -53,9 +53,6 @@ type DefineCollectionParams = {
 // 	return col
 // }
 
-// let models = createModelsStore()
-// const models = createModelsStore()
-
 // type RelationKeys<TModel extends BaseModel> = keyof Record<
 // 	keyof ConditionalPick<TModel, ModelRelationDefinition<any, any>>,
 // 	{ label: string }

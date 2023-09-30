@@ -128,10 +128,10 @@ describe("should return object left contain fk and know fk is not null", () => {
 		expectTypeOf<{ post: undefined }>(val)
 	})
 
-	it("should return optional when field is nullable ", () => {
+	it("should return null when field is nullable ", () => {
 		const val = {} as ReturnedProperties<News, { post: true }, false>
 
-		expectTypeOf<{ post: GetReadFields<Post, false> | undefined }>(val)
+		expectTypeOf<{ post: GetReadFields<Post, false> | null }>(val)
 		// @ts-expect-error
 		expectTypeOf<{ post: GetReadFields<Post, false> }>(val)
 		// @ts-expect-error
@@ -255,7 +255,7 @@ it("should respect hidden with $fields", () => {
 	})
 })
 
-it("should always return optional for ref o2o", () => {
+it("should always return nullable for ref o2o", () => {
 	// If fk is not located in it's table, we cannot guarantee that it exists.
 	// For example Writer is created, and they can have 1 post. But that post might not yet exist
 	class Post extends BaseModel {
@@ -279,6 +279,6 @@ it("should always return optional for ref o2o", () => {
 
 	type Result = ReturnedProperties<Writer, { post: true }, true>
 
-	expectTypeOf<Result["post"]>(undefined)
+	expectTypeOf<Result["post"]>(null)
 	expectTypeOf<Result["post"]>({ id: "", title: "", writer: NEVER, writerId: "" })
 })

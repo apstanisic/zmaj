@@ -44,7 +44,12 @@ export class UsersService {
 		// userId: string,
 		trx?: Transaction,
 	): Promise<UserWithSecret | undefined> {
-		const users = await this.repo.findWhere({ limit: 1, where: filter, includeHidden: true, trx })
+		const users = await this.repo.findWhere({
+			limit: 1,
+			where: filter,
+			includeHidden: true,
+			trx,
+		})
 		const user = users[0] as UserWithSecret | undefined
 
 		if (user && (user.password === undefined || user.otpToken === undefined)) throw500(3784329)
@@ -177,7 +182,11 @@ export class UsersService {
 		trx?: Transaction
 	}): Promise<void> {
 		const { data, user, trx } = params
-		const valid = await this.checkPassword({ userId: user.userId, password: data.oldPassword, trx })
+		const valid = await this.checkPassword({
+			userId: user.userId,
+			password: data.oldPassword,
+			trx,
+		})
 		if (!valid) throw400(967123, emsg.invalidPassword)
 		await this.setPassword({ userId: user.userId, newPassword: data.newPassword, trx })
 	}

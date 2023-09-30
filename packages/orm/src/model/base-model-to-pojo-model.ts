@@ -1,5 +1,4 @@
 import { NameTransformer } from "@orm/NameTransformer"
-import { ModelsState } from "@orm/create-models-store"
 import { ZmajOrmError } from "@orm/orm-errors"
 import { BaseModel } from "./base-model"
 import { PojoModel, PojoModelField, PojoModelRelation } from "./pojo-model"
@@ -9,34 +8,33 @@ import { PojoModel, PojoModelField, PojoModelRelation } from "./pojo-model"
  */
 export function baseModelToPojoModel(
 	ModelClass: BaseModel | PojoModel,
-	getOne: ModelsState["getOne"],
+	allModels: (BaseModel | PojoModel)[],
 	transformer?: NameTransformer,
 ): PojoModel {
-	if (ModelClass instanceof BaseModel) {
-		const model = ModelClass
-		const fields = convertAllModelFieldsFromClassToPojo(model.fields, transformer)
-		const fieldsArr = Object.entries(fields)
-		const updatedAtField = fieldsArr.find(([_, config]) => config.isUpdatedAt)?.[0] ?? null
-		const createdAtField = fieldsArr.find(([_, config]) => config.isCreatedAt)?.[0] ?? null
+	if (!(ModelClass instanceof BaseModel)) return ModelClass
 
-		return {
-			name: model.name,
-			tableName: model.tableName ?? model.name,
-			idField: model.getPkField(),
-			fields,
-			updatedAtField,
-			createdAtField,
-			relations: convertAllModelRelationsFromClassToPojo(ModelClass, getOne),
-			disabled: model.disabled,
-		}
-	} else {
-		return ModelClass
+	const model = ModelClass
+	const fields = convertAllModelFieldsFromClassToPojo(model.fields, transformer)
+	const fieldsArr = Object.entries(fields)
+	const updatedAtField = fieldsArr.find(([_, config]) => config.isUpdatedAt)?.[0] ?? null
+	const createdAtField = fieldsArr.find(([_, config]) => config.isCreatedAt)?.[0] ?? null
+
+	return {
+		isPojoModel: true,
+		name: model.name,
+		tableName: model.tableName ?? model.name,
+		idField: model.getPkField(),
+		fields,
+		updatedAtField,
+		createdAtField,
+		relations: convertAllModelRelationsFromClassToPojo(ModelClass, allModels),
+		disabled: model.disabled,
 	}
 }
 
 function convertAllModelRelationsFromClassToPojo(
 	model: BaseModel,
-	getOne: ModelsState["getOne"],
+	allModels: (BaseModel | PojoModel)[],
 ): PojoModel["relations"] {
 	const relations = model.getRelations()
 
@@ -44,14 +42,12 @@ function convertAllModelRelationsFromClassToPojo(
 
 	for (const [property, relation] of Object.entries(relations)) {
 		const type = relation.options.type
-		const otherSide = getOne(relation.modelFn())
+		const otherSideModel = new (relation.modelFn())() as BaseModel
+		const otherSide = allModels.find((m) => m.name === otherSideModel.name)
+		if (!otherSide) throw new ZmajOrmError("No other side")
 
 		const otherSidePk =
-			otherSide instanceof BaseModel
-				? otherSide.getPkField()
-				: Object.entries(otherSide.fields).find(
-						([field, config]) => config.isPrimaryKey,
-				  )?.[0]
+			otherSide instanceof BaseModel ? otherSide.getPkField() : otherSide.idField
 
 		if (!otherSidePk) throw new ZmajOrmError("No PK")
 
@@ -70,7 +66,9 @@ function convertAllModelRelationsFromClassToPojo(
 				referencedModel: otherSide.name,
 			}
 		} else if (type === "many-to-many") {
-			const junctionModel = getOne(relation.options.junction())
+			const junctionModel = new (relation.options.junction())()
+			// const junction = allModels.find(am => am.name === junctionModelRelation.name)
+			// const junctionModel = getOne(relation.options.junction())
 			expanded[property] = {
 				type,
 				field: model.getPkField(),
@@ -98,7 +96,7 @@ function convertAllModelFieldsFromClassToPojo(
 function convertModelFieldFromClassToPojo(
 	fieldName: string,
 	field: BaseModel["fields"][string],
-	transformer: NameTransformer = ({ key }) => key,
+	transformer?: NameTransformer,
 ): PojoModelField {
 	return {
 		fieldName,
@@ -106,7 +104,8 @@ function convertModelFieldFromClassToPojo(
 		canCreate: field.canCreate,
 		canUpdate: field.canUpdate,
 		canRead: field.canRead,
-		columnName: field.columnName ?? transformer({ key: fieldName, type: "column" }),
+		columnName:
+			field.columnName ?? transformer?.({ key: fieldName, type: "column" }) ?? fieldName,
 		hasDefaultValue: field.hasDefault,
 		isAutoIncrement: field.isAutoIncrement,
 		isNullable: field.nullable,

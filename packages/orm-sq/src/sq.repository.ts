@@ -53,6 +53,8 @@ const symbolComparisons: Record<Comparison | "$and" | "$or", symbol> = {
 	$nin: Op.notIn,
 	$and: Op.and,
 	$or: Op.or,
+	//TODO
+	// $not: Op.not
 }
 export class SequelizeRepository<
 	TModel extends BaseModel = BaseModel,
@@ -167,7 +169,10 @@ export class SequelizeRepository<
 			)
 			// Must find since SQLite does not return all data (data that has default value)
 			// TODO Maybe add check for PG
-			return this.findWhere({ where: created.map((c) => c.getDataValue(this.pk)) })
+			return this.findWhere({
+				where: created.map((c) => c.getDataValue(this.pk)),
+				trx: params.trx,
+			})
 			// return created.map((v) => v.get({ plain: true }))
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {

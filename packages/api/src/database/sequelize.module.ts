@@ -17,6 +17,7 @@ import { DatabaseConfig } from "./database.config"
 		{
 			provide: Orm,
 			inject: [DatabaseConfig],
+
 			useFactory: async (config: DatabaseConfig) => {
 				const orm = new Orm({
 					config,

@@ -37,7 +37,8 @@
 		"test": "cd ../.. && vitest run packages/e2e-packaging --passWithNoTests",
 		"test-packaging": "vitest run",
 		"tsc": "tsc",
-		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
+		"test-watch": "cd ../.. && vitest watch packages/e2e-packaging --passWithNoTests"
 	},
 	"dependencies": {
 		"@zmaj-js/orm": "workspace:^",

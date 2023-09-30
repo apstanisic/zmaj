@@ -63,21 +63,14 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 			const filter = afterEmit2.filter
 			const limit = afterEmit2.options.limit ?? 20
 			if (!isEmpty(sort)) {
-				const fieldsCanRead = this.authz.getRuleFields({
+				const allowed = this.authz.check({
 					action: "read",
 					resource: afterEmit2.collection,
 					user: afterEmit2.user,
+					field: Object.keys(sort),
 				})
 
-				if (fieldsCanRead === null) {
-					// nothing, allowed
-				} else if (fieldsCanRead === undefined) {
-					//
-					throw403(409381, emsg.invalidQueryKey("sort"))
-				} else {
-					const allAllowed = Object.keys(sort).every((field) => fieldsCanRead.includes(field))
-					if (!allAllowed) throw403(499321, emsg.invalidQueryKey("sort"))
-				}
+				if (!allowed) throw403(499321, emsg.invalidQueryKey("sort"))
 
 				const invalidSort = Object.keys(sort).find(
 					(field) => collection.fields[field]?.sortable !== true,
@@ -92,7 +85,11 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 				offset: pageToOffset(page ?? 1, limit),
 				orderBy: sort,
 				where:
-					filter.type === "id" ? [filter.id] : filter.type === "ids" ? filter.ids : filter.where,
+					filter.type === "id"
+						? [filter.id]
+						: filter.type === "ids"
+						? filter.ids
+						: filter.where,
 			}
 
 			let items: GetReadFields<BaseModel, false>[]
@@ -167,7 +164,8 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 			// we have to check every field for nested relation
 			if (isStruct(fieldValue)) {
 				const rightSide =
-					this.infraState.getCollection(relation.otherSide.collectionName) ?? throw500(97234)
+					this.infraState.getCollection(relation.otherSide.collectionName) ??
+					throw500(97234)
 				this.checkIfJoinsAllowed(fieldValue, rightSide)
 			}
 		}

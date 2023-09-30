@@ -87,7 +87,11 @@ export class CrudCreateService<Item extends Struct = Struct> extends CrudBaseSer
 				{ ...afterEmit1, trx: em, type: "start" }, //
 			)
 
-			const createdRecords = await repo.createMany({ trx: em, data: afterEmit2.dto as any[] })
+			const createdRecords = await repo.createMany({
+				trx: em,
+				data: afterEmit2.dto as any[],
+				overrideCanCreate: params.overrideCanCreate,
+			})
 
 			const afterEmit3 = await this.emit<CreateFinishEvent<Item>>(
 				{ ...afterEmit2, result: createdRecords as Item[], type: "finish" }, //

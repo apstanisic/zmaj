@@ -19,7 +19,7 @@ import {
 } from "@zmaj-js/common"
 import flat from "flat"
 import { AuthorizationConfig } from "../authorization.config"
-import { AuthorizationRules } from "../authorization.rules"
+import { AuthorizationRules, RulesParams } from "../authorization.rules"
 import { AuthorizationState } from "./authorization.state"
 import { builtInTransformers } from "./condition-transformers"
 import { AuthzConditionTransformer } from "./condition-transformers/condition-transformer.type"
@@ -60,7 +60,8 @@ export class DbAuthorizationRules extends AuthorizationRules {
 	 */
 	private readonly conditionTransformers: Record<string, AuthzConditionTransformer>
 
-	getRules(user?: AuthUser): AnyMongoAbility {
+	// I can optimize this by passing resource that we need
+	getRules({ action, resource, user }: RulesParams): AnyMongoAbility {
 		if (user?.roleId === ADMIN_ROLE_ID) return allAllowed
 
 		const abilities = new AbilityBuilder(createMongoAbility)
@@ -70,7 +71,13 @@ export class DbAuthorizationRules extends AuthorizationRules {
 		// If role no longer exist, require user to sign in again
 		if (!role) throw401(70039, emsg.sessionExpired)
 
-		for (const permission of role.permissions) {
+		const relevantPermissions = resource
+			? role.rules[resource] ?? [] //
+			: Object.values(role.rules).flat()
+
+		for (const permission of relevantPermissions) {
+			// if user specified action they need this rule for, and is not current, skip it
+			if (action && permission.action !== action) continue
 			// If no field is allowed, don't add permission
 			if (permission.fields && permission.fields.length === 0) continue
 
@@ -112,7 +119,7 @@ export class DbAuthorizationRules extends AuthorizationRules {
 		permission,
 	}: {
 		permission: Readonly<Permission>
-		user?: AuthUser
+		user: AuthUser | null
 	}): Struct {
 		const delimiter = FLAT_DELIMITER
 		const conditions = permission.conditions ?? {}
@@ -140,7 +147,7 @@ export class DbAuthorizationRules extends AuthorizationRules {
 			// It will return everything after ":", or undefined if there is no ":"
 			const modifier = valueSections[1]
 
-			flatConditions[trKey] = transformer.transform({ user, modifier })
+			flatConditions[trKey] = transformer.transform({ user: user ?? undefined, modifier })
 		}
 
 		return unflatten<Struct, Struct>(flatConditions, { delimiter })

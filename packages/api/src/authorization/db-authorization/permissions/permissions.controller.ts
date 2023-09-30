@@ -8,12 +8,11 @@ import { CrudService } from "@api/crud/crud.service"
 import { Controller, Delete, Get, Post, Put } from "@nestjs/common"
 import {
 	Data,
-	endpoints,
 	Permission,
 	PermissionCollection,
 	PermissionCreateDto,
-	PermissionSchema,
 	PermissionUpdateDto,
+	endpoints,
 } from "@zmaj-js/common"
 import { PartialDeep } from "type-fest"
 
@@ -42,7 +41,7 @@ export class PermissionsController {
 		@GetCrudRequest() req: CrudRequest,
 		@DtoBody(PermissionCreateDto) dto: PermissionCreateDto,
 	): Promise<Data<Partial<Permission>>> {
-		return wrap(this.crud.createOne(req, { dto, factory: PermissionSchema }))
+		return wrap(this.crud.createOne(req, { dto }))
 	}
 
 	@SetSystemPermission("authorization", "modify")

@@ -4,6 +4,7 @@ import { Cron, CronExpression } from "@nestjs/schedule"
 import {
 	ADMIN_ROLE_ID,
 	PUBLIC_ROLE_ID,
+	Permission,
 	PermissionCollection,
 	RoleCollection,
 	RoleModel,
@@ -14,6 +15,9 @@ import { OrmRepository, RepoManager, ReturnedProperties } from "@zmaj-js/orm"
 import { v4 } from "uuid"
 import { OnCrudEvent } from "../../crud/on-crud-event.decorator"
 
+export type DbAuthorizationRole = ReturnedProperties<RoleModel, undefined> & {
+	rules: Record<string, Permission[]>
+}
 /**
  * Service that keeps roles in permissions in memory so we can have easy access
  * without querying database on every request
@@ -26,7 +30,7 @@ export class AuthorizationState implements OnModuleInit {
 	cacheVersion = v4()
 
 	/** All roles */
-	roles: Record<string, ReturnedProperties<RoleModel, { $fields: true; permissions: true }>> = {}
+	roles: Record<string, DbAuthorizationRole> = {}
 
 	private rolesRepo: OrmRepository<RoleModel>
 
@@ -46,10 +50,18 @@ export class AuthorizationState implements OnModuleInit {
 	}
 
 	async updateRoles(): Promise<void> {
+		this.roles = {}
 		const roles = await this.rolesRepo.findWhere({
 			fields: { $fields: true, permissions: true }, //
 		})
-		this.roles = Object.fromEntries(roles.map((r) => [r.id, r] as const))
+		for (const role of roles) {
+			this.roles[role.id] = { ...role, rules: {}, permissions: undefined as never }
+			const authzRole = this.roles[role.id]!
+			for (const permission of role.permissions) {
+				authzRole.rules[permission.resource] ??= []
+				authzRole.rules[permission.resource]!.push(permission)
+			}
+		}
 	}
 
 	/**

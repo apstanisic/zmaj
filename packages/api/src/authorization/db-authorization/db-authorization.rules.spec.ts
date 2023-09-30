@@ -36,7 +36,12 @@ describe("AuthorizationService", () => {
 		authzConfig = module.get(AuthorizationConfig)
 		//
 		authzState = module.get(AuthorizationState)
-		authzState.roles = times(5, (i) => RoleStub({ name: `role_${i}` }))
+
+		const roles = times(5, (i) => RoleStub({ name: `role_${i}` }))
+		for (const role of roles) {
+			role.rules
+		}
+		authzState.roles = Object.fromEntries
 		authzState.permissions = times(30, () =>
 			PermissionStub({
 				roleId: rand(authzState.roles.map((r) => r.id)),
@@ -116,45 +121,15 @@ describe("AuthorizationService", () => {
 			expect(rules.rules).toEqual([{ action: "manage", subject: "all" }])
 		})
 
-		it("clear cache when roles and permissions have been changed", () => {
-			const stateCacheVersion = v4()
-			authzState.cacheVersion = stateCacheVersion
-
-			service["cache"].version = v4()
-			// ensure length of 1+
-			service["cache"].values.set("hello", "world" as any)
-
-			service.getRules(user)
-
-			expect(service["cache"].version).toEqual(stateCacheVersion)
-			expect(service["cache"].values.keys.length).toEqual(0)
-		})
-
-		it("should read data from cache if available", () => {
-			const cache = new Map()
-			cache.set(user.userId, "fake value")
-			service["cache"] = {
-				version: authzState.cacheVersion,
-				values: cache,
-			}
-			const res = service.getRules(user)
-			expect(res).toEqual("fake value")
-		})
-
-		it("should cache data", () => {
-			const res = service.getRules(user)
-			// test that it points to same object
-			expect(service["cache"].values.get(user.userId)).toBe(res)
-		})
-
 		it("should get relevant dynamic values ", () => {
-			authzState.permissions = [PermissionStub({ roleId: user.roleId })]
+			const permission = PermissionStub({ roleId: user.roleId })
+			authzState.roles[ADMIN_ROLE_ID]!.permissions = [permission as any]
 			service["injectDynamicValues"] = vi.fn().mockImplementation(() => ({ id: "mock-id" }))
 
 			service.getRules(user)
 
 			expect(service["injectDynamicValues"]).toBeCalledWith({
-				permission: authzState.permissions[0],
+				permission: permission,
 				user: user,
 			})
 		})

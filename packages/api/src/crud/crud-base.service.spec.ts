@@ -8,17 +8,10 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from "@nestjs/common"
-import { asMock, AuthUser, CollectionDef, makeWritable } from "@zmaj-js/common"
+import { AuthUser, CollectionDef, asMock, makeWritable } from "@zmaj-js/common"
 import { AuthUserStub, CollectionDefStub, mockCollectionDefs } from "@zmaj-js/test-utils"
 import { isString } from "radash"
-import { beforeEach, describe, expect, it, Mock, vi } from "vitest"
-import { CrudBaseService } from "./crud-base.service"
-import {
-	DeleteBeforeEvent,
-	ReadAfterEvent,
-	ReadBeforeEvent,
-	UpdateBeforeEvent,
-} from "./crud-event.types"
+import { Mock, beforeEach, describe, expect, it, vi } from "vitest"
 import { CreateBeforeEventStub } from "./__mocks__/create-event.stubs"
 import {
 	CrudBeforeEventStub,
@@ -27,6 +20,13 @@ import {
 } from "./__mocks__/crud-event.mocks"
 import { ReadAfterEventStub } from "./__mocks__/read-event.stubs"
 import { UpdateBeforeEventStub } from "./__mocks__/update-event.stubs"
+import { CrudBaseService } from "./crud-base.service"
+import {
+	DeleteBeforeEvent,
+	ReadAfterEvent,
+	ReadBeforeEvent,
+	UpdateBeforeEvent,
+} from "./crud-event.types"
 
 describe("CrudBaseService", () => {
 	let service: CrudBaseService<any>
@@ -84,7 +84,9 @@ describe("CrudBaseService", () => {
 		})
 
 		it("should throw 500 if error is not error type", () => {
-			expect(() => service["throwCrudError"]("err" as any)).toThrow(InternalServerErrorException)
+			expect(() => service["throwCrudError"]("err" as any)).toThrow(
+				InternalServerErrorException,
+			)
 		})
 
 		/**
@@ -117,7 +119,7 @@ describe("CrudBaseService", () => {
 		//
 		beforeEach(() => {
 			event = UpdateBeforeEventStub()
-			authz.getRuleConditions = vi.fn().mockReturnValue({ name: "testing" })
+			authz.getAuthzAsOrmFilter = vi.fn().mockReturnValue({ name: "testing" })
 			authz.getRuleFields = vi.fn(() => null)
 			service["isFilterAllowed"] = vi.fn()
 		})
@@ -149,7 +151,7 @@ describe("CrudBaseService", () => {
 				collection: "test" as any,
 			})
 			service["joinFilterAndAuthz"](event)
-			expect(authz.getRuleConditions).toBeCalledWith({
+			expect(authz.getAuthzAsOrmFilter).toBeCalledWith({
 				user,
 				action: "update",
 				resource: "test",
@@ -192,7 +194,7 @@ describe("CrudBaseService", () => {
 				where: null as any,
 			}
 
-			asMock(authz.getRuleConditions).mockReturnValue({})
+			asMock(authz.getAuthzAsOrmFilter).mockReturnValue({})
 
 			const res = service["joinFilterAndAuthz"](event)
 			expect(res).toEqual({ $and: [] })

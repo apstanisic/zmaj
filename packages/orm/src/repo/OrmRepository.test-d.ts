@@ -219,8 +219,8 @@ describe("Fields", () => {
 
 		it("should override can create", () => {
 			postRepo.createOne({
-				// @ts-expect-error
 				data: {
+					// @ts-expect-error
 					createdAt: new Date(),
 					body: "hello",
 					likes: 5,

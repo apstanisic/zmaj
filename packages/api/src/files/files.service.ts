@@ -146,6 +146,7 @@ export class FilesService {
 					factory: () => fileInfo,
 					trx: em,
 					user,
+					overrideCanCreate: true,
 				})
 
 				await this.storageService
@@ -153,7 +154,8 @@ export class FilesService {
 					.upload({ path: fileInfo.uri, source: file })
 					.catch((e) => {
 						if (e instanceof HttpException) throwErr(e)
-						if (e instanceof FileUploadDisabledError) throw403(7842323, emsg.uploadDisabled)
+						if (e instanceof FileUploadDisabledError)
+							throw403(7842323, emsg.uploadDisabled)
 						if (e instanceof StorageError) throw e
 
 						this.logger.error("File upload error", e)

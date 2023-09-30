@@ -193,7 +193,11 @@ describe("AuthorizationService", () => {
 
 		it("should check permissions only for current user", () => {
 			service.check({ action: "update", resource: "collections.testTable", user })
-			expect(service.getRules).toBeCalledWith(user)
+			expect(service.getRules).toBeCalledWith({
+				action: "update",
+				resource: "collections.testTable",
+				user,
+			})
 		})
 
 		it("should check if action is allowed", () => {
@@ -255,8 +259,16 @@ describe("AuthorizationService", () => {
 					can("read", "collections.posts", { cond: 2 })
 				})
 			})
-			const res = service.getRuleConditions({ action: "read", resource: "collections.users", user })
-			expect(service.getRules).toBeCalledWith(user)
+			const res = service.getAuthzAsOrmFilter({
+				action: "read",
+				resource: "collections.users",
+				user,
+			})
+			expect(service.getRules).toBeCalledWith({
+				action: "read",
+				resource: "collections.users",
+				user,
+			})
 			expect(res).toEqual({ cond: 1 })
 		})
 
@@ -268,7 +280,7 @@ describe("AuthorizationService", () => {
 					can("read", "users")
 				})
 			})
-			const res = service.getRuleConditions({ action: "read", resource: "forbidden", user })
+			const res = service.getAuthzAsOrmFilter({ action: "read", resource: "forbidden", user })
 			expect(res).toEqual({})
 		})
 
@@ -278,7 +290,7 @@ describe("AuthorizationService", () => {
 					can("read", "users")
 				})
 			})
-			const res = service.getRuleConditions({ action: "read", resource: "users", user })
+			const res = service.getAuthzAsOrmFilter({ action: "read", resource: "users", user })
 			expect(res).toEqual({})
 		})
 	})
@@ -290,7 +302,7 @@ describe("AuthorizationService", () => {
 		beforeEach(() => {
 			authzConfig.exposeAllowedPermissions = true
 			service.checkSystem = vi.fn(() => true)
-			service["getRules"] = vi.fn(() => defineAbility((can) => can("manage", "all")))
+			service.getRules = vi.fn(() => defineAbility((can) => can("manage", "all")))
 		})
 		// it("should throw if actions are not exposed", () => {
 		// 	authzConfig.exposeAllowedPermissions = false
@@ -313,7 +325,7 @@ describe("AuthorizationService", () => {
 		})
 
 		it("should get allowed actions for user", () => {
-			service.getRules = (user) => {
+			service.getRules = () => {
 				return defineAbility((can) => {
 					can("read", "r1", ["f1"])
 					can("update", "r2", ["f2"])
@@ -328,7 +340,7 @@ describe("AuthorizationService", () => {
 		})
 
 		it("should get public actions when not signed in", () => {
-			service.getRules = (user) => {
+			service.getRules = () => {
 				return defineAbility((can) => {
 					can("read", "r1", ["f1"])
 				})

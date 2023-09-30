@@ -81,6 +81,7 @@ function ensureRequiredScripts(packageJson, folderName) {
 		prebuild: "rimraf dist",
 		lint: "eslint --fix src",
 		test: `cd ../.. && vitest run packages/${folderName} --passWithNoTests`,
+		"test-watch": `cd ../.. && vitest watch packages/${folderName} --passWithNoTests`,
 		tsc: "tsc",
 		format: "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
 	}

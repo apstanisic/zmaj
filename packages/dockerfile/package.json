@@ -25,7 +25,8 @@
 		"test": "cd ../.. && vitest run packages/dockerfile --passWithNoTests",
 		"tsc": "tsc",
 		"prebuild": "rimraf dist",
-		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
+		"test-watch": "cd ../.. && vitest watch packages/dockerfile --passWithNoTests"
 	},
 	"dependencies": {
 		"zmaj": "workspace:*"

@@ -30,7 +30,6 @@ describe("MigrationsService e2e", () => {
 	//
 	beforeAll(async () => {
 		const root = join(process.cwd(), "../..")
-		console.log({ root })
 
 		getTestEnvValues(root)
 		sq = new SequelizeService(

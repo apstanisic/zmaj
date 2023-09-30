@@ -25,8 +25,6 @@ export class SequelizeRepoManager extends RepoManager {
 		super()
 	}
 
-	// protected models = createModelsStore()
-
 	protected repositories: Record<string, OrmRepository<any>> = {}
 
 	getOrm(): Sequelize {
@@ -36,7 +34,7 @@ export class SequelizeRepoManager extends RepoManager {
 	getRepo<TModel extends BaseModel = BaseModel>(
 		model: Class<BaseModel> | string,
 	): OrmRepository<TModel> {
-		const name = isString(model) ? model : this.models.getOne(model).name
+		const name = isString(model) ? model : this.models.getOneAsPojo(model).name
 
 		const exist = this.sq.qsModels[name]
 

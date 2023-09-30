@@ -37,7 +37,8 @@
 		"tsc": "tsc",
 		"build": "tsup --config ../../tsup.config.ts",
 		"dev": "tsup --config ../../tsup.config.ts --watch",
-		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
+		"test-watch": "cd ../.. && vitest watch packages/common --passWithNoTests"
 	},
 	"dependencies": {
 		"@zmaj-js/orm": "workspace:*",

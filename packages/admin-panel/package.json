@@ -46,7 +46,8 @@
 		"serve": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
+		"test-watch": "cd ../.. && vitest watch packages/admin-panel --passWithNoTests"
 	},
 	"peerDependencies": {
 		"react": "^18.2.0",

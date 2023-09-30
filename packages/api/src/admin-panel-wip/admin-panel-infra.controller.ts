@@ -4,7 +4,7 @@ import { SetSystemPermission } from "@api/authorization/set-system-permission.de
 import { wrap } from "@api/common/wrap"
 import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { Controller, Get } from "@nestjs/common"
-import { AuthUser, Data, CollectionDef } from "@zmaj-js/common"
+import { AuthUser, CollectionDef, Data } from "@zmaj-js/common"
 
 /**
  * Admin panel needs some info to be provided, so it can show proper pages/ui.
@@ -19,7 +19,7 @@ export class AdminPanelInfraController {
 	@SetSystemPermission("adminPanel", "access")
 	@Get("infra")
 	async getAdminPanelInfra(@GetUser() user?: AuthUser): Promise<Data<CollectionDef[]>> {
-		const rules = this.authz.getRules(user)
+		const rules = this.authz.getRules({ user })
 
 		const canRead = Object.values(this.infraState.collections).filter((col) =>
 			rules.can("read", col.authzKey),

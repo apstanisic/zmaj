@@ -36,6 +36,7 @@ export type CrudCreateParams<T extends Struct = Struct> = SharedParams<T> & {
 	factory?:
 		| ZodSchema<Partial<T>, any, Struct> //
 		| ((params: Struct) => Partial<T> | Promise<Partial<T>>)
+	overrideCanCreate?: boolean
 }
 
 ///

@@ -8,9 +8,8 @@ import { ZmajOrmError } from "./orm-errors"
 type ModelParam = Class<BaseModel> | PojoModel
 
 export type ModelsState = {
-	models: Map<string, BaseModel | PojoModel>
+	models: Map<string, PojoModel>
 	init: (model: ModelParam[]) => PojoModel[]
-	getOne: (model: ModelParam) => PojoModel | BaseModel
 	getOneAsPojo: (model: ModelParam) => PojoModel
 	getAllAsPojo: () => PojoModel[]
 	getByNameAsPojo: (name: string) => PojoModel
@@ -18,50 +17,37 @@ export type ModelsState = {
 }
 
 export function createModelsStore(config?: { nameTransformer?: NameTransformer }): ModelsState {
-	const allModels = new Map<string, BaseModel | PojoModel>()
 	const pojoModels = new Map<string, PojoModel>()
 
 	function modelName(model: ModelParam): string {
-		return typeof model === "function" ? model.name : model.name
+		return typeof model === "function" ? new model().name : model.name
 	}
-
-	function addIfMissing(Model: ModelParam): void {
-		if (Model === undefined) throw new Error("Provided model is undefined!")
-		const name = modelName(Model)
-		if (allModels.has(name)) return
-
-		allModels.set(name, typeof Model === "function" ? new Model() : Model)
-	}
-
-	function getOne(model: ModelParam): BaseModel | PojoModel {
-		addIfMissing(model)
-		return allModels.get(modelName(model))!
-	}
-
-	// for (const model of models) {
-	// 	addIfMissing(model)
-	// }
 
 	return {
-		models: allModels,
+		models: pojoModels,
 		init: (models: ModelParam[]): PojoModel[] => {
-			allModels.clear()
 			pojoModels.clear()
-			for (const model of models) {
-				addIfMissing(model)
+			// for (const model of models) {
+			// 	addIfMissing(model)
+			// }
+			const instances = models.map((Model) =>
+				typeof Model === "function" ? new Model() : Model,
+			)
+			for (const model of instances) {
+				pojoModels.set(
+					model.name,
+					baseModelToPojoModel(model, instances, config?.nameTransformer),
+				)
 			}
-			for (const [name, model] of allModels.entries()) {
-				pojoModels.set(name, baseModelToPojoModel(model, getOne, config?.nameTransformer))
-			}
+			// console.log(JSON.stringify(Array.from(pojoModels.values()), null, 4))
+
 			return Array.from(pojoModels.values())
 		},
-		getOne: (model: ModelParam) => {
-			addIfMissing(model)
-			return allModels.get(modelName(model))!
-		},
 		getOneAsPojo: (model: ModelParam) => {
-			addIfMissing(model)
-			return pojoModels.get(modelName(model))!
+			// addIfMissing(model)
+			const item = pojoModels.get(modelName(model))!
+			if (!item) throw new ZmajOrmError("Model missing")
+			return item
 		},
 		// TEMP
 		getByNameAsPojo: (name: string) => {
@@ -75,7 +61,7 @@ export function createModelsStore(config?: { nameTransformer?: NameTransformer }
 			return Array.from(pojoModels.values())
 		},
 		removeAll: (): void => {
-			allModels.clear()
+			pojoModels.clear()
 		},
 	}
 }

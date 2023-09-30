@@ -1,5 +1,5 @@
 import { BuildTestDbService } from "@api/testing/build-test-db.service"
-import { sleep } from "@zmaj-js/common"
+import { sleep, snakeCase } from "@zmaj-js/common"
 import { createModelsStore } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { execa } from "execa"
@@ -29,7 +29,7 @@ export default async function setupAndTeardown(): Promise<void | (() => Promise<
 			host: env["DB_HOST"]!,
 		},
 		console,
-		createModelsStore(),
+		createModelsStore({ nameTransformer: ({ key }) => snakeCase(key) }),
 	)
 
 	const testData = new BuildTestDbService(sq)

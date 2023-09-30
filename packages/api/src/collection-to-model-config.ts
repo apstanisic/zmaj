@@ -31,8 +31,18 @@ function collectionToPojoModel(collection: CollectionDef): PojoModel {
 	})
 
 	return {
+		isPojoModel: true,
 		name: collection.collectionName,
 		tableName: collection.tableName ?? snakeCase(collection.collectionName),
+		idField: collection.pkField,
+		updatedAtField:
+			Object.entries(collection.fields).find(
+				([fieldName, config]) => config.isUpdatedAt,
+			)?.[0] ?? null,
+		createdAtField:
+			Object.entries(collection.fields).find(
+				([fieldName, config]) => config.isCreatedAt,
+			)?.[0] ?? null,
 		fields: collection.fields,
 		relations,
 		disabled: collection.disabled,
@@ -43,20 +53,10 @@ export function mixedColDef(
 	collections: (CollectionDef | PojoModel | Class<BaseModel>)[],
 ): (PojoModel | Class<BaseModel>)[] {
 	return collections.map((c) => {
-		return "collectionName" in c ? collectionToPojoModel(c) : c
+		if (typeof c === "function") return c
+		if ("isPojoModel" in c) {
+			return c
+		}
+		return collectionToPojoModel(c)
 	})
 }
-
-// export function modelToModelConfig(
-// 	ModelClass: Class<BaseModel>,
-// 	store: ReturnType<typeof createModelsStore>,
-// ): ModelConfig {
-// 	const model = store.get(ModelClass)
-// 	return {
-// 		collectionName: model.name,
-// 		tableName: model.tableName ?? snakeCase(model.name),
-// 		fields: mapValues(model.fields, (v, f) => ({ ...v, fieldName: f })),
-// 		relations: {},
-// 		disabled: false,
-// 	}
-// }

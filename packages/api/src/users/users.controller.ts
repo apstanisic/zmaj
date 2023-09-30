@@ -9,11 +9,11 @@ import { CrudService } from "@api/crud/crud.service"
 import { Controller, Delete, Get, Post, Put } from "@nestjs/common"
 import {
 	Data,
-	endpoints,
 	User,
 	UserCollection,
 	UserCreateDto,
 	UserUpdateDto,
+	endpoints,
 } from "@zmaj-js/common"
 import { PartialDeep } from "type-fest"
 import { UsersService } from "./users.service"
@@ -71,6 +71,7 @@ export class UsersController {
 			collection: UserCollection,
 			dto: body,
 			factory: async (params) => this.usersService.createUserFactory(params),
+			overrideCanCreate: true,
 		})
 		return wrap(user)
 		// const user = await this.usersService.createUser({ data: body })

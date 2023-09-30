@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common"
-import { SequelizeService } from "@zmaj-js/orm-sq"
+import { Orm } from "@zmaj-js/orm"
 import type PQueue from "p-queue"
 import { InfraSchemaSyncService } from "./infra-schema-sync/infra-schema-sync.service"
 import { InfraStateService } from "./infra-state/infra-state.service"
@@ -9,7 +9,7 @@ export class OnInfraChangeService implements OnModuleDestroy, OnModuleInit {
 	constructor(
 		private infraSchemaSync: InfraSchemaSyncService,
 		private infraState: InfraStateService,
-		private sequelizeService: SequelizeService,
+		private orm: Orm,
 	) {}
 	async onModuleInit(): Promise<void> {
 		// pre cache it
@@ -29,7 +29,7 @@ export class OnInfraChangeService implements OnModuleDestroy, OnModuleInit {
 	async syncAppAndDb(): Promise<void> {
 		await this.infraSchemaSync.sync()
 		await this.infraState.initializeState()
-		this.sequelizeService.generateModels(this.infraState._collectionsForOrm)
+		this.orm.updateModels(this.infraState._collectionsForOrm)
 	}
 
 	async executeChange<T>(fn: () => Promise<T>): Promise<T> {

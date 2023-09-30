@@ -40,10 +40,12 @@
 		"build": "tsup --config tsup.config.ts",
 		"dev": "tsup --config tsup.config.ts --watch",
 		"serve": "NODE_ENV=dev node --inspect --watch dist/main.js",
-		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore"
+		"format": "prettier . --write --ignore-unknown  --ignore-path ../../.prettierignore",
+		"test-watch": "cd ../.. && vitest watch packages/api --passWithNoTests"
 	},
 	"dependencies": {
 		"@casl/ability": "^6.5.0",
+		"@casl/mongoose": "^7.2.1",
 		"@nestjs/cache-manager": "^2.1.0",
 		"@nestjs/common": "^10.2.6",
 		"@nestjs/core": "^10.2.6",

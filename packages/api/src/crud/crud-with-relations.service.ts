@@ -80,7 +80,9 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 				throw403(3789234, emsg.invalidPayload)
 			}
 			// if o2m or m2m, allow changing fks
-			else if (["many-to-many", "one-to-many"].includes(col.relations[propertyName]?.type ?? "_")) {
+			else if (
+				["many-to-many", "one-to-many"].includes(col.relations[propertyName]?.type ?? "_")
+			) {
 				const changes = ToManyChangeSchema.parse(propertyValue)
 				// validate that changes are in correct format
 				toManyData[propertyName] = changes
@@ -116,7 +118,13 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 
 				for (const [property, change] of Object.entries(relations)) {
 					const relation = collection.relations[property]!
-					await this.handleToManyChange({ mainRecordId: id, trx, change, relation, params })
+					await this.handleToManyChange({
+						mainRecordId: id,
+						trx,
+						change,
+						relation,
+						params,
+					})
 				}
 				return updated as Item
 			},

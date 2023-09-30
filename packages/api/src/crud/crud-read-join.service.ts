@@ -3,9 +3,9 @@ import { throw400, throw403 } from "@api/common/throw-http"
 import { knexQuery } from "@api/database/knex-query"
 import { emsg } from "@api/errors"
 import { Inject, Injectable } from "@nestjs/common"
-import { Sequelize } from "sequelize"
-import { isNil, joinFilters, Struct } from "@zmaj-js/common"
+import { Struct, isNil, joinFilters } from "@zmaj-js/common"
 import { isEmpty } from "radash"
+import { Sequelize } from "sequelize"
 import { CrudBaseService } from "./crud-base.service"
 import type { ReadBeforeEvent, ReadStartEvent } from "./crud-event.types"
 import { OnCrudEvent } from "./on-crud-event.decorator"
@@ -83,7 +83,7 @@ export class CrudReadJoinService<Item extends Struct = Struct> extends CrudBaseS
 		if (query.otmShowForbidden) return
 
 		// get conditions to update record
-		const updateConditions = this.authz.getRuleConditions({
+		const updateConditions = this.authz.getAuthzAsOrmFilter({
 			action: "update",
 			resource: event.collection,
 			user: event.user,
@@ -96,7 +96,7 @@ export class CrudReadJoinService<Item extends Struct = Struct> extends CrudBaseS
 
 		event.filter = {
 			type: "where",
-			where: joinFilters(where, updateConditions) ?? {},
+			where: joinFilters(where, ...updateConditions.$and) ?? {},
 		}
 	}
 

@@ -9,7 +9,7 @@ export class SecurityTokenModel extends BaseModel {
 		createdAt: f.createdAt(),
 		token: f.text({ canUpdate: false }),
 		validUntil: f.dateTime({ columnName: "valid_until", canUpdate: false }),
-		usedFor: f.text({ columnName: "user_for", canUpdate: false }),
+		usedFor: f.text({ columnName: "used_for", canUpdate: false }),
 		userId: f.uuid({ columnName: "user_id", canUpdate: false }),
 		data: f.text({ nullable: true, canUpdate: false }),
 	}))

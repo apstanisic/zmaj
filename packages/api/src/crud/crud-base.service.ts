@@ -91,7 +91,9 @@ export class CrudBaseService<Item extends Struct> {
 		if (!isError(error)) throw500(9067123)
 
 		// provided non uuid for uuid field
-		const isUuidError = error.message.toLowerCase().includes("invalid input syntax for type uuid")
+		const isUuidError = error.message
+			.toLowerCase()
+			.includes("invalid input syntax for type uuid")
 		if (isUuidError) throw400(153211, emsg.notUuid)
 
 		// User is trying to filter by unknown property
@@ -101,6 +103,8 @@ export class CrudBaseService<Item extends Struct> {
 		if (isUnknownFieldError) throw400(901732, emsg.noProperty)
 
 		this.logger.warn("Crud Problem", error)
+
+		console.log({ error })
 
 		// this.logger.error("Unhandled DB error", error)
 		// any other error from db
@@ -117,7 +121,7 @@ export class CrudBaseService<Item extends Struct> {
 		// there is no filter on create
 		if (event.action === "create") throw500(328462343)
 
-		const authzFilter = this.authz.getRuleConditions({
+		const authzFilter = this.authz.getAuthzAsOrmFilter({
 			user: event.user,
 			resource: event.collection,
 			action: event.action,
@@ -135,7 +139,9 @@ export class CrudBaseService<Item extends Struct> {
 		const queryFilter = this.filterToWhere(event.filter, event.collection)
 
 		return {
-			$and: [queryFilter, authzFilter].filter(notNil).filter((v): v is Filter => !isEmpty(v)),
+			$and: [queryFilter, ...authzFilter.$and]
+				.filter(notNil)
+				.filter((v): v is Filter => !isEmpty(v)),
 		}
 	}
 
@@ -263,45 +269,49 @@ export class CrudBaseService<Item extends Struct> {
 		if (!isStruct(filter)) throw400(532432, emsg.invalidPayload)
 
 		const collection = params.collection
-		const fields = this.authz.getRuleFields({
-			action: params.action,
-			resource: params.collection,
-			user: params.user,
-		})
-		if (fields === undefined) throw400(50812, emsg.noAuthz)
 
-		for (const [key, value] of Object.entries(filter)) {
-			//
-			if (key === "$or" || key === "$and") {
-				// $or & $and must be alone
-				if (Object.keys(filter).length > 1) throw400(50812, emsg.invalidPayload)
-				if (!Array.isArray(value)) throw400(50888, emsg.invalidPayload)
+		if ("$or" in filter || "$and" in filter) {
+			// $or & $and must be alone
+			if (Object.keys(filter).length > 1) throw400(50812, emsg.invalidPayload)
+			const value = filter["$and"] || filter["$or"]
 
-				// check every sub filter in them
-				// value.forEach((val) => this.isWhereAllowed(val, fields, collection))
-				value.forEach((val) => this.isFilterAllowed({ ...params, filter: val }))
-			}
-			// if field is field, simply check if user has access
-			else if (collection.fields[key]) {
-				if (fields === null || fields.includes(key)) continue
-				throw403(399443, emsg.noField)
-			}
-			// if relation, recursively call this function
-			else if (collection.relations[key]) {
-				const rel = collection.relations[key]!
-				const rightCol =
-					this.infraState.collections[rel.otherSide.collectionName] ??
-					throw400(899022, emsg.invalidPayload)
-				this.isFilterAllowed({
-					action: params.action,
-					user: params.user,
-					collection: rightCol,
-					filter: value,
-				})
-				// this.isWhereAllowed(value as Struct, [], rightCol)
+			if (!Array.isArray(value)) throw400(50888, emsg.invalidPayload)
+
+			// check every sub filter in them
+			// value.forEach((val) => this.isWhereAllowed(val, fields, collection))
+			value.forEach((val) => this.isFilterAllowed({ ...params, filter: val }))
+		}
+
+		const fieldsToCheck = []
+		const relationsToCheck = []
+		for (const key of Object.keys(filter)) {
+			if (collection.fields[key]) {
+				fieldsToCheck.push(key)
+			} else if (collection.relations[key]) {
+				relationsToCheck.push(key)
 			} else {
 				throw403(50852, emsg.invalidQueryKey("filter"))
 			}
+		}
+		const fieldsAllowed = this.authz.check({
+			action: params.action,
+			resource: params.collection.authzKey,
+			field: fieldsToCheck,
+			user: params.user,
+		})
+		if (!fieldsAllowed) throw403(399443, emsg.noField)
+
+		for (const relation of relationsToCheck) {
+			const rel = collection.relations[relation]!
+			const rightCol =
+				this.infraState.collections[rel.otherSide.collectionName] ??
+				throw400(899022, emsg.invalidPayload)
+			this.isFilterAllowed({
+				action: params.action,
+				user: params.user,
+				collection: rightCol,
+				filter: filter[relation],
+			})
 		}
 	}
 }

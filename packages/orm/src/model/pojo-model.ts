@@ -58,4 +58,5 @@ export type PojoModel = {
 	createdAtField: string | null
 	fields: Record<string, PojoModelField>
 	relations: Record<string, PojoModelRelation>
+	isPojoModel: true
 }

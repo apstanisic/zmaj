@@ -9,12 +9,12 @@ import { CrudService } from "@api/crud/crud.service"
 import { Controller, Delete, Get, Post, Put } from "@nestjs/common"
 import {
 	Data,
-	endpoints,
 	Webhook,
 	WebhookCollection,
 	WebhookCreateDto,
 	WebhookSchema,
 	WebhookUpdateDto,
+	endpoints,
 } from "@zmaj-js/common"
 import { PartialDeep } from "type-fest"
 
@@ -50,7 +50,12 @@ export class WebhooksController {
 		@GetCrudRequest() meta: CrudRequest,
 		@DtoBody(WebhookCreateDto) dto: WebhookCreateDto,
 	): Promise<Data<Partial<Webhook>>> {
-		return wrap(this.crud.createOne(meta, { dto, factory: WebhookSchema }))
+		return wrap(
+			this.crud.createOne(meta, {
+				dto,
+				factory: WebhookSchema.omit({ id: true, createdAt: true }),
+			}),
+		)
 	}
 
 	@Put(ep.updateById)

@@ -160,7 +160,9 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 			throw new ZmajOrmError("Data must be object")
 		}
 		const result = await this.createMany({ ...params, data: [params.data] })
-		if (result.length !== 1) throw new InternalOrmProblem(39534) //throw500(39534)
+
+		if (result.length === 0) throw new InternalOrmProblem(97939) //throw500(39534)
+		if (result.length > 1) throw new InternalOrmProblem(39534) //throw500(39534)
 		return result[0]!
 	}
 
@@ -255,6 +257,8 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 					overrideCanCreate !== true &&
 					this.pojoModel.fields[field]?.canCreate === false
 				) {
+					console.log("HEEEEREEE", { items, overrideCanCreate })
+
 					throw new FieldCreateForbiddenError(field)
 				}
 				parsed[field] = value

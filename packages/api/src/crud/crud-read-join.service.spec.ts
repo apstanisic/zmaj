@@ -4,9 +4,9 @@ import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException, ForbiddenException } from "@nestjs/common"
 import { ReadUrlQueryStub, mockCollectionDefs } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { ReadBeforeEventStub, ReadStartEventStub } from "./__mocks__/read-event.stubs"
 import { ReadBeforeEvent, ReadStartEvent } from "./crud-event.types"
 import { CrudReadJoinService } from "./crud-read-join.service"
-import { ReadBeforeEventStub, ReadStartEventStub } from "./__mocks__/read-event.stubs"
 
 describe("CrudReadJoinService", () => {
 	let service: CrudReadJoinService
@@ -53,7 +53,7 @@ describe("CrudReadJoinService", () => {
 			event.options.otmFkField = "post_id"
 			event.options.otmShowForbidden = false
 			event.filter = { type: "id", id: 5 }
-			authz.getRuleConditions = vi.fn().mockImplementation(() => throw500(423))
+			authz.getAuthzAsOrmFilter = vi.fn().mockImplementation(() => throw500(423))
 		})
 		//
 		it("should do nothing if user is not requesting to-many dialog options", () => {
@@ -69,7 +69,7 @@ describe("CrudReadJoinService", () => {
 		})
 
 		it("should join current filter with conditions that is needed to update record", () => {
-			authz.getRuleConditions = vi.fn().mockReturnValue({ name: "hello" })
+			authz.getAuthzAsOrmFilter = vi.fn().mockReturnValue({ name: "hello" })
 			service.__getOnlyEntitiesThatUserCanUpdate(event)
 			expect(event.filter).toEqual({
 				type: "where",
@@ -85,7 +85,7 @@ describe("CrudReadJoinService", () => {
 
 		it("should append condition if filter is already `$and`", () => {
 			//
-			authz.getRuleConditions = vi.fn().mockReturnValue({ name: "hello" })
+			authz.getAuthzAsOrmFilter = vi.fn().mockReturnValue({ name: "hello" })
 			service["filterToWhere"] = vi.fn().mockReturnValue({ $and: [{ test: "me" }] })
 			service.__getOnlyEntitiesThatUserCanUpdate(event)
 			expect(event.filter).toEqual({
@@ -148,7 +148,9 @@ describe("CrudReadJoinService", () => {
 
 		it("should throw if invalid collection provided", async () => {
 			event.options.mtmCollection = "non_exist"
-			await expect(service.__generateManyToManyFilter(event)).rejects.toThrow(BadRequestException)
+			await expect(service.__generateManyToManyFilter(event)).rejects.toThrow(
+				BadRequestException,
+			)
 		})
 
 		// it("should throw if invalid property provided", async () => {
@@ -158,12 +160,16 @@ describe("CrudReadJoinService", () => {
 
 		it("should throw if invalid property provided", async () => {
 			event.options.mtmProperty = "non_exist"
-			await expect(service.__generateManyToManyFilter(event)).rejects.toThrow(BadRequestException)
+			await expect(service.__generateManyToManyFilter(event)).rejects.toThrow(
+				BadRequestException,
+			)
 		})
 
 		it("should throw if action not allowed", async () => {
 			authz.check = vi.fn().mockReturnValue(false)
-			await expect(service.__generateManyToManyFilter(event)).rejects.toThrow(ForbiddenException)
+			await expect(service.__generateManyToManyFilter(event)).rejects.toThrow(
+				ForbiddenException,
+			)
 		})
 
 		it("should ensure that user can modify junction table", async () => {

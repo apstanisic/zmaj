@@ -17,24 +17,27 @@ import {
 	systemPermissions,
 } from "@zmaj-js/common"
 import { isEmpty, isString } from "radash"
-import { PartialDeep } from "type-fest"
+import { Except, PartialDeep } from "type-fest"
 import { AuthorizationConfig } from "./authorization.config"
-import { AuthorizationRules } from "./authorization.rules"
+import { AuthorizationRules, RulesParams } from "./authorization.rules"
 
 type Action = "create" | "read" | "update" | "delete" | string
 type Resource = string | CollectionDef
 
-type CanParams<T extends Struct = Struct> = {
+type SharedAuthzParams = {
 	user?: AuthUser
 	resource: Resource
 	action: Action
-	record?: T
-	field?: string
 }
 
-type CanChangeRecordParams<T = Struct> = Pick<CanParams, "user" | "resource" | "action"> & {
-	record: T
+type CanParams<T extends Struct = Struct> = SharedAuthzParams & {
+	record?: T
+	field?: string | string[]
+}
+
+type CanChangeRecordParams<T = Struct> = SharedAuthzParams & {
 	changes: Partial<T>
+	record: T
 }
 
 type PickFieldsParams<T extends Struct = Struct> = Pick<
@@ -86,14 +89,14 @@ export class AuthorizationService {
 	 *   changes: { name: "Test" },
 	 *   resource: "test_table",
 	 *   action: "update",
-	 *   data: { id: 5, name: "Example" }
+	 *   record: { id: 5, name: "Example" }
 	 * })
 	 * ```
 	 */
 	canModifyRecord(params: CanChangeRecordParams): boolean {
 		const { changes, ...rest } = params
 		const fields = Object.keys(changes)
-		return fields.every((field) => this.check({ ...rest, field }))
+		return this.check({ ...rest, field: fields })
 	}
 
 	/**
@@ -112,14 +115,15 @@ export class AuthorizationService {
 	 * })
 	 * ```
 	 */
-	canModifyResource(params: Omit<CanChangeRecordParams, "record">): boolean {
+	canModifyResource(params: Except<CanChangeRecordParams, "record">): boolean {
 		const { changes, ...rest } = params
 		const fields = Object.keys(changes)
-		return fields.every((field) => this.check({ ...rest, field }))
+		return this.check({ ...rest, field: fields })
 	}
 
 	/**
 	 * Check system permission
+	 * This is mainly typescript type helper for `check`
 	 *
 	 * @param resourceKey System resource
 	 * @param actionKey System action
@@ -144,9 +148,11 @@ export class AuthorizationService {
 
 	/**
 	 * Get all action that user is allowed to perform
+	 * This is used for easing usage in admin panel
 	 *
 	 * @param user Logged in user
 	 * @returns All allowed actions, `null` if user is admin
+	 * @deprecated Everything that is tied to admin panel should be separate from core.
 	 */
 	getAllowedActions(user?: AuthUser): AllowedAction[] | null {
 		// this prevents user from knowing it's permissions and server config
@@ -162,15 +168,13 @@ export class AuthorizationService {
 
 		// this.checkSystem("account", "readPermissions", { user }) || throw403(89234)
 
-		return this.getRules(user).rules.map((rule) => ({
+		const check = this.getRules({ user: user ?? null })
+
+		return check.rules.map((rule) => ({
 			action: rule.action,
 			fields: rule.fields === undefined ? null : castArray(rule.fields),
 			resource: rule.subject,
 		}))
-		// all permissions that are tied to current role
-		// return this.authzState.permissions
-		// 	.filter((p) => p.roleId === (user?.roleId ?? PUBLIC_ROLE_ID))
-		// 	.map((p) => ({ fields: p.fields, action: p.action, resource: p.resource }))
 	}
 
 	/**
@@ -182,12 +186,16 @@ export class AuthorizationService {
 	 * check. If you can, use other methods
 	 */
 	check({ user, resource, action, record, field }: CanParams): boolean {
-		const rules = this.getRules(user)
 		const resourceName = this.getResourceName(resource)
+		const rules = this.getRules({ user: user ?? null, action, resource: resourceName })
 
 		const caslResource = isNil(record) ? resourceName : { ...record, __caslType: resourceName }
 
-		return rules.can(action, caslResource, field)
+		if (!field) {
+			return rules.can(action, caslResource)
+		} else {
+			return castArray(field).every((field) => rules.can(action, caslResource, field))
+		}
 	}
 
 	/**
@@ -260,7 +268,8 @@ export class AuthorizationService {
 				const fieldsToCheck = fields?.[field] === true ? undefined : fields?.[field]
 
 				const rightCollection =
-					this.infraState.getCollection(fullRel?.otherSide.collectionName ?? "_") ?? throw500(78323)
+					this.infraState.getCollection(fullRel?.otherSide.collectionName ?? "_") ??
+					throw500(78323)
 				// check if value is array (o2m|m2m)
 				// we have to get values for every property
 				if (Array.isArray(value)) {
@@ -300,7 +309,7 @@ export class AuthorizationService {
 	 *
 	 * @example
 	 * ```js
-	 * const conditions = service.getRuleConditions({
+	 * const conditions = service.getAuthzAsOrmFilter({
 	 *   user: userFromJwt,
 	 *   action: "read", // or "update"...
 	 *   resource: "some_table",
@@ -308,38 +317,37 @@ export class AuthorizationService {
 	 * ```
 	 *
 	 */
-	getRuleConditions(params: Pick<CanParams, "user" | "action" | "resource">): Struct {
-		return (
-			this.getRules(params.user).relevantRuleFor(
-				params.action,
-				this.getResourceName(params.resource),
-			)?.conditions ?? {}
-		)
+	getAuthzAsOrmFilter(params: Pick<CanParams, "user" | "action" | "resource">): {
+		$and: Struct[]
+	} {
+		const ability = this.getRules({
+			user: params.user ?? null,
+			action: params.action,
+			resource: this.getResourceName(params.resource),
+		})
+
+		// rulesToQuery(ability, params.action, this.getResourceName(params.resource), r => r.inverted ? {$not})
+
+		const t =
+			this.getRules({
+				user: params.user ?? null,
+				resource: this.getResourceName(params.resource),
+			}).relevantRuleFor(params.action, this.getResourceName(params.resource))?.conditions ??
+			{}
+		return { $and: [t] }
+
+		// TODO Explore
+		// const filter = accessibleBy(ability, params.action)[
+		// 	this.getResourceName(params.resource)
+		// ] ?? { $and: [] }
+
+		// return filter as any
+		// return { $and: [filter] }
 	}
 
-	getRuleFields(
-		params: Pick<CanParams, "user" | "action" | "resource">,
-	): string[] | null | undefined {
-		const rule = this.getRules(params.user).relevantRuleFor(
-			params.action,
-			this.getResourceName(params.resource),
-		)
-		//
-		if (!rule) return undefined
-
-		return rule.fields ?? null
-	}
-
-	/**
-	 * Get rules for provided user
-	 *
-	 * @param user User that need to be checked to have permissions.
-	 * If user is not provided, it will provide rules for public role
-	 * @returns Rules that user is allowed
-	 */
-	getRules(user?: AuthUser): AnyMongoAbility {
+	getRules(params: RulesParams): AnyMongoAbility {
 		// if authz is disabled, return rule that allows everything
 		if (this.config.disable) return allAllowed
-		return this.authRules.getRules(user)
+		return this.authRules.getRules(params)
 	}
 }

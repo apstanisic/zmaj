@@ -91,6 +91,7 @@ export class MigrationsService {
 			.catch((e: MigrationError) => {
 				this.logger.error("Problem running migrations")
 				this.logger.error(e.message)
+				this.logger.error(e)
 				throw e.cause ?? throw500(4292102)
 			})
 	}

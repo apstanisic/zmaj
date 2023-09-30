@@ -1,7 +1,7 @@
 import { buildTestModule } from "@api/testing/build-test-module"
 import { ADMIN_ROLE_ID, PUBLIC_ROLE_ID } from "@zmaj-js/common"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { AuthorizationState } from "./authorization.state"
+import { AuthorizationState, DbAuthorizationRole } from "./authorization.state"
 import { RoleStub } from "./roles/role.stub"
 
 describe("AuthorizationState", () => {
@@ -17,20 +17,34 @@ describe("AuthorizationState", () => {
 	})
 
 	describe("ensureRequiredRolesExist", () => {
+		const roles = {
+			[ADMIN_ROLE_ID]: {
+				...RoleStub({ id: ADMIN_ROLE_ID }),
+				permissions: [],
+				users: undefined as never,
+			} as DbAuthorizationRole,
+			[PUBLIC_ROLE_ID]: {
+				...RoleStub({ id: PUBLIC_ROLE_ID }),
+				permissions: [],
+				users: undefined as never,
+			} as DbAuthorizationRole,
+		}
 		beforeEach(() => {
 			service["rolesRepo"].createOne = vi.fn()
-			service["rolesRepo"].findWhere = vi.fn()
+			service["rolesRepo"].findWhere = vi.fn(async () => Object.values(roles) as any)
 		})
 
 		//
 		it("should do nothing if roles exist", async () => {
-			service.roles = [RoleStub({ id: PUBLIC_ROLE_ID }), RoleStub({ id: ADMIN_ROLE_ID })]
+			service.roles = roles
 			await service["ensureRequiredRolesExist"]()
 			expect(service["rolesRepo"].createOne).not.toBeCalled()
 		})
 
 		it("should create admin role if missing", async () => {
-			service.roles = [RoleStub({ id: PUBLIC_ROLE_ID })]
+			service.roles = {
+				[PUBLIC_ROLE_ID]: roles[PUBLIC_ROLE_ID],
+			}
 			await service["ensureRequiredRolesExist"]()
 			expect(service["rolesRepo"].createOne).toBeCalledWith({
 				data: expect.objectContaining({ id: ADMIN_ROLE_ID, name: "Admin" }),
@@ -38,7 +52,9 @@ describe("AuthorizationState", () => {
 		})
 
 		it("should create public role if missing", async () => {
-			service.roles = [RoleStub({ id: ADMIN_ROLE_ID })]
+			service.roles = {
+				[ADMIN_ROLE_ID]: roles[ADMIN_ROLE_ID],
+			}
 			await service["ensureRequiredRolesExist"]()
 			expect(service["rolesRepo"].createOne).toBeCalledWith({
 				data: expect.objectContaining({ id: PUBLIC_ROLE_ID, name: "Public" }),
@@ -46,7 +62,7 @@ describe("AuthorizationState", () => {
 		})
 
 		it("should refresh roles state if role created", async () => {
-			service.roles = [RoleStub({ id: ADMIN_ROLE_ID })]
+			service.roles = { [ADMIN_ROLE_ID]: roles[ADMIN_ROLE_ID] }
 			await service["ensureRequiredRolesExist"]()
 			expect(service["rolesRepo"].findWhere).toBeCalled()
 		})
