@@ -54,6 +54,8 @@ export type PojoModel = {
 	tableName: string
 	disabled: boolean
 	idField: string
+	updatedAtField: string | null
+	createdAtField: string | null
 	fields: Record<string, PojoModelField>
 	relations: Record<string, PojoModelRelation>
 }

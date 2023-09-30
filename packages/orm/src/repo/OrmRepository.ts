@@ -259,6 +259,17 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 				}
 				parsed[field] = value
 			}
+
+			const now = new Date()
+
+			if (this.pojoModel.createdAtField) {
+				parsed[this.pojoModel.createdAtField] = now
+			}
+
+			if (this.pojoModel.updatedAtField) {
+				parsed[this.pojoModel.updatedAtField] = now
+			}
+
 			return parsed
 		})
 	}
@@ -280,6 +291,10 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 		// activated if no change occur
 		if (Object.keys(parsed).length === 0) {
 			throw new NoChangesProvidedError(9090)
+		}
+
+		if (this.pojoModel.updatedAtField) {
+			parsed[this.pojoModel.updatedAtField] = new Date()
 		}
 
 		return parsed

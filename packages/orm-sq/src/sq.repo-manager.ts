@@ -37,11 +37,8 @@ export class SequelizeRepoManager extends RepoManager {
 		model: Class<BaseModel> | string,
 	): OrmRepository<TModel> {
 		const name = isString(model) ? model : this.models.getOne(model).name
-		// const name = model
 
-		// const collection = isString(col) ? col : col.collectionName
-
-		const exist = this.sq.models[name]
+		const exist = this.sq.qsModels[name]
 
 		if (!exist) throw new UndefinedModelError(name)
 

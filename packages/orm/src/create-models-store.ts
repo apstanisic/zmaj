@@ -1,4 +1,5 @@
 import { Class } from "type-fest"
+import { NameTransformer } from "./NameTransformer"
 import { BaseModel } from "./model/base-model"
 import { baseModelToPojoModel } from "./model/base-model-to-pojo-model"
 import { PojoModel } from "./model/pojo-model"
@@ -16,7 +17,7 @@ export type ModelsState = {
 	removeAll: () => void
 }
 
-export function createModelsStore(models: ModelParam[] = []): ModelsState {
+export function createModelsStore(config?: { nameTransformer?: NameTransformer }): ModelsState {
 	const allModels = new Map<string, BaseModel | PojoModel>()
 	const pojoModels = new Map<string, PojoModel>()
 
@@ -37,9 +38,9 @@ export function createModelsStore(models: ModelParam[] = []): ModelsState {
 		return allModels.get(modelName(model))!
 	}
 
-	for (const model of models) {
-		addIfMissing(model)
-	}
+	// for (const model of models) {
+	// 	addIfMissing(model)
+	// }
 
 	return {
 		models: allModels,
@@ -50,7 +51,7 @@ export function createModelsStore(models: ModelParam[] = []): ModelsState {
 				addIfMissing(model)
 			}
 			for (const [name, model] of allModels.entries()) {
-				pojoModels.set(name, baseModelToPojoModel(model, getOne))
+				pojoModels.set(name, baseModelToPojoModel(model, getOne, config?.nameTransformer))
 			}
 			return Array.from(pojoModels.values())
 		},

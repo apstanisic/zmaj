@@ -82,10 +82,14 @@ export class SequelizeRepository<
 		params: FindManyOptions<TModel, TFields, TIncludeHidden>,
 	): Promise<ReturnedProperties<TModel, TFields, TIncludeHidden>[]> {
 		const raw = params.includeHidden === true
-		const filterAndFields = this.filterAndFields(params.where, params.fields)
+		const filterAndFields = this.filterAndFields(
+			params.where,
+			params.fields,
+			params.includeHidden,
+		)
 
 		const res = await this.sequelizeModel.findAll({
-			raw,
+			// raw,
 			limit: params.limit,
 			offset: params.offset,
 			order: Object.entries(params.orderBy ?? {}) as any,
@@ -94,7 +98,6 @@ export class SequelizeRepository<
 		})
 
 		if (raw) return res as any[] as ReturnedProperties<TModel, TFields, TIncludeHidden>[]
-
 		return res.map((r) => r.get({ plain: true })) as ReturnedProperties<
 			TModel,
 			TFields,
@@ -111,7 +114,11 @@ export class SequelizeRepository<
 	>(
 		params: FindAndCountOptions<TModel, TFields, TIncludeHidden>,
 	): Promise<[ReturnedProperties<TModel, TFields, TIncludeHidden>[], number]> {
-		const fieldsAndFilter = this.filterAndFields(params.where, params.fields)
+		const fieldsAndFilter = this.filterAndFields(
+			params.where,
+			params.fields,
+			params.includeHidden,
+		)
 
 		const res = await this.sequelizeModel.findAndCountAll({
 			transaction: params.trx as any,
@@ -225,7 +232,7 @@ export class SequelizeRepository<
 	 * and we do not want to keep track. SO we use dynamic getter.
 	 */
 	private get sequelizeModel(): ModelStatic<Model<any, any>> {
-		const model = this.orm.models[this.pojoModel.name]
+		const model = this.orm.qsModels[this.pojoModel.name]
 		if (!model) throw new InternalOrmProblem(3910)
 		return model
 	}
@@ -233,6 +240,7 @@ export class SequelizeRepository<
 	private filterAndFields(
 		where?: RepoFilter<TModel> | IdType[] | IdType,
 		fields?: SelectProperties<TModel>,
+		includeHidden?: boolean,
 	): Pick<IncludeOptions, "attributes" | "include" | "association" | "through" | "where"> {
 		const whereResult = this.parseFilter(where)
 
@@ -241,7 +249,9 @@ export class SequelizeRepository<
 			fields: fields,
 			collection: this.pojoModel.name,
 			filterRelations: whereResult.toAdd,
+			includeHidden: includeHidden,
 		})
+
 		return { where: whereResult.where, ...fieldsAndRelations }
 	}
 
@@ -273,65 +283,81 @@ export class SequelizeRepository<
 		collection,
 		property,
 		filterRelations,
+		includeHidden,
 	}: // subQuery,
 	{
 		fields: F
 		collection: string
 		property?: string
+		// relation that are needed for filter, but not for displaying
 		filterRelations?: string[]
-		// subQuery?: boolean
+		includeHidden?: boolean
 	}): Pick<IncludeOptions, "attributes" | "include" | "association" | "through"> {
+		if (JSON.stringify(fields) === "{}") {
+			throw new NoFieldsSelectedError(93000)
+		}
+
 		// clone since filter relations will mutate this value
 		// if it's nill, default to all fields
 		fields = isNil(fields) ? ({ $fields: true } as never) : structuredClone(fields ?? ({} as F))
 
-		const model = this.orm.models[collection] // ?? throw500(378324, emsg.noModel(collection))
-		if (!model) throw new UndefinedModelError(collection, 3001)
-		// if fields is empty, get all columns
-		// we need to specify here, since if filter add join, we don't know what fields to fetch
-		// so if it's empty, get all
-		if (JSON.stringify(fields) === "{}") {
-			throw new NoFieldsSelectedError(93000)
-		}
+		const sqModel = this.orm.qsModels[collection] // ?? throw500(378324, emsg.noModel(collection))
+		const zmajModel = this.orm["modelsStore"].getByNameAsPojo(collection)
+		if (!sqModel || !zmajModel) throw new UndefinedModelError(collection, 3001)
 		if ((fields as Struct)?.["$fields"]) {
 			// `getAttributes` returns column property as key, and it's data.
 			// we are simply taking all property names and settings them to true
 			// if $fields, we can have other relations
+			const $fields = includeHidden
+				? mapValues(zmajModel.fields, () => true) //
+				: Object.fromEntries(
+						Object.entries(zmajModel.fields)
+							.filter(([field, config]) => config.canRead)
+							.map(([field]) => [field, true]),
+				  )
+
+			const { $fields: $fieldsField, ...relations } = fields as any
 			fields = {
-				...fields, // This will contain other relations
-				...(mapValues(model.getAttributes(), () => true) as F), // all fields are set to true
+				...relations, // This will contain other relations
+				// ...(mapValues(sqModel.getAttributes(), () => true) as F), // all fields are set to true
+				...$fields, // All fields that should be included in $fields
 			}
 		}
 		filterRelations?.forEach((relation) => {
 			const alreadyAdded = get(fields, relation)
 
+			// join without selecting any fields
 			if (isNil(alreadyAdded)) {
 				fields = set(fields!, relation, {})
 			}
 		})
 
+		// attributes are relations
 		const attributes: string[] = []
 		const include: IncludeOptions[] = []
 
-		const fieldsMeta = model.getAttributes()
+		const fieldsMeta = sqModel.getAttributes()
 
 		// delete fields!.$subQuery
 		for (const [property, value] of Object.entries(fields!)) {
 			// if $fields, get all fields
-			if (property === "$fields") {
-				attributes.push(...Object.keys(fieldsMeta))
-				continue
-			}
+			// if (property === "$fields") {
+			// 	attributes.push(...Object.keys(fieldsMeta))
+			// 	continue
+			// }
 			// field property is not relation, simply add to attributes (fields)
-			const isField = fieldsMeta[property]
+			// const isField = fieldsMeta[property]
+			const zmajField = zmajModel.fields[property]
 
-			if (isField) {
-				attributes.push(property)
+			if (zmajField) {
+				if (includeHidden || zmajField.canRead) {
+					attributes.push(property)
+				}
 				continue
 			}
 
 			// property must be relation, or invalid param
-			const relMeta = model.associations[property] // ?? throw400(578932, emsg.noProperty)
+			const relMeta = sqModel.associations[property] // ?? throw400(578932, emsg.noProperty)
 			if (!relMeta) throw new NoPropertyError(property, 1490)
 			// get relation type
 			const relType = relMeta.associationType
@@ -357,6 +383,7 @@ export class SequelizeRepository<
 					fields: value as any,
 					collection: relMeta.target.name,
 					property: relMeta.as,
+					includeHidden: includeHidden,
 					filterRelations: filterRelations
 						?.filter((r) => r.includes("."))
 						.map((r) => r.substring(0, r.indexOf("."))),

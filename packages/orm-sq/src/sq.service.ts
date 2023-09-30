@@ -57,7 +57,7 @@ export class SequelizeService {
 		this.schemaInfo = new SequelizeSchemaInfoService(this)
 		this.alterSchema = new SequelizeAlterSchemaService(this, this.schemaInfo, logger)
 	}
-	get models(): Record<string, ModelStatic<any>> {
+	get qsModels(): Record<string, ModelStatic<any>> {
 		return this.orm.models
 	}
 

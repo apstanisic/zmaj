@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { faker } from "@faker-js/faker"
-import { times, uuidRegex } from "@zmaj-js/common"
+import { snakeCase, times, uuidRegex } from "@zmaj-js/common"
 import {
 	BaseModel,
 	Class,
@@ -62,17 +62,15 @@ describe("SequelizeRepository", () => {
 		override tableName = "test_table"
 		fields = this.buildFields((f) => ({
 			id: f.intPk({}),
-			name: f.text({ columnName: "name" }),
+			name: f.text({}),
 			default: f.text({ hasDefault: true }),
-			noRead: f.text({ columnName: "no_read", canRead: false }),
-			noUpdate: f.text({ columnName: "no_update", canUpdate: false }),
+			noRead: f.text({ canRead: false }),
+			noUpdate: f.text({ canUpdate: false }),
 			noCreateDefault: f.text({
-				columnName: "no_create_default",
 				canCreate: false,
 				hasDefault: true,
 			}),
 			noUpdateDefault: f.text({
-				columnName: "no_update_default",
 				canUpdate: false,
 				hasDefault: true,
 			}),
@@ -127,6 +125,7 @@ describe("SequelizeRepository", () => {
 			},
 			engine: sqOrmEngine,
 			models,
+			nameTransformer: ({ key }) => snakeCase(key),
 		})
 		await orm.init()
 		sq = orm.engine.engineProvider as SequelizeService
@@ -331,8 +330,8 @@ describe("SequelizeRepository", () => {
 					name = "with_hidden"
 					fields = this.buildFields((f) => ({
 						id: f.intPk({}),
-						firstName: f.text({ canRead: true, columnName: "first_name" }), //
-						lastName: f.text({ canRead: false, columnName: "last_name" }), //
+						firstName: f.text({ canRead: true }), //
+						lastName: f.text({ canRead: false }), //
 					}))
 				}
 				let repo: OrmRepository<WithHiddenModel>
@@ -349,7 +348,7 @@ describe("SequelizeRepository", () => {
 						last_name: DataTypes.STRING,
 					})
 
-					sq.generateModels([...models, WithHiddenModel])
+					orm.updateModels([...models, WithHiddenModel])
 					repo = sq.repoManager.getRepo(WithHiddenModel)
 				})
 
@@ -487,7 +486,7 @@ describe("SequelizeRepository", () => {
 				name = "owner"
 				fields = {
 					id: this.field.intPk({}),
-					rightId: this.field.uuid({ columnName: "right_id", nullable: true }),
+					rightId: this.field.uuid({ nullable: true }),
 				}
 				other = this.oneToOneOwner(() => RefModel, { fkField: "rightId" })
 			}
@@ -509,7 +508,7 @@ describe("SequelizeRepository", () => {
 						references: { model: "ref", key: "id" },
 					},
 				})
-				sq.generateModels([...models, RefModel, NullableOwnerModel])
+				orm.updateModels([...models, RefModel, NullableOwnerModel])
 			})
 
 			it("should join properly", async () => {
@@ -748,8 +747,103 @@ describe("SequelizeRepository", () => {
 					})),
 				})
 			})
-			// THIS IS IMPORTANT
-			it.todo("canRead should be used for nested")
+
+			describe("overrideCanRead", () => {
+				class PostHidden extends BaseModel {
+					name = "posts"
+					fields = this.buildFields((f) => ({
+						id: f.uuidPk({}),
+						title: f.text({}),
+						body: f.text({ canRead: false }),
+					}))
+					comments = this.oneToMany(() => CommentHidden, { fkField: "postId" })
+				}
+				class CommentHidden extends BaseModel {
+					name = "comments"
+					fields = this.buildFields((f) => ({
+						id: f.uuidPk({}),
+						body: f.text({ canRead: false }),
+						postId: f.uuid({}),
+					}))
+					post = this.manyToOne(() => PostHidden, { fkField: "postId" })
+				}
+				beforeEach(() => {
+					orm.updateModels([PostHidden, CommentHidden])
+				})
+
+				// THIS IS IMPORTANT
+				it("should not return canRead hidden fields", async () => {
+					const res = await repo(PostHidden).findById({
+						id: post.id,
+						fields: {
+							body: true,
+							id: true,
+							title: true,
+							comments: {
+								body: true,
+								postId: true,
+								id: true,
+								post: {
+									title: true,
+									body: true,
+								},
+							},
+						},
+					})
+					// Post and comments are created with another models, so they have hidden data
+					expect(res).toEqual({
+						id: post.id,
+						title: post.title,
+						body: undefined,
+						comments: comments.map((c) => ({
+							body: undefined,
+							id: c.id,
+							postId: c.postId,
+							post: {
+								title: post.title,
+								body: undefined,
+							},
+						})),
+					})
+				})
+
+				it.skip("should be possible to override canRead", async () => {
+					const res = await repo(PostHidden).findById({
+						id: post.id,
+						includeHidden: true,
+						fields: {
+							body: true,
+							id: true,
+							title: true,
+							comments: {
+								body: true,
+								postId: true,
+								id: true,
+								post: {
+									title: true,
+									body: true,
+								},
+							},
+						},
+					})
+
+					// Post and comments are created with another models, so they have hidden data
+					expect(res).toEqual({
+						id: post.id,
+						title: post.title,
+						body: post.body,
+						comments: comments.map((c) => ({
+							body: c.body,
+							id: c.id,
+							postId: c.postId,
+							post: {
+								title: post.title,
+								body: post.body,
+							},
+						})),
+					})
+				})
+			})
 		})
 		describe("many to many", () => {
 			let post: TPost
@@ -978,7 +1072,7 @@ describe("SequelizeRepository", () => {
 			it("should throw UniqueError if needed", async () => {
 				const model = new TestModel()
 
-				await sq.qi.changeColumn(model.tableName, model.fields.name.columnName, {
+				await sq.qi.changeColumn(model.tableName, "name", {
 					unique: true,
 					type: DataTypes.TEXT,
 				})

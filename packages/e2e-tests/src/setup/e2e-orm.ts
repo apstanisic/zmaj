@@ -1,4 +1,4 @@
-import { sleep, systemModels } from "@zmaj-js/common"
+import { sleep, snakeCase, systemModels } from "@zmaj-js/common"
 import { sqOrmEngine } from "@zmaj-js/orm-sq"
 import {
 	TCommentModel,
@@ -20,7 +20,15 @@ export function createOrm(): Orm {
 			type: process.env.DB_TYPE,
 		},
 		engine: sqOrmEngine,
-		models: [...systemModels, TTagModel, TPostInfoModel, TPostModel, TCommentModel, TPostTagModel],
+		models: [
+			...systemModels,
+			TTagModel,
+			TPostInfoModel,
+			TPostModel,
+			TCommentModel,
+			TPostTagModel,
+		],
+		nameTransformer: ({ key }) => snakeCase(key),
 	})
 }
 

@@ -1,6 +1,6 @@
 import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { Global, Module } from "@nestjs/common"
-import { systemModels } from "@zmaj-js/common"
+import { snakeCase, systemModels } from "@zmaj-js/common"
 import { AlterSchemaService, Orm, SchemaInfoService } from "@zmaj-js/orm"
 import {
 	SequelizeAlterSchemaService,
@@ -18,7 +18,12 @@ import { DatabaseConfig } from "./database.config"
 			provide: Orm,
 			inject: [DatabaseConfig],
 			useFactory: async (config: DatabaseConfig) => {
-				const orm = new Orm({ config, engine: sqOrmEngine, models: [...systemModels] })
+				const orm = new Orm({
+					config,
+					engine: sqOrmEngine,
+					models: [...systemModels],
+					nameTransformer: ({ key }) => snakeCase(key),
+				})
 				await orm.init()
 				return orm
 			},

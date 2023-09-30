@@ -1,5 +1,4 @@
 import { ColumnDataType, OrmLogger, PojoModel } from "@zmaj-js/orm"
-import { snake } from "radash"
 import { DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize"
 import { v4 } from "uuid"
 
@@ -7,14 +6,13 @@ export class SequelizeModelsGenerator {
 	constructor(private logger: OrmLogger = console) {}
 	removeAllModels(orm: Sequelize): void {
 		// Models in best delete order
-		const toRemove =
+		const sortedToRemove =
 			orm.modelManager
 				.getModelsTopoSortedByForeignKey()
 				?.concat() // reverse mutates array, so we clone it here
 				.reverse() ?? orm.modelManager.all //
-		// Object.values(orm.models)
 
-		for (const model of toRemove) {
+		for (const model of sortedToRemove) {
 			orm.modelManager.removeModel(model as ModelStatic<any>)
 		}
 	}
@@ -28,8 +26,6 @@ export class SequelizeModelsGenerator {
 		this.removeAllModels(orm)
 
 		const modelConfigs = models
-		// const models = this.state.getAll()
-		// const modelConfigs = models.map((model) => baseModelToPojoModel(model, this.state))
 
 		for (const model of modelConfigs) {
 			if (model.disabled) continue
@@ -54,52 +50,38 @@ export class SequelizeModelsGenerator {
 	}
 
 	private generateModelAndFields(col: PojoModel, orm: Sequelize): void {
-		const properties: ModelAttributes = {}
-
 		const fields = Object.entries(col.fields)
 
-		const createdAtField = fields.find(([_, f]) => f.isCreatedAt)?.[0] ?? false
-		const updatedAtField = fields.find(([_, f]) => f.isUpdatedAt)?.[0] ?? false
+		const properties: ModelAttributes = {}
 
-		fields.forEach(([propertyName, field]) => {
+		for (const [propertyName, field] of fields) {
 			const property: ModelAttributes[string] = {
 				// allowNull: true, //field.isNullable,
 				// allowNull: ![createdAtField, updatedAtField].includes(propertyName),
-				// orm.options.dialect === "sqlite" ? "sqlite" : "postgres",
+				field: field.columnName,
 				type: this.getType(field.dataType),
-				autoIncrement: field.isAutoIncrement,
 				unique: field.isUnique,
+				autoIncrement: field.isAutoIncrement,
 				primaryKey: field.isPrimaryKey,
 				autoIncrementIdentity: field.isPrimaryKey && field.isAutoIncrement,
-				field: snake(propertyName), // field.columnName, TODO FIXME!!!!!!!!!!!
-				// i'm abusing comment property to notify repository if record can be updated
-				comment: `CAN_CREATE=${field.canCreate};CAN_UPDATE=${field.canUpdate}`,
 			}
 
-			const isUuidPkWithoutDefaultValue =
+			const uuidPk =
 				field.isPrimaryKey && //
-				field.isAutoIncrement !== true &&
-				field.hasDefaultValue !== true
+				field.dataType === "uuid" &&
+				!field.hasDefaultValue // if there is default value in DB, do nothing
 
-			if (isUuidPkWithoutDefaultValue) {
+			if (uuidPk) {
 				property.defaultValue = v4
 			}
 
-			// we can't simply provide undefined if it's not hidden, since it check if undefined is provided
-			if (!field.canRead) {
-				property.get = () => undefined
-			}
-
 			properties[propertyName] = property
-		})
+		}
 
 		orm.define(col.name, properties, {
 			freezeTableName: true,
 			tableName: col.tableName,
-			timestamps: true,
-			updatedAt: updatedAtField,
-			createdAt: createdAtField,
-			deletedAt: false,
+			timestamps: false,
 		})
 	}
 

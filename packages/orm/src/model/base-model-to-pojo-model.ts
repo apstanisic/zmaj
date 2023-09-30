@@ -1,3 +1,4 @@
+import { NameTransformer } from "@orm/NameTransformer"
 import { ModelsState } from "@orm/create-models-store"
 import { ZmajOrmError } from "@orm/orm-errors"
 import { BaseModel } from "./base-model"
@@ -9,14 +10,22 @@ import { PojoModel, PojoModelField, PojoModelRelation } from "./pojo-model"
 export function baseModelToPojoModel(
 	ModelClass: BaseModel | PojoModel,
 	getOne: ModelsState["getOne"],
+	transformer?: NameTransformer,
 ): PojoModel {
 	if (ModelClass instanceof BaseModel) {
 		const model = ModelClass
+		const fields = convertAllModelFieldsFromClassToPojo(model.fields, transformer)
+		const fieldsArr = Object.entries(fields)
+		const updatedAtField = fieldsArr.find(([_, config]) => config.isUpdatedAt)?.[0] ?? null
+		const createdAtField = fieldsArr.find(([_, config]) => config.isCreatedAt)?.[0] ?? null
+
 		return {
 			name: model.name,
 			tableName: model.tableName ?? model.name,
 			idField: model.getPkField(),
-			fields: convertAllModelFieldsFromClassToPojo(model.fields),
+			fields,
+			updatedAtField,
+			createdAtField,
 			relations: convertAllModelRelationsFromClassToPojo(ModelClass, getOne),
 			disabled: model.disabled,
 		}
@@ -78,9 +87,10 @@ function convertAllModelRelationsFromClassToPojo(
 
 function convertAllModelFieldsFromClassToPojo(
 	fields: BaseModel["fields"],
+	transformer?: NameTransformer,
 ): Record<string, PojoModelField> {
 	const fieldEntries = Object.entries(fields).map(([fieldName, field]) => {
-		return [fieldName, convertModelFieldFromClassToPojo(fieldName, field)]
+		return [fieldName, convertModelFieldFromClassToPojo(fieldName, field, transformer)]
 	})
 	return Object.fromEntries(fieldEntries)
 }
@@ -88,6 +98,7 @@ function convertAllModelFieldsFromClassToPojo(
 function convertModelFieldFromClassToPojo(
 	fieldName: string,
 	field: BaseModel["fields"][string],
+	transformer: NameTransformer = ({ key }) => key,
 ): PojoModelField {
 	return {
 		fieldName,
@@ -95,7 +106,7 @@ function convertModelFieldFromClassToPojo(
 		canCreate: field.canCreate,
 		canUpdate: field.canUpdate,
 		canRead: field.canRead,
-		columnName: field.columnName,
+		columnName: field.columnName ?? transformer({ key: fieldName, type: "column" }),
 		hasDefaultValue: field.hasDefault,
 		isAutoIncrement: field.isAutoIncrement,
 		isNullable: field.nullable,
