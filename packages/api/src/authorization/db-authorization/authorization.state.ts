@@ -16,6 +16,9 @@ import { v4 } from "uuid"
 import { OnCrudEvent } from "../../crud/on-crud-event.decorator"
 
 export type DbAuthorizationRole = ReturnedProperties<RoleModel, undefined> & {
+	/**
+	 * Key is resource, value is all permissions
+	 */
 	rules: Record<string, Permission[]>
 }
 /**

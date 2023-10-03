@@ -1,13 +1,15 @@
 import { GetUser } from "@api/authentication/get-user.decorator"
 import { ParseStringPipe } from "@api/common/parse-string.pipe"
-import { wrap } from "@api/common/wrap"
-import { Controller, Get, Param } from "@nestjs/common"
-import { AllowedAction, AuthUser, endpoints, type Data } from "@zmaj-js/common"
+import { Controller, Param } from "@nestjs/common"
+import { AuthUser, endpoints } from "@zmaj-js/common"
 import { AuthorizationConfig } from "./authorization.config"
 import { AuthorizationService } from "./authorization.service"
 
 const ep = endpoints.authz
 
+/**
+ * @deprecated Should be moved under `/api/admin-panel`
+ */
 @Controller(ep.$base)
 export class AuthorizationController {
 	constructor(
@@ -16,16 +18,9 @@ export class AuthorizationController {
 	) {}
 
 	/**
-	 *
-	 * @param user Logged in user
-	 * @returns Partial permission with info about what user can do
+	 * Not exposed currently, see in the future if there is a need
 	 */
-	@Get(ep.getPermissions)
-	getPermittedActions(@GetUser() user?: AuthUser): Data<AllowedAction[] | null> {
-		return wrap(this.service.getAllowedActions(user))
-	}
-
-	@Get(ep.isAllowed)
+	// @Get(ep.isAllowed)
 	isAllowed(
 		@Param("action", ParseStringPipe) action: string,
 		@Param("resource", ParseStringPipe) resource: string,

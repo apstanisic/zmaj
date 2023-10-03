@@ -5,12 +5,12 @@ import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common"
 import { asMock, makeWritable, uuidRegex } from "@zmaj-js/common"
-import { mockCollectionDefs, ReadUrlQueryStub } from "@zmaj-js/test-utils"
+import { ReadUrlQueryStub, mockCollectionDefs } from "@zmaj-js/test-utils"
 import { omit } from "radash"
-import { beforeEach, describe, expect, it, Mock, Mocked, vi } from "vitest"
+import { Mock, Mocked, beforeEach, describe, expect, it, vi } from "vitest"
+import { ReadBeforeEventStub } from "./__mocks__/read-event.stubs"
 import { CrudReadParams, ReadBeforeEvent } from "./crud-event.types"
 import { CrudReadService } from "./crud-read.service"
-import { ReadBeforeEventStub } from "./__mocks__/read-event.stubs"
 
 describe("CrudReadService", () => {
 	let service: CrudReadService
@@ -83,7 +83,7 @@ describe("CrudReadService", () => {
 			service["repoManager"].getRepo = vi
 				.fn()
 				.mockImplementation(() => ({ findWhere, findAndCount }))
-			authz.getRuleFields = vi.fn((..._p) => null)
+			authz.check = vi.fn((..._p) => true)
 
 			params = {
 				collection: mockCollectionDefs.posts,
@@ -110,13 +110,10 @@ describe("CrudReadService", () => {
 
 		it("should throw if user requested forbidden sort", async () => {
 			params.options!.sort = { body: "DESC" }
-			authz.getRuleFields.mockImplementation(() => null)
+			authz.check.mockImplementation(() => true)
 			await expect(service.findWhere(params)).resolves.not.toThrow()
 
-			vi.mocked(authz.getRuleFields).mockImplementation(() => ["id", "title"])
-			await expect(service.findWhere(params)).rejects.toThrow(ForbiddenException)
-
-			authz.getRuleFields.mockImplementation(() => undefined)
+			authz.check.mockImplementation(() => false)
 			await expect(service.findWhere(params)).rejects.toThrow(ForbiddenException)
 		})
 
@@ -214,10 +211,16 @@ describe("CrudReadService", () => {
 
 			it("should have trx if not provided only in 2nd and 3rd emit", async () => {
 				await service.findWhere(params)
-				expect(emit).nthCalledWith(1, expect.not.objectContaining({ trx: expect.anything() }))
+				expect(emit).nthCalledWith(
+					1,
+					expect.not.objectContaining({ trx: expect.anything() }),
+				)
 				expect(emit).nthCalledWith(2, expect.objectContaining({ trx: "TEST_TRX" }))
 				expect(emit).nthCalledWith(3, expect.objectContaining({ trx: "TEST_TRX" }))
-				expect(emit).nthCalledWith(4, expect.not.objectContaining({ trx: expect.anything() }))
+				expect(emit).nthCalledWith(
+					4,
+					expect.not.objectContaining({ trx: expect.anything() }),
+				)
 			})
 
 			it("should use provided trx", async () => {
@@ -255,7 +258,10 @@ describe("CrudReadService", () => {
 			})
 
 			it("should keep changes in emitter", async () => {
-				emit.mockImplementation(async (v: { type: string }) => ({ ...v, ["$" + v.type]: true }))
+				emit.mockImplementation(async (v: { type: string }) => ({
+					...v,
+					["$" + v.type]: true,
+				}))
 
 				await service.findWhere(params)
 
@@ -303,7 +309,10 @@ describe("CrudReadService", () => {
 				it("should pass count if requested", async () => {
 					params.options!.count = true
 					await service.findWhere(params)
-					expect(emit).nthCalledWith(3, expect.objectContaining({ result: [{ id: 1 }], count: 1 }))
+					expect(emit).nthCalledWith(
+						3,
+						expect.objectContaining({ result: [{ id: 1 }], count: 1 }),
+					)
 				})
 			})
 

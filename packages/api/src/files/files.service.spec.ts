@@ -173,7 +173,9 @@ describe("FilesService", () => {
 
 		it("should throw if storage is unable to get file", async () => {
 			getFile.mockRejectedValue(undefined)
-			await expect(service.getFile({ id: fileId })).rejects.toThrow(InternalServerErrorException)
+			await expect(service.getFile({ id: fileId })).rejects.toThrow(
+				InternalServerErrorException,
+			)
 		})
 
 		it("should return file stream and info", async () => {
@@ -291,6 +293,7 @@ describe("FilesService", () => {
 				{
 					req,
 					factory: expect.any(Function),
+					overrideCanCreate: true,
 					trx: "trx", //
 					collection: FileCollection,
 					user: req.user,

@@ -69,7 +69,7 @@ describe("CrudReadJoinService", () => {
 		})
 
 		it("should join current filter with conditions that is needed to update record", () => {
-			authz.getAuthzAsOrmFilter = vi.fn().mockReturnValue({ name: "hello" })
+			authz.getAuthzAsOrmFilter = vi.fn(() => ({ $and: [{ name: "hello" }] }))
 			service.__getOnlyEntitiesThatUserCanUpdate(event)
 			expect(event.filter).toEqual({
 				type: "where",
@@ -85,7 +85,7 @@ describe("CrudReadJoinService", () => {
 
 		it("should append condition if filter is already `$and`", () => {
 			//
-			authz.getAuthzAsOrmFilter = vi.fn().mockReturnValue({ name: "hello" })
+			authz.getAuthzAsOrmFilter = vi.fn(() => ({ $and: [{ name: "hello" }] }))
 			service["filterToWhere"] = vi.fn().mockReturnValue({ $and: [{ test: "me" }] })
 			service.__getOnlyEntitiesThatUserCanUpdate(event)
 			expect(event.filter).toEqual({

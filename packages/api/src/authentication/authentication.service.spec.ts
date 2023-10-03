@@ -1,10 +1,20 @@
 import { AuthorizationService } from "@api/authorization/authorization.service"
+import { RoleStub } from "@api/authorization/db-authorization/roles/role.stub"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { UsersService } from "@api/users/users.service"
 import { BadRequestException, ForbiddenException, UnauthorizedException } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import { TestingModule } from "@nestjs/testing"
-import { AuthUser, SignInDto, User, UserWithSecret, asMock, uuidRegex } from "@zmaj-js/common"
+import {
+	ADMIN_ROLE_ID,
+	AuthUser,
+	SignInDto,
+	User,
+	UserModel,
+	asMock,
+	uuidRegex,
+} from "@zmaj-js/common"
+import { ReturnedProperties } from "@zmaj-js/orm"
 import { AuthUserStub, UserStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { AuthSessionStub } from "./auth-sessions/auth-session.stub"
@@ -45,7 +55,7 @@ describe("AuthenticationService", () => {
 	describe("emailAndPasswordSignIn", () => {
 		let authzService: AuthorizationService
 		let dto: SignInDto
-		let fullUser: UserWithSecret
+		let fullUser: ReturnedProperties<UserModel, { $fields: true; role: true }, true>
 		let user: AuthUser
 		const ip = "127.0.0.1"
 		const userAgent = "SOME_USER_AGENT"
@@ -60,11 +70,17 @@ describe("AuthenticationService", () => {
 					backupCodes: ["hello"],
 				}),
 			)
-			fullUser = UserStub({ otpToken: null, status: "active" })
+			fullUser = {
+				...UserStub({ otpToken: null, status: "active" }),
+				role: RoleStub({ id: ADMIN_ROLE_ID, requireMfa: false }),
+			}
+			fullUser
 			user = AuthUser.fromUser(fullUser)
 			dto = new SignInDto({ email: fullUser.email, password: "hello_world" })
 
-			usersService.findUserWithHiddenFields = vi.fn(async () => fullUser)
+			// @ts-expect-error
+			usersService.repo ??= {}
+			usersService.repo.findOne = vi.fn(async () => fullUser as any)
 			usersService.checkPasswordHash = vi.fn(async () => true)
 			service.verifyOtp = vi.fn(async () => undefined)
 			service.createAuthSession = vi.fn(async () => ({
@@ -72,7 +88,6 @@ describe("AuthenticationService", () => {
 				accessToken: "my_at",
 				refreshToken: "my_rt",
 			}))
-			authzService.roleRequireMfa = vi.fn(async () => false)
 
 			// service.verifyOtp = vi.fn(async () => {})
 			jwtService.signAsync = vi.fn().mockResolvedValue("jwt-token")
@@ -80,7 +95,7 @@ describe("AuthenticationService", () => {
 		})
 
 		it("should throw if user does not exist", async () => {
-			vi.mocked(usersService.findUserWithHiddenFields).mockResolvedValue(undefined)
+			vi.mocked(usersService.repo.findOne).mockResolvedValue(undefined)
 
 			await expect(service.emailAndPasswordSignIn(dto, { ip, userAgent })).rejects.toThrow(
 				UnauthorizedException,
@@ -120,7 +135,7 @@ describe("AuthenticationService", () => {
 		})
 
 		it("should return info that role requires mfa enabled with data to enable it", async () => {
-			vi.mocked(authzService.roleRequireMfa).mockResolvedValue(true)
+			fullUser.role.requireMfa = true
 			const res = await service.emailAndPasswordSignIn(dto, { ip, userAgent })
 			expect(res).toEqual({ status: "must-create-mfa", data: expect.any(Object) })
 		})
@@ -228,9 +243,9 @@ describe("AuthenticationService", () => {
 		})
 
 		it("should throw if email is not valid", async () => {
-			await expect(service.oauthSignIn({ email: "invalid", emailVerified: true })).rejects.toThrow(
-				BadRequestException,
-			)
+			await expect(
+				service.oauthSignIn({ email: "invalid", emailVerified: true }),
+			).rejects.toThrow(BadRequestException)
 		})
 		it("should throw if email is not verified", async () => {
 			await expect(

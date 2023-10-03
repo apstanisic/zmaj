@@ -1,12 +1,6 @@
 import { throw401, throw500 } from "@api/common/throw-http"
 import { emsg } from "@api/errors"
-import {
-	AbilityBuilder,
-	AnyMongoAbility,
-	createAliasResolver,
-	createMongoAbility,
-	defineAbility,
-} from "@casl/ability"
+import { AbilityBuilder, AnyMongoAbility, createMongoAbility, defineAbility } from "@casl/ability"
 import { Injectable } from "@nestjs/common"
 import {
 	ADMIN_ROLE_ID,
@@ -27,10 +21,6 @@ import { AuthzConditionTransformer } from "./condition-transformers/condition-tr
 const { flatten, unflatten } = flat
 
 const allAllowed = defineAbility((can) => can("manage", "all"))
-
-const resolveAction = createAliasResolver({
-	modify: ["update", "delete", "create"],
-})
 
 @Injectable()
 export class DbAuthorizationRules extends AuthorizationRules {
@@ -67,6 +57,8 @@ export class DbAuthorizationRules extends AuthorizationRules {
 		const abilities = new AbilityBuilder(createMongoAbility)
 		// Users's role ID, or public role for non registered users
 		const roleId = user?.roleId ?? PUBLIC_ROLE_ID
+		console.log(Object.keys(this.authzState.roles), roleId)
+
 		const role = this.authzState.roles[roleId]
 		// If role no longer exist, require user to sign in again
 		if (!role) throw401(70039, emsg.sessionExpired)
@@ -94,10 +86,7 @@ export class DbAuthorizationRules extends AuthorizationRules {
 			)
 		}
 
-		const result = abilities.build({
-			detectSubjectType: (data) => data["__caslType"],
-			resolveAction,
-		})
+		const result = abilities.build(this.getBuildOptions())
 		return result
 	}
 
@@ -126,18 +115,19 @@ export class DbAuthorizationRules extends AuthorizationRules {
 		if (!isStruct(conditions)) throw500(3992)
 		const flatConditions = flatten<Struct, Struct>(conditions, { delimiter })
 
-		for (const [key, value] of Object.entries(flatConditions)) {
-			if (typeof value !== "string") continue
+		for (const [field, comparison] of Object.entries(flatConditions)) {
+			if (typeof comparison !== "string") continue
 
-			if (value.startsWith("_$")) {
-				flatConditions[key] = value.substring(1)
+			if (comparison.startsWith("_$")) {
+				flatConditions[field] = comparison.substring(1)
 				continue
 			}
 
-			if (!value.startsWith("$")) continue
+			if (!comparison.startsWith("$")) continue
 
-			const valueSections = value.substring(1).split(":")
+			const valueSections = comparison.substring(1).split(":")
 			const trKey = valueSections[0]!
+
 			const transformer = this.conditionTransformers[trKey]
 			// Should we throw here?
 			// Transformer could be removed and then invalid value will be returned
@@ -147,7 +137,7 @@ export class DbAuthorizationRules extends AuthorizationRules {
 			// It will return everything after ":", or undefined if there is no ":"
 			const modifier = valueSections[1]
 
-			flatConditions[trKey] = transformer.transform({ user: user ?? undefined, modifier })
+			flatConditions[field] = transformer.transform({ user: user ?? undefined, modifier })
 		}
 
 		return unflatten<Struct, Struct>(flatConditions, { delimiter })

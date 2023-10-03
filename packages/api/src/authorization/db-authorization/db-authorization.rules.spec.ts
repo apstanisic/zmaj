@@ -37,16 +37,28 @@ describe("AuthorizationService", () => {
 		//
 		authzState = module.get(AuthorizationState)
 
+		authzState.roles = {}
+		authzState.roles[ADMIN_ROLE_ID] = { rules: {} } as any
+		authzState.roles[PUBLIC_ROLE_ID] = { rules: {} } as any
 		const roles = times(5, (i) => RoleStub({ name: `role_${i}` }))
 		for (const role of roles) {
-			role.rules
+			authzState.roles[role.id] = {
+				...role,
+				users: undefined as never,
+				permissions: undefined as never,
+				rules: {},
+			}
 		}
-		authzState.roles = Object.fromEntries
-		authzState.permissions = times(30, () =>
+		// authzState.roles = Object.fromEntries
+		const permissions = times(30, () =>
 			PermissionStub({
-				roleId: rand(authzState.roles.map((r) => r.id)),
+				roleId: rand(roles.map((r) => r.id)),
 			}),
 		)
+		for (const permission of permissions) {
+			authzState.roles[permission.roleId]!.rules[permission.resource] ??= []
+			authzState.roles[permission.roleId]!.rules[permission.resource]?.push(permission)
+		}
 	})
 
 	it("should be defined", () => {
@@ -117,16 +129,21 @@ describe("AuthorizationService", () => {
 		//
 		it("should allow all actions for admin", () => {
 			user.roleId = ADMIN_ROLE_ID
-			const rules = service.getRules(user)
+			const rules = service.getRules({ user })
 			expect(rules.rules).toEqual([{ action: "manage", subject: "all" }])
 		})
 
 		it("should get relevant dynamic values ", () => {
 			const permission = PermissionStub({ roleId: user.roleId })
-			authzState.roles[ADMIN_ROLE_ID]!.permissions = [permission as any]
+			authzState.roles[user.roleId] = {
+				...RoleStub(),
+				rules: {
+					[permission.resource]: [permission],
+				},
+			}
 			service["injectDynamicValues"] = vi.fn().mockImplementation(() => ({ id: "mock-id" }))
 
-			service.getRules(user)
+			service.getRules({ user })
 
 			expect(service["injectDynamicValues"]).toBeCalledWith({
 				permission: permission,
@@ -135,10 +152,11 @@ describe("AuthorizationService", () => {
 		})
 
 		it("should inject dynamic values", () => {
-			authzState.permissions = [PermissionStub({ roleId: PUBLIC_ROLE_ID })]
+			const perm = PermissionStub({ roleId: PUBLIC_ROLE_ID })
+			authzState.roles[PUBLIC_ROLE_ID]!.rules[perm.resource] = [perm]
 			service["injectDynamicValues"] = vi.fn().mockImplementation(() => ({ id: "mock-id" }))
 
-			const rules = service.getRules()
+			const rules = service.getRules({ user: null })
 
 			expect(rules.rules[0]?.conditions).toEqual({ id: "mock-id" })
 		})
@@ -149,7 +167,7 @@ describe("AuthorizationService", () => {
 			beforeEach(() => {
 				user = AuthUserStub()
 
-				authzState.permissions = times(10, (i) =>
+				const perms = times(10, (i) =>
 					PermissionStub({
 						roleId: i < 5 ? user.roleId : v4(),
 						fields: [`f${i}`],
@@ -157,12 +175,17 @@ describe("AuthorizationService", () => {
 						resource: `collections.testTable${i}`,
 					}),
 				)
+				for (const perm of perms) {
+					authzState.roles[perm.roleId] ??= { rules: {} } as any
+					authzState.roles[perm.roleId]!.rules[perm.resource] ??= []
+					authzState.roles[perm.roleId]!.rules[perm.resource]?.push(perm)
+				}
 
 				service["injectDynamicValues"] = vi.fn().mockReturnValue({ injected: "values" })
 			})
 
 			it("should get rules for current user", () => {
-				const res = service.getRules(user)
+				const res = service.getRules({ user })
 				expect(res.rules.length).toEqual(5)
 
 				for (let i = 0; i < 5; i++) {
@@ -179,30 +202,46 @@ describe("AuthorizationService", () => {
 			})
 
 			it("should get public rules if user is not signed in", () => {
-				authzState.permissions = [
-					PermissionStub({ roleId: PUBLIC_ROLE_ID }),
-					PermissionStub({ roleId: v4() }),
-				]
-				const res = service.getRules()
+				authzState.roles[PUBLIC_ROLE_ID]!.rules = {
+					"collections.test": [PermissionStub({ roleId: PUBLIC_ROLE_ID })],
+				}
+				// authzState.permissions = [
+				// 	PermissionStub({ roleId: PUBLIC_ROLE_ID }),
+				// 	PermissionStub({ roleId: v4() }),
+				// ]
+				const res = service.getRules({ user: null })
 				expect(res.rules.length).toEqual(1)
 			})
 
 			it("should not add permission if no field is allowed", () => {
-				authzState.permissions = [PermissionStub({ roleId: PUBLIC_ROLE_ID, fields: [] })]
-				const res = service.getRules()
+				authzState.roles[PUBLIC_ROLE_ID]!.rules = {
+					"collections.test": [PermissionStub({ roleId: PUBLIC_ROLE_ID, fields: [] })],
+				}
+				// authzState.permissions = [PermissionStub({ roleId: PUBLIC_ROLE_ID, fields: [] })]
+				const res = service.getRules({ user: null })
 				expect(res.rules.length).toEqual(0)
 			})
 
 			it("should forbid having resource with name 'all' since it's reserved word", async () => {
-				authzState.permissions = [
-					PermissionStub({
-						resource: "all",
-						roleId: PUBLIC_ROLE_ID,
-						fields: null,
-						action: "create",
-					}),
-				]
-				const res = service.getRules()
+				authzState.roles[PUBLIC_ROLE_ID]!.rules = {
+					all: [
+						PermissionStub({
+							resource: "all",
+							roleId: PUBLIC_ROLE_ID,
+							fields: null,
+							action: "create",
+						}),
+					],
+				}
+				// authzState.permissions = [
+				// 	PermissionStub({
+				// 		resource: "all",
+				// 		roleId: PUBLIC_ROLE_ID,
+				// 		fields: null,
+				// 		action: "create",
+				// 	}),
+				// ]
+				const res = service.getRules({ user: null })
 				expect(res.rules).toEqual([
 					{
 						action: "create",

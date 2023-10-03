@@ -48,7 +48,11 @@ export class AuthenticationService {
 		dto: SignInDto,
 		params: Pick<CrudRequest, "ip" | "userAgent"> & { expiresAt?: Date },
 	): Promise<SignInResponse> {
-		const user = await this.users.findUserWithHiddenFields({ email: dto.email })
+		const user = await this.users.repo.findOne({
+			where: { email: dto.email },
+			includeHidden: true,
+			fields: { $fields: true, role: true },
+		})
 		// user does not exist
 		if (!user) throw401(68833, emsg.userNotFound)
 		// not active
@@ -61,9 +65,11 @@ export class AuthenticationService {
 		// verify mfa if exists
 		await this.verifyOtp(user, dto.otpToken)
 		// check if role requires mfa
-		const requireMfa = await this.authzService.roleRequireMfa(AuthUser.fromUser(user))
-		if (requireMfa && !user.otpToken) {
-			return { status: "must-create-mfa", data: await this.mfa.generateParamsToEnable(dto.email) }
+		if (user.role.requireMfa && !user.otpToken) {
+			return {
+				status: "must-create-mfa",
+				data: await this.mfa.generateParamsToEnable(dto.email),
+			}
 		}
 		// sign in user
 		const authUser = AuthUser.fromUser(user)

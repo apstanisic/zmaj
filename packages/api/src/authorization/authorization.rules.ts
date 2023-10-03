@@ -1,5 +1,6 @@
-import { AnyMongoAbility } from "@casl/ability"
+import { AbilityOptions, AnyMongoAbility, createAliasResolver } from "@casl/ability"
 import { AuthUser } from "@zmaj-js/common"
+import { detectSubjectType } from "./authorization.utils"
 
 export type RulesParams = {
 	/**
@@ -22,6 +23,14 @@ export type RulesParams = {
 }
 
 export abstract class AuthorizationRules {
-	abstract requireMfa(user: AuthUser): Promise<boolean>
 	abstract getRules(params: RulesParams): AnyMongoAbility
+
+	protected getBuildOptions(): AbilityOptions<any, any> {
+		return {
+			detectSubjectType,
+			resolveAction: createAliasResolver({
+				modify: ["update", "delete", "create"],
+			}),
+		}
+	}
 }

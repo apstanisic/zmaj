@@ -19,7 +19,7 @@ export class AdminPanelInfraController {
 	@SetSystemPermission("adminPanel", "access")
 	@Get("infra")
 	async getAdminPanelInfra(@GetUser() user?: AuthUser): Promise<Data<CollectionDef[]>> {
-		const rules = this.authz.getRules({ user })
+		const rules = this.authz.getRules({ user: user ?? null })
 
 		const canRead = Object.values(this.infraState.collections).filter((col) =>
 			rules.can("read", col.authzKey),

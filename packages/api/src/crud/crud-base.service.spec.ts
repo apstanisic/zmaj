@@ -8,9 +8,8 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from "@nestjs/common"
-import { AuthUser, CollectionDef, asMock, makeWritable } from "@zmaj-js/common"
+import { AuthUser, CollectionDef, makeWritable } from "@zmaj-js/common"
 import { AuthUserStub, CollectionDefStub, mockCollectionDefs } from "@zmaj-js/test-utils"
-import { isString } from "radash"
 import { Mock, beforeEach, describe, expect, it, vi } from "vitest"
 import { CreateBeforeEventStub } from "./__mocks__/create-event.stubs"
 import {
@@ -119,8 +118,8 @@ describe("CrudBaseService", () => {
 		//
 		beforeEach(() => {
 			event = UpdateBeforeEventStub()
-			authz.getAuthzAsOrmFilter = vi.fn().mockReturnValue({ name: "testing" })
-			authz.getRuleFields = vi.fn(() => null)
+			authz.getAuthzAsOrmFilter = vi.fn(() => ({ $and: [{ name: "testing" }] }))
+			authz.check = vi.fn(() => true)
 			service["isFilterAllowed"] = vi.fn()
 		})
 
@@ -194,7 +193,7 @@ describe("CrudBaseService", () => {
 				where: null as any,
 			}
 
-			asMock(authz.getAuthzAsOrmFilter).mockReturnValue({})
+			vi.mocked(authz.getAuthzAsOrmFilter).mockReturnValue({ $and: [] })
 
 			const res = service["joinFilterAndAuthz"](event)
 			expect(res).toEqual({ $and: [] })
@@ -397,16 +396,13 @@ describe("CrudBaseService", () => {
 		beforeEach(() => {
 			user = AuthUserStub()
 
-			authz.getRuleFields = vi.fn((params) => {
-				const col = isString(params.resource) ? params.resource : params.resource.authzKey
-				if (col.includes("posts")) return ["id", "title"]
-				if (col.includes("comments")) return ["id", "body"]
-				if (col.includes("tags")) return null
-				return undefined
+			authz.check = vi.fn((params) => {
+				return false
 			})
 		})
 		//
 		it("should do nothing if all allowed", () => {
+			authz.check = vi.fn(() => true)
 			service["isFilterAllowed"]({
 				action: "read",
 				collection,
@@ -416,6 +412,7 @@ describe("CrudBaseService", () => {
 		})
 
 		it("should throw if contains forbidden filter", () => {
+			authz.check = vi.fn(() => false)
 			expect(() =>
 				service["isFilterAllowed"]({
 					action: "read",
@@ -427,6 +424,7 @@ describe("CrudBaseService", () => {
 		})
 
 		it("should throw if $and contains forbidden filter", () => {
+			authz.check = vi.fn(() => false)
 			expect(() =>
 				service["isFilterAllowed"]({
 					action: "read",
@@ -438,6 +436,7 @@ describe("CrudBaseService", () => {
 		})
 
 		it("should throw if relation contains forbidden filter", () => {
+			authz.check = vi.fn(() => false)
 			expect(() =>
 				service["isFilterAllowed"]({
 					action: "read",

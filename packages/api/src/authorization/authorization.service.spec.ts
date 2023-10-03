@@ -2,7 +2,8 @@ import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { AnyMongoAbility, defineAbility } from "@casl/ability"
 import { ForbiddenException } from "@nestjs/common"
-import { ADMIN_ROLE_ID, AuthUser, asMock, camelCaseKeys, codeCollection } from "@zmaj-js/common"
+import { TestingModule } from "@nestjs/testing"
+import { AuthUser, asMock, camelCaseKeys, codeCollection } from "@zmaj-js/common"
 import { BaseModel } from "@zmaj-js/orm"
 import {
 	AuthUserStub,
@@ -21,13 +22,14 @@ import { AuthorizationConfig } from "./authorization.config"
 import { AuthorizationService } from "./authorization.service"
 
 describe("AuthorizationService", () => {
+	let module: TestingModule
 	let service: AuthorizationService
 	let authzConfig: AuthorizationConfig
 	let infraState: InfraStateService
 	let user: AuthUser
 
 	beforeEach(async () => {
-		const module = await buildTestModule(AuthorizationService, [
+		module = await buildTestModule(AuthorizationService, [
 			{
 				provide: AuthorizationConfig,
 				useValue: new AuthorizationConfig({ exposeAllowedPermissions: true }),
@@ -48,8 +50,13 @@ describe("AuthorizationService", () => {
 
 	describe("getResourceName", () => {
 		it("should get resource name if string", () => {
+			const name = service["getResourceName"]("hello.world")
+			expect(name).toEqual("hello.world")
+		})
+
+		it("should default to collection if no dot is provided", () => {
 			const name = service["getResourceName"]("hello")
-			expect(name).toEqual("hello")
+			expect(name).toEqual("collections.hello")
 		})
 
 		it("should get resource name infra collection", () => {
@@ -86,17 +93,10 @@ describe("AuthorizationService", () => {
 				action: "update",
 				resource: "test_table",
 				user,
-				field: "name",
+				field: ["name", "id"],
 				record: { test: "me" },
 			})
 
-			expect(service.check).toBeCalledWith({
-				action: "update",
-				resource: "test_table",
-				user,
-				field: "id",
-				record: { test: "me" },
-			})
 			expect(res).toBe(true)
 		})
 
@@ -132,15 +132,9 @@ describe("AuthorizationService", () => {
 				action: "update",
 				resource: "test_table",
 				user,
-				field: "name",
+				field: ["name", "id"],
 			})
 
-			expect(service.check).toBeCalledWith({
-				action: "update",
-				resource: "test_table",
-				user,
-				field: "id",
-			})
 			expect(res).toBe(true)
 		})
 
@@ -202,7 +196,7 @@ describe("AuthorizationService", () => {
 
 		it("should check if action is allowed", () => {
 			service.check({ action: "update", resource: "collections.testTable", user })
-			expect(casl.can).toBeCalledWith("update", "collections.testTable", undefined)
+			expect(casl.can).toBeCalledWith("update", "collections.testTable")
 		})
 
 		it("should allow to pass infra collection instead of resource", () => {
@@ -211,7 +205,7 @@ describe("AuthorizationService", () => {
 				authzKey: "collections.testTable",
 			})
 			service.check({ action: "update", resource, user })
-			expect(casl.can).toBeCalledWith("update", "collections.testTable", undefined)
+			expect(casl.can).toBeCalledWith("update", "collections.testTable")
 		})
 
 		//
@@ -239,6 +233,17 @@ describe("AuthorizationService", () => {
 				user,
 			})
 			expect(casl.can).toBeCalledWith("update", "collections.testTable", "my_field")
+		})
+
+		it("should check if action on multiple fields is allowed", () => {
+			service.check({
+				action: "update",
+				resource: "collections.testTable",
+				field: ["my_field", "my_second"],
+				user,
+			})
+			expect(casl.can).toBeCalledWith("update", "collections.testTable", "my_field")
+			expect(casl.can).toBeCalledWith("update", "collections.testTable", "my_second")
 		})
 
 		it("should return is action allowed or not", () => {
@@ -269,10 +274,10 @@ describe("AuthorizationService", () => {
 				resource: "collections.users",
 				user,
 			})
-			expect(res).toEqual({ cond: 1 })
+			expect(res).toEqual({ $and: [{ cond: 1 }] })
 		})
 
-		it("should return empty object if user can't access this resource", () => {
+		it("should return empty $and array if user can't access this resource", () => {
 			// not job of this method to check if user is allowed
 			// so we simply do not provide any conditions
 			service.getRules = vi.fn().mockImplementation(() => {
@@ -281,77 +286,77 @@ describe("AuthorizationService", () => {
 				})
 			})
 			const res = service.getAuthzAsOrmFilter({ action: "read", resource: "forbidden", user })
-			expect(res).toEqual({})
+			expect(res).toEqual({ $and: [] })
 		})
 
-		it("should return empty object if there are no conditions for current rule", () => {
+		it("should return empty $and array if there are no conditions for current rule", () => {
 			service.getRules = vi.fn().mockImplementation(() => {
 				return defineAbility((can) => {
 					can("read", "users")
 				})
 			})
 			const res = service.getAuthzAsOrmFilter({ action: "read", resource: "users", user })
-			expect(res).toEqual({})
+			expect(res).toEqual({ $and: [] })
 		})
 	})
 
-	/**
-	 *
-	 */
-	describe("getAllowedActions", () => {
-		beforeEach(() => {
-			authzConfig.exposeAllowedPermissions = true
-			service.checkSystem = vi.fn(() => true)
-			service.getRules = vi.fn(() => defineAbility((can) => can("manage", "all")))
-		})
-		// it("should throw if actions are not exposed", () => {
-		// 	authzConfig.exposeAllowedPermissions = false
-		// 	expect(() => service.getAllowedActions(user)).toThrow(ForbiddenException)
-		// })
-		it("should return empty array if not allowed to expose", () => {
-			authzConfig.exposeAllowedPermissions = false
-			const res = service.getAllowedActions(user)
-			expect(res).toEqual([])
-		})
+	// /**
+	//  *
+	//  */
+	// describe("getAllowedActions", () => {
+	// 	beforeEach(() => {
+	// 		authzConfig.exposeAllowedPermissions = true
+	// 		service.checkSystem = vi.fn(() => true)
+	// 		service.getRules = vi.fn(() => defineAbility((can) => can("manage", "all")))
+	// 	})
+	// 	// it("should throw if actions are not exposed", () => {
+	// 	// 	authzConfig.exposeAllowedPermissions = false
+	// 	// 	expect(() => service.getAllowedActions(user)).toThrow(ForbiddenException)
+	// 	// })
+	// 	it("should return empty array if not allowed to expose", () => {
+	// 		authzConfig.exposeAllowedPermissions = false
+	// 		const res = service.getAllowedActions(user)
+	// 		expect(res).toEqual([])
+	// 	})
 
-		it("should return empty array if current role is not allowed", () => {
-			asMock(service.checkSystem).mockReturnValue(false)
-			expect(service.getAllowedActions(user)).toEqual([])
-		})
+	// 	it("should return empty array if current role is not allowed", () => {
+	// 		asMock(service.checkSystem).mockReturnValue(false)
+	// 		expect(service.getAllowedActions(user)).toEqual([])
+	// 	})
 
-		it("should return null if user is admin", () => {
-			user.roleId = ADMIN_ROLE_ID
-			expect(service.getAllowedActions(user)).toBeNull()
-		})
+	// 	it("should return null if user is admin", () => {
+	// 		user.roleId = ADMIN_ROLE_ID
+	// 		expect(service.getAllowedActions(user)).toBeNull()
+	// 	})
 
-		it("should get allowed actions for user", () => {
-			service.getRules = () => {
-				return defineAbility((can) => {
-					can("read", "r1", ["f1"])
-					can("update", "r2", ["f2"])
-				})
-			}
-			//
-			const res = service.getAllowedActions(user)
-			expect(res).toEqual([
-				{ action: "read", fields: ["f1"], resource: "r1" }, //
-				{ action: "update", fields: ["f2"], resource: "r2" }, //
-			])
-		})
+	// 	it("should get allowed actions for user", () => {
+	// 		service.getRules = () => {
+	// 			return defineAbility((can) => {
+	// 				can("read", "r1", ["f1"])
+	// 				can("update", "r2", ["f2"])
+	// 			})
+	// 		}
+	// 		//
+	// 		const res = service.getAllowedActions(user)
+	// 		expect(res).toEqual([
+	// 			{ action: "read", fields: ["f1"], resource: "r1" }, //
+	// 			{ action: "update", fields: ["f2"], resource: "r2" }, //
+	// 		])
+	// 	})
 
-		it("should get public actions when not signed in", () => {
-			service.getRules = () => {
-				return defineAbility((can) => {
-					can("read", "r1", ["f1"])
-				})
-			}
+	// 	it("should get public actions when not signed in", () => {
+	// 		service.getRules = () => {
+	// 			return defineAbility((can) => {
+	// 				can("read", "r1", ["f1"])
+	// 			})
+	// 		}
 
-			const res = service.getAllowedActions()
-			expect(res).toEqual([
-				{ action: "read", fields: ["f1"], resource: "r1" }, //
-			])
-		})
-	})
+	// 		const res = service.getAllowedActions()
+	// 		expect(res).toEqual([
+	// 			{ action: "read", fields: ["f1"], resource: "r1" }, //
+	// 		])
+	// 	})
+	// })
 
 	/**
 	 *
@@ -456,6 +461,8 @@ describe("AuthorizationService", () => {
 						return v.field === "id" || v.field === "body"
 					}
 					if (v.resource === "collections.postsInfo") {
+						console.log({ v })
+
 						return v.field === "id" || v.field === "additionalInfo"
 					}
 					return false

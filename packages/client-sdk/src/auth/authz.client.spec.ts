@@ -21,7 +21,7 @@ describe("AuthzClient", () => {
 
 		it("should call api", async () => {
 			const res = await client.allowedActions()
-			expect(axios.get).toBeCalledWith("/system/authorization/permissions")
+			expect(axios.get).toBeCalledWith("admin-panel-wip/auth/allowed-actions")
 			expect(res).toEqual("response")
 			//
 		})

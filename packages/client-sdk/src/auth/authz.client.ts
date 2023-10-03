@@ -27,7 +27,7 @@ export class AuthzClient {
 		if (this.#state.currentUser?.roleId === ADMIN_ROLE_ID) return null
 
 		return this.#http
-			.get<Data<AllowedAction[] | null>>(ep.getPermissions)
+			.get<Data<AllowedAction[] | null>>("admin-panel-wip/auth/allowed-actions")
 			.then((r) => r.data.data)
 			.catch(sdkThrow)
 	}

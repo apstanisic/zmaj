@@ -28,21 +28,6 @@ describe("AuthorizationController", () => {
 		user = AuthUserStub()
 	})
 
-	describe("getAllowedAction", () => {
-		beforeEach(() => {
-			service.getAllowedActions = vi.fn().mockReturnValue([55])
-		})
-
-		it("should get allowed action", () => {
-			const res = controller.getPermittedActions(user)
-			expect(res).toEqual({ data: [55] })
-		})
-		it("should get actions for current user", () => {
-			controller.getPermittedActions(user)
-			expect(service.getAllowedActions).toBeCalledWith(user)
-		})
-	})
-
 	describe("isAllowed", () => {
 		beforeEach(() => {
 			service.checkSystem = vi.fn(() => true)
