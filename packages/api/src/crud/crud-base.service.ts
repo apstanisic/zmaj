@@ -280,6 +280,7 @@ export class CrudBaseService<Item extends Struct> {
 			// check every sub filter in them
 			// value.forEach((val) => this.isWhereAllowed(val, fields, collection))
 			value.forEach((val) => this.isFilterAllowed({ ...params, filter: val }))
+			return
 		}
 
 		const fieldsToCheck = []
@@ -290,6 +291,8 @@ export class CrudBaseService<Item extends Struct> {
 			} else if (collection.relations[key]) {
 				relationsToCheck.push(key)
 			} else {
+				console.log({ key, filter })
+
 				throw403(50852, emsg.invalidQueryKey("filter"))
 			}
 		}

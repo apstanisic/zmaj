@@ -28,7 +28,7 @@ describe("RolesController", () => {
 	it("should findById", () => TestCrudControllers.testFindById({ service, controller }))
 	it("should findMany", () => TestCrudControllers.testFindMany({ service, controller }))
 	it("should createOne", () =>
-		TestCrudControllers.testCreateOne({ service, controller, dto: true, factory: true }))
+		TestCrudControllers.testCreateOne({ service, controller, dto: true }))
 	it("should deleteById", () => TestCrudControllers.testDeleteById({ service, controller }))
 	it("should updateById", () =>
 		TestCrudControllers.testUpdateById({ service, controller, dto: true }))

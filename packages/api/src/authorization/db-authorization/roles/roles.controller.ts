@@ -14,7 +14,6 @@ import {
 	Role,
 	RoleCollection,
 	RoleCreateDto,
-	RoleSchema,
 	RoleUpdateDto,
 	endpoints as allEndpoints,
 } from "@zmaj-js/common"
@@ -65,7 +64,7 @@ export class RolesController {
 		@GetCrudRequest() req: CrudRequest,
 		@DtoBody(RoleCreateDto) dto: RoleCreateDto,
 	): Promise<Data<Partial<Role>>> {
-		return wrap(this.crud.createOne(req, { dto, factory: RoleSchema }))
+		return wrap(this.crud.createOne(req, { dto }))
 	}
 
 	/**

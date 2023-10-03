@@ -1,4 +1,5 @@
 import { sleep, snakeCase, systemModels } from "@zmaj-js/common"
+import { Orm } from "@zmaj-js/orm"
 import { sqOrmEngine } from "@zmaj-js/orm-sq"
 import {
 	TCommentModel,
@@ -7,8 +8,6 @@ import {
 	TPostTagModel,
 	TTagModel,
 } from "@zmaj-js/test-utils"
-import { Orm } from "zmaj"
-
 export function createOrm(): Orm {
 	return new Orm({
 		config: {

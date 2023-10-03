@@ -1,6 +1,6 @@
 import { GetUser } from "@api/authentication/get-user.decorator"
 import { ParseStringPipe } from "@api/common/parse-string.pipe"
-import { Controller, Param } from "@nestjs/common"
+import { Controller, Get, Param } from "@nestjs/common"
 import { AuthUser, endpoints } from "@zmaj-js/common"
 import { AuthorizationConfig } from "./authorization.config"
 import { AuthorizationService } from "./authorization.service"
@@ -20,7 +20,7 @@ export class AuthorizationController {
 	/**
 	 * Not exposed currently, see in the future if there is a need
 	 */
-	// @Get(ep.isAllowed)
+	@Get(ep.isAllowed)
 	isAllowed(
 		@Param("action", ParseStringPipe) action: string,
 		@Param("resource", ParseStringPipe) resource: string,

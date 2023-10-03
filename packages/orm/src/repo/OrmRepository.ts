@@ -284,7 +284,7 @@ export abstract class OrmRepository<TModel extends BaseModel = BaseModel> {
 	): Record<string, unknown> {
 		const parsed: Record<string, unknown> = {}
 		for (const [field, value] of Object.entries(changes)) {
-			if (value === null || value === undefined) continue
+			if (value === undefined) continue
 			if (overrideCanUpdate !== true && this.pojoModel.fields[field]?.canUpdate === false) {
 				throw new FieldUpdateForbiddenError(field)
 			}
