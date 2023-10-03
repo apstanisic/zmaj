@@ -15,54 +15,36 @@ jobs:
             - name: Build Success
               run: echo "Build Success"
 
+    # Depends on build since we are using monorepo imports which require build output
     lint:
         timeout-minutes: 10
         runs-on: ubuntu-latest
+        needs: [build]
         steps:
             - uses: actions/checkout@v3
-            - uses: pnpm/action-setup@v2
-              with:
-                  version: 8
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 18
-                  cache: "pnpm"
-            - name: Install dependencies
-              run: pnpm install
+            - uses: ./.github/actions/setup
             - name: Lint
               run: npm run lint
 
+    # Depends on build since we are using monorepo imports which require build output
     tsc:
         timeout-minutes: 10
         runs-on: ubuntu-latest
+        needs: [build]
         steps:
             - uses: actions/checkout@v3
-            - uses: pnpm/action-setup@v2
-              with:
-                  version: 8
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 18
-                  cache: "pnpm"
-            - name: Install dependencies
-              run: pnpm install
+            - uses: ./.github/actions/setup
             - name: Type Check
               run: npm run tsc
 
+    # Depends on build since we are using monorepo imports which require build output
     test-unit:
         timeout-minutes: 10
         runs-on: ubuntu-latest
+        needs: [build]
         steps:
             - uses: actions/checkout@v3
-            - uses: pnpm/action-setup@v2
-              with:
-                  version: 8
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 18
-                  cache: "pnpm"
-            - name: Install dependencies
-              run: pnpm install
+            - uses: ./.github/actions/setup
             - name: Test
               run: npx vitest
 
