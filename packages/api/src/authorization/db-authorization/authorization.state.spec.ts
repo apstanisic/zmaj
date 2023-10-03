@@ -20,10 +20,12 @@ describe("AuthorizationState", () => {
 		const roles: Record<string, DbAuthorizationRole> = {
 			[ADMIN_ROLE_ID]: {
 				...RoleStub({ id: ADMIN_ROLE_ID }),
+				permissions: [] as never,
 				rules: {},
 			},
 			[PUBLIC_ROLE_ID]: {
 				...RoleStub({ id: PUBLIC_ROLE_ID }),
+				permissions: [] as never,
 				rules: {},
 			},
 		}
@@ -60,6 +62,7 @@ describe("AuthorizationState", () => {
 		})
 
 		it("should refresh roles state if role created", async () => {
+			vi.mocked(service["rolesRepo"].findWhere).mockResolvedValue([])
 			service.roles = { [ADMIN_ROLE_ID]: roles[ADMIN_ROLE_ID]! }
 			await service["ensureRequiredRolesExist"]()
 			expect(service["rolesRepo"].findWhere).toBeCalled()

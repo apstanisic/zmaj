@@ -21,7 +21,15 @@ jobs:
         needs: [build]
         steps:
             - uses: actions/checkout@v3
-            - uses: ./.github/actions/setup
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+            - name: Install dependencies
+              run: pnpm install
             - name: Lint
               run: npm run lint
 
@@ -31,7 +39,15 @@ jobs:
         needs: [build]
         steps:
             - uses: actions/checkout@v3
-            - uses: ./.github/actions/setup
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+            - name: Install dependencies
+              run: pnpm install
             - name: Type Check
               run: npm run tsc
 
@@ -41,7 +57,15 @@ jobs:
         needs: [build]
         steps:
             - uses: actions/checkout@v3
-            - uses: ./.github/actions/setup
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+            - name: Install dependencies
+              run: pnpm install
             - name: Test
               run: npx vitest
 
