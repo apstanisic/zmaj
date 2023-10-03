@@ -461,8 +461,6 @@ describe("AuthorizationService", () => {
 						return v.field === "id" || v.field === "body"
 					}
 					if (v.resource === "collections.postsInfo") {
-						console.log({ v })
-
 						return v.field === "id" || v.field === "additionalInfo"
 					}
 					return false

@@ -17,17 +17,15 @@ describe("AuthorizationState", () => {
 	})
 
 	describe("ensureRequiredRolesExist", () => {
-		const roles = {
+		const roles: Record<string, DbAuthorizationRole> = {
 			[ADMIN_ROLE_ID]: {
 				...RoleStub({ id: ADMIN_ROLE_ID }),
-				permissions: [],
-				users: undefined as never,
-			} as DbAuthorizationRole,
+				rules: {},
+			},
 			[PUBLIC_ROLE_ID]: {
 				...RoleStub({ id: PUBLIC_ROLE_ID }),
-				permissions: [],
-				users: undefined as never,
-			} as DbAuthorizationRole,
+				rules: {},
+			},
 		}
 		beforeEach(() => {
 			service["rolesRepo"].createOne = vi.fn()
@@ -43,7 +41,7 @@ describe("AuthorizationState", () => {
 
 		it("should create admin role if missing", async () => {
 			service.roles = {
-				[PUBLIC_ROLE_ID]: roles[PUBLIC_ROLE_ID],
+				[PUBLIC_ROLE_ID]: roles[PUBLIC_ROLE_ID]!,
 			}
 			await service["ensureRequiredRolesExist"]()
 			expect(service["rolesRepo"].createOne).toBeCalledWith({
@@ -53,7 +51,7 @@ describe("AuthorizationState", () => {
 
 		it("should create public role if missing", async () => {
 			service.roles = {
-				[ADMIN_ROLE_ID]: roles[ADMIN_ROLE_ID],
+				[ADMIN_ROLE_ID]: roles[ADMIN_ROLE_ID]!,
 			}
 			await service["ensureRequiredRolesExist"]()
 			expect(service["rolesRepo"].createOne).toBeCalledWith({
@@ -62,7 +60,7 @@ describe("AuthorizationState", () => {
 		})
 
 		it("should refresh roles state if role created", async () => {
-			service.roles = { [ADMIN_ROLE_ID]: roles[ADMIN_ROLE_ID] }
+			service.roles = { [ADMIN_ROLE_ID]: roles[ADMIN_ROLE_ID]! }
 			await service["ensureRequiredRolesExist"]()
 			expect(service["rolesRepo"].findWhere).toBeCalled()
 		})

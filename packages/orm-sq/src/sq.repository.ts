@@ -199,7 +199,7 @@ export class SequelizeRepository<
 			fields: { [this.pk]: true } as any,
 		})
 
-		const ids = rows.map((r) => r[this.pk]) as IdType[]
+		const ids = rows.map((r: Struct) => r[this.pk]) as IdType[]
 
 		await this.sequelizeModel.update(changes as any, {
 			transaction: params.trx as any,
@@ -221,7 +221,7 @@ export class SequelizeRepository<
 			trx: params.trx,
 			where: params.where,
 		})
-		const ids = toDelete.map((row) => row[this.pk]) as IdType[]
+		const ids = toDelete.map((row: Struct) => row[this.pk]) as IdType[]
 		await this.sequelizeModel
 			.destroy({ where: this.parseFilter(ids).where, transaction: params.trx as any })
 			.catch((e) => {

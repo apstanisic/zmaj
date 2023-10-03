@@ -37,10 +37,10 @@ describe("Fields", () => {
 		it("should not return relations by default", async () => {
 			const result = await postRepo.findOneOrThrow({})
 
-			assertType<never>(result.comments)
-			assertType<never>(result.tags)
-			assertType<never>(result.info)
-			assertType<never>(result.writer)
+			assertType<undefined>(result.comments)
+			assertType<undefined>(result.tags)
+			assertType<undefined>(result.info)
+			assertType<undefined>(result.writer)
 
 			// // @ts-expect-error
 			// assertType<any[]>(result.comments)
@@ -156,7 +156,7 @@ describe("Fields", () => {
 					id: true,
 				},
 			})
-			assertType<never>(result.comments)
+			assertType<undefined>(result.comments)
 
 			// // @ts-expect-error
 			// assertType<unknown[]>(result.comments)
