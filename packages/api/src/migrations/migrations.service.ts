@@ -111,7 +111,7 @@ export class MigrationsService {
 			await migration(executeStringMigration, {
 				databaseType: "postgres",
 				trx: ctx.trx,
-				repoManager: this.orm.repoManager,
+				orm: this.orm,
 				qi: this.sqService.orm.getQueryInterface(),
 			})
 		}

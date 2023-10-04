@@ -1,12 +1,11 @@
-import { mixedColDef } from "@api/collection-to-model-config"
 import { ConfigModuleConfig } from "@api/config/config.config"
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { DatabaseConfig } from "@api/database/database.config"
 import { getE2ETestModule } from "@api/testing/e2e-test-module"
 import { getTestEnvValues } from "@api/testing/get-test-env-values"
-import { DbMigration, DbMigrationModel, systemModels, uuidRegex } from "@zmaj-js/common"
-import { AlterSchemaService, RepoManager, SchemaInfoService, createModelsStore } from "@zmaj-js/orm"
-import { SequelizeService } from "@zmaj-js/orm-sq"
+import { DbMigration, DbMigrationModel, snakeCase, systemModels, uuidRegex } from "@zmaj-js/common"
+import { AlterSchemaService, Orm, RepoManager, SchemaInfoService } from "@zmaj-js/orm"
+import { SequelizeService, sqOrmEngine } from "@zmaj-js/orm-sq"
 import { join } from "node:path"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { ConfigService } from "../config/config.service"
@@ -26,31 +25,32 @@ describe("MigrationsService e2e", () => {
 	let sq: SequelizeService
 	let schemaInfo: SchemaInfoService
 	let alterSchema: AlterSchemaService
-	let repoManager: BootstrapRepoManager
+	let orm: BootstrapOrm
 	//
 	beforeAll(async () => {
 		const root = join(process.cwd(), "../..")
 
 		getTestEnvValues(root)
-		sq = new SequelizeService(
-			new DatabaseConfig(
+		orm = new Orm({
+			config: new DatabaseConfig(
 				{},
 				new ConfigService(
 					new ConfigModuleConfig({ useEnvFile: true, envPath: join(root, ".env.test") }),
 				),
 			),
-			console,
-			createModelsStore(),
-		)
-		sq.generateModels(mixedColDef([...systemModels]))
-		await sq.init()
+			engine: sqOrmEngine,
+			models: [...systemModels],
+			nameTransformer: ({ key }) => snakeCase(key),
+		})
+		sq = orm.engine.engineProvider as SequelizeService
+		// sq.generateModels(mixedColDef([...systemModels]))
+		// await sq.init()
 		schemaInfo = sq.schemaInfo
 		alterSchema = sq.alterSchema
-		repoManager = sq.repoManager
 	})
 	afterAll(async () => {
 		await alterSchema.dropTable({ tableName })
-		await repoManager.getRepo(DbMigrationModel).deleteWhere({ where: {} })
+		await orm.getRepo(DbMigrationModel).deleteWhere({ where: {} })
 		await sq.onModuleDestroy()
 	})
 

@@ -1,7 +1,6 @@
 import { AppModule } from "@api/app/app.module"
 import { AppService } from "@api/app/app.service"
 import { ConfigureAppParams } from "@api/app/configure-app-params.type"
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { OnInfraChangeService } from "@api/infra/on-infra-change.service"
 import { UsersService } from "@api/users/users.service"
 import { INestApplication } from "@nestjs/common"
@@ -95,7 +94,7 @@ export async function getE2ETestModuleExpanded(
 
 	const dropTable = async (tableName: string): Promise<void> => {
 		const qi = app.get(SequelizeService).orm.getQueryInterface()
-		const colRepo = app.get(BootstrapRepoManager).getRepo(CollectionMetadataModel)
+		const colRepo = app.get(Orm).getRepo(CollectionMetadataModel)
 
 		await qi.dropTable(tableName, { cascade: true })
 		await colRepo.deleteWhere({ where: { tableName } })

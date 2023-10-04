@@ -1,7 +1,6 @@
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
-import { Transaction } from "@zmaj-js/orm"
-import { QueryInterface } from "sequelize"
 import { DbMigrationName } from "@zmaj-js/common"
+import { Orm, Transaction } from "@zmaj-js/orm"
+import { QueryInterface } from "sequelize"
 
 export type MigrationRunnerContext = {
 	trx?: Transaction
@@ -11,7 +10,7 @@ export type MigrationRunnerContext = {
 type ExecuteSql = (query: string) => Promise<void>
 
 type MigrationFnOptions = {
-	repoManager: BootstrapRepoManager
+	orm: Orm
 	trx: Transaction | any
 	qi: QueryInterface
 	databaseType: "postgres"

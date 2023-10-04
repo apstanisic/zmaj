@@ -1,4 +1,4 @@
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { InternalServerErrorException } from "@nestjs/common"
 import { TestingModule } from "@nestjs/testing"
@@ -106,7 +106,11 @@ describe("InfraStateService", () => {
 		})
 
 		it("should expand collection", () => {
-			const res = service["expandCollection"](collection, allMockFieldDefs, allMockRelationDefs)
+			const res = service["expandCollection"](
+				collection,
+				allMockFieldDefs,
+				allMockRelationDefs,
+			)
 			expect(res).toEqual<CollectionDef>({
 				...collection,
 				pkColumn: "id",
@@ -123,8 +127,14 @@ describe("InfraStateService", () => {
 		})
 
 		it("should set fields", () => {
-			const res = service["expandCollection"](collection, allMockFieldDefs, allMockRelationDefs)!
-			const amountOfFields = allMockFieldMetadata.filter((f) => f.tableName === "posts").length
+			const res = service["expandCollection"](
+				collection,
+				allMockFieldDefs,
+				allMockRelationDefs,
+			)!
+			const amountOfFields = allMockFieldMetadata.filter(
+				(f) => f.tableName === "posts",
+			).length
 			expect(Object.keys(res.fields)).toHaveLength(amountOfFields)
 		})
 
@@ -133,7 +143,11 @@ describe("InfraStateService", () => {
 				(r) => r.tableName === "posts",
 			).length
 
-			const res = service["expandCollection"](collection, allMockFieldDefs, allMockRelationDefs)!
+			const res = service["expandCollection"](
+				collection,
+				allMockFieldDefs,
+				allMockRelationDefs,
+			)!
 			expect(Object.keys(res.relations)).toHaveLength(amountOfRelations)
 		})
 	})
@@ -161,7 +175,9 @@ describe("InfraStateService", () => {
 				fields: dbState.fieldMetadata,
 				allRelations: [
 					...dbState.relationMetadata,
-					...systemCollections.flatMap((c) => Object.values(c.relations).map((v) => v.relation)),
+					...systemCollections.flatMap((c) =>
+						Object.values(c.relations).map((v) => v.relation),
+					),
 				],
 			})
 		})
@@ -198,7 +214,7 @@ describe("InfraStateService", () => {
 			const service = new InfraStateService(
 				schemaInfoService,
 				infraService,
-				module.get(BootstrapRepoManager),
+				module.get(BootstrapOrm),
 			)
 			const res = await service["getDbState"]()
 

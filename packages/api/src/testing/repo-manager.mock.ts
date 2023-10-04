@@ -1,15 +1,10 @@
-import { BootstrapOrm, BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { FactoryProvider } from "@nestjs/common"
 import { CollectionDef, Struct, snakeCase } from "@zmaj-js/common"
 import { BaseModel, Class, Orm, RepoManager } from "@zmaj-js/orm"
 import { vi } from "vitest"
 
-export const mockRepoManagers = (): [
-	FactoryProvider,
-	FactoryProvider,
-	FactoryProvider,
-	FactoryProvider,
-] => {
+export const mockRepoManagers = (): [FactoryProvider, FactoryProvider, FactoryProvider] => {
 	// those two share same repos, only diff is that base is available before db connection.
 	// base should only be used on system tables
 	const repos: Struct = {}
@@ -27,7 +22,6 @@ export const mockRepoManagers = (): [
 		},
 	})
 	return [
-		{ provide: BootstrapRepoManager, useFactory: factory },
 		{ provide: RepoManager, useFactory: factory },
 		{ provide: Orm, useFactory: factory },
 		{ provide: BootstrapOrm, useFactory: factory },

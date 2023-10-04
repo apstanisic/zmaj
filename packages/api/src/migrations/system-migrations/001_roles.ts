@@ -7,7 +7,7 @@ const table = "zmaj_roles"
 
 export const CreateRolesTable = createSystemMigration({
 	name: "2022_04_24_16_33_18__create_roles_table",
-	up: async (_, { qi, trx, repoManager }) => {
+	up: async (_, { qi, trx, orm }) => {
 		await qi.createTable(
 			table,
 			{
@@ -20,7 +20,7 @@ export const CreateRolesTable = createSystemMigration({
 		)
 		await qi.addIndex(table, ["created_at"], { transaction: trx })
 
-		await repoManager.getRepo(RoleModel).createMany({
+		await orm.getRepo(RoleModel).createMany({
 			trx: trx as any,
 			data: [
 				{
