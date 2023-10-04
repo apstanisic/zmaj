@@ -118,8 +118,10 @@ describe("CrudReadJoinService", () => {
 			// infraState.collections = camelCaseKeys(mockCollectionDefs)
 			literal = vi.fn(() => "hello")
 			// @ts-ignore
-			service["repoManager"] = {
-				getOrm: vi.fn(() => ({ literal })),
+			service["orm"].engine = {
+				engineProvider: {
+					orm: { literal },
+				},
 			}
 		})
 		it("should do nothing if left record id not provided", async () => {

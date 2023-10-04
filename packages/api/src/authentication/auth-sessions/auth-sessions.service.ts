@@ -11,7 +11,7 @@ import {
 	AuthUser,
 	zodCreate,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { Orm, OrmRepository } from "@zmaj-js/orm"
 import { addMilliseconds, isPast, subYears } from "date-fns"
 import { v4 } from "uuid"
 import { AuthenticationConfig } from "../authentication.config"
@@ -21,10 +21,10 @@ export class AuthSessionsService {
 	repo: OrmRepository<AuthSessionModel>
 	constructor(
 		private readonly encryption: EncryptionService,
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly config: AuthenticationConfig,
 	) {
-		this.repo = this.repoManager.getRepo(AuthSessionModel)
+		this.repo = this.orm.getRepo(AuthSessionModel)
 	}
 
 	/**
@@ -46,7 +46,8 @@ export class AuthSessionsService {
 			userAgent: params.userAgent,
 			ip: params.ip,
 			userId: user.userId,
-			validUntil: params.expiresAt ?? addMilliseconds(new Date(), this.config.refreshTokenTtlMs),
+			validUntil:
+				params.expiresAt ?? addMilliseconds(new Date(), this.config.refreshTokenTtlMs),
 			refreshToken: rt.raw,
 		})
 

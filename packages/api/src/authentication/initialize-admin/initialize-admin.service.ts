@@ -1,12 +1,12 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { throw403 } from "@api/common/throw-http"
-import { RepoManager } from "@zmaj-js/orm"
 import { emsg } from "@api/errors"
 import { KeyValueStorageService } from "@api/key-value-storage/key-value-storage.service"
 import { SettingsKey } from "@api/key-value-storage/key-value.consts"
 import { UsersService } from "@api/users/users.service"
 import { Injectable, Logger, OnApplicationBootstrap } from "@nestjs/common"
 import { ADMIN_ROLE_ID, AuthUser, SignUpDto } from "@zmaj-js/common"
+import { Orm } from "@zmaj-js/orm"
 import { AuthenticationConfig } from "../authentication.config"
 
 @Injectable()
@@ -15,7 +15,7 @@ export class InitializeAdminService implements OnApplicationBootstrap {
 	constructor(
 		private readonly users: UsersService,
 		private readonly keyVal: KeyValueStorageService,
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly config: AuthenticationConfig,
 		private readonly globalConfig: GlobalConfig,
 	) {}
@@ -71,7 +71,7 @@ export class InitializeAdminService implements OnApplicationBootstrap {
 	 * Allow first user registration as admin
 	 */
 	async createAdmin(data: SignUpDto, options?: { ignoreInited?: boolean }): Promise<AuthUser> {
-		return this.repoManager.transaction({
+		return this.orm.transaction({
 			fn: async (em) => {
 				const savedUser = await this.users.createUser({
 					trx: em,

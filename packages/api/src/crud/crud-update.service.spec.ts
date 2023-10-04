@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common"
 import { asMock, times } from "@zmaj-js/common"
 import { mockCollectionDefs } from "@zmaj-js/test-utils"
-import { beforeEach, describe, expect, it, Mock, vi } from "vitest"
+import { Mock, beforeEach, describe, expect, it, vi } from "vitest"
 import { CrudUpdateParams } from "./crud-event.types"
 import { CrudUpdateService } from "./crud-update.service"
 
@@ -82,7 +82,9 @@ describe("CrudUpdateService", () => {
 					{ id: findCount, name: "og" },
 				]
 			})
-			updateById = vi.fn().mockImplementation(async () => ({ id: updateCount++, name: "test" }))
+			updateById = vi
+				.fn()
+				.mockImplementation(async () => ({ id: updateCount++, name: "test" }))
 
 			updateCount = 1
 			findCount = 1
@@ -96,7 +98,7 @@ describe("CrudUpdateService", () => {
 			service["emit"] = emit
 			service["joinFilterAndAuthz"] = vi.fn().mockReturnValue({ id: 5 })
 			service["getAllowedData"] = vi.fn((v) => v.result as any[])
-			service["repoManager"].getRepo = vi.fn().mockImplementation(() => ({ findWhere, updateById }))
+			service["orm"].getRepo = vi.fn().mockImplementation(() => ({ findWhere, updateById }))
 		})
 
 		it("should have proper mocks", async () => {
@@ -162,10 +164,16 @@ describe("CrudUpdateService", () => {
 
 			it("should have em if not provided only in 2nd and 3rd emit", async () => {
 				await service.updateWhere(params)
-				expect(emit).nthCalledWith(1, expect.not.objectContaining({ trx: expect.anything() }))
+				expect(emit).nthCalledWith(
+					1,
+					expect.not.objectContaining({ trx: expect.anything() }),
+				)
 				expect(emit).nthCalledWith(2, expect.objectContaining({ trx: "TEST_TRX" }))
 				expect(emit).nthCalledWith(3, expect.objectContaining({ trx: "TEST_TRX" }))
-				expect(emit).nthCalledWith(4, expect.not.objectContaining({ trx: expect.anything() }))
+				expect(emit).nthCalledWith(
+					4,
+					expect.not.objectContaining({ trx: expect.anything() }),
+				)
 			})
 
 			it("should use provided trx", async () => {
@@ -202,7 +210,10 @@ describe("CrudUpdateService", () => {
 			})
 
 			it("should keep changes in emitter", async () => {
-				emit.mockImplementation(async (v: { type: string }) => ({ ...v, ["$" + v.type]: true }))
+				emit.mockImplementation(async (v: { type: string }) => ({
+					...v,
+					["$" + v.type]: true,
+				}))
 
 				await service.updateWhere(params)
 

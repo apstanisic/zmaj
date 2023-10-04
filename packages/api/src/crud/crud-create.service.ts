@@ -38,7 +38,7 @@ export class CrudCreateService<Item extends Struct = Struct> extends CrudBaseSer
 	 */
 	async createMany(params: CrudCreateParams<Item>): Promise<Partial<Item>[]> {
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection.collectionName)
+		const repo = this.orm.getRepo(collection.collectionName)
 
 		// If table only has Primary key, don't allow creating items
 		// Common error when user tests after creating table

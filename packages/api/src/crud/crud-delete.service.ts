@@ -30,7 +30,7 @@ export class CrudDeleteService<Item extends Struct = Struct> extends CrudBaseSer
 	async deleteWhere(params: CrudDeleteParams<Item>): Promise<Partial<Item>[]> {
 		const { trx } = params
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection.collectionName)
+		const repo = this.orm.getRepo(collection.collectionName)
 
 		const afterEmit1 = await this.emit<DeleteBeforeEvent<Item>>(
 			{ ...params, collection, action: "delete", type: "before" }, //
@@ -47,12 +47,17 @@ export class CrudDeleteService<Item extends Struct = Struct> extends CrudBaseSer
 				(original) =>
 					({
 						original: original as ReadonlyDeep<Item>,
-						id: (original[afterEmit1.collection.pkField] as IdType) ?? throw500(7293892),
+						id:
+							(original[afterEmit1.collection.pkField] as IdType) ??
+							throw500(7293892),
 					}) as const,
 			)
 
 			// if ids are provided, and user can't delete all ids, throw
-			if (afterEmit1.filter.type === "ids" && afterEmit1.filter.ids.length !== toDelete.length) {
+			if (
+				afterEmit1.filter.type === "ids" &&
+				afterEmit1.filter.ids.length !== toDelete.length
+			) {
 				throw403(838934, emsg.noAuthz)
 			}
 

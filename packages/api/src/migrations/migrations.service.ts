@@ -1,5 +1,5 @@
 import { throw500 } from "@api/common/throw-http"
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { Injectable, Logger } from "@nestjs/common"
 import { DbMigrationModel } from "@zmaj-js/common"
 import { SchemaInfoService } from "@zmaj-js/orm"
@@ -26,7 +26,7 @@ export class MigrationsService {
 	constructor(
 		private storage: MigrationsUmzugStorage,
 		private schemaInfo: SchemaInfoService,
-		private repoManager: BootstrapRepoManager,
+		private orm: BootstrapOrm,
 		private config: MigrationsConfig,
 		private sqService: SequelizeService,
 	) {}
@@ -43,7 +43,7 @@ export class MigrationsService {
 	}
 
 	async ensureMigrationsTableExist(): Promise<void> {
-		await this.repoManager.transaction({
+		await this.orm.transaction({
 			type: "SERIALIZABLE",
 			fn: async (trx) => {
 				const done = await this.schemaInfo.hasTable({
@@ -71,7 +71,7 @@ export class MigrationsService {
 		migrations: readonly MigrationDefinition[],
 	): Promise<void> {
 		await this.ensureMigrationsTableExist()
-		await this.repoManager
+		await this.orm
 			.transaction({
 				fn: async (trx) => {
 					const runner = new Umzug<MigrationRunnerContext>({
@@ -102,7 +102,7 @@ export class MigrationsService {
 	): Promise<void> {
 		if (!migration) return
 		const executeStringMigration = async (val: string): Promise<void> => {
-			await this.repoManager.rawQuery(val, { trx: ctx.trx })
+			await this.orm.rawQuery(val, { trx: ctx.trx })
 		}
 
 		if (isString(migration)) {
@@ -111,7 +111,7 @@ export class MigrationsService {
 			await migration(executeStringMigration, {
 				databaseType: "postgres",
 				trx: ctx.trx,
-				repoManager: this.repoManager,
+				repoManager: this.orm.repoManager,
 				qi: this.sqService.orm.getQueryInterface(),
 			})
 		}

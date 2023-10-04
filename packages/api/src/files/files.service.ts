@@ -17,7 +17,7 @@ import {
 	zodCreate,
 	type UUID,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { Orm, OrmRepository } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { FileUploadDisabledError, StorageError } from "@zmaj-js/storage-core"
 import { format } from "date-fns"
@@ -35,11 +35,11 @@ export class FilesService {
 		public readonly crudCreate: CrudCreateService<FileInfo>,
 		private readonly storageService: StorageService,
 		private readonly authz: AuthorizationService,
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly imagesService: ImagesService,
 		private readonly sqService: SequelizeService,
 	) {
-		this.repo = this.repoManager.getRepo(FileModel)
+		this.repo = this.orm.getRepo(FileModel)
 	}
 
 	/**
@@ -125,7 +125,7 @@ export class FilesService {
 
 		const filePath = this.generateUri(fileId, extension)
 
-		return this.repoManager.transaction({
+		return this.orm.transaction({
 			fn: async (em) => {
 				const fileInfo = zodCreate(FileSchema, {
 					mimeType,

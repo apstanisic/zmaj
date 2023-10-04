@@ -1,4 +1,4 @@
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionMetadata,
@@ -14,23 +14,23 @@ import { alphabetical, unique } from "radash"
 @Injectable()
 export class InfraService {
 	constructor(
-		private baseRepoManager: BootstrapRepoManager,
+		private orm: BootstrapOrm,
 		private schemaInfo: SchemaInfoService,
 	) {}
 
 	async getCollectionMetadata(trx?: Transaction): Promise<CollectionMetadata[]> {
 		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
-		return this.baseRepoManager.getRepo(CollectionMetadataModel).findWhere({ trx })
+		return this.orm.getRepo(CollectionMetadataModel).findWhere({ trx })
 	}
 
 	async getFieldMetadata(trx?: Transaction): Promise<FieldMetadata[]> {
 		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
-		return this.baseRepoManager.getRepo(FieldMetadataModel).findWhere({ trx })
+		return this.orm.getRepo(FieldMetadataModel).findWhere({ trx })
 	}
 
 	async getRelationMetadata(trx?: Transaction): Promise<RelationMetadata[]> {
 		// @ts-ignore https://github.com/microsoft/TypeScript/issues/53234
-		return this.baseRepoManager.getRepo(RelationMetadataModel).findWhere({ trx })
+		return this.orm.getRepo(RelationMetadataModel).findWhere({ trx })
 	}
 
 	// sort fks by table, then by it's name. This prevent having multiple fks

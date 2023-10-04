@@ -1,5 +1,5 @@
 import { throw500 } from "@api/common/throw-http"
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
@@ -29,9 +29,9 @@ export class InfraSchemaRelationsSyncService {
 	constructor(
 		private readonly infraService: InfraService,
 		private readonly schemaInfo: SchemaInfoService,
-		private bootstrapRepoManager: BootstrapRepoManager,
+		private orm: BootstrapOrm,
 	) {
-		this.repo = this.bootstrapRepoManager.getRepo(RelationMetadataModel)
+		this.repo = this.orm.getRepo(RelationMetadataModel)
 	}
 	repo: OrmRepository<RelationMetadataModel>
 
@@ -84,7 +84,9 @@ export class InfraSchemaRelationsSyncService {
 					[fk.fkTable, fk.referencedTable].includes(collection.tableName),
 			)
 			if (!relevantFkExist) {
-				this.logger.log(`Removing invalid relation ${relation.tableName}.${relation.propertyName}`)
+				this.logger.log(
+					`Removing invalid relation ${relation.tableName}.${relation.propertyName}`,
+				)
 				invalidRelations.push(relation)
 			}
 		}
@@ -104,7 +106,8 @@ export class InfraSchemaRelationsSyncService {
 	 * compare propertyName with itself
 	 */
 	getFreePropertyName(
-		relation: Pick<RelationDef, "tableName" | "propertyName"> & Partial<Pick<RelationDef, "id">>,
+		relation: Pick<RelationDef, "tableName" | "propertyName"> &
+			Partial<Pick<RelationDef, "id">>,
 		data: DbState,
 	): string {
 		// fields in collection that current relation is located
@@ -145,7 +148,9 @@ export class InfraSchemaRelationsSyncService {
 			// no support for self referencing fk, for now
 			if (fk.fkTable === fk.referencedTable) continue
 			// find collection
-			const manyCollection = data.collectionMetadata.find((col) => col.tableName === fk.fkTable)
+			const manyCollection = data.collectionMetadata.find(
+				(col) => col.tableName === fk.fkTable,
+			)
 			if (!manyCollection) throw500(471024)
 
 			// find relation for this fk and collection
@@ -240,7 +245,9 @@ export class InfraSchemaRelationsSyncService {
 
 			if (freePropertyName === rel.propertyName) continue
 
-			this.logger.log(`Fixing relation naming collision: ${rel.tableName}.${rel.propertyName}`)
+			this.logger.log(
+				`Fixing relation naming collision: ${rel.tableName}.${rel.propertyName}`,
+			)
 
 			// This will mutate relation, so that we don't have to fresh new data from db
 			// If we don't do this, rel will have stale value, and some comparison will not work
@@ -299,8 +306,12 @@ export class InfraSchemaRelationsSyncService {
 		for (const unique of uniqueGroups) {
 			const [col1, col2] = unique.columnNames
 
-			const leftFk = data.fks.find((fk) => fk.fkTable === unique.tableName && fk.fkColumn && col1)
-			const rightFk = data.fks.find((fk) => fk.fkTable === unique.tableName && fk.fkColumn && col2)
+			const leftFk = data.fks.find(
+				(fk) => fk.fkTable === unique.tableName && fk.fkColumn && col1,
+			)
+			const rightFk = data.fks.find(
+				(fk) => fk.fkTable === unique.tableName && fk.fkColumn && col2,
+			)
 			// both columns must have foreign keys and composite unique so we can be know that it's relation
 			if (!leftFk || !rightFk) continue
 
@@ -325,7 +336,10 @@ export class InfraSchemaRelationsSyncService {
 
 				// if there is relation that isn't joined
 				if (relation) {
-					await this.repo.updateById({ id: relation.id, changes: { mtmFkName: rightFk.fkName } })
+					await this.repo.updateById({
+						id: relation.id,
+						changes: { mtmFkName: rightFk.fkName },
+					})
 					// await this.db
 					// 	.start(RelationMetadataCollection)
 					// 	.where("id", relation.id)
@@ -345,7 +359,10 @@ export class InfraSchemaRelationsSyncService {
 				)
 				// if there is relation that isn't joined
 				if (relation) {
-					await this.repo.updateById({ id: relation.id, changes: { mtmFkName: leftFk.fkName } })
+					await this.repo.updateById({
+						id: relation.id,
+						changes: { mtmFkName: leftFk.fkName },
+					})
 					// await this.db
 					// 	.start(RelationMetadataCollection)
 					// 	.where("id", relation.id)

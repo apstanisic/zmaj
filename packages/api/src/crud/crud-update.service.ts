@@ -38,7 +38,7 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 	 */
 	async updateWhere(params: CrudUpdateParams<Item>): Promise<Partial<Item>[]> {
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection.collectionName)
+		const repo = this.orm.getRepo(collection.collectionName)
 
 		// emit first hook
 		const afterEmit1 = await this.emit<UpdateBeforeEvent<Item>>(
@@ -72,7 +72,10 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 			const foundRows = await repo.findWhere({ where: where as any, trx })
 
 			// if ids are provided, and user can't delete all ids, throw
-			if (afterEmit1.filter.type === "ids" && afterEmit1.filter.ids.length !== foundRows.length) {
+			if (
+				afterEmit1.filter.type === "ids" &&
+				afterEmit1.filter.ids.length !== foundRows.length
+			) {
 				throw403(58829, emsg.noAuthz)
 			}
 			// if (afterEmit1.filter.type === "id" && foundRows.length === 0) {
@@ -80,7 +83,8 @@ export class CrudUpdateService<Item extends Struct = Struct> extends CrudBaseSer
 			// }
 
 			const toUpdate: UpdateStartEvent<Item>["toUpdate"] = foundRows.map((item) => ({
-				id: (item[collection.pkField as keyof typeof item] ?? throw500(23486)) as unknown as IdType,
+				id: (item[collection.pkField as keyof typeof item] ??
+					throw500(23486)) as unknown as IdType,
 				original: item as Item,
 				changed: omit({ ...structuredClone(item), ...afterEmit1.changes }, [
 					collection.pkField,

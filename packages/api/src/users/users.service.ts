@@ -1,5 +1,5 @@
 import { throw400, throw401, throw403, throw500 } from "@api/common/throw-http"
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {
@@ -23,10 +23,10 @@ type IdOrEmailObject = { id: string } | { email: string }
 @Injectable()
 export class UsersService {
 	constructor(
-		private readonly repoManager: BootstrapRepoManager,
+		private readonly orm: BootstrapOrm,
 		private readonly encryptionService: EncryptionService,
 	) {
-		this.repo = this.repoManager.getRepo(UserModel)
+		this.repo = this.orm.getRepo(UserModel)
 	}
 
 	readonly repo: OrmRepository<UserModel>

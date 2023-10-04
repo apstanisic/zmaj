@@ -1,5 +1,5 @@
 import { throw500 } from "@api/common/throw-http"
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
@@ -23,10 +23,10 @@ export class InfraSchemaFieldsSyncService {
 	constructor(
 		private infraService: InfraService,
 		private schemaInfo: SchemaInfoService,
-		private bootstrapRepoManager: BootstrapRepoManager,
+		private orm: BootstrapOrm,
 		private config: InfraConfig,
 	) {
-		this.repo = this.bootstrapRepoManager.getRepo(FieldMetadataModel)
+		this.repo = this.orm.getRepo(FieldMetadataModel)
 	}
 	repo: OrmRepository<FieldMetadataModel>
 
@@ -51,7 +51,9 @@ export class InfraSchemaFieldsSyncService {
 	): Promise<void> {
 		const nestedColumns = nestByTableAndColumnName(columns)
 		// Return only fields that don't exist as column
-		const redundant = fields.filter((f) => nestedColumns[f.tableName]?.[f.columnName] === undefined)
+		const redundant = fields.filter(
+			(f) => nestedColumns[f.tableName]?.[f.columnName] === undefined,
+		)
 
 		if (redundant.length === 0) return
 
@@ -108,7 +110,9 @@ export class InfraSchemaFieldsSyncService {
 		if (missing.length === 0) return
 
 		for (const field of missing) {
-			this.logger.log(`Creating missing field "${field.columnName}" for table "${field.tableName}"`)
+			this.logger.log(
+				`Creating missing field "${field.columnName}" for table "${field.tableName}"`,
+			)
 		}
 		try {
 			await this.repo.createMany({ data: missing })

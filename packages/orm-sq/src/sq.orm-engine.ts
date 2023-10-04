@@ -14,5 +14,17 @@ export const sqOrmEngine = createOrmEngine<SequelizeService>((params) => {
 		destroy: async () => sq.onModuleDestroy(),
 		updateModels: (models: (Class<BaseModel> | PojoModel)[]) => sq.generateModels(models),
 		engineProvider: sq,
+		rawQuery: async (query, options) => {
+			const result = await sq.rawQuery(query, options)
+			return result
+		},
+		transaction: (params) => {
+			if (params.trx) return params.fn(params.trx)
+
+			return sq.transaction({
+				fn: async (trx) => params.fn(trx as any),
+				type: params.type,
+			})
+		},
 	}
 })

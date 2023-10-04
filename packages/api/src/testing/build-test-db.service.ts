@@ -1,6 +1,7 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { mixedColDef } from "@api/collection-to-model-config"
 import { throw500 } from "@api/common/throw-http"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { MigrationsConfig } from "@api/migrations/migrations.config"
 import { MigrationsService } from "@api/migrations/migrations.service"
@@ -18,8 +19,8 @@ import {
 	systemModels,
 	times,
 } from "@zmaj-js/common"
-import { RepoManager } from "@zmaj-js/orm"
-import { SequelizeRepoManager, SequelizeSchemaInfoService, SequelizeService } from "@zmaj-js/orm-sq"
+import { SchemaInfoService } from "@zmaj-js/orm"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import {
 	TCommentModel,
 	TCommentStub,
@@ -47,12 +48,13 @@ type Trx = any // Transaction | SqTrx
 @Injectable()
 export class BuildTestDbService {
 	qi: QueryInterface
-	repoManager: RepoManager
-	schemaInfo: SequelizeSchemaInfoService
-	constructor(private sq: SequelizeService) {
+	schemaInfo: SchemaInfoService
+	constructor(
+		private sq: SequelizeService,
+		private orm: BootstrapOrm,
+	) {
 		this.qi = this.sq.orm.getQueryInterface()
-		this.repoManager = new SequelizeRepoManager(this.sq, sq["modelsStore"])
-		this.schemaInfo = new SequelizeSchemaInfoService(this.sq)
+		this.schemaInfo = orm.schemaInfo
 	}
 
 	async initSqWithMocks(): Promise<void> {
@@ -62,18 +64,24 @@ export class BuildTestDbService {
 		await this.sq.init()
 	}
 
-	private exampleProjectTables = ["posts", "comments", "tags", "posts_tags", "posts_info"] as const
+	private exampleProjectTables = [
+		"posts",
+		"comments",
+		"tags",
+		"posts_tags",
+		"posts_info",
+	] as const
 
 	async seedRandomData(): Promise<void> {
 		// posts
-		const posts = await this.repoManager.getRepo(TPostModel).createMany({
+		const posts = await this.orm.getRepo(TPostModel).createMany({
 			overrideCanCreate: true,
 			data: times(60, () => omitCreatedAt(TPostStub())),
 		})
 		const postIds = posts.map((p) => p.id)
 
 		// tags
-		const tags = await this.repoManager.getRepo(TTagModel).createMany({
+		const tags = await this.orm.getRepo(TTagModel).createMany({
 			overrideCanCreate: true,
 			data: unique(
 				times(12, () => TTagStub()),
@@ -83,43 +91,45 @@ export class BuildTestDbService {
 		const tagIds = tags.map((p) => p.id)
 
 		// comments
-		const comments = await this.repoManager.getRepo(TCommentModel).createMany({
+		const comments = await this.orm.getRepo(TCommentModel).createMany({
 			overrideCanCreate: true,
 			data: times(12, () => TCommentStub({ postId: rand(postIds) })),
 		})
 
 		// posts_info
 		const postIdsForPostInfo = shuffle(postIds)
-		const postsInfo = await this.repoManager.getRepo(TPostInfoModel).createMany({
+		const postsInfo = await this.orm.getRepo(TPostInfoModel).createMany({
 			overrideCanCreate: true,
 			data: times(25, () => TPostInfoStub({ postId: postIdsForPostInfo.shift() })),
 		})
 
 		// posts_tags
 		// for every post, create between 0 and 8 (inclusive) tag connections
-		const postsTags = await this.repoManager.getRepo(TPostTagModel).createMany({
+		const postsTags = await this.orm.getRepo(TPostTagModel).createMany({
 			overrideCanCreate: true,
 			data: postIds
 				.map((postId) => {
 					const tIds = shuffle(tagIds)
-					return times(random(1, 9), (i) => TPostTagStub({ id: null, postId, tagId: tIds.shift() }))
+					return times(random(1, 9), (i) =>
+						TPostTagStub({ id: null, postId, tagId: tIds.shift() }),
+					)
 				})
 				.flatMap((v) => v),
 		})
 	}
 
 	async seedConstData(): Promise<void> {
-		await this.repoManager.getRepo(TPostModel).createMany({ data: mockData.posts as any })
-		await this.repoManager
+		await this.orm.getRepo(TPostModel).createMany({ data: mockData.posts as any })
+		await this.orm
 			.getRepo(TTagModel)
 			.createMany({ data: mockData.tags, overrideCanCreate: true })
-		await this.repoManager
+		await this.orm
 			.getRepo(TCommentModel)
 			.createMany({ data: mockData.comments, overrideCanCreate: true })
-		await this.repoManager
+		await this.orm
 			.getRepo(TPostInfoModel)
 			.createMany({ data: mockData.postInfo, overrideCanCreate: true })
-		await this.repoManager.getRepo(TPostTagModel).createMany({ data: mockData.postsTags })
+		await this.orm.getRepo(TPostTagModel).createMany({ data: mockData.postsTags })
 	}
 
 	async dropSystemTables(trx?: Trx): Promise<void> {
@@ -170,9 +180,9 @@ export class BuildTestDbService {
 
 	async createSystemTables(trx?: Trx): Promise<void> {
 		const mg = new MigrationsService(
-			new MigrationsUmzugStorage(this.repoManager),
+			new MigrationsUmzugStorage(this.orm),
 			this.schemaInfo,
-			this.repoManager,
+			this.orm,
 			new MigrationsConfig({}),
 			this.sq,
 		)
@@ -196,7 +206,7 @@ export class BuildTestDbService {
 	}
 
 	async createStoreSchema(trx?: Trx): Promise<void> {
-		await this.repoManager.transaction({
+		await this.orm.transaction({
 			trx,
 			fn: async (trx) => {
 				await initECommerce(this.sq, trx)
@@ -270,7 +280,9 @@ export class BuildTestDbService {
 				},
 			},
 			{
-				uniqueKeys: { [mockCompositeUniqueKeyId.posts_tags]: { fields: ["tag_id", "post_id"] } },
+				uniqueKeys: {
+					[mockCompositeUniqueKeyId.posts_tags]: { fields: ["tag_id", "post_id"] },
+				},
 				transaction: trx,
 			},
 		)
@@ -293,7 +305,7 @@ export class BuildTestDbService {
 				transaction: trx,
 			},
 		)
-		await configureBlogInfra(this.repoManager, trx)
+		await configureBlogInfra(this.orm, trx)
 	}
 
 	async createMockAdmin(): Promise<User> {
@@ -301,7 +313,7 @@ export class BuildTestDbService {
 			secretKey: process.env["SECRET_KEY"] ?? throw500(423789423),
 		} as GlobalConfig).hash("password")
 
-		const repo = this.repoManager.getRepo<UserModel>(UserModel)
+		const repo = this.orm.getRepo<UserModel>(UserModel)
 		return repo.createOne({
 			data: {
 				email: "admin@example.com",
@@ -314,17 +326,17 @@ export class BuildTestDbService {
 	}
 
 	async seedECommerceDemo(): Promise<void> {
-		const roleRepo = this.repoManager.getRepo(RoleModel)
-		const userRepo = this.repoManager.getRepo(UserModel)
-		const tagRepo = this.repoManager.getRepo("tags")
-		const productRepo = this.repoManager.getRepo("products")
-		const reviewRepo = this.repoManager.getRepo("reviews")
-		const orderRepo = this.repoManager.getRepo("orders")
-		const orderProductRepo = this.repoManager.getRepo("orderProducts")
-		const categoryRepo = this.repoManager.getRepo("categories")
-		const productTagRepo = this.repoManager.getRepo("productsTags")
+		const roleRepo = this.orm.getRepo(RoleModel)
+		const userRepo = this.orm.getRepo(UserModel)
+		const tagRepo = this.orm.getRepo("tags")
+		const productRepo = this.orm.getRepo("products")
+		const reviewRepo = this.orm.getRepo("reviews")
+		const orderRepo = this.orm.getRepo("orders")
+		const orderProductRepo = this.orm.getRepo("orderProducts")
+		const categoryRepo = this.orm.getRepo("categories")
+		const productTagRepo = this.orm.getRepo("productsTags")
 
-		await this.repoManager.transaction({
+		await this.orm.transaction({
 			fn: async (trx) => {
 				await orderProductRepo.deleteWhere({ where: {} })
 				await productTagRepo.deleteWhere({ where: {} })
@@ -336,7 +348,7 @@ export class BuildTestDbService {
 				await userRepo.deleteWhere({ where: { email: { $ne: "admin@example.com" } } })
 				await roleRepo.deleteWhere({ where: { name: { $eq: "Shopper" } } })
 
-				const images = await this.repoManager
+				const images = await this.orm
 					.getRepo(FileModel)
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 
@@ -361,16 +373,16 @@ export class BuildTestDbService {
 	}
 
 	async buildBlogDemo(): Promise<void> {
-		const roleRepo = this.repoManager.getRepo(RoleModel)
-		const userRepo = this.repoManager.getRepo(UserModel)
-		const tagRepo = this.repoManager.getRepo("tags")
-		const postsRepo = this.repoManager.getRepo("posts")
-		const commentsRepo = this.repoManager.getRepo("comments")
-		const postsTagsRepo = this.repoManager.getRepo("postsTags")
+		const roleRepo = this.orm.getRepo(RoleModel)
+		const userRepo = this.orm.getRepo(UserModel)
+		const tagRepo = this.orm.getRepo("tags")
+		const postsRepo = this.orm.getRepo("posts")
+		const commentsRepo = this.orm.getRepo("comments")
+		const postsTagsRepo = this.orm.getRepo("postsTags")
 
 		const data = createBlogDemo()
 
-		await this.repoManager.transaction({
+		await this.orm.transaction({
 			fn: async (trx) => {
 				await postsTagsRepo.deleteWhere({ where: {} })
 				await tagRepo.deleteWhere({ where: {} })
@@ -379,7 +391,7 @@ export class BuildTestDbService {
 				await userRepo.deleteWhere({ where: { email: { $ne: "admin@example.com" } } })
 				await roleRepo.deleteWhere({ where: { name: { $nin: ["Admin", "Public"] } } })
 
-				const images = await this.repoManager
+				const images = await this.orm
 					.getRepo(FileModel)
 					.findWhere({ where: { mimeType: { $like: "image%" } } })
 

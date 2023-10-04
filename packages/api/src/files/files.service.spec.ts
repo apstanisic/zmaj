@@ -14,7 +14,7 @@ import {
 } from "@nestjs/common"
 import { TestingModule } from "@nestjs/testing"
 import { AuthUser, FileCollection, FileInfo, Struct, UUID, asMock, times } from "@zmaj-js/common"
-import { RepoManager } from "@zmaj-js/orm"
+import { Orm } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { BaseStorage } from "@zmaj-js/storage-core"
 import { AuthUserStub, FileStub } from "@zmaj-js/test-utils"
@@ -30,7 +30,7 @@ describe("FilesService", () => {
 	let service: FilesService
 	let storageService: Writable<StorageService>
 	let authzService: Writable<AuthorizationService>
-	let repoManager: RepoManager
+	let orm: Orm
 	let imagesService: ImagesService
 	let crudCreateService: CrudCreateService
 
@@ -40,7 +40,7 @@ describe("FilesService", () => {
 		service = module.get(FilesService)
 		storageService = module.get(StorageService)
 		authzService = module.get(AuthorizationService)
-		repoManager = module.get(RepoManager)
+		orm = module.get(Orm)
 		// crudService = module.get(CrudService)
 		crudCreateService = module.get(CrudCreateService)
 		imagesService = module.get(ImagesService)
@@ -210,7 +210,7 @@ describe("FilesService", () => {
 
 			upload = vi.fn().mockResolvedValue(undefined)
 			storageService.provider = vi.fn().mockReturnValue({ upload })
-			repoManager.transaction = vi.fn(({ fn }) => fn("trx" as any))
+			orm.transaction = vi.fn(({ fn }) => fn("trx" as any))
 			service.generateUri = vi.fn().mockReturnValue("my_path.jpg")
 			crudCreateService.createOne = vi.fn(async () => ({}))
 			imagesService.createImagesFromFile = vi.fn()

@@ -41,7 +41,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 
 	async findWhere(params: CrudReadParams<Item>): Promise<ResponseWithCount<Item>> {
 		const collection = this.getCollection(params.collection)
-		const repo = this.repoManager.getRepo(collection.collectionName)
+		const repo = this.orm.getRepo(collection.collectionName)
 		const options = zodCreate(UrlQuerySchema, params.options ?? {})
 
 		const afterEmit1 = await this.emit<ReadBeforeEvent<Item>>(

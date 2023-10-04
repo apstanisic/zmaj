@@ -3,7 +3,7 @@ import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException, ForbiddenException, UnauthorizedException } from "@nestjs/common"
 import { TestingModule } from "@nestjs/testing"
 import { randEmail } from "@ngneat/falso"
-import { asMock, AuthUser, User, UserCreateDto, UserUpdatePasswordDto } from "@zmaj-js/common"
+import { AuthUser, User, UserCreateDto, UserUpdatePasswordDto, asMock } from "@zmaj-js/common"
 import { AuthUserStub, UserStub } from "@zmaj-js/test-utils"
 import { v4 } from "uuid"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -62,12 +62,16 @@ describe("UsersService", () => {
 
 		it("should throw if user does not exist", async () => {
 			asMock(service.findUser).mockImplementation(async () => undefined)
-			await expect(service.findActiveUser({ email: "test" })).rejects.toThrow(UnauthorizedException)
+			await expect(service.findActiveUser({ email: "test" })).rejects.toThrow(
+				UnauthorizedException,
+			)
 		})
 
 		it("should throw if user is not active", async () => {
 			user.status = "disabled"
-			await expect(service.findActiveUser({ email: "test" })).rejects.toThrow(ForbiddenException)
+			await expect(service.findActiveUser({ email: "test" })).rejects.toThrow(
+				ForbiddenException,
+			)
 		})
 
 		it("should return active user", async () => {
@@ -112,7 +116,9 @@ describe("UsersService", () => {
 				}),
 			})
 			expect(service["repo"].createOne).toBeCalledWith({
-				data: expect.objectContaining({ password: expect.stringMatching("secret_pass_hashed") }),
+				data: expect.objectContaining({
+					password: expect.stringMatching("secret_pass_hashed"),
+				}),
 			})
 		})
 
@@ -134,7 +140,10 @@ describe("UsersService", () => {
 
 		it("should update user", async () => {
 			await service.updateUser({ userId: "1", data: { firstName: "test" } })
-			expect(service["repo"].updateById).toBeCalledWith({ id: "1", changes: { firstName: "test" } })
+			expect(service["repo"].updateById).toBeCalledWith({
+				id: "1",
+				changes: { firstName: "test" },
+			})
 		})
 
 		it("should update user", async () => {
@@ -146,15 +155,15 @@ describe("UsersService", () => {
 	describe("setPassword", () => {
 		beforeEach(() => {
 			encService.hash = vi.fn(async (pass: string) => `${pass}_hash`)
-			service["repoManager"].rawQuery = vi.fn(async () => [])
+			service["orm"].rawQuery = vi.fn(async () => [])
 			service.repo.updateWhere = vi.fn()
 		})
 
 		it("should throw if user provided invalid password", async () => {
 			encService.hash = vi.fn().mockRejectedValue(new BadRequestException(47999))
-			await expect(service.setPassword({ userId: "uid", newPassword: "hello" })).rejects.toThrow(
-				BadRequestException,
-			)
+			await expect(
+				service.setPassword({ userId: "uid", newPassword: "hello" }),
+			).rejects.toThrow(BadRequestException)
 		})
 
 		it("should generate password hash", async () => {
@@ -216,7 +225,10 @@ describe("UsersService", () => {
 			await expect(
 				service.tryChangePassword({
 					user,
-					data: new UserUpdatePasswordDto({ newPassword: "qwerty123", oldPassword: "password" }),
+					data: new UserUpdatePasswordDto({
+						newPassword: "qwerty123",
+						oldPassword: "password",
+					}),
 				}),
 			).rejects.toThrow(BadRequestException)
 		})

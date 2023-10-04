@@ -1,7 +1,7 @@
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { BadRequestException } from "@nestjs/common"
-import { RepoManager } from "@zmaj-js/orm"
+import { Orm } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { MigrationError } from "umzug"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -15,7 +15,7 @@ describe("MigrationsService", () => {
 	let service: MigrationsService
 	let storage: MigrationsUmzugStorage
 	let sqService: SequelizeService
-	let repoManager: RepoManager
+	let orm: Orm
 
 	beforeEach(async () => {
 		const module = await buildTestModule(MigrationsService).compile()
@@ -24,9 +24,9 @@ describe("MigrationsService", () => {
 		sqService = module.get(SequelizeService)
 		sqService.orm ??= {} as any
 		sqService.orm.getQueryInterface ??= vi.fn(() => ({}) as any)
-		repoManager = module.get(BootstrapRepoManager)
-		repoManager.transaction = vi.fn(async (v) => v.fn("TRX" as any))
-		repoManager.rawQuery = vi.fn(async (v) => [])
+		orm = module.get(BootstrapOrm)
+		orm.transaction = vi.fn(async (v) => v.fn("TRX" as any))
+		orm.rawQuery = vi.fn(async (v) => [])
 	})
 
 	describe("sync", () => {
@@ -99,7 +99,7 @@ describe("MigrationsService", () => {
 		it("should run text migration", async () => {
 			await service["executeMigration"]({ type: "user", trx: "TextTrx" as any }, "SELECT 1")
 
-			expect(repoManager.rawQuery).toBeCalledWith("SELECT 1", { trx: "TextTrx" })
+			expect(orm.rawQuery).toBeCalledWith("SELECT 1", { trx: "TextTrx" })
 		})
 
 		it("should run function migration", async () => {
@@ -107,7 +107,7 @@ describe("MigrationsService", () => {
 				executeMigration("SELECT 2"),
 			)
 			await service["executeMigration"]({ type: "user", trx: "FnTrx" as any }, fn)
-			expect(repoManager.rawQuery).toBeCalledWith("SELECT 2", { trx: "FnTrx" })
+			expect(orm.rawQuery).toBeCalledWith("SELECT 2", { trx: "FnTrx" })
 		})
 	})
 
@@ -129,17 +129,17 @@ describe("MigrationsService", () => {
 		})
 
 		it("should ensure that migrations tables exists", async () => {
-			repoManager.transaction = vi.fn(async ({ fn }) => fn("TRX" as any))
+			orm.transaction = vi.fn(async ({ fn }) => fn("TRX" as any))
 			await service.runMigrations("system", [migration])
 			expect(service["ensureMigrationsTableExist"]).toBeCalled()
 		})
 
 		it("should create transaction for migrations", async () => {
 			// if transaction does nothing, nothing happens
-			repoManager.transaction = vi.fn(async () => undefined as any)
+			orm.transaction = vi.fn(async () => undefined as any)
 			await service.runMigrations("system", [migration])
 			expect(service["executeMigration"]).not.toBeCalled()
-			repoManager.transaction = vi.fn(async (v) => v.fn("TRX" as any))
+			orm.transaction = vi.fn(async (v) => v.fn("TRX" as any))
 			await service.runMigrations("system", [migration])
 			expect(service["executeMigration"]).toBeCalled()
 		})
@@ -147,7 +147,7 @@ describe("MigrationsService", () => {
 		it("should revert transaction if there are errors", async () => {
 			service["executeMigration"] = vi.fn().mockRejectedValue(new BadRequestException())
 
-			repoManager.transaction = vi.fn((params) =>
+			orm.transaction = vi.fn((params) =>
 				params.fn("TRX" as any).catch((err) => {
 					expect(err).toBeInstanceOf(MigrationError)
 					throw err

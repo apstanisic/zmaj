@@ -1,7 +1,7 @@
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { CollectionMetadataModel, FieldMetadataModel, RelationMetadataModel } from "@zmaj-js/common"
+import { Orm } from "@zmaj-js/orm"
 
-export async function configureBlogInfra(repoManager: BootstrapRepoManager, trx: any) {
+export async function configureBlogInfra(repoManager: Orm, trx: any) {
 	const repo = repoManager.getRepo(FieldMetadataModel)
 	const repoCol = repoManager.getRepo(CollectionMetadataModel)
 	const repoRel = repoManager.getRepo(RelationMetadataModel)

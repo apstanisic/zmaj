@@ -10,7 +10,7 @@ import {
 	qsStringify,
 	zodCreate,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager, Transaction } from "@zmaj-js/orm"
+import { Orm, OrmRepository, Transaction } from "@zmaj-js/orm"
 import { z } from "zod"
 
 export type CreateTokenFormEmailConfirmationParams = {
@@ -44,17 +44,17 @@ export type CreateTokenFormEmailConfirmationParams = {
 export class SecurityTokensService {
 	private readonly repo: OrmRepository<SecurityTokenModel>
 	constructor(
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly config: GlobalConfig,
 		private readonly emailService: EmailService,
 	) {
-		this.repo = this.repoManager.getRepo(SecurityTokenModel)
+		this.repo = this.orm.getRepo(SecurityTokenModel)
 	}
 
 	async createTokenWithEmailConfirmation(
 		params: CreateTokenFormEmailConfirmationParams,
 	): Promise<void> {
-		const token = await this.repoManager.transaction({
+		const token = await this.orm.transaction({
 			trx: params.trx,
 			fn: async (trx) => {
 				const usedFor =
@@ -85,7 +85,10 @@ export class SecurityTokensService {
 	 * Create security token and store it in database
 	 */
 	async createToken(
-		params: Pick<z.input<typeof SecurityTokenSchema>, "usedFor" | "validUntil" | "data" | "userId">,
+		params: Pick<
+			z.input<typeof SecurityTokenSchema>,
+			"usedFor" | "validUntil" | "data" | "userId"
+		>,
 		trx?: Transaction,
 	): Promise<SecurityToken> {
 		return this.repo.createOne({

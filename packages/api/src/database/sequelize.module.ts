@@ -1,23 +1,16 @@
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { Global, Module } from "@nestjs/common"
 import { snakeCase, systemModels } from "@zmaj-js/common"
 import { AlterSchemaService, Orm, SchemaInfoService } from "@zmaj-js/orm"
-import {
-	SequelizeAlterSchemaService,
-	SequelizeRepoManager,
-	SequelizeSchemaInfoService,
-	SequelizeService,
-	sqOrmEngine,
-} from "@zmaj-js/orm-sq"
+import { SequelizeService, sqOrmEngine } from "@zmaj-js/orm-sq"
 import { DatabaseConfig } from "./database.config"
 
 @Global()
 @Module({
 	providers: [
 		{
-			provide: Orm,
+			provide: BootstrapOrm,
 			inject: [DatabaseConfig],
-
 			useFactory: async (config: DatabaseConfig) => {
 				const orm = new Orm({
 					config,
@@ -31,43 +24,22 @@ import { DatabaseConfig } from "./database.config"
 		},
 		{
 			provide: SequelizeService,
-			inject: [Orm],
+			inject: [BootstrapOrm],
 			useFactory: async (orm: Orm) => {
 				return orm.engine.engineProvider as SequelizeService
 			},
 		},
 		{
-			provide: SequelizeRepoManager,
-			inject: [Orm],
-			useFactory: (orm: Orm) => orm.repoManager,
-		},
-		{
-			provide: SequelizeAlterSchemaService,
-			inject: [Orm],
-			useFactory: (orm: Orm) => orm.alterSchema,
-		},
-		{
-			provide: SequelizeSchemaInfoService,
-			inject: [Orm],
-			useFactory: (orm: Orm) => orm.schemaInfo,
-		},
-
-		{
-			provide: BootstrapRepoManager,
-			inject: [Orm],
-			useFactory: (orm: Orm) => orm.repoManager,
-		},
-		{
 			provide: AlterSchemaService,
-			inject: [Orm],
+			inject: [BootstrapOrm],
 			useFactory: (orm: Orm) => orm.alterSchema,
 		},
 		{
 			provide: SchemaInfoService,
-			inject: [Orm],
+			inject: [BootstrapOrm],
 			useFactory: (orm: Orm) => orm.schemaInfo,
 		},
 	],
-	exports: [Orm, BootstrapRepoManager, AlterSchemaService, SchemaInfoService, SequelizeService],
+	exports: [BootstrapOrm, AlterSchemaService, SchemaInfoService, SequelizeService],
 })
 export class SequelizeModule {}

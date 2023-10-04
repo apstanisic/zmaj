@@ -141,7 +141,7 @@ describe("CollectionsController e2e", () => {
 				.from(tableName)
 				.insert([{ id2: v4() }, { id2: v4() }])
 				.toQuery()
-			await repoManager.rawQuery(rawQuery)
+			await all.orm.rawQuery(rawQuery)
 			const testRepo = repoManager.getRepo(tableName)
 			expect(testRepo).toBeDefined()
 			const inTable = await testRepo.findWhere({})
@@ -192,7 +192,9 @@ describe("CollectionsController e2e", () => {
 			expect(res.statusCode).toEqual(200)
 
 			// disabled state should be changed
-			expect(infraStateService.getCollection(collection.collectionName)?.disabled).toEqual(true)
+			expect(infraStateService.getCollection(collection.collectionName)?.disabled).toEqual(
+				true,
+			)
 
 			// don't initialize repo if collection disabled
 			expect(() => {

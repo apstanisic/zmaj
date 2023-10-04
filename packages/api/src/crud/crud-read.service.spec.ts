@@ -80,9 +80,7 @@ describe("CrudReadService", () => {
 			service["checkIfJoinsAllowed"] = vi.fn()
 			service["parseFilter"] = vi.fn().mockResolvedValue({ id: 5 })
 			service["getAllowedData"] = vi.fn((v) => v.result as any[])
-			service["repoManager"].getRepo = vi
-				.fn()
-				.mockImplementation(() => ({ findWhere, findAndCount }))
+			service["orm"].getRepo = vi.fn().mockImplementation(() => ({ findWhere, findAndCount }))
 			authz.check = vi.fn((..._p) => true)
 
 			params = {

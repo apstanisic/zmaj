@@ -12,7 +12,7 @@ import {
 	pageToOffset,
 	type UUID,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { Orm, OrmRepository } from "@zmaj-js/orm"
 import { isEmpty } from "radash"
 import { AuthSessionsService } from "./auth-sessions.service"
 import { UserAgentService } from "./user-agent.service"
@@ -25,12 +25,12 @@ import { UserAgentService } from "./user-agent.service"
 export class AuthSessionsApiService {
 	repo: OrmRepository<AuthSessionModel>
 	constructor(
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly authz: AuthorizationService,
 		private readonly userAgentService: UserAgentService,
 		private readonly service: AuthSessionsService,
 	) {
-		this.repo = this.repoManager.getRepo(AuthSessionModel)
+		this.repo = this.orm.getRepo(AuthSessionModel)
 	}
 
 	/**
@@ -47,7 +47,8 @@ export class AuthSessionsApiService {
 		options: GetManyOptions,
 	): Promise<{ data: PublicAuthSession[]; count: number }> {
 		// Can if user read this
-		this.authz.checkSystem("account", "readSessions", { user }) || throw403(409721, emsg.noAuthz)
+		this.authz.checkSystem("account", "readSessions", { user }) ||
+			throw403(409721, emsg.noAuthz)
 		const query = UrlQuerySchema.parse(options)
 
 		const [sessions, count] = await this.repo.findAndCount({
@@ -105,7 +106,8 @@ export class AuthSessionsApiService {
 	 * @returns Deleted session
 	 */
 	async removeById(sessionId: UUID, user: AuthUser): Promise<PublicAuthSession> {
-		this.authz.checkSystem("account", "deleteSessions", { user }) || throw403(907231, emsg.noAuthz)
+		this.authz.checkSystem("account", "deleteSessions", { user }) ||
+			throw403(907231, emsg.noAuthz)
 
 		const [deleted] = await this.repo.deleteWhere({
 			where: { id: sessionId, userId: user.userId },

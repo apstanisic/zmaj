@@ -1,8 +1,7 @@
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
 import { DynamicModule, Module } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
 import { systemCollections } from "@zmaj-js/common"
-import { AlterSchemaService } from "@zmaj-js/orm"
+import { AlterSchemaService, Orm } from "@zmaj-js/orm"
 import { CliDbModule } from "./bootstrap-cli-db"
 
 @Module({})
@@ -24,10 +23,10 @@ export async function uninstallZmajCli(envPath: string): Promise<void> {
 	})
 	app.enableShutdownHooks()
 	try {
-		const repoM = app.get(BootstrapRepoManager)
+		const orm = app.get(Orm)
 		const alter = app.get(AlterSchemaService)
 
-		await repoM.transaction({
+		await orm.transaction({
 			fn: async (trx) => {
 				for (const col of systemCollections) {
 					await alter.dropTable({ tableName: col.tableName, trx })

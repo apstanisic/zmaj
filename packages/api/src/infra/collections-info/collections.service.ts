@@ -12,7 +12,7 @@ import {
 	UUID,
 	zodCreate,
 } from "@zmaj-js/common"
-import { AlterSchemaService, OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { AlterSchemaService, Orm, OrmRepository } from "@zmaj-js/orm"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { InfraConfig } from "../infra.config"
 import { OnInfraChangeService } from "../on-infra-change.service"
@@ -22,25 +22,26 @@ export class CollectionsService {
 	repo: OrmRepository<CollectionMetadataModel>
 	fieldsRepo: OrmRepository<FieldMetadataModel>
 	constructor(
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly appInfraSync: OnInfraChangeService,
 		private readonly alterSchema: AlterSchemaService,
 		private readonly infraState: InfraStateService,
 		private readonly infraConfig: InfraConfig,
 	) {
-		this.repo = this.repoManager.getRepo(CollectionMetadataModel)
-		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataModel)
+		this.repo = this.orm.getRepo(CollectionMetadataModel)
+		this.fieldsRepo = this.orm.getRepo(FieldMetadataModel)
 	}
 
 	async createCollection(dto: CollectionCreateDto): Promise<CollectionMetadata> {
 		return this.appInfraSync.executeChange(async () => {
-			return this.repoManager.transaction({
+			return this.orm.transaction({
 				fn: async (trx) => {
 					const created = await this.repo.createOne({
 						trx,
 						data: zodCreate(CollectionMetadataSchema.omit({ createdAt: true }), {
 							...dto,
-							collectionName: dto.collectionName ?? this.infraConfig.toCase(dto.tableName),
+							collectionName:
+								dto.collectionName ?? this.infraConfig.toCase(dto.tableName),
 						}),
 					})
 
@@ -71,7 +72,10 @@ export class CollectionsService {
 		if (!col) throw404(379993, emsg.noCollection)
 
 		const hasFk = Object.values(col.relations).some(
-			(r) => r.type === "one-to-many" || r.type === "many-to-many" || r.type === "ref-one-to-one",
+			(r) =>
+				r.type === "one-to-many" ||
+				r.type === "many-to-many" ||
+				r.type === "ref-one-to-one",
 		)
 
 		// pg throws error unless i cascade, IDK if i want to do that, since it's inconsistent
@@ -79,7 +83,7 @@ export class CollectionsService {
 		if (hasFk) throw403(18843, emsg.cantDeleteTableHasFk)
 
 		return this.appInfraSync.executeChange(() => {
-			return this.repoManager.transaction({
+			return this.orm.transaction({
 				fn: async (trx) => {
 					const deleted = await this.repo.deleteById({ trx, id: collectionId })
 					await this.alterSchema.dropTable({ tableName: deleted.tableName, trx })
@@ -90,6 +94,8 @@ export class CollectionsService {
 	}
 
 	async updateCollection(id: UUID, data: CollectionUpdateDto): Promise<CollectionMetadata> {
-		return this.appInfraSync.executeChange(async () => this.repo.updateById({ id, changes: data }))
+		return this.appInfraSync.executeChange(async () =>
+			this.repo.updateById({ id, changes: data }),
+		)
 	}
 }

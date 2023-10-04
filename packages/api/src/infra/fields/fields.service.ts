@@ -13,7 +13,7 @@ import {
 	isNil,
 	zodCreate,
 } from "@zmaj-js/common"
-import { AlterSchemaService, OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { AlterSchemaService, Orm, OrmRepository } from "@zmaj-js/orm"
 import { isString, title } from "radash"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { InfraConfig } from "../infra.config"
@@ -22,13 +22,13 @@ import { OnInfraChangeService } from "../on-infra-change.service"
 @Injectable()
 export class FieldsService {
 	constructor(
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly infraState: InfraStateService,
 		private readonly appInfraSync: OnInfraChangeService,
 		private readonly alterSchema: AlterSchemaService,
 		private readonly config: InfraConfig,
 	) {
-		this.repo = this.repoManager.getRepo(FieldMetadataModel)
+		this.repo = this.orm.getRepo(FieldMetadataModel)
 	}
 
 	readonly repo: OrmRepository<FieldMetadataModel>
@@ -61,7 +61,7 @@ export class FieldsService {
 		})
 
 		return this.appInfraSync.executeChange(async () =>
-			this.repoManager.transaction({
+			this.orm.transaction({
 				fn: async (trx) => {
 					const field = await this.repo.createOne({ data: toCreate, trx: trx })
 
@@ -123,7 +123,7 @@ export class FieldsService {
 		if (fieldInState.isForeignKey) throw403(79777, emsg.noDeleteFk)
 
 		return this.appInfraSync.executeChange(async () =>
-			this.repoManager.transaction({
+			this.orm.transaction({
 				fn: async (trx) => {
 					const field = await this.repo.deleteById({ id, trx })
 

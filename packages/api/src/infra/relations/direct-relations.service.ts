@@ -15,8 +15,8 @@ import {
 } from "@zmaj-js/common"
 import {
 	AlterSchemaService,
+	Orm,
 	OrmRepository,
-	RepoManager,
 	SchemaInfoService,
 	Transaction,
 } from "@zmaj-js/orm"
@@ -30,14 +30,14 @@ export class DirectRelationService {
 	private repo: OrmRepository<RelationMetadataModel>
 	private fieldsRepo: OrmRepository<FieldMetadataModel>
 	constructor(
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly alterSchema: AlterSchemaService,
 		private readonly schemaInfo: SchemaInfoService,
 		private readonly infraState: InfraStateService,
 		private readonly config: InfraConfig,
 	) {
-		this.repo = this.repoManager.getRepo(RelationMetadataModel)
-		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataModel)
+		this.repo = this.orm.getRepo(RelationMetadataModel)
+		this.fieldsRepo = this.orm.getRepo(FieldMetadataModel)
 	}
 
 	async getFreeFkName(table: string, column: string, trx?: Transaction): Promise<string> {
@@ -65,7 +65,8 @@ export class DirectRelationService {
 		const leftCol =
 			this.infraState.getCollection(dto.leftCollection) ?? throw400(37439, emsg.noCollection)
 		const rightCol =
-			this.infraState.getCollection(dto.rightCollection) ?? throw400(900231, emsg.noCollection)
+			this.infraState.getCollection(dto.rightCollection) ??
+			throw400(900231, emsg.noCollection)
 
 		// can't modify system table
 		if (leftCol.tableName.startsWith("zmaj")) throw403(42392, emsg.isSystemTable)
@@ -126,7 +127,7 @@ export class DirectRelationService {
 	async createRelation(data: RelationCreateDto): Promise<RelationMetadata> {
 		const dto = await this.validateDtoWithSchema(data)
 
-		return this.repoManager.transaction({
+		return this.orm.transaction({
 			fn: async (trx) => {
 				await this.alterSchema.createColumn({
 					columnName: dto.left.column,
@@ -206,7 +207,7 @@ export class DirectRelationService {
 		}
 		if (fkTable.startsWith("zmaj")) throw403(890234, emsg.isSystemTable)
 
-		await this.repoManager.transaction({
+		await this.orm.transaction({
 			fn: async (trx) => {
 				await this.alterSchema.dropForeignKey({
 					fkColumn: fkCol,

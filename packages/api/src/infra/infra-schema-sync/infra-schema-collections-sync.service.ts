@@ -1,4 +1,4 @@
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
@@ -17,10 +17,10 @@ export class InfraSchemaCollectionsSyncService {
 	constructor(
 		private infraService: InfraService,
 		private schemaInfo: SchemaInfoService,
-		private bootstrapRepoManager: BootstrapRepoManager,
+		private orm: BootstrapOrm,
 		private config: InfraConfig,
 	) {
-		this.repo = this.bootstrapRepoManager.getRepo(CollectionMetadataModel)
+		this.repo = this.orm.getRepo(CollectionMetadataModel)
 	}
 	repo: OrmRepository<CollectionMetadataModel>
 
@@ -50,7 +50,9 @@ export class InfraSchemaCollectionsSyncService {
 			this.logger.log(`Deleting redundant collection for table "${col.tableName}"`)
 		}
 
-		await this.repo.deleteWhere({ where: { id: { $in: redundantCollections.map((c) => c.id) } } })
+		await this.repo.deleteWhere({
+			where: { id: { $in: redundantCollections.map((c) => c.id) } },
+		})
 	}
 
 	/**

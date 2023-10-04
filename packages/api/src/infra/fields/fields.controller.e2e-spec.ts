@@ -11,7 +11,7 @@ import {
 	throwErr,
 	User,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager, SchemaInfoService } from "@zmaj-js/orm"
+import { Orm, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { camel } from "radash"
 import { DataTypes } from "sequelize"
@@ -24,7 +24,7 @@ describe("RelationController e2e", () => {
 	let app: INestApplication
 	let schemaInfoService: SchemaInfoService
 	let infraStateService: InfraStateService
-	let repoManager: RepoManager
+	let orm: Orm
 	let sqService: SequelizeService
 	//
 	let migrationsRepo: OrmRepository<DbMigrationModel>
@@ -44,7 +44,7 @@ describe("RelationController e2e", () => {
 		//
 		schemaInfoService = app.get(SchemaInfoService)
 		sqService = app.get(SequelizeService)
-		repoManager = app.get(RepoManager)
+		orm = app.get(Orm)
 
 		infraStateService = app.get(InfraStateService)
 
@@ -90,7 +90,10 @@ describe("RelationController e2e", () => {
 		const newField = "new_field"
 
 		it("should create field", async () => {
-			const hasField = await schemaInfoService.hasColumn({ table: tableName, column: newField })
+			const hasField = await schemaInfoService.hasColumn({
+				table: tableName,
+				column: newField,
+			})
 			expect(hasField).toEqual(false)
 
 			const res = await supertest(app.getHttpServer())
@@ -127,10 +130,12 @@ describe("RelationController e2e", () => {
 
 			//
 			// created field should be added to repo
-			const testRepo = repoManager.getRepo(collectionName)
+			const testRepo = orm.getRepo(collectionName)
 			await testRepo.createOne({ data: { [fieldInState!.fieldName]: "test_me" } })
 			const inTable = await testRepo.findWhere({})
-			expect(inTable).toEqual([{ id: 1, name: null, value: null, [camel(newField)]: "test_me" }])
+			expect(inTable).toEqual([
+				{ id: 1, name: null, value: null, [camel(newField)]: "test_me" },
+			])
 
 			// TODO not creating migrations currently
 			// // migration should have been created
@@ -186,8 +191,8 @@ describe("RelationController e2e", () => {
 				.from(tableName)
 				.insert({ name: "test", value: "new value" })
 				.toQuery()
-			await repoManager.rawQuery(rawQuery)
-			const inDb = await repoManager.getRepo(collectionName).findWhere({})
+			await all.orm.rawQuery(rawQuery)
+			const inDb = await orm.getRepo(collectionName).findWhere({})
 			expect(inDb).toEqual([{ id: 1, name: "test" }])
 			expect(inDb[0]?.["value"]).toBeUndefined()
 		})
@@ -227,8 +232,8 @@ describe("RelationController e2e", () => {
 
 			// should remove field from repo
 			const rawQuery = knexQuery.from(tableName).insert({ name: "test_delete" }).toQuery()
-			await repoManager.rawQuery(rawQuery)
-			const inDb = await repoManager.getRepo(collectionName).findWhere({})
+			await orm.rawQuery(rawQuery)
+			const inDb = await orm.getRepo(collectionName).findWhere({})
 			expect(inDb).toEqual([{ id: 1, name: "test_delete" }])
 			expect(inDb[0]?.["value"]).toBeUndefined()
 

@@ -8,7 +8,7 @@ import { INestApplication } from "@nestjs/common"
 import { NestExpressApplication } from "@nestjs/platform-express"
 import { Test } from "@nestjs/testing"
 import { ADMIN_ROLE_ID, CollectionMetadataModel, User, UserCreateDto, merge } from "@zmaj-js/common"
-import { BaseModel, OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { BaseModel, Orm, OrmRepository, RepoManager } from "@zmaj-js/orm"
 import { SequelizeService } from "@zmaj-js/orm-sq"
 import { join } from "node:path"
 import { Class } from "type-fest"
@@ -47,6 +47,7 @@ export async function getE2ETestModuleExpanded(
 	dropTableAndSync: (tableName: string) => Promise<void>
 	dropTable: (tableName: string) => Promise<void>
 	changeInfra: (fn: () => Promise<void>) => Promise<void>
+	orm: Orm
 }> {
 	const app = await getE2ETestModule(override)
 	const usersService = app.get(UsersService)
@@ -114,5 +115,6 @@ export async function getE2ETestModuleExpanded(
 		dropTableAndSync,
 		dropTable,
 		changeInfra,
+		orm: app.get(Orm),
 	}
 }

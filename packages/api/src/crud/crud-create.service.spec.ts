@@ -7,10 +7,10 @@ import {
 	ForbiddenException,
 	InternalServerErrorException,
 } from "@nestjs/common"
-import { asMock, Struct, uuidRegex } from "@zmaj-js/common"
+import { Struct, asMock, uuidRegex } from "@zmaj-js/common"
 import { mockCollectionDefs } from "@zmaj-js/test-utils"
 import { omit } from "radash"
-import { beforeEach, describe, expect, it, Mock, vi } from "vitest"
+import { Mock, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 import { CrudCreateService } from "./crud-create.service"
 import { CrudCreateParams } from "./crud-event.types"
@@ -54,7 +54,9 @@ describe("CrudCreateService", () => {
 
 		it("should throw if no item is created", async () => {
 			asMock(service.createMany).mockResolvedValue([])
-			await expect(service.createOne(dto, params)).rejects.toThrow(InternalServerErrorException)
+			await expect(service.createOne(dto, params)).rejects.toThrow(
+				InternalServerErrorException,
+			)
 		})
 	})
 
@@ -81,7 +83,7 @@ describe("CrudCreateService", () => {
 			service["checkCrudPermission"] = vi.fn()
 			service["joinFilterAndAuthz"] = vi.fn().mockReturnValue({ id: 5 })
 			service["getAllowedData"] = vi.fn((v) => v.result as any[])
-			service["repoManager"].getRepo = vi.fn().mockImplementation(() => ({ findWhere, createMany }))
+			service["orm"].getRepo = vi.fn().mockImplementation(() => ({ findWhere, createMany }))
 		})
 
 		it("should throw if table only has pk column", async () => {
@@ -189,10 +191,16 @@ describe("CrudCreateService", () => {
 
 			it("should have em if not provided only in 2nd and 3rd emit", async () => {
 				await service.createMany(params)
-				expect(emit).nthCalledWith(1, expect.not.objectContaining({ trx: expect.anything() }))
+				expect(emit).nthCalledWith(
+					1,
+					expect.not.objectContaining({ trx: expect.anything() }),
+				)
 				expect(emit).nthCalledWith(2, expect.objectContaining({ trx: "TEST_TRX" }))
 				expect(emit).nthCalledWith(3, expect.objectContaining({ trx: "TEST_TRX" }))
-				expect(emit).nthCalledWith(4, expect.not.objectContaining({ trx: expect.anything() }))
+				expect(emit).nthCalledWith(
+					4,
+					expect.not.objectContaining({ trx: expect.anything() }),
+				)
 			})
 
 			it("should use provided trx", async () => {
@@ -228,14 +236,29 @@ describe("CrudCreateService", () => {
 				// So same dto is trough whole thing, but it is mutated by assigning ID
 				//
 
-				expect(emit).nthCalledWith(1, expect.objectContaining({ ...omit(toBeCalledWith, ["dto"]) }))
-				expect(emit).nthCalledWith(2, expect.objectContaining({ ...omit(toBeCalledWith, ["dto"]) }))
-				expect(emit).nthCalledWith(3, expect.objectContaining({ ...omit(toBeCalledWith, ["dto"]) }))
-				expect(emit).nthCalledWith(4, expect.objectContaining({ ...omit(toBeCalledWith, ["dto"]) }))
+				expect(emit).nthCalledWith(
+					1,
+					expect.objectContaining({ ...omit(toBeCalledWith, ["dto"]) }),
+				)
+				expect(emit).nthCalledWith(
+					2,
+					expect.objectContaining({ ...omit(toBeCalledWith, ["dto"]) }),
+				)
+				expect(emit).nthCalledWith(
+					3,
+					expect.objectContaining({ ...omit(toBeCalledWith, ["dto"]) }),
+				)
+				expect(emit).nthCalledWith(
+					4,
+					expect.objectContaining({ ...omit(toBeCalledWith, ["dto"]) }),
+				)
 			})
 
 			it("should keep changes in emitter", async () => {
-				emit.mockImplementation(async (v: { type: string }) => ({ ...v, ["$" + v.type]: true }))
+				emit.mockImplementation(async (v: { type: string }) => ({
+					...v,
+					["$" + v.type]: true,
+				}))
 
 				await service.createMany(params)
 
@@ -258,7 +281,10 @@ describe("CrudCreateService", () => {
 				it("should always emit array of records", async () => {
 					params.dto = { hello: "world" }
 					await service.createMany(params)
-					expect(emit).nthCalledWith(1, expect.objectContaining({ dto: [{ hello: "world" }] }))
+					expect(emit).nthCalledWith(
+						1,
+						expect.objectContaining({ dto: [{ hello: "world" }] }),
+					)
 				})
 			})
 

@@ -13,7 +13,7 @@ import {
 	UserModel,
 } from "@zmaj-js/common"
 import { emailTemplates } from "@zmaj-js/email-templates"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { Orm, OrmRepository } from "@zmaj-js/orm"
 import { addMonths } from "date-fns"
 
 const USED_FOR_USER_INVITATION = "USED_FOR_USER_INVITATION"
@@ -22,11 +22,11 @@ const USED_FOR_USER_INVITATION = "USED_FOR_USER_INVITATION"
 export class UserInvitationsService {
 	readonly repo: OrmRepository<UserModel>
 	constructor(
-		private repoManager: RepoManager,
+		private orm: Orm,
 		private tokensService: SecurityTokensService, //
 		private usersService: UsersService, //
 	) {
-		this.repo = this.repoManager.getRepo(UserModel)
+		this.repo = this.orm.getRepo(UserModel)
 	}
 
 	async acceptInvitation(params: ConfirmUserInvitationDto): Promise<{ email: string }> {
@@ -40,7 +40,7 @@ export class UserInvitationsService {
 		})
 		if (!token) throw400(38999, emsg.emailTokenExpired)
 
-		await this.repoManager.transaction({
+		await this.orm.transaction({
 			fn: async (trx) => {
 				const { firstName, lastName, password } = params
 
@@ -88,7 +88,10 @@ export class UserInvitationsService {
 							return {
 								to: user.email, //
 								subject: "Invitation",
-								html: emailTemplates.inviteUser({ ZMAJ_APP_NAME: appName, ZMAJ_URL: url }),
+								html: emailTemplates.inviteUser({
+									ZMAJ_APP_NAME: appName,
+									ZMAJ_URL: url,
+								}),
 								text: `Go to ${url} to confirm invitation`,
 							}
 						},

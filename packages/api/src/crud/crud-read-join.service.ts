@@ -4,8 +4,8 @@ import { knexQuery } from "@api/database/knex-query"
 import { emsg } from "@api/errors"
 import { Inject, Injectable } from "@nestjs/common"
 import { Struct, isNil, joinFilters } from "@zmaj-js/common"
+import { SequelizeService } from "@zmaj-js/orm-sq"
 import { isEmpty } from "radash"
-import { Sequelize } from "sequelize"
 import { CrudBaseService } from "./crud-base.service"
 import type { ReadBeforeEvent, ReadStartEvent } from "./crud-event.types"
 import { OnCrudEvent } from "./on-crud-event.decorator"
@@ -163,7 +163,7 @@ export class CrudReadJoinService<Item extends Struct = Struct> extends CrudBaseS
 		// We want all records that are not in array of already existing records
 		// this is tied to MikroORM
 		// we need to cast value since we use orm agnostic em type
-		const orm = this.repoManager.getOrm() as Sequelize
+		const orm = (this.orm.engine.engineProvider as SequelizeService).orm
 		const subqueryFilter = {
 			// id: { $nin: mikroOrmEm.raw(recordsThatAreOwnedByProvidedId) },
 			// cloneDeep properly clones orm.literal, which is instance of class,

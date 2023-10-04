@@ -4,7 +4,7 @@ import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import { AuthUser, OtpEnableDto, RoleModel } from "@zmaj-js/common"
-import { OrmRepository, RepoManager, Transaction } from "@zmaj-js/orm"
+import { Orm, OrmRepository, Transaction } from "@zmaj-js/orm"
 import { isString } from "radash"
 import { z } from "zod"
 import { MfaService } from "./mfa.service"
@@ -23,9 +23,9 @@ export class UsersMfaService {
 		private readonly usersService: UsersService,
 		private readonly jwt: JwtService,
 		private readonly mfa: MfaService,
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 	) {
-		this.roleRepo = this.repoManager.getRepo(RoleModel)
+		this.roleRepo = this.orm.getRepo(RoleModel)
 	}
 
 	async requestToEnableOtp(userId: string): Promise<RequestMfaPrompt> {
@@ -73,7 +73,10 @@ export class UsersMfaService {
 	}
 
 	async hasMfa(user: AuthUser, trx?: Transaction): Promise<boolean> {
-		const fullUser = await this.usersService.findUserWithHiddenFields({ email: user.email }, trx)
+		const fullUser = await this.usersService.findUserWithHiddenFields(
+			{ email: user.email },
+			trx,
+		)
 		return isString(fullUser?.otpToken)
 	}
 }

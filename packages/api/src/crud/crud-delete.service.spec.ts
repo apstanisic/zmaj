@@ -5,7 +5,7 @@ import { buildTestModule } from "@api/testing/build-test-module"
 import { ForbiddenException, NotFoundException } from "@nestjs/common"
 import { asMock } from "@zmaj-js/common"
 import { mockCollectionDefs } from "@zmaj-js/test-utils"
-import { beforeEach, describe, expect, it, Mock, vi } from "vitest"
+import { Mock, beforeEach, describe, expect, it, vi } from "vitest"
 import { CrudDeleteService } from "./crud-delete.service"
 import { CrudDeleteParams } from "./crud-event.types"
 
@@ -66,9 +66,7 @@ describe("CrudDeleteService", () => {
 			service["checkCrudPermission"] = vi.fn()
 			service["joinFilterAndAuthz"] = vi.fn().mockReturnValue({ id: 5 })
 			service["getAllowedData"] = vi.fn((v) => v.result as any[])
-			service["repoManager"].getRepo = vi
-				.fn()
-				.mockImplementation(() => ({ findWhere, deleteWhere }))
+			service["orm"].getRepo = vi.fn().mockImplementation(() => ({ findWhere, deleteWhere }))
 		})
 
 		it("should throw if permission is forbidden", async () => {
@@ -84,8 +82,7 @@ describe("CrudDeleteService", () => {
 		})
 
 		it("should return allowed data", async () => {
-			emit
-				.mockImplementationOnce(async (v) => v)
+			emit.mockImplementationOnce(async (v) => v)
 				.mockImplementationOnce(async (v) => v)
 				.mockImplementationOnce(async (v) => v)
 				.mockImplementationOnce(async (v) => ({ result: ["hello", "world"] }))
@@ -108,10 +105,16 @@ describe("CrudDeleteService", () => {
 
 			it("should have em if not provided only in 2nd and 3rd emit", async () => {
 				await service.deleteWhere(params)
-				expect(emit).nthCalledWith(1, expect.not.objectContaining({ trx: expect.anything() }))
+				expect(emit).nthCalledWith(
+					1,
+					expect.not.objectContaining({ trx: expect.anything() }),
+				)
 				expect(emit).nthCalledWith(2, expect.objectContaining({ trx: "TEST_TRX" }))
 				expect(emit).nthCalledWith(3, expect.objectContaining({ trx: "TEST_TRX" }))
-				expect(emit).nthCalledWith(4, expect.not.objectContaining({ trx: expect.anything() }))
+				expect(emit).nthCalledWith(
+					4,
+					expect.not.objectContaining({ trx: expect.anything() }),
+				)
 			})
 
 			it("should use provided trx", async () => {
@@ -148,7 +151,10 @@ describe("CrudDeleteService", () => {
 			})
 
 			it("should keep changes in emitter", async () => {
-				emit.mockImplementation(async (v: { type: string }) => ({ ...v, ["$" + v.type]: true }))
+				emit.mockImplementation(async (v: { type: string }) => ({
+					...v,
+					["$" + v.type]: true,
+				}))
 
 				await service.deleteWhere(params)
 

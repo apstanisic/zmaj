@@ -10,7 +10,7 @@ import {
 	ToManyChange,
 	ToManyChangeSchema,
 } from "@zmaj-js/common"
-import { IdType, RepoManager, Transaction } from "@zmaj-js/orm"
+import { IdType, Orm, Transaction } from "@zmaj-js/orm"
 import { z } from "zod"
 import { CrudCreateService } from "./crud-create.service"
 import { CrudDeleteService } from "./crud-delete.service"
@@ -21,7 +21,7 @@ import { CrudConfig } from "./crud.config"
 export class CrudWithRelationsService<Item extends Struct = Struct> {
 	constructor(
 		private readonly state: InfraStateService,
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly del: CrudDeleteService,
 		private readonly update: CrudUpdateService<Item>,
 		private readonly create: CrudCreateService,
@@ -36,7 +36,7 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 			data,
 			params.collection,
 		)
-		return this.repoManager.transaction({
+		return this.orm.transaction({
 			fn: async (trx) => {
 				// if (params.filter.type !== "id") throw500(38923)
 				const created = await this.create.createOne(fields, { ...params, trx })
@@ -106,7 +106,7 @@ export class CrudWithRelationsService<Item extends Struct = Struct> {
 			params.collection,
 		)
 
-		return this.repoManager.transaction({
+		return this.orm.transaction({
 			trx: params.trx,
 			fn: async (trx) => {
 				/// TODO Handle when we change only relations, and no normal field.

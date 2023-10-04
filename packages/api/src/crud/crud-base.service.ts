@@ -6,7 +6,7 @@ import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { ForbiddenException, HttpException, Injectable, Logger } from "@nestjs/common"
 import { EventEmitter2 } from "@nestjs/event-emitter"
 import { CollectionDef, Struct, isError, isIdType, isNil, isStruct, notNil } from "@zmaj-js/common"
-import { RepoManager, Transaction } from "@zmaj-js/orm"
+import { Orm, Transaction } from "@zmaj-js/orm"
 import { isEmpty, omit } from "radash"
 import { PartialDeep } from "type-fest"
 import {
@@ -42,8 +42,9 @@ export class CrudBaseService<Item extends Struct> {
 		protected readonly authz: AuthorizationService,
 		private readonly emitter: EventEmitter2,
 		protected readonly infraState: InfraStateService,
-		protected readonly repoManager: RepoManager,
+		// protected readonly repoManager: RepoManager,
 		protected readonly crudConfig: CrudConfig,
+		protected readonly orm: Orm,
 	) {}
 
 	/**
@@ -62,7 +63,7 @@ export class CrudBaseService<Item extends Struct> {
 	): Promise<T> {
 		return trx
 			? fn(trx).catch((e) => this.throwCrudError(e))
-			: this.repoManager.transaction({ fn }).catch((e) => this.throwCrudError(e))
+			: this.orm.transaction({ fn }).catch((e) => this.throwCrudError(e))
 	}
 
 	/**

@@ -1,6 +1,6 @@
 import { mixedColDef } from "@api/collection-to-model-config"
 import { throw500 } from "@api/common/throw-http"
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { InfraService } from "@api/infra/infra.service"
 import { Injectable, Logger } from "@nestjs/common"
 import {
@@ -45,7 +45,7 @@ export class InfraStateService {
 	constructor(
 		private readonly schemaInfo: SchemaInfoService,
 		private readonly infra: InfraService,
-		private readonly bootRepo: BootstrapRepoManager,
+		private readonly orm: BootstrapOrm,
 		private expandRelationsService: ExpandRelationsService = new ExpandRelationsService(),
 	) {}
 
@@ -94,14 +94,18 @@ export class InfraStateService {
 	}
 
 	private async getDbState(): Promise<InitialDbState> {
-		const result = await this.bootRepo
+		const result = await this.orm
 			.transaction({
 				fn: async (trx): Promise<InitialDbState> => {
 					// db schema
-					const columns = nestByTableAndColumnName(await this.schemaInfo.getColumns({ trx }))
+					const columns = nestByTableAndColumnName(
+						await this.schemaInfo.getColumns({ trx }),
+					)
 					const fks = await this.infra.getForeignKeys(trx)
 
-					const compositeUniqueKeys = await this.schemaInfo.getCompositeUniqueKeys({ trx })
+					const compositeUniqueKeys = await this.schemaInfo.getCompositeUniqueKeys({
+						trx,
+					})
 
 					// Get simple db values
 					const collectionMetadata = await this.infra.getCollectionMetadata(trx)
@@ -189,7 +193,9 @@ export class InfraStateService {
 			collections: [...dbState.collectionMetadata, ...systemCollections],
 			allRelations: [
 				...dbState.relationMetadata,
-				...systemCollections.flatMap((c) => Object.values(c.relations).map((v) => v.relation)),
+				...systemCollections.flatMap((c) =>
+					Object.values(c.relations).map((v) => v.relation),
+				),
 			],
 		})
 		//

@@ -16,8 +16,8 @@ import {
 } from "@zmaj-js/common"
 import {
 	AlterSchemaService,
+	Orm,
 	OrmRepository,
-	RepoManager,
 	SchemaInfoService,
 	Transaction,
 } from "@zmaj-js/orm"
@@ -29,21 +29,23 @@ import { InfraConfig } from "../infra.config"
 export class CreateManyToManyRelationsService {
 	constructor(
 		private schemaInfo: SchemaInfoService,
-		private repoManager: RepoManager,
+		private orm: Orm,
 		private alterSchema: AlterSchemaService,
 		private infraState: InfraStateService,
 		private config: InfraConfig,
 	) {
-		this.relationsRepo = this.repoManager.getRepo(RelationMetadataModel)
-		this.collectionsRepo = this.repoManager.getRepo(CollectionMetadataModel)
-		this.fieldsRepo = this.repoManager.getRepo(FieldMetadataModel)
+		this.relationsRepo = this.orm.getRepo(RelationMetadataModel)
+		this.collectionsRepo = this.orm.getRepo(CollectionMetadataModel)
+		this.fieldsRepo = this.orm.getRepo(FieldMetadataModel)
 	}
 
 	private relationsRepo: OrmRepository<RelationMetadataModel>
 	private collectionsRepo: OrmRepository<CollectionMetadataModel>
 	private fieldsRepo: OrmRepository<FieldMetadataModel>
 
-	private async validateDtoWithSchema(dto: RelationCreateDto): Promise<JunctionRelationCreateDto2> {
+	private async validateDtoWithSchema(
+		dto: RelationCreateDto,
+	): Promise<JunctionRelationCreateDto2> {
 		const leftCol =
 			this.infraState.getCollection(dto.leftCollection) ?? throw400(8333, emsg.noCollection)
 		const rightCol =
@@ -78,7 +80,8 @@ export class CreateManyToManyRelationsService {
 				table: leftCol.tableName,
 				collectionName: leftCol.collectionName,
 				column: leftCol.pkColumn,
-				fkName: dto.fkName ?? (await this.getFreeFkName(leftCol.tableName, dto.left.column)),
+				fkName:
+					dto.fkName ?? (await this.getFreeFkName(leftCol.tableName, dto.left.column)),
 				pkType: leftCol.fields[leftCol.pkField]?.dbRawDataType ?? throw500(379993),
 			},
 			right: {
@@ -87,7 +90,8 @@ export class CreateManyToManyRelationsService {
 				column: rightCol.pkColumn,
 				collectionName: rightCol.collectionName,
 				fkName:
-					dto.junction?.fkName ?? (await this.getFreeFkName(rightCol.tableName, dto.right.column)),
+					dto.junction?.fkName ??
+					(await this.getFreeFkName(rightCol.tableName, dto.right.column)),
 				pkType: rightCol.fields[rightCol.pkField]?.dbRawDataType ?? throw500(379993),
 			},
 		}
@@ -267,7 +271,7 @@ export class CreateManyToManyRelationsService {
 	async createRelation(data: RelationCreateDto): Promise<RelationMetadata> {
 		const dto = await this.validateDtoWithSchema(data)
 
-		return this.repoManager.transaction({
+		return this.orm.transaction({
 			fn: async (trx) => {
 				await this.modifySchema(dto, trx)
 				await this.createCollectionAndFields(dto, trx)

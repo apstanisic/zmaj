@@ -1,5 +1,5 @@
 import { InitializeAdminService } from "@api/authentication/initialize-admin/initialize-admin.service"
-import { BootstrapRepoManager } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
 import { OnInfraChangeService } from "@api/infra/on-infra-change.service"
 import { RelationsService } from "@api/infra/relations/relations.service"
 import { Injectable } from "@nestjs/common"
@@ -19,17 +19,17 @@ export class TestingUtilsService {
 	private testData: BuildTestDbService
 	constructor(
 		private onChange: OnInfraChangeService,
-		private repoManager: BootstrapRepoManager,
+		private orm: BootstrapOrm,
 		private relationsService: RelationsService,
 		private adminInit: InitializeAdminService,
 		private sqService: SequelizeService,
 	) {
-		this.testData = new BuildTestDbService(this.sqService)
+		this.testData = new BuildTestDbService(this.sqService, this.orm)
 	}
 
 	async createTestAdmin(): Promise<void> {
 		// delete if exist
-		await this.repoManager.getRepo(UserModel).deleteWhere({ where: { email: "admin@example.com" } })
+		await this.orm.getRepo(UserModel).deleteWhere({ where: { email: "admin@example.com" } })
 		await this.adminInit.createAdmin({
 			email: "admin@example.com",
 			firstName: "Test",
@@ -46,9 +46,9 @@ export class TestingUtilsService {
 	 *
 	 */
 	async configureExampleProjectForAdminPanel(): Promise<void> {
-		const repo = this.repoManager.getRepo(FieldMetadataModel)
-		const repoCol = this.repoManager.getRepo(CollectionMetadataModel)
-		const repoRel = this.repoManager.getRepo(RelationMetadataModel)
+		const repo = this.orm.getRepo(FieldMetadataModel)
+		const repoCol = this.orm.getRepo(CollectionMetadataModel)
+		const repoRel = this.orm.getRepo(RelationMetadataModel)
 
 		// posts
 

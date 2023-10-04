@@ -9,7 +9,7 @@ import {
 	RelationMetadata,
 	RelationMetadataModel,
 } from "@zmaj-js/common"
-import { AlterSchemaService, OrmRepository, RepoManager, SchemaInfoService } from "@zmaj-js/orm"
+import { AlterSchemaService, Orm, OrmRepository, SchemaInfoService } from "@zmaj-js/orm"
 import { alphabetical, isEqual } from "radash"
 import { CreateManyToManyRelationsService } from "./create-many-to-many-relations.service"
 
@@ -20,10 +20,10 @@ export class ManyToManyRelationsService {
 		private createMtmService: CreateManyToManyRelationsService, //
 		private infraState: InfraStateService,
 		private alterSchema: AlterSchemaService,
-		private repoManager: RepoManager,
+		private orm: Orm,
 		private schemaInfo: SchemaInfoService,
 	) {
-		this.repo = this.repoManager.getRepo(RelationMetadataModel)
+		this.repo = this.orm.getRepo(RelationMetadataModel)
 	}
 
 	async createRelation(dto: RelationCreateDto): Promise<RelationMetadata> {
@@ -31,7 +31,7 @@ export class ManyToManyRelationsService {
 	}
 
 	async deleteRelation(relation: RelationDef): Promise<void> {
-		await this.repoManager.transaction({
+		await this.orm.transaction({
 			fn: async (trx) => {
 				if (!relation.junction) throw400(935423, emsg.notMtmRelation)
 
@@ -63,7 +63,10 @@ export class ManyToManyRelationsService {
 				await this.repo.deleteWhere({
 					trx,
 					where: {
-						$or: [{ fkName: relation.relation.fkName }, { fkName: relation.relation.mtmFkName! }],
+						$or: [
+							{ fkName: relation.relation.fkName },
+							{ fkName: relation.relation.mtmFkName! },
+						],
 					},
 				})
 			},
@@ -93,7 +96,7 @@ export class ManyToManyRelationsService {
 		// if (rel1.leftTable !== rel2.leftTable) throw400(91942132,)
 
 		// We update mtmFkName with fk of the other side
-		await this.repoManager.transaction({
+		await this.orm.transaction({
 			fn: async (trx) => {
 				if (rel1.otherSide.relationId) {
 					await this.repo.updateById({
@@ -153,7 +156,7 @@ export class ManyToManyRelationsService {
 		if (relations.length === 0) throw400(42389, emsg.noRelation)
 		const firstRel = relations[0]!
 
-		await this.repoManager.transaction({
+		await this.orm.transaction({
 			fn: async (trx): Promise<void> => {
 				// remove mtmFk for every relation that is included in this.
 				// this will delete left and right table mtmFk

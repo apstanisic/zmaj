@@ -2,6 +2,7 @@ import { InfraStateService } from "@api/infra/infra-state/infra-state.service"
 import { INFRA_SCHEMA_SYNC_FINISHED } from "@api/infra/infra.consts"
 import { Global, Module } from "@nestjs/common"
 import { Orm, RepoManager } from "@zmaj-js/orm"
+import { BootstrapOrm } from "./BootstrapRepoManager"
 
 @Global()
 @Module({
@@ -14,7 +15,16 @@ import { Orm, RepoManager } from "@zmaj-js/orm"
 				return orm.repoManager
 			},
 		},
+
+		{
+			provide: Orm,
+			inject: [BootstrapOrm, InfraStateService, INFRA_SCHEMA_SYNC_FINISHED],
+			useFactory: async (orm: BootstrapOrm, state: InfraStateService) => {
+				orm.updateModels(state._collectionsForOrm)
+				return orm
+			},
+		},
 	],
-	exports: [RepoManager],
+	exports: [RepoManager, Orm],
 })
 export class OrmModule {}
