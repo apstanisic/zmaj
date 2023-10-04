@@ -57,7 +57,6 @@ export class DbAuthorizationRules extends AuthorizationRules {
 		const abilities = new AbilityBuilder(createMongoAbility)
 		// Users's role ID, or public role for non registered users
 		const roleId = user?.roleId ?? PUBLIC_ROLE_ID
-		console.log(Object.keys(this.authzState.roles), roleId)
 
 		const role = this.authzState.roles[roleId]
 		// If role no longer exist, require user to sign in again

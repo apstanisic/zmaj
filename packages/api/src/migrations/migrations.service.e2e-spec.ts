@@ -42,9 +42,8 @@ describe("MigrationsService e2e", () => {
 			models: [...systemModels],
 			nameTransformer: ({ key }) => snakeCase(key),
 		})
+		await orm.init()
 		sq = orm.engine.engineProvider as SequelizeService
-		// sq.generateModels(mixedColDef([...systemModels]))
-		// await sq.init()
 		schemaInfo = sq.schemaInfo
 		alterSchema = sq.alterSchema
 	})
