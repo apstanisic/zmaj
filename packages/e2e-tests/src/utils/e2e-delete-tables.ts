@@ -7,7 +7,7 @@ async function deleteTable(tableName: string): Promise<void> {
 	await orm.init()
 
 	try {
-		await orm.repoManager.transaction({
+		await orm.transaction({
 			fn: async (trx) => {
 				await orm.repoManager
 					.getRepo(CollectionMetadataModel)

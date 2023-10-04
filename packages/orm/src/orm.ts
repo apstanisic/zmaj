@@ -11,21 +11,21 @@ import { RepoManager } from "./repo/repo-manager.type"
 import { TransactionParams } from "./repo/transaction/transaction-params.type"
 import { AlterSchemaService } from "./schema/services/alter-schema.service"
 import { SchemaInfoService } from "./schema/services/schema-info.service"
-type OrmParams = {
-	engine: OrmEngineSetup
+type OrmParams<T> = {
+	engine: OrmEngineSetup<T>
 	config: DatabaseConfig
 	models: Class<BaseModel>[]
 	nameTransformer?: NameTransformer
 }
 
-export class Orm {
+export class Orm<T = unknown> {
 	readonly alterSchema: AlterSchemaService
 	readonly schemaInfo: SchemaInfoService
 	readonly repoManager: RepoManager
 	readonly models: ModelsState
-	public readonly engine: OrmEngine
+	public readonly engine: OrmEngine<T>
 
-	constructor(params: OrmParams) {
+	constructor(params: OrmParams<T>) {
 		this.models = createModelsStore({ nameTransformer: params.nameTransformer })
 		this.models.init(params.models)
 		this.engine = params.engine({ config: params.config, models: this.models })

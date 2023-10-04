@@ -1,5 +1,6 @@
 import { spinner } from "@clack/prompts"
-import { SequelizeService, __testUtils, createModelsStore } from "@zmaj-js/api"
+import { Orm, __testUtils, sqOrmEngine } from "@zmaj-js/api"
+import { systemModels } from "@zmaj-js/common"
 import { readFile } from "node:fs/promises"
 import pc from "picocolors"
 import { processExit } from "../prompt-utils.js"
@@ -21,13 +22,15 @@ export function createExampleSchemaCommand(yr: BaseYargs): void {
 					type: "boolean",
 					default: false,
 					alias: "s",
-					description: "This will delete existing system tables. This option requires -f  to work",
+					description:
+						"This will delete existing system tables. This option requires -f  to work",
 				})
 				.option("delete-user", {
 					type: "boolean",
 					default: false,
 					alias: "u",
-					description: "This will delete existing user tables. This option requires -f  to work",
+					description:
+						"This will delete existing user tables. This option requires -f  to work",
 				})
 				.option("force", {
 					type: "boolean",
@@ -76,8 +79,13 @@ async function createExampleSchema(params: {
 		}),
 	)
 
-	const sq = new SequelizeService(
-		{
+	const orm = new Orm({
+		engine: sqOrmEngine,
+		models: [...systemModels],
+		nameTransformer({ key }) {
+			return key
+		},
+		config: {
 			database: envValues["DB_DATABASE"]!,
 			host: envValues["DB_HOST"]!,
 			port: Number(envValues["DB_PORT"]!),
@@ -86,11 +94,11 @@ async function createExampleSchema(params: {
 			type: "postgres",
 			logging: false,
 		},
-		console,
-		createModelsStore(),
-	)
+	})
+	await orm.init()
+
 	try {
-		const service = new __testUtils.BuildTestDbService(sq)
+		const service = new __testUtils.BuildTestDbService(orm.engine.engineProvider, orm)
 		await service.initSqWithMocks()
 
 		if (deleteUser) {
@@ -131,9 +139,9 @@ async function createExampleSchema(params: {
 			}
 			s3.stop(pc.green("Example data created"))
 		}
-		await sq.onModuleDestroy()
+		await orm.destroy()
 	} catch (error) {
-		await sq.onModuleDestroy()
+		await orm.destroy()
 		processExit(1, "Problem creating example project", error)
 	}
 }

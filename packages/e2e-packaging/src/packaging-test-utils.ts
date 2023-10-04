@@ -82,7 +82,7 @@ export async function waitForDatabase(): Promise<void> {
 			},
 		})
 		await orm.init()
-		await orm.repoManager.rawQuery("SELECT 1")
+		await orm.rawQuery("SELECT 1")
 		await orm.destroy()
 	})
 	if (!success) throw new Error("DB not starting")

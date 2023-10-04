@@ -23,7 +23,7 @@ export {
 	type ZodDtoInput,
 } from "@zmaj-js/common"
 export * from "@zmaj-js/orm"
-export { SequelizeService } from "@zmaj-js/orm-sq"
+export { SequelizeService, sqOrmEngine } from "@zmaj-js/orm-sq"
 export { BaseStorage, LocalStorageConfig } from "@zmaj-js/storage-core"
 export type { ProviderConfig as StorageProviderConfig } from "@zmaj-js/storage-core"
 export { S3StorageConfig } from "@zmaj-js/storage-s3"

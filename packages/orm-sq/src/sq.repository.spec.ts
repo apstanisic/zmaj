@@ -146,7 +146,7 @@ describe("SequelizeRepository", () => {
 	})
 
 	it("should work setup", async () => {
-		const res = await orm.repoManager.rawQuery("SELECT * from posts")
+		const res = await orm.rawQuery("SELECT * from posts")
 		expect(res).toBeInstanceOf(Array)
 	})
 
@@ -1112,7 +1112,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should use provided transaction", async () => {
-				await sq.repoManager
+				await orm
 					.transaction({
 						fn: async (trx) => {
 							await postRepo.createMany({
@@ -1224,7 +1224,7 @@ describe("SequelizeRepository", () => {
 			it("should use provided transaction", async () => {
 				const testRepo = repo(TestModel)
 				const created = await testRepo.createOne({ data: TestModel.createStub() })
-				await sq.repoManager
+				await orm
 					.transaction({
 						fn: async (trx) => {
 							await testRepo.updateWhere({
@@ -1298,7 +1298,7 @@ describe("SequelizeRepository", () => {
 			})
 
 			it("should use provided trx", async () => {
-				await sq.repoManager
+				await orm
 					.transaction({
 						fn: async (trx) => {
 							await postRepo.deleteWhere({ where: { likes: 0 }, trx })

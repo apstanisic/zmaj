@@ -36,7 +36,7 @@ export async function waitForDatabase(): Promise<void> {
 
 	const success = await waitFor(async () => {
 		await orm.init()
-		await orm.repoManager.rawQuery("SELECT 1")
+		await orm.rawQuery("SELECT 1")
 	})
 	if (!success) throw new Error("Database connection not working in E2E")
 	await orm.destroy()
