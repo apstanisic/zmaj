@@ -84,7 +84,7 @@ export class InitializeAdminService implements OnApplicationBootstrap {
 						confirmedEmail: true,
 					},
 				})
-				await this.keyVal.updateOrCreate(
+				await this.keyVal.upsert(
 					{
 						key: SettingsKey.ADMIN_USER_INITED,
 						value: "true",

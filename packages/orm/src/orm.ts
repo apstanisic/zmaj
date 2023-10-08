@@ -1,32 +1,25 @@
 import { Class } from "type-fest"
-import { NameTransformer } from "./NameTransformer"
+import { OrmParams } from "./OrmParams"
 import { ModelsState, createModelsStore } from "./create-models-store"
-import { DatabaseConfig } from "./database-config.type"
 import { BaseModel } from "./model/base-model"
 import { PojoModel } from "./model/pojo-model"
-import { OrmEngine, OrmEngineSetup } from "./orm-engine"
+import { OrmEngine } from "./orm-engine"
 import { OrmRepository } from "./repo/OrmRepository"
 import { RawQueryOptions } from "./repo/raw-query-options.type"
 import { RepoManager } from "./repo/repo-manager.type"
 import { TransactionParams } from "./repo/transaction/transaction-params.type"
 import { AlterSchemaService } from "./schema/services/alter-schema.service"
 import { SchemaInfoService } from "./schema/services/schema-info.service"
-type OrmParams<T> = {
-	engine: OrmEngineSetup<T>
-	config: DatabaseConfig
-	models: Class<BaseModel>[]
-	nameTransformer?: NameTransformer
-}
 
-export class Orm<T = unknown> {
+export class Orm<TEngine = unknown> {
 	readonly alterSchema: AlterSchemaService
 	readonly schemaInfo: SchemaInfoService
 	readonly repoManager: RepoManager
-	readonly models: ModelsState
-	public readonly engine: OrmEngine<T>
+	private models: ModelsState
+	readonly engine: OrmEngine<TEngine>
 
-	constructor(params: OrmParams<T>) {
-		this.models = createModelsStore({ nameTransformer: params.nameTransformer })
+	constructor(params: OrmParams<TEngine>) {
+		this.models = createModelsStore({ nameTransformer: params.naming })
 		this.models.init(params.models)
 		this.engine = params.engine({ config: params.config, models: this.models })
 		this.alterSchema = this.engine.alterSchema

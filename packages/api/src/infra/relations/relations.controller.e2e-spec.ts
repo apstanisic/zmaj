@@ -51,8 +51,8 @@ describe("RelationController e2e", () => {
 		infraStateService = app.get(InfraStateService)
 		relationsService = app.get(RelationsService)
 
-		migrationsRepo = all.repo(DbMigrationModel)
-		relationsRepo = all.repo(RelationMetadataModel)
+		migrationsRepo = all.getRepo(DbMigrationModel)
+		relationsRepo = all.getRepo(RelationMetadataModel)
 	})
 
 	afterAll(async () => {
@@ -166,14 +166,18 @@ describe("RelationController e2e", () => {
 				})
 
 				const leftRelation =
-					infraStateService.getCollection(ownerCollectionName)?.relations[dto.left.propertyName]
+					infraStateService.getCollection(ownerCollectionName)?.relations[
+						dto.left.propertyName
+					]
 				expect(leftRelation).toBeDefined()
 				expect((leftRelation as RelationDef).type).toEqual("many-to-one")
 
 				expect(res.body.data).toEqual(fixTestDate(leftRelation))
 
 				const rightRelation =
-					infraStateService.getCollection(refCollectionName)?.relations[dto.right.propertyName]
+					infraStateService.getCollection(refCollectionName)?.relations[
+						dto.right.propertyName
+					]
 				expect(rightRelation).toBeDefined()
 				expect((rightRelation as RelationDef).type).toEqual("one-to-many")
 
@@ -229,14 +233,18 @@ describe("RelationController e2e", () => {
 				} as ForeignKey)
 
 				const leftRelation =
-					infraStateService.getCollection(refCollectionName)?.relations[dto.left.propertyName]
+					infraStateService.getCollection(refCollectionName)?.relations[
+						dto.left.propertyName
+					]
 				expect(leftRelation).toBeDefined()
 				expect((leftRelation as RelationDef).type).toEqual("one-to-many")
 
 				expect(res.body.data).toEqual(fixTestDate(leftRelation))
 
 				const rightRelation =
-					infraStateService.getCollection(ownerCollectionName)?.relations[dto.right.propertyName]
+					infraStateService.getCollection(ownerCollectionName)?.relations[
+						dto.right.propertyName
+					]
 				expect(rightRelation).toBeDefined()
 				expect((rightRelation as RelationDef).type).toEqual("many-to-one")
 
@@ -289,14 +297,18 @@ describe("RelationController e2e", () => {
 				})
 
 				const leftRelation =
-					infraStateService.getCollection(ownerCollectionName)?.relations[dto.left.propertyName]
+					infraStateService.getCollection(ownerCollectionName)?.relations[
+						dto.left.propertyName
+					]
 				expect(leftRelation).toBeDefined()
 				expect((leftRelation as RelationDef).type).toEqual("owner-one-to-one")
 
 				expect(res.body.data).toEqual(fixTestDate(leftRelation))
 
 				const rightRelation =
-					infraStateService.getCollection(refCollectionName)?.relations[dto.right.propertyName]
+					infraStateService.getCollection(refCollectionName)?.relations[
+						dto.right.propertyName
+					]
 				expect(rightRelation).toBeDefined()
 				expect((rightRelation as RelationDef).type).toEqual("ref-one-to-one")
 
@@ -356,14 +368,18 @@ describe("RelationController e2e", () => {
 				} as ForeignKey)
 
 				const leftRelation =
-					infraStateService.getCollection(refCollectionName)?.relations[dto.left.propertyName]
+					infraStateService.getCollection(refCollectionName)?.relations[
+						dto.left.propertyName
+					]
 				expect(leftRelation).toBeDefined()
 				expect((leftRelation as RelationDef).type).toEqual("ref-one-to-one")
 
 				expect(res.body.data).toEqual(fixTestDate(leftRelation))
 
 				const rightRelation =
-					infraStateService.getCollection(ownerCollectionName)?.relations[dto.right.propertyName]
+					infraStateService.getCollection(ownerCollectionName)?.relations[
+						dto.right.propertyName
+					]
 				expect(rightRelation).toBeDefined()
 				expect((rightRelation as RelationDef).type).toEqual("owner-one-to-one")
 			})
@@ -408,7 +424,10 @@ describe("RelationController e2e", () => {
 				const hasTable = await schemaInfoService.hasTable({ table: junctionTableName })
 				expect(hasTable).toEqual(true)
 
-				const pkCol = await schemaInfoService.getColumn({ table: junctionTableName, column: "id" })
+				const pkCol = await schemaInfoService.getColumn({
+					table: junctionTableName,
+					column: "id",
+				})
 				expect(pkCol).toMatchObject({ primaryKey: true } as DbColumn)
 
 				// const leftCol = await schemaInfoService.getColumn(
@@ -458,14 +477,18 @@ describe("RelationController e2e", () => {
 				// } as DbColumn)
 
 				const leftRelation =
-					infraStateService.getCollection(ownerCollectionName)?.relations[dto.left.propertyName]
+					infraStateService.getCollection(ownerCollectionName)?.relations[
+						dto.left.propertyName
+					]
 				expect(leftRelation).toBeDefined()
 				expect(leftRelation?.type).toEqual("many-to-many")
 
 				expect(res.body.data).toEqual(fixTestDate(leftRelation))
 
 				const rightRelation =
-					infraStateService.getCollection(refCollectionName)?.relations[dto.right.propertyName]
+					infraStateService.getCollection(refCollectionName)?.relations[
+						dto.right.propertyName
+					]
 				expect(rightRelation).toBeDefined()
 				expect((leftRelation as RelationDef).type).toEqual("many-to-many")
 
@@ -538,7 +561,9 @@ describe("RelationController e2e", () => {
 		})
 
 		afterEach(async () => {
-			await migrationsRepo.deleteWhere({ where: { name: { $like: "%drop_fk_books_r_e2e%" } } })
+			await migrationsRepo.deleteWhere({
+				where: { name: { $like: "%drop_fk_books_r_e2e%" } },
+			})
 		})
 
 		it("should delete m2o relation", async () => {
@@ -598,7 +623,9 @@ describe("RelationController e2e", () => {
 
 		it("split many-to-many", async () => {
 			const relBefore = infraStateService.relations.filter(
-				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionCollectionName,
+				(r) =>
+					r.type === "many-to-many" &&
+					r.junction.collectionName === junctionCollectionName,
 			)
 			expect(relBefore).toHaveLength(2)
 
@@ -612,7 +639,9 @@ describe("RelationController e2e", () => {
 
 			// should remove relation in state
 			const m2mRelationsWithThisJunctionTable = infraStateService.relations.filter(
-				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionCollectionName,
+				(r) =>
+					r.type === "many-to-many" &&
+					r.junction.collectionName === junctionCollectionName,
 			)
 			expect(m2mRelationsWithThisJunctionTable).toHaveLength(0)
 
@@ -656,7 +685,8 @@ describe("RelationController e2e", () => {
 
 		it("join many-to-many", async () => {
 			const relBefore = infraStateService.relations.filter(
-				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionCollection,
+				(r) =>
+					r.type === "many-to-many" && r.junction.collectionName === junctionCollection,
 			)
 
 			expect(relBefore).toHaveLength(0)
@@ -671,7 +701,8 @@ describe("RelationController e2e", () => {
 
 			// should remove relation in state
 			const m2mRelationsWithThisJunctionTable = infraStateService.relations.filter(
-				(r) => r.type === "many-to-many" && r.junction.collectionName === junctionCollection,
+				(r) =>
+					r.type === "many-to-many" && r.junction.collectionName === junctionCollection,
 			)
 			expect(m2mRelationsWithThisJunctionTable).toHaveLength(2)
 

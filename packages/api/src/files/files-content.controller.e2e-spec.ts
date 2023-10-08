@@ -35,10 +35,13 @@ describe("FilesContentController e2e", () => {
 			storage: {
 				enableFallbackStorage: false,
 			},
-			files: { generateCommonImageSizes: true, imageSizes: [{ name: "test", fit: "inside" }] },
+			files: {
+				generateCommonImageSizes: true,
+				imageSizes: [{ name: "test", fit: "inside" }],
+			},
 		})
 		app = all.app
-		filesRepo = all.repo(FileModel)
+		filesRepo = all.getRepo(FileModel)
 		storageService = app.get(StorageService)
 		filesService = app.get(FilesService)
 		user = await all.createUser()
@@ -162,7 +165,9 @@ describe("FilesContentController e2e", () => {
 
 			expect(inDb.uri.includes(inDb.id)).toBe(true)
 
-			const uploadedFile = await storageService.provider(inDb.storageProvider).getFile(inDb.uri)
+			const uploadedFile = await storageService
+				.provider(inDb.storageProvider)
+				.getFile(inDb.uri)
 			const asBuffer = await streamToBuffer(uploadedFile)
 			expect(asBuffer.toString("utf-8")).toEqual("HelloWorld5000")
 		})
@@ -178,7 +183,9 @@ describe("FilesContentController e2e", () => {
 
 			const inDb = await filesRepo.findById({ id: res.body.data.id })
 
-			const files = await storageService.provider(inDb.storageProvider).list(path.dirname(inDb.uri))
+			const files = await storageService
+				.provider(inDb.storageProvider)
+				.list(path.dirname(inDb.uri))
 
 			const id = inDb.id
 

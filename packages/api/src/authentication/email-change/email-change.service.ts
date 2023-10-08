@@ -1,21 +1,39 @@
+import { GlobalConfig } from "@api/app/global-app.config"
 import { AuthorizationService } from "@api/authorization/authorization.service"
-import { throw400, throw401, throw403, throw500 } from "@api/common/throw-http"
+import { throw400, throw403 } from "@api/common/throw-http"
+import { EmailCallbackService } from "@api/email/email-callback.service"
+import { EmailService } from "@api/email/email.service"
 import { emsg } from "@api/errors"
-import { SecurityTokensService } from "@api/security-tokens/security-tokens.service"
 import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
-import { AuthUser, ChangeEmailDto, getEndpoints, isEmail } from "@zmaj-js/common"
+import { JwtService } from "@nestjs/jwt"
+import { AuthUser, ChangeEmailDto, getEndpoints } from "@zmaj-js/common"
 import { emailTemplates } from "@zmaj-js/email-templates"
-import { addHours } from "date-fns"
+import { z } from "zod"
 
 const USED_FOR_CHANGE_EMAIL = "email-change"
+
+const changeEmailTokenSchema = z.object({
+	/** User's current email */
+	current: z.string().email(),
+	/** Email that user wants to set */
+	next: z.string().email(),
+	/** User's ID */
+	sub: z.string().uuid(),
+	/** Ensure that this is used for only this purpose */
+	type: z.literal(USED_FOR_CHANGE_EMAIL),
+})
+type ChangeEmailToken = z.infer<typeof changeEmailTokenSchema>
 
 @Injectable()
 export class EmailChangeService {
 	constructor(
 		private readonly users: UsersService,
-		private readonly tokens: SecurityTokensService,
 		private readonly authz: AuthorizationService,
+		private readonly jwtService: JwtService,
+		private readonly emailService: EmailService,
+		private readonly globalConfig: GlobalConfig,
+		private readonly emailCallbackService: EmailCallbackService,
 	) {}
 
 	async requestEmailChange(
@@ -28,20 +46,26 @@ export class EmailChangeService {
 
 		if (!validPassword) throw400(90417, emsg.invalidPassword)
 
-		await this.tokens.createTokenWithEmailConfirmation({
-			token: {
-				userId: user.userId,
-				usedFor: USED_FOR_CHANGE_EMAIL,
-				validUntil: addHours(new Date(), 3),
-				data: newEmail,
+		const url = await this.emailCallbackService.createJwtCallbackUrl<
+			typeof changeEmailTokenSchema
+		>({
+			expiresIn: "6h",
+			path: getEndpoints((e) => e.auth.account.emailChange).confirm,
+			usedFor: USED_FOR_CHANGE_EMAIL,
+			userId: user.userId,
+			data: {
+				current: user.email,
+				next: newEmail,
 			},
-			redirectPath: getEndpoints((e) => e.auth.account.emailChange).confirm,
-			urlQuery: { userId: user.userId },
-			emailParams: (url, appName) => ({
-				subject: "Confirm email change",
-				text: `Go to ${url} to confirm email change`,
-				to: newEmail,
-				html: emailTemplates.emailChange({ ZMAJ_APP_NAME: appName, ZMAJ_URL: url }),
+		})
+
+		await this.emailService.sendEmail({
+			subject: "Confirm email change",
+			to: newEmail,
+			text: `Go to ${url} to confirm email change`,
+			html: emailTemplates.emailChange({
+				ZMAJ_APP_NAME: this.globalConfig.name,
+				ZMAJ_URL: url.toString(),
 			}),
 		})
 
@@ -51,30 +75,21 @@ export class EmailChangeService {
 	/**
 	 *
 	 */
-	async setNewEmail({
-		userId,
-		token,
-	}: {
-		userId: string
-		token: string
-	}): Promise<{ email: string }> {
-		const dbUser = await this.users.findActiveUser({ id: userId })
-		const user = AuthUser.fromUser(dbUser)
-		this.authz.checkSystem("account", "updateEmail", { user }) || throw403(9074012, emsg.noAuthz)
-
-		const savedToken = await this.tokens.findToken({
-			userId,
+	async setNewEmail({ token }: { token: string }): Promise<{ email: string }> {
+		const data = await this.emailCallbackService.verifyJwtCallback({
 			token,
-			usedFor: USED_FOR_CHANGE_EMAIL,
+			schema: changeEmailTokenSchema,
 		})
 
-		if (!savedToken) throw401(41027, emsg.emailTokenExpired)
+		const dbUser = await this.users.findActiveUser({ id: data.sub })
+		if (dbUser.email !== data.current) throw403(9388990, emsg.emailTokenExpired)
 
-		const email = savedToken.data ?? ""
+		const user = AuthUser.fromUser(dbUser)
+		this.authz.checkSystem("account", "updateEmail", { user }) ||
+			throw403(9074012, emsg.noAuthz)
 
-		if (!isEmail(email)) throw500(74512)
+		const email = data.next
 
-		await this.tokens.deleteUserTokens({ userId: user.userId })
 		await this.users.updateUser({ userId: user.userId, data: { email } })
 
 		return { email }

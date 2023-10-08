@@ -41,7 +41,7 @@ export class EmailConfig extends ZodDto(EmailConfigSchema) {
 		const host = params.host ?? configService.get<string>("EMAIL_HOST")
 		const port = params.port ?? configService.get<number>("EMAIL_PORT")
 		const secure = params.secure ?? configService.get<boolean>("EMAIL_SECURE")
-		const enabled = params.enabled ?? configService.get<boolean>("EMAIL_ENABLED") ?? false
+		const enabled = params.enabled ?? configService.get<boolean>("EMAIL_ENABLED")
 
 		const withEnv: EmailConfigParams = {
 			...params,
@@ -53,13 +53,11 @@ export class EmailConfig extends ZodDto(EmailConfigSchema) {
 			enabled, //
 		}
 
-		// we are providing default values for this if email is not enabled, since in that case
-		// we do not care about values
-		// and it enabled user to provide only EMAIL_ENABLE=false in .env
-		if (enabled === false) {
-			withEnv.user ??= "non_existing"
-			withEnv.password ??= "non_existing"
-			withEnv.port ??= 3456
+		// Add dummy values if enabled is false, cause we need to satisfy validation
+		if (!enabled) {
+			withEnv.user ??= "default"
+			withEnv.password ??= "default"
+			withEnv.port ??= 10000
 			withEnv.host ??= "localhost"
 		}
 

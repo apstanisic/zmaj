@@ -31,9 +31,7 @@ export class CliDbModule {
 					provide: ConfigModuleConfig,
 					useValue: {
 						envPath,
-						assignToProcessEnv: false,
-						throwOnNoEnvFile: true,
-						useEnvFile: true,
+						assignEnvFileToProcessEnv: false,
 						useProcessEnv: true,
 					},
 				},

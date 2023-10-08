@@ -1,3 +1,4 @@
+export { type NameTransformer } from "./NameTransformer"
 export { createModelsStore, type ModelsState } from "./create-models-store"
 export { type DatabaseConfig } from "./database-config.type"
 export { type OrmLogger } from "./logger.type"

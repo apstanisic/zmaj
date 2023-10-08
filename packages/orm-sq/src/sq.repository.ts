@@ -237,7 +237,7 @@ export class SequelizeRepository<
 	 * and we do not want to keep track. SO we use dynamic getter.
 	 */
 	private get sequelizeModel(): ModelStatic<Model<any, any>> {
-		const model = this.orm.qsModels[this.pojoModel.name]
+		const model = this.orm.sqModels[this.pojoModel.name]
 		if (!model) throw new InternalOrmProblem(3910)
 		return model
 	}
@@ -306,7 +306,7 @@ export class SequelizeRepository<
 		// if it's nill, default to all fields
 		fields = isNil(fields) ? ({ $fields: true } as never) : structuredClone(fields ?? ({} as F))
 
-		const sqModel = this.orm.qsModels[collection] // ?? throw500(378324, emsg.noModel(collection))
+		const sqModel = this.orm.sqModels[collection] // ?? throw500(378324, emsg.noModel(collection))
 		const zmajModel = this.orm["modelsStore"].getByNameAsPojo(collection)
 		if (!sqModel || !zmajModel) throw new UndefinedModelError(collection, 3001)
 		if ((fields as Struct)?.["$fields"]) {

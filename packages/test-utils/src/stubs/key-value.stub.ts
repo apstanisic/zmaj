@@ -1,6 +1,7 @@
 import {
 	randBetweenDate,
 	randChanceBoolean,
+	randFutureDate,
 	randPastDate,
 	randSentence,
 	randWord,
@@ -20,5 +21,6 @@ export const KeyValueStub = stub<KeyValue>(() => {
 		key: randWord(),
 		value: randSentence(),
 		namespace: randChanceBoolean({ chanceTrue: 0.5 }) ? randWord() : null,
+		expiresAt: randFutureDate(),
 	}
 }, KeyValueSchema)

@@ -38,6 +38,7 @@ async function globalSetup(config: FullConfig): Promise<() => Promise<void>> {
 				merge(predefinedApiConfigs.test, {
 					customModules: [__testUtils.TestingUtilsModule],
 					migrations: { autoRunMigrations: true },
+					config: { envPath: "../../.env.test" },
 				}),
 			),
 

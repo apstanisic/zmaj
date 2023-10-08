@@ -1,20 +1,34 @@
 import { BaseModel } from "@orm/model/base-model"
 import { Class } from "type-fest"
+import { ModelsState, PojoModel } from ".."
 import { OrmRepository } from "./OrmRepository"
 
 export abstract class RepoManager {
-	protected abstract repositories: Record<string, OrmRepository<any>>
+	constructor(protected modelsState: ModelsState) {}
+	protected repositories: Record<string, OrmRepository<any>> = {}
 
 	/**
 	 * Get ORM repository
 	 * @param model Provide either model name or model
 	 */
-	abstract getRepo<TModel extends BaseModel = BaseModel>(
+	getRepo<TModel extends BaseModel = BaseModel>(
 		model: Class<TModel> | string,
-	): OrmRepository<TModel>
+	): OrmRepository<TModel> {
+		const name = typeof model === "string" ? model : this.modelsState.getOneAsPojo(model).name
 
-	// abstract getOrm<T = unknown>(): T
-	abstract getOrm(): unknown
+		const repo = this.repositories[name]
+		if (repo) return repo as OrmRepository<TModel>
 
-	// abstract unescaped(val: string): string
+		const pojoModel = this.modelsState.getByNameAsPojo(name)
+
+		const created = this.createRepo(pojoModel)
+		this.repositories[name] = created as OrmRepository<any>
+		return created as OrmRepository<TModel>
+	}
+
+	reset(): void {
+		this.repositories = {}
+	}
+
+	protected abstract createRepo(model: PojoModel): OrmRepository
 }

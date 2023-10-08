@@ -226,8 +226,8 @@ export class AuthClient {
 			.catch(sdkThrow)
 	}
 
-	async changeForgottenPassword(data: PasswordResetDto): Promise<{ email: string }> {
-		return this.#http
+	async changeForgottenPassword(data: PasswordResetDto): Promise<void> {
+		await this.#http
 			.put<{ email: string }>("auth/password-reset/reset", data)
 			.then((r) => r.data)
 			.catch(sdkThrow)

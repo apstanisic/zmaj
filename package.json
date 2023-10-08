@@ -29,6 +29,7 @@
 		"pnpm": ">=8.0.0"
 	},
 	"devDependencies": {
+		"@faker-js/faker": "^8.1.0",
 		"@lerna-lite/cli": "^2.5.1",
 		"@swc-node/register": "^1.6.7",
 		"@swc/cli": "^0.1.62",

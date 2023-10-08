@@ -1,58 +1,34 @@
 import { Injectable } from "@nestjs/common"
-import {
-	KeyValue,
-	KeyValueModel,
-	KeyValueSchema,
-	Struct,
-	ignoreErrors,
-	isStruct,
-	zodCreate,
-} from "@zmaj-js/common"
-import { OrmRepository, RepoManager, Transaction } from "@zmaj-js/orm"
-import { z } from "zod"
+import { Cron, CronExpression } from "@nestjs/schedule"
+import { CreateKeyValueSchema, KeyValue, KeyValueModel, zodCreate } from "@zmaj-js/common"
+import { GetCreateFields, Orm, OrmRepository, Transaction } from "@zmaj-js/orm"
+
+type CreateKeyValueParams = GetCreateFields<KeyValueModel, false>
 
 @Injectable()
 export class KeyValueStorageService {
 	private repo: OrmRepository<KeyValueModel>
-	constructor(private readonly repoManager: RepoManager) {
-		this.repo = this.repoManager.getRepo(KeyValueModel)
+	constructor(private readonly orm: Orm) {
+		this.repo = this.orm.getRepo(KeyValueModel)
 	}
 
 	/**
 	 * Don't use repo, use custom methods because that method parsed result
 	 */
-
 	async findByKey(
 		key: string,
 		namespace: string | null = null,
 		options: { trx?: Transaction } = {},
 	): Promise<KeyValue | undefined> {
 		return this.repo.findOne({
-			where: { key, namespace: namespace },
+			where: {
+				key,
+				namespace,
+				// only values that have not expired
+				$or: [{ expiresAt: { $lte: new Date() } }, { expiresAt: null }],
+			},
 			trx: options.trx,
 		})
-	}
-
-	async findAndCast<T>(params: {
-		key: string
-		namespace: string | null
-		trx?: Transaction
-		cast: (v: KeyValue) => T
-	}): Promise<{ raw: KeyValue; casted: T } | undefined> {
-		const raw = await this.findByKey(params.key, params.namespace ?? null, { trx: params.trx })
-		if (!raw) return undefined
-		try {
-			const casted = params.cast(raw)
-			return { raw, casted }
-		} catch (error) {
-			return undefined
-		}
-	}
-
-	castValue<T>(val: KeyValue, cast: (v: Struct) => T): T | null {
-		const asJSON = ignoreErrors(() => JSON.parse(val.value ?? "null"))
-		if (!isStruct(asJSON)) return null
-		return cast(asJSON)
 	}
 
 	/**
@@ -60,17 +36,20 @@ export class KeyValueStorageService {
 	 * @param data
 	 * @param em It accepts EntityManager in case it's in transaction
 	 */
-	async create(data: z.input<typeof KeyValueSchema>, trx?: Transaction): Promise<KeyValue> {
-		const keyVal = zodCreate(KeyValueSchema.omit({ createdAt: true, updatedAt: true }), data)
-
-		const saved = await this.repo.createOne({ data: keyVal, trx })
+	async create(data: CreateKeyValueParams, trx?: Transaction): Promise<KeyValue> {
+		const saved = await this.repo.createOne({
+			data: zodCreate(CreateKeyValueSchema, data),
+			trx,
+		})
 		return saved
 	}
 
-	async updateOrCreate(data: z.input<typeof KeyValueSchema>, trx?: Transaction): Promise<KeyValue> {
-		const exist = await this.repo.findOne({
-			where: { key: data.key, namespace: data.namespace },
-		})
+	/**
+	 * When you are using store to set a flag, it's best to use this, cause it will not
+	 * throw an error if it already exist, but will update row
+	 */
+	async upsert(data: CreateKeyValueParams, trx?: Transaction): Promise<KeyValue> {
+		const exist = await this.findByKey(data.key, data.namespace)
 
 		if (exist) {
 			return this.repo.updateById({
@@ -96,5 +75,15 @@ export class KeyValueStorageService {
 			trx: options.trx,
 		})
 		return deleted[0]
+	}
+
+	/**
+	 * This will run cron job every 5 minutes that will delete expired values
+	 */
+	@Cron(CronExpression.EVERY_5_MINUTES)
+	async __deleteExpiredValues(): Promise<void> {
+		await this.repo.deleteWhere({
+			where: { expiresAt: { $lte: new Date() } },
+		})
 	}
 }

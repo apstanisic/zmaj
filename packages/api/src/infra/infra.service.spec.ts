@@ -1,4 +1,4 @@
-import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapOrm"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { CollectionMetadataModel, FieldMetadataModel, RelationMetadataModel } from "@zmaj-js/common"
 import { beforeEach, describe, expect, it, vi } from "vitest"

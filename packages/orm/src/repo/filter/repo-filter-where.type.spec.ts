@@ -51,11 +51,11 @@ describe("CrudFilter", () => {
 		assertType<RepoFilterWhere<PostModel>>({ $and: [{}, {}] })
 	})
 
-	it("should not allow both $and and $or", () => {
+	it("should allow combining $and and $or with other conditions", () => {
 		assertType<RepoFilterWhere<PostModel>>({
-			$and: [{}, {}],
-			// @ts-expect-error
-			$or: [{}, {}],
+			body: "Hello",
+			$and: [{ likes: 5 }, { body: { $ne: "Hello" } }],
+			$or: [{ body: "Test" }, { body: "Me!!" }],
 		})
 	})
 

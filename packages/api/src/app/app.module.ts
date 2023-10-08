@@ -10,7 +10,6 @@ import { InfraModule } from "@api/infra/infra.module"
 import { KeyValueStorageModule } from "@api/key-value-storage/key-value-storage.module"
 import { MigrationsModule } from "@api/migrations/migrations.module"
 import { RuntimeSettingsModule } from "@api/runtime-settings/runtime-settings.module"
-import { SecurityTokensModule } from "@api/security-tokens/security-tokens.module"
 import { StorageModule } from "@api/storage/storage.module"
 import { TranslationsModule } from "@api/translations/translations.module"
 import { UsersModule } from "@api/users/users.module"
@@ -52,12 +51,14 @@ export class AppModule {
 				{
 					provide: GlobalConfig,
 					inject: [ConfigService],
-					useFactory: (config: ConfigService) => new GlobalConfig(params?.global ?? {}, config),
+					useFactory: (config: ConfigService) =>
+						new GlobalConfig(params?.global ?? {}, config),
 				},
 				{
 					provide: SecurityConfig,
 					inject: [ConfigService],
-					useFactory: (config: ConfigService) => new SecurityConfig(params?.security ?? {}, config),
+					useFactory: (config: ConfigService) =>
+						new SecurityConfig(params?.security ?? {}, config),
 				},
 			],
 			imports: [
@@ -87,7 +88,6 @@ export class AppModule {
 				UsersModule,
 				KeyValueStorageModule,
 				RuntimeSettingsModule,
-				SecurityTokensModule,
 				CrudModule.register(params?.crud ?? {}),
 				CollectionsEndpointModule,
 				ActivityLogModule.register(params.activityLog ?? {}),

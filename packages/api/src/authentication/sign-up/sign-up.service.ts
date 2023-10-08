@@ -1,26 +1,36 @@
+import { GlobalConfig } from "@api/app/global-app.config"
 import { throw403 } from "@api/common/throw-http"
+import { EmailCallbackService } from "@api/email/email-callback.service"
+import { EmailService } from "@api/email/email.service"
 import { emsg } from "@api/errors"
 import { RuntimeSettingsService } from "@api/runtime-settings/runtime-settings.service"
-import { SecurityTokensService } from "@api/security-tokens/security-tokens.service"
 import { UsersService } from "@api/users/users.service"
 import { Injectable, Logger } from "@nestjs/common"
-import { getEndpoints, SignUpDto, User, UserCreateDto } from "@zmaj-js/common"
+import { JwtService } from "@nestjs/jwt"
+import { SignUpDto, User, UserCreateDto, getEndpoints } from "@zmaj-js/common"
 import { emailTemplates } from "@zmaj-js/email-templates"
-import { addMonths } from "date-fns"
 import { SetOptional } from "type-fest"
+import { z } from "zod"
 import { AuthenticationConfig } from "../authentication.config"
 
 const USED_FOR_EMAIL_CONFIRM = "email-confirm"
+
+const confirmEmailTokenSchema = z.object({
+	type: z.literal(USED_FOR_EMAIL_CONFIRM),
+	sub: z.string().uuid(),
+})
 
 @Injectable()
 export class SignUpService {
 	private logger = new Logger(SignUpService.name)
 	constructor(
 		private readonly usersService: UsersService,
-		// private readonly keyValService: KeyValueStorageService,
 		private readonly authConfig: AuthenticationConfig,
-		private readonly tokenService: SecurityTokensService,
 		private readonly settings: RuntimeSettingsService,
+		private readonly emailService: EmailService,
+		private readonly emailCallbackService: EmailCallbackService,
+		private readonly globalConfig: GlobalConfig,
+		private readonly jwtService: JwtService,
 	) {}
 
 	/**
@@ -60,34 +70,38 @@ export class SignUpService {
 			}),
 		})
 
-		await this.tokenService.createTokenWithEmailConfirmation({
-			token: {
-				usedFor: USED_FOR_EMAIL_CONFIRM,
-				userId: user.id,
-				validUntil: addMonths(new Date(), 3),
-			},
-			redirectPath: getEndpoints((e) => e.auth.signUp).confirmEmail,
-			emailParams: (url, appName) => ({
-				subject: "Confirm email",
-				to: user.email,
-				text: `Go to ${url} to confirm email`,
-				html: emailTemplates.confirmEmail({ ZMAJ_APP_NAME: appName, ZMAJ_URL: url }),
+		const url = await this.emailCallbackService.createJwtCallbackUrl({
+			userId: user.id,
+			expiresIn: "30d",
+			path: getEndpoints((e) => e.auth.signUp).confirmEmail, //
+			usedFor: USED_FOR_EMAIL_CONFIRM,
+		})
+
+		await this.emailService.sendEmail({
+			subject: "Confirm email",
+			to: user.email,
+			text: `Go to ${url} to confirm email`,
+			html: emailTemplates.confirmEmail({
+				ZMAJ_APP_NAME: this.globalConfig.name,
+				ZMAJ_URL: url.toString(),
 			}),
 		})
 
 		return user
 	}
 
-	async confirmEmail(userId: string, token: string): Promise<{ email: string }> {
-		const tokenInDb = await this.tokenService.findToken({
+	async confirmEmail(token: string): Promise<{ email: string }> {
+		const data = await this.emailCallbackService.verifyJwtCallback({
 			token,
-			usedFor: USED_FOR_EMAIL_CONFIRM,
-			userId,
+			schema: confirmEmailTokenSchema,
 		})
-		if (!tokenInDb) throw403(6788999, emsg.emailTokenExpired)
-		const user = await this.usersService.findUser({ id: userId })
+
+		const user = await this.usersService.findUser({ id: data.sub })
 		if (user?.status !== "emailUnconfirmed") throw403(3678833, emsg.noAuthz)
-		await this.usersService.updateUser({ userId, data: { confirmedEmail: true, status: "active" } })
+		await this.usersService.updateUser({
+			userId: user.id,
+			data: { confirmedEmail: true, status: "active" },
+		})
 		return { email: user.email }
 	}
 

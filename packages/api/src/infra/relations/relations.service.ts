@@ -8,7 +8,7 @@ import {
 	RelationUpdateDto,
 	UUID,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { Orm, OrmRepository } from "@zmaj-js/orm"
 import { InfraStateService } from "../infra-state/infra-state.service"
 import { OnInfraChangeService } from "../on-infra-change.service"
 import { DirectRelationService } from "./direct-relations.service"
@@ -19,13 +19,13 @@ type MtmRelationSides = [RelationDef] | [RelationDef, RelationDef]
 @Injectable()
 export class RelationsService {
 	constructor(
-		private readonly repoManger: RepoManager,
+		private readonly orm: Orm,
 		private readonly infraState: InfraStateService,
 		private readonly onInfraChange: OnInfraChangeService,
 		private readonly directRelationsService: DirectRelationService,
 		private readonly mtmService: ManyToManyRelationsService,
 	) {
-		this.repo = this.repoManger.getRepo(RelationMetadataModel)
+		this.repo = this.orm.getRepo(RelationMetadataModel)
 	}
 
 	private repo: OrmRepository<RelationMetadataModel>

@@ -36,7 +36,7 @@ describe("WebhooksController e2e", () => {
 		webhookService = app.get(WebhooksService)
 		httpClient = app.get(HttpClient)
 		//
-		webhooksRepo = all.repo(WebhookModel)
+		webhooksRepo = all.getRepo(WebhookModel)
 	})
 
 	afterAll(async () => {

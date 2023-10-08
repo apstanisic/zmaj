@@ -46,8 +46,8 @@ describe("CollectionsController e2e", () => {
 
 		infraStateService = app.get(InfraStateService)
 
-		migrationsRepo = all.repo(DbMigrationModel)
-		collectionsRepo = all.repo(CollectionMetadataModel)
+		migrationsRepo = all.getRepo(DbMigrationModel)
+		collectionsRepo = all.getRepo(CollectionMetadataModel)
 
 		user = await all.createUser()
 	})

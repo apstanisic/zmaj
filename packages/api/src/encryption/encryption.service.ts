@@ -3,8 +3,9 @@ import { throw400, throw500 } from "@api/common/throw-http"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import { PasswordSchema } from "@zmaj-js/common"
-import argon2 from "argon2"
+import * as argon2 from "argon2"
 import Cryptr from "cryptr"
+import { createHmac } from "node:crypto"
 
 /**
  * EncryptionService
@@ -16,7 +17,7 @@ import Cryptr from "cryptr"
 export class EncryptionService {
 	readonly prefix = "$ZM$"
 
-	crypt: Cryptr
+	private crypt: Cryptr
 
 	constructor(private config: GlobalConfig) {
 		this.crypt = new Cryptr(this.config.secretKey)
@@ -50,8 +51,18 @@ export class EncryptionService {
 		try {
 			return this.crypt.decrypt(encrypted.replace(this.prefix, ""))
 		} catch (error) {
-			throw500(99932)
+			throw400(99932, emsg.badEncryptionValue)
 		}
+	}
+
+	createHmac(value: string): string {
+		return createHmac("sha1", this.config.secretKey).update(value).digest("hex")
+	}
+
+	verifyHmac(plainValue: string, hmacValue: string): boolean {
+		return (
+			createHmac("sha1", this.config.secretKey).update(plainValue).digest("hex") === hmacValue
+		)
 	}
 
 	/**
@@ -63,6 +74,8 @@ export class EncryptionService {
 	 * @see https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
 	 * @param value
 	 * @returns argon2 with pepper
+	 *
+	 * TODO Should we put validation here?
 	 */
 	async hash(
 		value: string,
@@ -72,7 +85,7 @@ export class EncryptionService {
 
 		const password = validate ? PasswordSchema.parse(value) : value
 
-		const hashed = await argon2.hash(password, { type: argon2.argon2id })
+		const hashed = await argon2.hash(password)
 		if (!encrypt) return hashed
 
 		const encrypted = await this.encrypt(hashed)
@@ -95,13 +108,18 @@ export class EncryptionService {
 			hash = await this.decrypt(hash)
 		}
 
-		if (hash.startsWith("$argon2id")) {
-			return argon2.verify(hash, plain, { type: argon2.argon2id })
+		if (hash.startsWith("$argon2")) {
+			return argon2.verify(hash, plain)
 		}
+
+		// https://github.com/ranisalt/node-argon2/wiki/Migrating-from-another-hash-function
 		// put legacy password hashes here
-		else {
-			// invalid hash provided
-			throw500(7932499)
-		}
+
+		// if (hash.startsWith("$2")) {
+		// 	// We never used bcrypt
+		// }
+
+		// invalid hash provided
+		throw500(7932499)
 	}
 }

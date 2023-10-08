@@ -1,8 +1,8 @@
-import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapOrm"
 import { Global, Module } from "@nestjs/common"
-import { snakeCase, systemModels } from "@zmaj-js/common"
+import { systemModels } from "@zmaj-js/common"
 import { AlterSchemaService, Orm, SchemaInfoService } from "@zmaj-js/orm"
-import { SequelizeService, sqOrmEngine } from "@zmaj-js/orm-sq"
+import { SequelizeService, snakeCaseNaming, sqOrmEngine } from "@zmaj-js/orm-sq"
 import { DatabaseConfig } from "./database.config"
 
 @Global()
@@ -16,7 +16,7 @@ import { DatabaseConfig } from "./database.config"
 					config,
 					engine: sqOrmEngine,
 					models: [...systemModels],
-					nameTransformer: ({ key }) => snakeCase(key),
+					naming: snakeCaseNaming,
 				})
 				await orm.init()
 				return orm

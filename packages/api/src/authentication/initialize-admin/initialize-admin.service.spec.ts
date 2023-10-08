@@ -31,7 +31,7 @@ describe("InitializeAdminService", () => {
 		//
 		keyValService = module.get(KeyValueStorageService)
 		keyValService.findByKey = vi.fn()
-		keyValService.updateOrCreate = vi.fn()
+		keyValService.upsert = vi.fn()
 		//
 		authnConfig = module.get(AuthenticationConfig)
 		authnConfig.allowAdminInitialize = true
@@ -98,7 +98,9 @@ describe("InitializeAdminService", () => {
 		it("should print instructions to create admin if not inited", async () => {
 			service.isAdminInitialized = vi.fn(async () => false)
 			await service.onApplicationBootstrap()
-			expect(service.logger.log).toBeCalledWith(expect.stringContaining("npx zmaj create-admin"))
+			expect(service.logger.log).toBeCalledWith(
+				expect.stringContaining("npx zmaj create-admin"),
+			)
 			expect(service.logger.log).not.toBeCalledWith(expect.stringContaining("/auth/init"))
 		})
 
@@ -158,7 +160,7 @@ describe("InitializeAdminService", () => {
 
 		it("create flag in db", async () => {
 			await service.createAdmin(dto)
-			expect(keyValService.updateOrCreate).toBeCalledWith(
+			expect(keyValService.upsert).toBeCalledWith(
 				{
 					key: "ADMIN_USER_INITED",
 					value: "true",

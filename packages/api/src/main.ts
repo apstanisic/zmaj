@@ -34,5 +34,4 @@ class DevModule {}
 runApi(predefinedApiConfigs.dev, {
 	config: { envPath: "../../.env.dev" }, //
 	customModules: [DevModule, TestingUtilsModule],
-	database: { logging: false },
 }).then((_server) => console.log("main.ts: Started"))

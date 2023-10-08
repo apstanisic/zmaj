@@ -1,10 +1,13 @@
 import { RedisInstance, RedisService } from "@api/redis/redis.service"
-import { SecurityTokensService } from "@api/security-tokens/security-tokens.service"
 import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
 import { AuthSessionsService } from "../auth-sessions/auth-sessions.service"
 import { AuthenticationConfig } from "../authentication.config"
 
+/**
+ * TODO This is at best experimental feature.
+ * Decide on Redis, we can also use key value storage as fallback
+ */
 @Injectable()
 export class AccountHackedService {
 	/** redis instance for this service */
@@ -21,7 +24,6 @@ export class AccountHackedService {
 	constructor(
 		private readonly users: UsersService,
 		private readonly authSessions: AuthSessionsService,
-		private readonly securityTokensService: SecurityTokensService,
 		private readonly redisService: RedisService,
 		private readonly config: AuthenticationConfig,
 	) {
@@ -40,8 +42,6 @@ export class AccountHackedService {
 		await this.users.updateUser({ userId, data: { status: "hacked" } })
 		// Remove all sessions
 		await this.authSessions.removeAllUserSessions(userId)
-		// Remove all token (used for password reset...)
-		await this.securityTokensService.deleteUserTokens({ userId })
 		// Given how fast redis is, we can check before every request if user is disabled.
 		// This provides additional layer of protection
 		// This will do nothing if user has disabled redis

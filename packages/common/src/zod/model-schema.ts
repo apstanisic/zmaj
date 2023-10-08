@@ -1,4 +1,4 @@
-import { BaseModel, GetModelFields } from "@zmaj-js/orm"
+import { BaseModel, GetCreateFields, GetModelFields } from "@zmaj-js/orm"
 import { z } from "zod"
 
 /**
@@ -18,4 +18,12 @@ export const ModelSchema = <T extends BaseModel>() => {
 
 export const SchemaCheck = <T>() => {
 	return <S extends z.ZodType<T, any, any>>(arg: S) => arg
+}
+
+export const CreateModelSchema = <
+	TModel extends BaseModel,
+	TOverrideCanCreate extends boolean = false,
+>() => {
+	return <S extends z.ZodType<GetCreateFields<TModel, TOverrideCanCreate>, any, any>>(arg: S) =>
+		arg
 }

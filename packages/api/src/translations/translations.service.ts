@@ -14,7 +14,7 @@ import {
 	UUID,
 	zodCreate,
 } from "@zmaj-js/common"
-import { IdType, OrmRepository, RepoManager } from "@zmaj-js/orm"
+import { IdType, Orm, OrmRepository } from "@zmaj-js/orm"
 
 type CommonParams = {
 	language: string
@@ -38,11 +38,11 @@ type OneItemParams = CommonParams & {
 export class TranslationsService {
 	repo: OrmRepository<TranslationModel>
 	constructor(
-		private readonly repoManager: RepoManager,
+		private readonly orm: Orm,
 		private readonly infraState: InfraStateService,
 		private readonly authz: AuthorizationService,
 	) {
-		this.repo = this.repoManager.getRepo(TranslationModel)
+		this.repo = this.orm.getRepo(TranslationModel)
 	}
 
 	/**
@@ -52,7 +52,7 @@ export class TranslationsService {
 		const collection =
 			this.infraState.getCollection(data.collectionId) ?? throw400(94723, emsg.notFound())
 
-		const collectionRepo = this.repoManager.getRepo(collection.collectionName)
+		const collectionRepo = this.orm.getRepo(collection.collectionName)
 
 		const item = await collectionRepo.findById({ id: data.itemId })
 
@@ -84,10 +84,11 @@ export class TranslationsService {
 			fields: { collectionId: true, id: true, itemId: true },
 		})
 		const collection =
-			Object.values(this.infraState.collections).find((c) => c.id === translation.collectionId) ??
-			throw500(89342)
+			Object.values(this.infraState.collections).find(
+				(c) => c.id === translation.collectionId,
+			) ?? throw500(89342)
 
-		const collectionRepo = this.repoManager.getRepo(collection.collectionName)
+		const collectionRepo = this.orm.getRepo(collection.collectionName)
 
 		const originalItem = await collectionRepo.findById({ id: translation.itemId })
 

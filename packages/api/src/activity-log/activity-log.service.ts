@@ -27,7 +27,7 @@ export class ActivityLogService {
 	repo: OrmRepository<ActivityLogModel>
 	constructor(
 		public readonly crud: CrudService<ActivityLog>,
-		private readonly orm: Orm, // private readonly config: AppConfigService,
+		private readonly orm: Orm,
 		private readonly config: ActivityLogConfig,
 	) {
 		this.repo = this.orm.getRepo(ActivityLogModel)

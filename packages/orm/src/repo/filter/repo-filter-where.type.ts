@@ -28,8 +28,13 @@ export type RepoFilterWhere<TModel extends BaseModel> = Simplify<
 					: never
 				: never
 	  }
-	| RequireExactlyOne<{
-			$and: [RepoFilterWhere<TModel>, RepoFilterWhere<TModel>, ...RepoFilterWhere<TModel>[]]
-			$or: [RepoFilterWhere<TModel>, RepoFilterWhere<TModel>, ...RepoFilterWhere<TModel>[]] //
-	  }>
+	| {
+			$and?: [RepoFilterWhere<TModel>, RepoFilterWhere<TModel>, ...RepoFilterWhere<TModel>[]]
+			$or?: [RepoFilterWhere<TModel>, RepoFilterWhere<TModel>, ...RepoFilterWhere<TModel>[]] //
+	  }
+	// TODO Decide on this.
+	// RequireExactlyOne<{
+	// 		$and: [RepoFilterWhere<TModel>, RepoFilterWhere<TModel>, ...RepoFilterWhere<TModel>[]]
+	// 		$or: [RepoFilterWhere<TModel>, RepoFilterWhere<TModel>, ...RepoFilterWhere<TModel>[]] //
+	//   }>
 >

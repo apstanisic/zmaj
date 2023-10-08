@@ -12,7 +12,7 @@ export class ParseFieldPipe implements PipeTransform<unknown, string> {
 		try {
 			return DbFieldSchema.parse(value)
 		} catch (error) {
-			throw400(59992, emsg.invalidPayload)
+			throw400(59922, emsg.invalidPayload)
 		}
 	}
 }

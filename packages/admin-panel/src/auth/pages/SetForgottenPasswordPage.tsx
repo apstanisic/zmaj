@@ -3,7 +3,7 @@ import { PasswordInputField } from "@admin-panel/field-components/password/Passw
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { ManualInputField } from "@admin-panel/shared/input/ManualInputField"
 import { Button } from "@admin-panel/ui/Button"
-import { isEmail, PasswordResetDto, PasswordSchema, sleep, Struct } from "@zmaj-js/common"
+import { PasswordResetDto, PasswordSchema, sleep, Struct } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
 import { useCallback } from "react"
 import { useSearchParams } from "react-router-dom"
@@ -20,17 +20,14 @@ export function SetForgottenPasswordPage(): JSX.Element {
 
 	const onSubmit = useCallback(
 		async (data: Struct) => {
-			const email = query.get("email")
 			const token = query.get("token")
 
-			if (!isEmail(email)) return notify("Corrupted link", { type: "error" })
 			if (!token || token.length < 10) return notify("Corrupted link", { type: "error" })
 
 			const validPass = PasswordSchema.safeParse(data["password"])
 			if (!validPass.success) return notify("Invalid password", { type: "error" })
 
 			const dto = new PasswordResetDto({
-				email,
 				token,
 				password: validPass.data,
 			})
@@ -50,7 +47,11 @@ export function SetForgottenPasswordPage(): JSX.Element {
 		<AuthPageLayout>
 			<h1 className="mt-2 mb-1 text-xl dark:text-white">Password Reset</h1>
 			<h2>Enter your new password</h2>
-			<Form onSubmit={onSubmit} defaultValues={{ password: "" }} className="grid w-full gap-y-1">
+			<Form
+				onSubmit={onSubmit}
+				defaultValues={{ password: "" }}
+				className="grid w-full gap-y-1"
+			>
 				<ManualInputField source="password" isRequired Component={PasswordInputField} />
 
 				<Button type="submit" outline className="ml-auto">

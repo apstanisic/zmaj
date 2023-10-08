@@ -1,8 +1,8 @@
 import { SetSystemPermission } from "@api/authorization/set-system-permission.decorator"
 import { DtoBody } from "@api/common/decorators/dto-body.decorator"
 import { ParseStringPipe } from "@api/common/parse-string.pipe"
-import { Controller, Get, ParseUUIDPipe, Put, Query } from "@nestjs/common"
-import { AuthUser, ChangeEmailDto, endpoints, type UUID } from "@zmaj-js/common"
+import { Controller, Get, Put, Query } from "@nestjs/common"
+import { AuthUser, ChangeEmailDto, endpoints } from "@zmaj-js/common"
 import { GetUser } from "../get-user.decorator"
 import { EmailChangeService } from "./email-change.service"
 
@@ -23,11 +23,7 @@ export class EmailChangeController {
 
 	// @SetSystemPermission("account", "updateEmail")
 	@Get(ep.confirm)
-	async setNewEmail(
-		// we don't have access to logged in user since we are not passing header
-		@Query("userId", ParseUUIDPipe) userId: UUID,
-		@Query("token", ParseStringPipe) token: string,
-	): Promise<{ email: string }> {
-		return this.service.setNewEmail({ userId, token })
+	async setNewEmail(@Query("token", ParseStringPipe) token: string): Promise<{ email: string }> {
+		return this.service.setNewEmail({ token })
 	}
 }

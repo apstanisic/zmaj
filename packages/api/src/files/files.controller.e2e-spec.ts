@@ -63,7 +63,7 @@ describe("FilesController e2e", () => {
 		all = await getE2ETestModuleExpanded()
 		app = all.app
 
-		filesRepo = all.repo(FileModel)
+		filesRepo = all.getRepo(FileModel)
 		filesService = app.get(FilesService)
 		storageService = app.get(StorageService)
 

@@ -1,6 +1,6 @@
 import { ConfigService } from "@api/config/config.service"
 import { Injectable } from "@nestjs/common"
-import { joinUrl, ZodDto } from "@zmaj-js/common"
+import { joinUrl, Struct, ZodDto } from "@zmaj-js/common"
 import { unique } from "radash"
 import { z } from "zod"
 
@@ -79,5 +79,14 @@ export class GlobalConfig extends ZodDto(GlobalConfigSchema) {
 
 	joinWithApiUrl(...values: string[]): string {
 		return joinUrl(this.urls.api, ...values)
+	}
+
+	withApiUrl(value: string, query?: Struct<string>): URL {
+		const url = new URL(joinUrl(this.urls.api, value))
+		if (!query) return url
+		for (const [key, value] of Object.entries(query)) {
+			url.searchParams.set(key, value)
+		}
+		return url
 	}
 }

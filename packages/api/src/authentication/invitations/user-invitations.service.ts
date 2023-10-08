@@ -1,8 +1,9 @@
 import { throw400 } from "@api/common/throw-http"
 import type { CreateFinishEvent } from "@api/crud/crud-event.types"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
+import { EmailCallbackService } from "@api/email/email-callback.service"
+import { EmailService } from "@api/email/email.service"
 import { emsg } from "@api/errors"
-import { SecurityTokensService } from "@api/security-tokens/security-tokens.service"
 import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
 import {
@@ -14,31 +15,37 @@ import {
 } from "@zmaj-js/common"
 import { emailTemplates } from "@zmaj-js/email-templates"
 import { Orm, OrmRepository } from "@zmaj-js/orm"
-import { addMonths } from "date-fns"
+import { z } from "zod"
 
 const USED_FOR_USER_INVITATION = "USED_FOR_USER_INVITATION"
+const schema = z.object({
+	type: z.literal(USED_FOR_USER_INVITATION),
+	sub: z.string().uuid(),
+})
 
 @Injectable()
 export class UserInvitationsService {
 	readonly repo: OrmRepository<UserModel>
 	constructor(
 		private orm: Orm,
-		private tokensService: SecurityTokensService, //
 		private usersService: UsersService, //
+		private emailService: EmailService,
+		private emailCallbackService: EmailCallbackService,
 	) {
 		this.repo = this.orm.getRepo(UserModel)
 	}
 
 	async acceptInvitation(params: ConfirmUserInvitationDto): Promise<{ email: string }> {
-		const user = await this.repo.findOne({ where: { email: params.email, status: "invited" } })
+		const data = await this.emailCallbackService.verifyJwtCallback({
+			token: params.token,
+			schema: schema,
+		})
+
+		const user = await this.repo.findOne({
+			where: { id: data.sub, status: "invited" }, //
+		})
 		// We don't want to expose to them that user is not invited
 		if (!user) throw400(738299, emsg.emailTokenExpired)
-		const token = await this.tokensService.findToken({
-			token: params.token,
-			usedFor: USED_FOR_USER_INVITATION,
-			userId: user.id,
-		})
-		if (!token) throw400(38999, emsg.emailTokenExpired)
 
 		await this.orm.transaction({
 			fn: async (trx) => {
@@ -59,12 +66,6 @@ export class UserInvitationsService {
 					newPassword: password,
 					trx,
 				})
-				// await this.passwordService.setPassword(user.id, password)
-				await this.tokensService.deleteUserTokens({
-					userId: user.id,
-					trx,
-					usedFor: USED_FOR_USER_INVITATION,
-				})
 			},
 		})
 		return { email: user.email }
@@ -73,32 +74,29 @@ export class UserInvitationsService {
 	@OnCrudEvent({ action: "create", collection: UserCollection, type: "finish" })
 	async __sendInvitationEmail(event: CreateFinishEvent<User>): Promise<void> {
 		for (const user of event.result) {
-			if (user.status === "invited") {
-				await this.tokensService
-					.createTokenWithEmailConfirmation({
-						trx: event.trx,
-						token: {
-							usedFor: USED_FOR_USER_INVITATION,
-							userId: user.id,
-							validUntil: addMonths(new Date(), 1),
-						},
-						urlQuery: { email: user.email },
-						redirectPath: getEndpoints((e) => e.auth.invitation).redirectToForm,
-						emailParams: (url, appName) => {
-							return {
-								to: user.email, //
-								subject: "Invitation",
-								html: emailTemplates.inviteUser({
-									ZMAJ_APP_NAME: appName,
-									ZMAJ_URL: url,
-								}),
-								text: `Go to ${url} to confirm invitation`,
-							}
-						},
-					})
-					// ignore error, since there can be multiple users, we don't want to stop at first
-					// this will create user, but won't create token and send email and
-					.catch(() => {})
+			if (user.status !== "invited") continue
+
+			try {
+				const url = await this.emailCallbackService.createJwtCallbackUrl({
+					path: getEndpoints((e) => e.auth.invitation).redirectToForm,
+					expiresIn: "30d",
+					userId: user.id,
+					usedFor: USED_FOR_USER_INVITATION,
+					data: { email: user.email },
+				})
+
+				await this.emailService.sendEmail({
+					to: user.email,
+					subject: "Invitation",
+					html: emailTemplates.inviteUser({
+						ZMAJ_APP_NAME: this.emailService["globalConfig"].name,
+						ZMAJ_URL: url.toString(),
+					}),
+					text: `Go to ${url} to confirm invitation`,
+				})
+			} catch (error) {
+				// ignore error, since there can be multiple users, we don't want to stop at first
+				// this will create user, but won't create token and send email and
 			}
 		}
 	}

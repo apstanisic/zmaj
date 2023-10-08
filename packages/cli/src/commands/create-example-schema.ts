@@ -1,5 +1,5 @@
 import { spinner } from "@clack/prompts"
-import { Orm, __testUtils, sqOrmEngine } from "@zmaj-js/api"
+import { Orm, __testUtils, snakeCaseNaming, sqOrmEngine } from "@zmaj-js/api"
 import { systemModels } from "@zmaj-js/common"
 import { readFile } from "node:fs/promises"
 import pc from "picocolors"
@@ -82,9 +82,7 @@ async function createExampleSchema(params: {
 	const orm = new Orm({
 		engine: sqOrmEngine,
 		models: [...systemModels],
-		nameTransformer({ key }) {
-			return key
-		},
+		naming: snakeCaseNaming,
 		config: {
 			database: envValues["DB_DATABASE"]!,
 			host: envValues["DB_HOST"]!,

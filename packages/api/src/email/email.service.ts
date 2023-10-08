@@ -1,10 +1,11 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { throw500 } from "@api/common/throw-http"
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common"
-import { createTransport, SendMailOptions, Transporter } from "nodemailer"
+import { SendMailOptions, Transporter, createTransport } from "nodemailer"
+import { SetRequired } from "type-fest"
 import { EmailConfig } from "./email.config"
 
-export type SendEmailParams = SendMailOptions & {
+export type SendEmailParams = SetRequired<SendMailOptions, "subject" | "to"> & {
 	/**
 	 * defaults to `true`
 	 */
@@ -18,15 +19,18 @@ export type SendEmailParams = SendMailOptions & {
  */
 @Injectable()
 export class EmailService implements OnModuleInit {
+	/** Logger */
+	private logger = new Logger(EmailService.name)
+
 	/**
 	 * Object that is in charge of sending mail
 	 */
 	private transporter?: Transporter
 
+	/**
+	 * Used for external services to find out if email service is enabled
+	 */
 	readonly enabled: boolean
-
-	/** Logger */
-	private logger = new Logger(EmailService.name)
 
 	constructor(
 		private config: EmailConfig,
@@ -55,10 +59,8 @@ export class EmailService implements OnModuleInit {
 				},
 			},
 			{
-				// sender: this.config.user,
-				subject: this.globalConfig.name,
-				// diff between sender and from??
-				// nodemailer says this is better
+				// Docs say to use `from`, not `sender`:
+				// https://nodemailer.com/message/#routing-options
 				from: this.config.user, //
 			},
 		)
@@ -67,7 +69,8 @@ export class EmailService implements OnModuleInit {
 			await this.transporter.verify()
 			this.logger.log("Successfully connected to email provider")
 		} catch (error) {
-			this.logger.error("Problem connecting to email provider", error)
+			this.transporter = undefined
+			this.logger.error("Problem connecting to email provider. Email is disabled.", error)
 		}
 	}
 
@@ -75,16 +78,16 @@ export class EmailService implements OnModuleInit {
 	 * Send mail
 	 */
 	async sendEmail(data: SendEmailParams): Promise<void> {
-		if (this.transporter === undefined) throw500(19286)
+		/* If email is not enabled, throw */
+		if (!this.transporter) throw500(19286)
 
-		const { appNameInTitle, ...rest } = data
-		if (appNameInTitle !== false) {
-			rest.subject ??= "Email"
-			rest.subject += ` - ${this.globalConfig.name}`
+		const { appNameInTitle = true, ...params } = data
+		if (appNameInTitle) {
+			params.subject += ` - ${this.globalConfig.name}`
 		}
 
 		try {
-			await this.transporter.sendMail(rest)
+			await this.transporter.sendMail(params)
 		} catch (error) {
 			throw500(83799)
 		}

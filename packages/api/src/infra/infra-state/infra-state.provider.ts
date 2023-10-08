@@ -1,4 +1,4 @@
-import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapOrm"
 import { InfraService } from "@api/infra/infra.service"
 import { FactoryProvider } from "@nestjs/common"
 import { SchemaInfoService } from "@zmaj-js/orm"

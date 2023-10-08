@@ -1,7 +1,7 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { mixedColDef } from "@api/collection-to-model-config"
 import { throw500 } from "@api/common/throw-http"
-import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapOrm"
 import { EncryptionService } from "@api/encryption/encryption.service"
 import { MigrationsConfig } from "@api/migrations/migrations.config"
 import { MigrationsService } from "@api/migrations/migrations.service"

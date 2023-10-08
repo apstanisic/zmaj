@@ -1,5 +1,5 @@
 import { throw500 } from "@api/common/throw-http"
-import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapOrm"
 import { Injectable, Logger } from "@nestjs/common"
 import { DbMigrationModel } from "@zmaj-js/common"
 import { SchemaInfoService } from "@zmaj-js/orm"

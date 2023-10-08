@@ -3,8 +3,8 @@ import { DtoBody } from "@api/common/decorators/dto-body.decorator"
 import { ParseStringPipe } from "@api/common/parse-string.pipe"
 import { throw403 } from "@api/common/throw-http"
 import { emsg } from "@api/errors"
-import { Controller, Get, ParseUUIDPipe, Post, Query, Redirect } from "@nestjs/common"
-import { AuthUser, endpoints, SignUpDto, ZodDto } from "@zmaj-js/common"
+import { Controller, Get, Post, Query, Redirect } from "@nestjs/common"
+import { AuthUser, SignUpDto, ZodDto, endpoints } from "@zmaj-js/common"
 import { z } from "zod"
 import { GetUser } from "../get-user.decorator"
 import { SignUpService } from "./sign-up.service"
@@ -39,11 +39,8 @@ export class SignUpController {
 
 	@Redirect()
 	@Get(ep.confirmEmail)
-	async confirmEmail(
-		@Query("userId", ParseUUIDPipe) userId: string,
-		@Query("token", ParseStringPipe) token: string,
-	): Promise<RedirectResponse> {
-		await this.service.confirmEmail(userId, token)
+	async confirmEmail(@Query("token", ParseStringPipe) token: string): Promise<RedirectResponse> {
+		await this.service.confirmEmail(token)
 
 		return {
 			url: this.config.urls.adminPanel,

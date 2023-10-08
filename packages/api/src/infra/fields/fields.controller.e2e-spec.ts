@@ -48,8 +48,8 @@ describe("RelationController e2e", () => {
 
 		infraStateService = app.get(InfraStateService)
 
-		migrationsRepo = all.repo(DbMigrationModel)
-		fieldsRepo = all.repo(FieldMetadataModel)
+		migrationsRepo = all.getRepo(DbMigrationModel)
+		fieldsRepo = all.getRepo(FieldMetadataModel)
 	})
 
 	afterAll(async () => {

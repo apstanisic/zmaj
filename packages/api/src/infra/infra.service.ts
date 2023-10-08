@@ -1,4 +1,4 @@
-import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapOrm"
 import { Injectable } from "@nestjs/common"
 import {
 	CollectionMetadata,

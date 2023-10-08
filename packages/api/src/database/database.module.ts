@@ -1,7 +1,6 @@
 import { Global, Module } from "@nestjs/common"
-import { ConfigService } from "../config/config.service"
-import { DatabaseConfig, DatabaseConfigParams } from "./database.config"
-import { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } from "./database.module-definition"
+import { DatabaseConfig } from "./database.config"
+import { ConfigurableModuleClass } from "./database.module-definition"
 import { SequelizeModule } from "./sequelize.module"
 
 /**
@@ -10,14 +9,7 @@ import { SequelizeModule } from "./sequelize.module"
 @Global()
 @Module({
 	imports: [SequelizeModule],
-	providers: [
-		{
-			provide: DatabaseConfig,
-			inject: [MODULE_OPTIONS_TOKEN, ConfigService],
-			useFactory: (params: DatabaseConfigParams, config: ConfigService) =>
-				new DatabaseConfig(params, config),
-		},
-	],
+	providers: [DatabaseConfig],
 	exports: [DatabaseConfig],
 })
 export class DatabaseModule extends ConfigurableModuleClass {}

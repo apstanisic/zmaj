@@ -6,7 +6,6 @@ import { CreateAuthSessionsTable } from "./004_auth_sessions"
 import { CreateFilesTable } from "./005_files"
 import { CreateWebhooksTable } from "./006_webhooks"
 import { CreateKeyValueTable } from "./007_key_value"
-import { CreateSecurityTokensTable } from "./008_security_tokens"
 import { CreateCollectionMetadataTable } from "./009_collection_metadata"
 import { CreateFieldMetadataTable } from "./010_field_metadata"
 import { CreateRelationMetadataTable } from "./011_relation_metadata"
@@ -22,7 +21,6 @@ export const systemMigrations = [
 	CreateFilesTable,
 	CreateWebhooksTable,
 	CreateKeyValueTable,
-	CreateSecurityTokensTable,
 	CreateCollectionMetadataTable,
 	CreateFieldMetadataTable,
 	CreateRelationMetadataTable,

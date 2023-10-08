@@ -1,4 +1,5 @@
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
+import { getJwtContent } from "@zmaj-js/common"
 import { useSearchParams } from "react-router-dom"
 import { AuthPageLayout } from "../components/AuthPageLayout"
 import { SignUpForm } from "../forms/SignUpForm"
@@ -12,13 +13,17 @@ export function AcceptUserInvitation(): JSX.Element {
 	useRedirectAuthenticated()
 	const [query] = useSearchParams()
 
+	const token = query.get("token")
+
+	const email = getJwtContent(token!)["email"]
+
 	return (
 		<AuthPageLayout>
-			<h1 className="mt-2 text-xl dark:text-white">Create Admin Account</h1>
+			<h1 className="mt-2 text-xl dark:text-white">Create Account</h1>
 			<SignUpForm
 				type="invitation"
-				defaultData={{ email: query.get("email") ?? undefined }}
-				invitationToken={query.get("token") ?? undefined}
+				defaultData={{ email: email as string }}
+				invitationToken={token ?? undefined}
 			/>
 		</AuthPageLayout>
 	)

@@ -51,7 +51,10 @@ test("Invite user", async ({ page, context, userPage, userFx }) => {
 	const pagePromise = context.waitForEvent("page", { timeout: 6000 })
 	// email is displayed in iframe
 	// https://playwright.dev/docs/frames
-	await page.frameLocator("#preview-html").getByRole("link", { name: "Accept invitation" }).click()
+	await page
+		.frameLocator("#preview-html")
+		.getByRole("link", { name: "Accept invitation" })
+		.click()
 
 	const page2 = await pagePromise
 	await page2.waitForLoadState()

@@ -28,7 +28,9 @@ describe("RuntimeSettingsService", () => {
 		module = await buildTestModule(RuntimeSettingsService, [
 			{
 				provide: AuthenticationConfig,
-				useValue: { isSignUpDynamic: vi.fn(() => true) } satisfies Partial<AuthenticationConfig>,
+				useValue: {
+					isSignUpDynamic: vi.fn(() => true),
+				} satisfies Partial<AuthenticationConfig>,
 			},
 		]).compile()
 		service = module.get(RuntimeSettingsService)
@@ -53,7 +55,7 @@ describe("RuntimeSettingsService", () => {
 			adminUser = AuthUserStub({ roleId: ADMIN_ROLE_ID })
 			dto = { defaultSignUpRole: v4(), signUpAllowed: true }
 			keyValService = module.get(KeyValueStorageService)
-			keyValService.updateOrCreate = vi.fn(async (val) => KeyValueStub({ ...val }))
+			keyValService.upsert = vi.fn(async (val) => KeyValueStub({ ...val }))
 		})
 
 		it("should throw if user not admin", async () => {
@@ -81,7 +83,7 @@ describe("RuntimeSettingsService", () => {
 
 		it("should update value in key-value storage", async () => {
 			await service.setSettings(dto, AuthUserStub({ roleId: ADMIN_ROLE_ID }))
-			expect(keyValService.updateOrCreate).toBeCalledWith({
+			expect(keyValService.upsert).toBeCalledWith({
 				key: "SETTINGS",
 				namespace: "ZMAJ_INTERNAL",
 				value: JSON.stringify({ ...service.getSettings().data, ...dto }),
@@ -90,7 +92,7 @@ describe("RuntimeSettingsService", () => {
 
 		it("should change state in memory", async () => {
 			await service.setSettings(dto, AuthUserStub({ roleId: ADMIN_ROLE_ID }))
-			vi.mocked(keyValService.updateOrCreate).mockResolvedValue(
+			vi.mocked(keyValService.upsert).mockResolvedValue(
 				KeyValueStub({ value: JSON.stringify(dto) }),
 			)
 			const parseSettings = service["parseSettings"].bind(service)
@@ -101,7 +103,7 @@ describe("RuntimeSettingsService", () => {
 
 		it("should return updated state", async () => {
 			await service.setSettings(dto, AuthUserStub({ roleId: ADMIN_ROLE_ID }))
-			vi.mocked(keyValService.updateOrCreate).mockResolvedValue(
+			vi.mocked(keyValService.upsert).mockResolvedValue(
 				KeyValueStub({ value: JSON.stringify(dto) }),
 			)
 			const res = await service.setSettings(dto, AuthUserStub({ roleId: ADMIN_ROLE_ID }))

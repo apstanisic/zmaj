@@ -273,6 +273,7 @@ export class CrudBaseService<Item extends Struct> {
 
 		if ("$or" in filter || "$and" in filter) {
 			// $or & $and must be alone
+			// TODO Is this needed. There are cases where this is needed
 			if (Object.keys(filter).length > 1) throw400(50812, emsg.invalidPayload)
 			const value = filter["$and"] || filter["$or"]
 

@@ -18,13 +18,13 @@ export type OrmEngine<T = unknown> = {
 	destroy: () => Promise<void>
 	updateModels: (models: (PojoModel | Class<BaseModel>)[]) => void
 	engineProvider: T
-	//
 	transaction<T>(params: {
 		type?: TransactionIsolationLevel
 		fn: (trx: Transaction) => Promise<T>
 		trx?: Transaction
 	}): Promise<T>
 	rawQuery: (query: string, options?: RawQueryOptions) => Promise<unknown[]>
+	// createRepo: (model: PojoModel) => OrmRepository
 }
 
 export type OrmEngineSetup<T = unknown> = (params: {

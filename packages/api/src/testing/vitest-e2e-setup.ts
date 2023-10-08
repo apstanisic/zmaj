@@ -1,7 +1,7 @@
 import { BuildTestDbService } from "@api/testing/build-test-db.service"
-import { sleep, snakeCase, systemModels } from "@zmaj-js/common"
+import { sleep, systemModels } from "@zmaj-js/common"
 import { DatabaseConfig, Orm } from "@zmaj-js/orm"
-import { SequelizeService, sqOrmEngine } from "@zmaj-js/orm-sq"
+import { SequelizeService, snakeCaseNaming, sqOrmEngine } from "@zmaj-js/orm-sq"
 import { execa } from "execa"
 import { join } from "node:path"
 import { getTestEnvValues } from "./get-test-env-values"
@@ -32,7 +32,7 @@ export default async function setupAndTeardown(): Promise<void | (() => Promise<
 		models: [...systemModels],
 		config,
 		engine: sqOrmEngine,
-		nameTransformer: ({ key }) => snakeCase(key),
+		naming: snakeCaseNaming,
 	})
 	const sq = orm.engine.engineProvider as SequelizeService
 

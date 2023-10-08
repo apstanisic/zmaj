@@ -1,17 +1,26 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { AuthorizationService } from "@api/authorization/authorization.service"
-import { throw401, throw403 } from "@api/common/throw-http"
+import { throw403 } from "@api/common/throw-http"
+import { EmailCallbackService } from "@api/email/email-callback.service"
 import { EmailService } from "@api/email/email.service"
+import { EncryptionService } from "@api/encryption/encryption.service"
 import { emsg } from "@api/errors"
-import { SecurityTokensService } from "@api/security-tokens/security-tokens.service"
 import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
-import { AuthUser, Email, getEndpoints, PasswordResetDto } from "@zmaj-js/common"
+import { AuthUser, Email, PasswordResetDto, getEndpoints } from "@zmaj-js/common"
 import { emailTemplates } from "@zmaj-js/email-templates"
-import { addHours, isPast } from "date-fns"
+import { z } from "zod"
 import { AuthenticationConfig } from "../authentication.config"
 
 const USED_FOR_PASSWORD_RESET = "password-reset"
+
+const schema = z.object({
+	type: z.literal(USED_FOR_PASSWORD_RESET),
+	sub: z.string().uuid(),
+	/** We are using JTI to store hmac of last part of the password hash, so user can't use reset multiple times  */
+	jti: z.string().min(10).max(300),
+})
+
 /**
  * Password reset service
  * Used for generating token and sending email
@@ -22,11 +31,18 @@ export class PasswordResetService {
 	constructor(
 		private emailService: EmailService,
 		private usersService: UsersService,
-		private tokensService: SecurityTokensService,
 		private authzService: AuthorizationService,
 		private authnConfig: AuthenticationConfig,
-		private config: GlobalConfig, // private repoManager: RepoManager,
+		private config: GlobalConfig,
+		private encryptionService: EncryptionService,
+		private emailCallbackService: EmailCallbackService,
 	) {}
+
+	passwordToHmac(fullPasswordHash: string): { sectionUsed: string; hmac: string } {
+		const sectionUsed = fullPasswordHash.slice(-12)
+		const hmac = this.encryptionService.createHmac(sectionUsed)
+		return { sectionUsed, hmac }
+	}
 
 	/**
 	 * Send instructions to reset password
@@ -38,7 +54,13 @@ export class PasswordResetService {
 
 		// Don't throw if user does not exists, simply return
 		// we do not want user to know if this account exists
-		const fullUser = await this.usersService.findActiveUser({ email }).catch(() => undefined)
+		const fullUser = await this.usersService.repo.findOne({
+			where: {
+				status: "active",
+				email,
+			},
+			includeHidden: true,
+		})
 		if (!fullUser) return
 
 		const user = AuthUser.fromUser(fullUser)
@@ -55,23 +77,22 @@ export class PasswordResetService {
 			return
 		}
 
-		// Only one token can be valid at the same time, reduces security concerns
-		// await this.tokensService.deleteAllUserTokens({ userId: fullUser.id })
+		const { hmac } = this.passwordToHmac(fullUser.password)
+		const url = await this.emailCallbackService.createJwtCallbackUrl<typeof schema>({
+			expiresIn: "6h",
+			path: getEndpoints((e) => e.auth.passwordReset).redirectToForm,
+			usedFor: USED_FOR_PASSWORD_RESET,
+			userId: user.userId,
+			data: { jti: hmac },
+		})
 
-		await this.tokensService.createTokenWithEmailConfirmation({
-			token: {
-				usedFor: USED_FOR_PASSWORD_RESET,
-				userId: fullUser.id,
-				validUntil: addHours(new Date(), 3),
-			},
-			urlQuery: { email },
-			redirectPath: getEndpoints((e) => e.auth.passwordReset).redirectToForm, // "auth/password-reset/reset",
-			deleteOld: "usedFor",
-			emailParams: (url, appName) => ({
-				to: email,
-				subject: "Reset password",
-				html: emailTemplates.passwordReset({ ZMAJ_APP_NAME: appName, ZMAJ_URL: url }),
-				text: `Go to ${url} to reset password`,
+		await this.emailService.sendEmail({
+			to: user.email,
+			subject: "Reset password",
+			text: `Go to ${url.toString()} to reset password`,
+			html: emailTemplates.passwordReset({
+				ZMAJ_APP_NAME: this.emailService["globalConfig"].name,
+				ZMAJ_URL: url.toString(),
 			}),
 		})
 	}
@@ -85,23 +106,30 @@ export class PasswordResetService {
 	 *
 	 * @todo Should I delete all active sessions
 	 */
-	async setNewPassword({ email, token, password }: PasswordResetDto): Promise<void> {
-		const fullUser = await this.usersService.findActiveUser({ email })
+	async setNewPassword({ token, password }: PasswordResetDto): Promise<void> {
+		const jwtData = await this.emailCallbackService.verifyJwtCallback({
+			token,
+			schema,
+		})
+		const hmac = jwtData.jti
+
+		const fullUser = await this.usersService.repo.findOne({
+			includeHidden: true,
+			where: { id: jwtData.sub, status: "active", confirmedEmail: true },
+		})
+
+		if (!fullUser) throw403(89932, emsg.emailTokenExpired)
+
+		const { sectionUsed } = this.passwordToHmac(fullUser.password)
+		if (!this.encryptionService.verifyHmac(sectionUsed, hmac)) {
+			throw403(93999, emsg.emailTokenExpired)
+		}
+
 		const user = AuthUser.fromUser(fullUser)
 
 		this.authzService.checkSystem("account", "resetPassword", { user }) ||
 			throw403(927134, emsg.noAuthz)
 
-		const tokenInDb = await this.tokensService.findToken({
-			token,
-			userId: fullUser.id,
-			usedFor: USED_FOR_PASSWORD_RESET,
-		})
-
-		if (!tokenInDb) throw401(8816, emsg.emailTokenExpired)
-		if (isPast(tokenInDb.validUntil)) throw401(901231, emsg.emailTokenExpired)
-
-		await this.tokensService.deleteUserTokens({ userId: user.userId })
-		await this.usersService.setPassword({ newPassword: password, userId: tokenInDb.userId })
+		await this.usersService.setPassword({ newPassword: password, userId: user.userId })
 	}
 }

@@ -1,5 +1,5 @@
-import { createSystemMigration } from "../create-system-migration"
 import { DataTypes } from "sequelize"
+import { createSystemMigration } from "../create-system-migration"
 import { DefaultNow, getRequiredColumns } from "../migrations.utils"
 
 const table = "zmaj_key_value"
@@ -16,6 +16,7 @@ export const CreateKeyValueTable = createSystemMigration({
 				value: { type: DataTypes.STRING(10000) },
 				namespace: { type: DataTypes.STRING(200) },
 				updated_at: { type: DataTypes.DATE(3), allowNull: false, defaultValue: DefaultNow },
+				expires_at: { type: DataTypes.DATE(3) },
 			},
 			{
 				transaction: trx,

@@ -1,5 +1,6 @@
 export { SequelizeAlterSchemaService } from "./schema/sq-alter-schema.service"
 export { SequelizeSchemaInfoService } from "./schema/sq-schema-info.service"
+export { snakeCaseNaming } from "./snake-case-naming"
 export { sqOrmEngine } from "./sq.orm-engine"
 export { SequelizeRepoManager } from "./sq.repo-manager"
 export { SequelizeService } from "./sq.service"

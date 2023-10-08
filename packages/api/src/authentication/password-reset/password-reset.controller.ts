@@ -1,8 +1,9 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { DtoBody } from "@api/common/decorators/dto-body.decorator"
 import { ParseEmailPipe } from "@api/common/parse-email.pipe"
-import { Body, Controller, Get, ParseUUIDPipe, Post, Put, Query, Res } from "@nestjs/common"
-import { endpoints, PasswordResetDto, qsStringify, type Email, type UUID } from "@zmaj-js/common"
+import { ParseStringPipe } from "@api/common/parse-string.pipe"
+import { Body, Controller, Get, Post, Put, Query, Res } from "@nestjs/common"
+import { PasswordResetDto, endpoints, qsStringify, type Email } from "@zmaj-js/common"
 import type { Response } from "express"
 import { PasswordResetService } from "./password-reset.service"
 
@@ -46,10 +47,9 @@ export class PasswordResetController {
 	@Get(ep.redirectToForm)
 	renderPasswordResetForm(
 		@Res() res: Response,
-		@Query("email", ParseEmailPipe) email: Email,
-		@Query("token", ParseUUIDPipe) token: UUID,
+		@Query("token", ParseStringPipe) token: string,
 	): void {
-		const query = qsStringify({ email, token })
+		const query = qsStringify({ token })
 		const url = this.config.joinWithAdminPanelUrl(`#/auth/password-reset?${query}`)
 
 		res.redirect(303, url)
@@ -64,8 +64,8 @@ export class PasswordResetController {
 	@Put(ep.reset)
 	async resetPassword(
 		@DtoBody(PasswordResetDto) body: PasswordResetDto,
-	): Promise<{ email: string }> {
+	): Promise<{ success: true }> {
 		await this.service.setNewPassword(body)
-		return { email: body.email }
+		return { success: true }
 	}
 }

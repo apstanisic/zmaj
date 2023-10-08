@@ -1,5 +1,5 @@
 import { throw400, throw401, throw403, throw500 } from "@api/common/throw-http"
-import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapOrm"
 import { emsg } from "@api/errors"
 import { Injectable } from "@nestjs/common"
 import {

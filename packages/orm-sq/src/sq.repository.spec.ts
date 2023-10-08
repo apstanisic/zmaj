@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { faker } from "@faker-js/faker"
-import { snakeCase, times, uuidRegex } from "@zmaj-js/common"
+import { times, uuidRegex } from "@zmaj-js/common"
 import {
 	BaseModel,
 	Class,
@@ -35,6 +35,7 @@ import { omit, pick, sort } from "radash"
 import { DataTypes, QueryInterface } from "sequelize"
 import { v4 } from "uuid"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { snakeCaseNaming } from "./snake-case-naming"
 import { sqOrmEngine } from "./sq.orm-engine"
 import { SequelizeService } from "./sq.service"
 
@@ -125,7 +126,7 @@ describe("SequelizeRepository", () => {
 			},
 			engine: sqOrmEngine,
 			models,
-			nameTransformer: ({ key }) => snakeCase(key),
+			naming: snakeCaseNaming,
 		})
 		await orm.init()
 		sq = orm.engine.engineProvider as SequelizeService

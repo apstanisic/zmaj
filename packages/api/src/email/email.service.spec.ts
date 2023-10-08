@@ -82,13 +82,23 @@ describe("EmailService", () => {
 	describe("sendMail", () => {
 		it("should throw an error if user tries to send email and mail is not configured", async () => {
 			service["transporter"] = undefined
-			await expect(service.sendEmail({})).rejects.toThrow(InternalServerErrorException)
+			await expect(
+				service.sendEmail({
+					subject: "Hello",
+					to: "test@example.test",
+				}),
+			).rejects.toThrow(InternalServerErrorException)
 		})
 
 		it("should call `nodemailer.sendMail` if transporter is defined", async () => {
 			const sendMail = vi.fn()
 			service["transporter"]!.sendMail = sendMail
-			const sendData: Mail.Options = { text: "hello", html: "world", subject: "Hello" }
+			const sendData = {
+				text: "hello",
+				html: "world",
+				subject: "Hello",
+				to: "test@example.test",
+			} satisfies Mail.Options
 			await service.sendEmail(sendData)
 			expect(sendMail).toBeCalledWith({ ...sendData, subject: "Hello - Zmaj App" })
 		})
@@ -96,7 +106,12 @@ describe("EmailService", () => {
 		it("should throw if sending email fails", async () => {
 			const sendMail = vi.fn().mockRejectedValue(new Error())
 			service["transporter"]!.sendMail = sendMail
-			await expect(service.sendEmail({})).rejects.toThrow(InternalServerErrorException)
+			await expect(
+				service.sendEmail({
+					subject: "Hello",
+					to: "world@example.test",
+				}),
+			).rejects.toThrow(InternalServerErrorException)
 		})
 	})
 })

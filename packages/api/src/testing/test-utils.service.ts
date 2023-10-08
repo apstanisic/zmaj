@@ -1,5 +1,5 @@
 import { InitializeAdminService } from "@api/authentication/initialize-admin/initialize-admin.service"
-import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapOrm"
 import { OnInfraChangeService } from "@api/infra/on-infra-change.service"
 import { RelationsService } from "@api/infra/relations/relations.service"
 import { Injectable } from "@nestjs/common"

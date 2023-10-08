@@ -17,11 +17,9 @@ const defaultUserConfig: ConfigureAppParams = {
 	authorization: { exposeAllowedPermissions: true },
 	// cache: { enabled: true, ttlMs: 3000 },
 	config: {
-		throwOnNoEnvFile: false,
-		useEnvFile: true,
 		useProcessEnv: true,
-		assignToProcessEnv: true,
-		envPath: ".env",
+		assignEnvFileToProcessEnv: true,
+		// envPath: ".env",
 	},
 	crud: { allowedJoin: "toOne", relationChange: "toManyFks" },
 	database: { logging: false },
@@ -38,13 +36,13 @@ const devConfig: ConfigureAppParams = merge(defaultUserConfig, {
 	migrations: { runDynamicMigrations: false, autoRunMigrations: true },
 	security: { exposeErrorDetails: true },
 	// cache: { enabled: false },
-	database: { logging: false },
-	config: { envPath: ".env.dev", throwOnNoEnvFile: true },
+	database: { logging: true },
+	config: { envPath: ".env.dev" },
 	infra: { defaultCase: "camel" },
 } as ConfigureAppParams)
 
 const testConfig: ConfigureAppParams = merge(devConfig, {
-	config: { envPath: ".env.test", throwOnNoEnvFile: false },
+	// config: { envPath: ".env.test" },
 	global: { log: ["warn", "error"] },
 	database: { logging: false },
 	migrations: { autoRunMigrations: false },

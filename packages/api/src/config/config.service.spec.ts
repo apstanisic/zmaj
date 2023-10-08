@@ -21,11 +21,13 @@ vi.mock("dotenv", () => ({
 	},
 }))
 
-describe("AppConfigService", () => {
+describe("ConfigService", () => {
 	let service: ConfigService
 
 	beforeEach(async () => {
-		service = new ConfigService(new ConfigModuleConfig({ useEnvFile: true }))
+		service = new ConfigService(
+			new ConfigModuleConfig({ envPath: ".env", useProcessEnv: false }),
+		)
 		// clear dotenv mocks after assigning to default service
 		vi.clearAllMocks()
 	})
@@ -47,28 +49,26 @@ describe("AppConfigService", () => {
 		})
 
 		it("should ignore env file", () => {
-			new ConfigService(new ConfigModuleConfig({ useEnvFile: false }))
+			new ConfigService(new ConfigModuleConfig({}))
 			expect(dotenv.parse).not.toBeCalled()
 		})
 
 		it("should pass data from file to be processed", () => {
-			new ConfigService(new ConfigModuleConfig({ useEnvFile: true }))
+			new ConfigService(new ConfigModuleConfig({ envPath: ".env" }))
 			expect(dotenv.parse).toBeCalledWith("FROM_FS=true")
 		})
 
 		it("should read from proper file", () => {
-			new ConfigService(new ConfigModuleConfig({ envPath: "/root.env", useEnvFile: true }))
+			new ConfigService(new ConfigModuleConfig({ envPath: "/root.env" }))
 			expect(readFileSync).toBeCalledWith("/root.env")
 
-			new ConfigService(new ConfigModuleConfig({ envPath: "relative.env", useEnvFile: true }))
+			new ConfigService(new ConfigModuleConfig({ envPath: "relative.env" }))
 			expect(readFileSync).toBeCalledWith(process.cwd() + "/relative.env")
 		})
 
 		it("should have higher priority in process.env", () => {
 			process.env["TEST_VAL"] = "HELLO_TEST"
-			const config = new ConfigService(
-				new ConfigModuleConfig({ useEnvFile: true, useProcessEnv: true }),
-			)
+			const config = new ConfigService(new ConfigModuleConfig({ useProcessEnv: true }))
 			expect(config.get("TEST_VAL")).toEqual("HELLO_TEST")
 		})
 	})

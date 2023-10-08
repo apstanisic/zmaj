@@ -1,38 +1,26 @@
 import { EmailService } from "@api/email/email.service"
-import { SecurityTokenStub } from "@api/security-tokens/security-token.stub"
-import { getE2ETestModule } from "@api/testing/e2e-test-module"
-import { UsersService } from "@api/users/users.service"
+import { TestSdk, createTestServer } from "@api/testing/e2e-test-module"
+import { faker } from "@faker-js/faker"
 import { INestApplication } from "@nestjs/common"
-import {
-	ADMIN_ROLE_ID,
-	ChangeEmailDto,
-	qsStringify,
-	SecurityTokenModel,
-	User,
-	UserCreateDto,
-	UserModel,
-} from "@zmaj-js/common"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
-import { UserStub } from "@zmaj-js/test-utils"
-import { addMinutes } from "date-fns"
-import { omit } from "radash"
+import { JwtService } from "@nestjs/jwt"
+import { ChangeEmailDto, User, qsStringify } from "@zmaj-js/common"
 import supertest from "supertest"
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { EmailChangeService } from "./email-change.service"
 
 describe("EmailChangeController e2e", () => {
+	let sdk: TestSdk
 	let app: INestApplication
 	let emailService: EmailService
-	//
-	let userRepo: OrmRepository<UserModel>
-	let tokenRepo: OrmRepository<SecurityTokenModel>
+	let jwtService: JwtService
 	//
 	let user: User
 	//
 	beforeAll(async () => {
-		app = await getE2ETestModule()
-		userRepo = app.get(RepoManager).getRepo(UserModel)
-		tokenRepo = app.get(RepoManager).getRepo(SecurityTokenModel)
+		sdk = await createTestServer()
+		app = sdk.app
 
+		jwtService = app.get(JwtService)
 		emailService = app.get(EmailService)
 		emailService.sendEmail = vi.fn()
 	})
@@ -42,31 +30,18 @@ describe("EmailChangeController e2e", () => {
 	})
 
 	beforeEach(async () => {
-		const userData = UserStub({
-			email: "e2e_email_change_current@example.com",
-			confirmedEmail: true,
-			status: "active",
-			roleId: ADMIN_ROLE_ID,
-		})
-
-		user = await app
-			.get(UsersService)
-			.createUser({ data: new UserCreateDto({ ...userData, password: "password" }) })
-	})
-
-	afterEach(async () => {
-		await tokenRepo.deleteWhere({ where: { userId: user.id } })
-		await userRepo.deleteById({ id: user.id })
+		user = await sdk.createUser()
 	})
 
 	describe("PUT /auth/account/email-change", () => {
 		it("should request email change", async () => {
+			const newEmail = faker.internet.email({ provider: "hello.test" })
 			//
 			const res = await supertest(app.getHttpServer())
 				.put("/api/auth/account/email-change")
 				.send(
 					new ChangeEmailDto({
-						newEmail: "e2e_email_change_new@example.com",
+						newEmail,
 						password: "password",
 					}),
 				)
@@ -74,23 +49,17 @@ describe("EmailChangeController e2e", () => {
 
 			expect(res.statusCode).toEqual(200)
 			expect(res.body).toEqual({
-				currentEmail: "e2e_email_change_current@example.com",
-				newEmail: "e2e_email_change_new@example.com",
+				currentEmail: user.email,
+				newEmail,
 			})
 
-			const tokens = await tokenRepo.findWhere({ where: { userId: user.id } })
-			expect(tokens[0]).toMatchObject({
-				usedFor: "email-change",
-				userId: user.id,
-				data: "e2e_email_change_new@example.com",
-			})
-
-			const query = qsStringify({ userId: user.id, token: tokens[0]!.token })
-			const url = `http://localhost:7100/api/auth/account/email-change/confirm?${query}`
+			const spy = vi.spyOn(jwtService, "signAsync")
+			const token = spy.mock.results.at(-1)
+			const url = `http://localhost:7100/api/auth/account/email-change/confirm?token=${token}`
 			expect(emailService.sendEmail).toBeCalledWith({
 				subject: "Confirm email change",
 				text: "Go to " + url + " to confirm email change",
-				to: "e2e_email_change_new@example.com",
+				to: newEmail,
 				html: expect.stringContaining(url),
 			})
 		})
@@ -98,19 +67,13 @@ describe("EmailChangeController e2e", () => {
 
 	describe("GET /auth/account/email-change/confirm", () => {
 		it("should change email", async () => {
-			const newEmail = "e2e_email_change_new@example.com"
+			const newEmail = faker.internet.email({ provider: "hello.test" })
 
-			const tokenStub = SecurityTokenStub({
-				usedFor: "email-change",
-				userId: user.id,
-				data: newEmail,
-				validUntil: addMinutes(new Date(), 30),
-			})
-			const token = await tokenRepo.createOne({ data: omit(tokenStub, ["createdAt"]) })
+			const token = app.get(EmailChangeService)
 
 			const query = qsStringify({ userId: user.id, token: token.token })
 			const res = await supertest(app.getHttpServer()).get(
-				`/api/auth/account/email-change/confirm?${query}`,
+				`/api/auth/account/email-change/confirm?token=${token}`,
 			)
 
 			expect(res.statusCode).toBe(200)

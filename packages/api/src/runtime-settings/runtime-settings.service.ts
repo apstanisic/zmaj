@@ -8,9 +8,9 @@ import {
 	ADMIN_ROLE_ID,
 	AuthUser,
 	ChangeSettingsDto,
-	merge,
 	RuntimeSettingsSchema,
 	Settings,
+	merge,
 } from "@zmaj-js/common"
 import { ReadonlyDeep } from "type-fest"
 import { KeyValueStorageService } from "../key-value-storage/key-value-storage.service"
@@ -38,7 +38,7 @@ export class RuntimeSettingsService implements OnModuleInit {
 		if (user.roleId !== ADMIN_ROLE_ID) throw403(793423, emsg.noAuthz)
 		const merged = merge(this.getSettings().data, val)
 
-		const updated = await this.keyVal.updateOrCreate({
+		const updated = await this.keyVal.upsert({
 			key: "SETTINGS",
 			namespace: KeyValueNamespace.INTERNAL,
 			value: JSON.stringify(merged),

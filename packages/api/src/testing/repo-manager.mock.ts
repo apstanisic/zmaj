@@ -1,4 +1,4 @@
-import { BootstrapOrm } from "@api/database/BootstrapRepoManager"
+import { BootstrapOrm } from "@api/database/BootstrapOrm"
 import { FactoryProvider } from "@nestjs/common"
 import { CollectionDef, Struct, snakeCase } from "@zmaj-js/common"
 import { BaseModel, Class, Orm, RepoManager } from "@zmaj-js/orm"

@@ -54,7 +54,7 @@ describe("CollectionsEndpoint e2e", () => {
 			})
 		})
 
-		repo = all.repo<TestPersonModel>(collectionName)
+		repo = all.getRepo<TestPersonModel>(collectionName)
 	})
 
 	afterAll(async () => {
