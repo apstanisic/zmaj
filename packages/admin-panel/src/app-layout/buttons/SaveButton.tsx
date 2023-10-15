@@ -1,4 +1,4 @@
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { MdSave } from "react-icons/md"
 // import { SaveButton as SB, useSaveContext } from "ra-core"
 import { useSaveContext } from "ra-core"

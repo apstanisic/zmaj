@@ -11,8 +11,6 @@ export function Divider(props: Props): JSX.Element {
 		<div
 			className={clsx("du-divider", props.vertical && "du-divider-vertical", props.className)}
 			{...separatorProps}
-		>
-			{/* {props.children} */}
-		</div>
+		></div>
 	)
 }

@@ -5,6 +5,7 @@ import { systemPermissions } from "./system-permissions.consts"
 export const PermissionCollection = codeCollection(PermissionModel, {
 	options: {
 		authzKey: systemPermissions.authorization.resource,
+		authzMustManage: true,
 	},
 	relations: {
 		role: {

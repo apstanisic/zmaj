@@ -32,18 +32,3 @@ export const Accordion = (props: {
 Accordion.Button = function <T>(props: HeadlessInferType<T>) {
 	return <Disclosure.Button {...(props as any)}>{props.children}</Disclosure.Button>
 }
-
-// //
-// type NativeElements = JSX.IntrinsicElements
-
-// type TypedAsProps2<T extends keyof NativeElements> = {
-// 	as?: T
-// 	children?: ReactNode
-// } & NativeElements[T]
-
-// type TypedAsProps<T> = {
-// 	as?: JSXElementConstructor<T>
-// 	children?: ReactNode
-// } & T
-
-// type Joined<T> = T extends keyof NativeElements ? TypedAsProps2<T> : TypedAsProps<T>

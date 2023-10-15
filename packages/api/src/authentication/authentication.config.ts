@@ -1,7 +1,7 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { ConfigService } from "@api/config/config.service"
 import { Inject, Injectable } from "@nestjs/common"
-import { filterStruct, ZodDto } from "@zmaj-js/common"
+import { ZodDto, filterStruct } from "@zmaj-js/common"
 import ms from "ms"
 import { isEmpty } from "radash"
 import { z } from "zod"
@@ -54,12 +54,8 @@ const AuthenticationConfigSchema = z.object({
 	 * Can user sign up
 	 * - true: User is allowed to sign up
 	 * - false: User is not allowed to sign up
-	 * - "dynamic" Can be changed in database with settings. By default it's `false`
-	 * // - "dynamic-default-true": It check for value if key value storage. Default to `true`
-	 * // - "dynamic-default-false": It check for value if key value storage. Default to `false`
 	 */
-	allowSignUp: z.boolean().or(z.literal("dynamic")).default(false),
-
+	allowSignUp: z.boolean().default(false),
 	/**
 	 * OpenID Connect providers
 	 * @deprecated Not enabled currently. It does nothing
@@ -110,14 +106,19 @@ export class AuthenticationConfig extends ZodDto(AuthenticationConfigSchema) {
 			// 		params.oauth?.apple?.clientSecret ?? configService.get("APPLE_OAUTH_CLIENT_SECRET"),
 			// },
 			facebook: {
-				clientId: params.oauth?.facebook?.clientId ?? configService.get("FACEBOOK_OAUTH_CLIENT_ID"),
+				clientId:
+					params.oauth?.facebook?.clientId ??
+					configService.get("FACEBOOK_OAUTH_CLIENT_ID"),
 				clientSecret:
-					params.oauth?.facebook?.clientSecret ?? configService.get("FACEBOOK_OAUTH_CLIENT_SECRET"),
+					params.oauth?.facebook?.clientSecret ??
+					configService.get("FACEBOOK_OAUTH_CLIENT_SECRET"),
 			},
 			google: {
-				clientId: params.oauth?.google?.clientId ?? configService.get("GOOGLE_OAUTH_CLIENT_ID"),
+				clientId:
+					params.oauth?.google?.clientId ?? configService.get("GOOGLE_OAUTH_CLIENT_ID"),
 				clientSecret:
-					params.oauth?.google?.clientSecret ?? configService.get("GOOGLE_OAUTH_CLIENT_SECRET"),
+					params.oauth?.google?.clientSecret ??
+					configService.get("GOOGLE_OAUTH_CLIENT_SECRET"),
 			},
 		}
 		const notEmpty = filterStruct(merged, (provider) => {
@@ -132,13 +133,5 @@ export class AuthenticationConfig extends ZodDto(AuthenticationConfigSchema) {
 	get fullSignInRedirectPath(): string {
 		if (this.signInRedirectPath.startsWith("http")) return this.signInRedirectPath
 		return this.globalConfig.joinWithAdminPanelUrl(this.signInRedirectPath)
-	}
-
-	isSignUpDynamic(): boolean {
-		return this.allowSignUp === "dynamic"
-		// return (
-		// 	this.allowSignUp === "dynamic-default-false" || //
-		// 	this.allowSignUp === "dynamic-default-true"
-		// )
 	}
 }

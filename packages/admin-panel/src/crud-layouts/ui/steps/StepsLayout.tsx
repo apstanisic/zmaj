@@ -1,6 +1,6 @@
 import { SaveButton } from "@admin-panel/app-layout/buttons/SaveButton"
-import { Button } from "@admin-panel/ui/Button"
 import { Stepper } from "@admin-panel/ui/Stepper"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { clsx } from "clsx"
 import { PropsWithChildren, ReactNode, useState } from "react"
 import { StepContextProvider } from "./step-context"
@@ -25,9 +25,9 @@ export const StepLayout = (
 					{/* Back button */}
 					<Button
 						// variant="transparent"
-						outline
-						disabled={step === 0}
-						onClick={() => {
+						variant="outlined"
+						isDisabled={step === 0}
+						onPress={() => {
 							setStep((old) => old - 1)
 							window.scrollTo({ top: 0, behavior: "smooth" })
 						}}
@@ -38,8 +38,8 @@ export const StepLayout = (
 					<Button
 						className={clsx(props.sections.length - 1 === step && "hidden")}
 						// variant="outlined"
-						outline
-						onClick={() => {
+						variant="outlined"
+						onPress={() => {
 							setStep((old) => old + 1)
 							window.scrollTo({ top: 0, behavior: "smooth" })
 						}}

@@ -1,6 +1,6 @@
 import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Authz } from "@admin-panel/state/authz-state"
-import { FieldMetadataCollection, systemPermissions } from "@zmaj-js/common"
+import { FieldMetadataCollection } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 import { FieldCreate } from "./FieldCreate"
 import { FieldEdit } from "./FieldEdit"
@@ -18,8 +18,7 @@ export function fieldResource(props: { authz: Authz }): JSX.Element {
 			create={modify ? FieldCreate : undefined}
 			edit={modify ? FieldEdit : undefined}
 			options={{
-				label: field.label ?? "Fields", //
-				authzResource: systemPermissions.infra.resource,
+				collection: FieldMetadataCollection,
 			}}
 		/>
 	)

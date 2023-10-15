@@ -1,5 +1,6 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { useResourceDefinition } from "ra-core"
 import { MdEdit } from "react-icons/md"
 import { useHref } from "react-router"
@@ -9,16 +10,23 @@ export function EditButton(props: { onlyIcon?: boolean }): JSX.Element {
 	const record = useRecord()
 	const href = useHref({ pathname: `/${resource.name}/${record?.id ?? ""}` })
 
+	const disabled = record?.id === undefined || !resource.hasShow
+
+	if (props.onlyIcon) {
+		return (
+			<IconButton aria-label={`Edit record ${record?.id}`} href={href} isDisabled={disabled}>
+				<MdEdit />
+			</IconButton>
+		)
+	}
+
 	return (
 		<ResponsiveButton
-			small
-			disabled={record?.id === undefined || !resource.hasEdit}
-			label="Edit"
-			aria-label={"Edit record " + record?.id}
-			href={href}
 			icon={<MdEdit />}
-			display={props.onlyIcon ? "icon" : undefined}
-			// onClick={() => redirect("Edit", resourceInfo.name, record.id)}
+			label="Edit"
+			aria-label={`Edit record ${record?.id}`}
+			href={href}
+			isDisabled={disabled}
 		/>
 	)
 }

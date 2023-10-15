@@ -2,7 +2,7 @@ import { GeneratedCreatePage } from "@admin-panel/generator/pages/GeneratedCreat
 import { GeneratedEditPage } from "@admin-panel/generator/pages/GeneratedEditPage"
 import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Authz } from "@admin-panel/state/authz-state"
-import { RoleCollection, systemPermissions } from "@zmaj-js/common"
+import { RoleCollection } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 import { GeneratedListPage } from "../../generator/pages/GeneratedListPage"
 // import { roleCreate } from "./roleCreate"
@@ -23,15 +23,7 @@ export function roleResource(props: { authz: Authz }): JSX.Element {
 			create={modify ? GeneratedCreatePage : undefined}
 			edit={modify ? GeneratedEditPage : undefined}
 			options={{
-				label: role.label ?? undefined,
-				authzResource: systemPermissions.authorization.resource,
-				authzActions: {
-					create: systemPermissions.authorization.actions.modify.key,
-					delete: systemPermissions.authorization.actions.modify.key,
-					edit: systemPermissions.authorization.actions.modify.key,
-					list: systemPermissions.authorization.actions.read.key,
-					show: systemPermissions.authorization.actions.read.key,
-				},
+				collection: RoleCollection,
 			}}
 		/>
 	)

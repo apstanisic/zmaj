@@ -1,7 +1,7 @@
 import { useActionContext } from "@admin-panel/context/action-context"
 import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
 import {
 	ActivityLog,

@@ -83,18 +83,21 @@ describe("EncryptionService", () => {
 		})
 
 		it("should throw if value is not string", async () => {
-			await expect(service.decrypt(44 as never)).rejects.toThrowError(InternalServerErrorException)
+			await expect(service.decrypt(44 as never)).rejects.toThrowError(
+				InternalServerErrorException,
+			)
 		})
 
 		it("should throw if value is not valid", async () => {
 			const withoutFirstChar = encryptedValue.slice(1)
+
 			// this is because without first char, it won't have valid prefix
-			await expect(service.decrypt(withoutFirstChar)).rejects.toThrowError(BadRequestException)
+			await expect(service.decrypt(withoutFirstChar)).rejects.toThrowError(
+				BadRequestException,
+			)
 
 			const withoutLastChar = encryptedValue.slice(0, -1)
-			await expect(service.decrypt(withoutLastChar)).rejects.toThrowError(
-				InternalServerErrorException,
-			)
+			await expect(service.decrypt(withoutLastChar)).rejects.toThrowError(BadRequestException)
 		})
 	})
 
@@ -127,7 +130,9 @@ describe("EncryptionService", () => {
 		it("should hash password with argon2id", async () => {
 			const res = await service.hash("hello_world")
 			const decrypted = await service.decrypt(res)
-			const hashValid = await argon2.verify(decrypted, "hello_world", { type: argon2.argon2id })
+			const hashValid = await argon2.verify(decrypted, "hello_world", {
+				type: argon2.argon2id,
+			})
 			expect(hashValid).toEqual(true)
 		})
 	})
@@ -155,9 +160,9 @@ describe("EncryptionService", () => {
 		})
 
 		it("should throw if hash is in invalid format", async () => {
-			await expect(service.verifyHash("some_invalid_format", "hello_world")).rejects.toThrowError(
-				InternalServerErrorException,
-			)
+			await expect(
+				service.verifyHash("some_invalid_format", "hello_world"),
+			).rejects.toThrowError(InternalServerErrorException)
 		})
 	})
 })

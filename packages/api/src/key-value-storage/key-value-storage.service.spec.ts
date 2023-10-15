@@ -29,12 +29,26 @@ describe("KeyValueStorageService", () => {
 
 		it("should find proper value", async () => {
 			const res = await service.findByKey("key1", "namespace1")
-			expect(findOne).toBeCalledWith({ where: { key: "key1", namespace: "namespace1" } })
+			expect(findOne).toBeCalledWith({
+				where: {
+					key: "key1",
+					namespace: "namespace1",
+					$or: [{ expiresAt: { $lte: expect.any(Date) } }, { expiresAt: null }],
+				},
+				trx: undefined,
+			})
 		})
 
 		it("should default to no namespace", async () => {
 			const res = await service.findByKey("key1")
-			expect(findOne).toBeCalledWith({ where: { key: "key1", namespace: null } })
+			expect(findOne).toBeCalledWith({
+				where: {
+					key: "key1",
+					namespace: null,
+					$or: [{ expiresAt: { $lte: expect.any(Date) } }, { expiresAt: null }],
+					trx: undefined,
+				},
+			})
 		})
 
 		it("should return value from db", async () => {

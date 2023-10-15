@@ -2,7 +2,6 @@ import { useRecord } from "@admin-panel/hooks/use-record"
 import { get, title } from "radash"
 import { ReactNode, memo } from "react"
 import { ShowFieldProps } from "../../field-components/types/ShowFieldProps"
-import { DefaultShowField } from "./DefaultShowField"
 import { RenderShowField } from "./RenderShowField"
 
 type ManualShowFieldProps = {
@@ -10,21 +9,14 @@ type ManualShowFieldProps = {
 } & Partial<ShowFieldProps> & {
 		source: string
 		render?: (props: ShowFieldProps) => ReactNode
-		/**
-		 * @internal @temp
-		 */
-		__fallbackValue?: any
 	}
 
 export const ManualShowField = memo((props: ManualShowFieldProps) => {
-	const Component = props.Component ?? DefaultShowField
+	const Component = props.Component ?? RenderShowField
 	const record = useRecord()
 	const source = props.source
 
-	// null is legitimate value. Only ignore undefined
-	let value = props.value
-	if (value === undefined) value = get(record, source)
-	if (value === undefined) value = props.__fallbackValue
+	const value = props.value ?? get(record, source)
 
 	const joined = {
 		...props,

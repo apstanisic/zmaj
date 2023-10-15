@@ -1,3 +1,4 @@
+import { SelectInput } from "@admin-panel/ui/forms/SelectInput"
 import { Editor } from "@zmaj-js/rich-input"
 import { clsx } from "clsx"
 import {
@@ -17,7 +18,6 @@ import {
 	MdFormatStrikethrough,
 	MdFormatUnderlined,
 } from "react-icons/md"
-import { Select } from "../../ui/Select"
 
 // type Editor = NonNullable<ReturnType<typeof useRichEditor>>
 
@@ -178,24 +178,31 @@ function Align({ editor }: { editor: Editor }): JSX.Element {
 
 function Headings({ editor }: { editor: Editor }): JSX.Element {
 	return (
-		<div className=" flex h-10 w-32">
-			<Select
-				choices={(["Normal", 1, 2, 3, 4] as const).map((value) => ({
+		<div className=" flex h-10 w-40">
+			<SelectInput
+				options={(["Normal", 1, 2, 3, 4] as const).map((value) => ({
 					value,
 					label: value === "Normal" ? value : `Heading ${value}`,
 				}))}
-				buttonProps={{ className: "w-full py-0.5 !h-10 " }}
+				aria-label="Pick font size"
+				triggerClassName="py-0.5 !h-10 overflow-hidden min-h-0"
+				isRequired
 				// buttonClassName="p-1.5"
-				className="h-10"
-				hideRequiredSign
+				// className="h-10"
+				// hideRequiredSign
 				name="headingLevel"
 				value={editor.getAttributes("heading")?.["level"] ?? "Normal"}
-				required
-				onChange={(level: "Normal" | 1 | 2 | 3 | 4) => {
+				// required
+				// onChange={(level: "Normal" | 1 | 2 | 3 | 4) => {
+				onChange={(level) => {
 					if (level === "Normal") {
 						return editor.chain().focus().setParagraph().run()
 					}
-					return editor.chain().focus().toggleHeading({ level }).run()
+					return editor
+						.chain()
+						.focus()
+						.toggleHeading({ level: level as any })
+						.run()
 				}}
 			/>
 		</div>

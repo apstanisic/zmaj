@@ -69,8 +69,8 @@ OIDC_PROVIDERS__MY_DOMAIN__ENABLED=false
 
 To allow users to sign up, you can set `allowSignUp: true` in authentication config.
 
-If you want to change that value during runtime, set `allowSignUp: "dynamic"`.
-That will allow you to change value in admin panel. If signing up is not allowed `allowOAuthSignUp` is ignored.
+<!-- If you want to change that value during runtime, set `allowSignUp: "dynamic"`.
+That will allow you to change value in admin panel. If signing up is not allowed `allowOAuthSignUp` is ignored. -->
 
 ## Security
 
@@ -91,14 +91,6 @@ import { runServer } from "zmaj"
 // all values are optional
 await runServer({
 	authentication: {
-		/**
-		 * Can user sign up.
-		 * - true: User is allowed to sign up
-		 * - false: User is not allowed to sign up
-		 * - "dynamic": Value can be changed during runtime
-		 * Defaults to `"dynamic"`.
-		 */
-		allowSignUp: "dynamic",
 		/** How long does refresh token lives in ms. Defaults to `30d`.*/
 		refreshTokenTtlMs: ms("30d"),
 		/** How long does access token lives in ms. Defaults to `20m`. */

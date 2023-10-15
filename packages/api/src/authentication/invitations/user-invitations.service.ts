@@ -1,3 +1,4 @@
+import { GlobalConfig } from "@api/app/global-app.config"
 import { throw400 } from "@api/common/throw-http"
 import type { CreateFinishEvent } from "@api/crud/crud-event.types"
 import { OnCrudEvent } from "@api/crud/on-crud-event.decorator"
@@ -5,13 +6,13 @@ import { EmailCallbackService } from "@api/email/email-callback.service"
 import { EmailService } from "@api/email/email.service"
 import { emsg } from "@api/errors"
 import { UsersService } from "@api/users/users.service"
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import {
 	ConfirmUserInvitationDto,
-	getEndpoints,
 	User,
 	UserCollection,
 	UserModel,
+	getEndpoints,
 } from "@zmaj-js/common"
 import { emailTemplates } from "@zmaj-js/email-templates"
 import { Orm, OrmRepository } from "@zmaj-js/orm"
@@ -25,10 +26,12 @@ const schema = z.object({
 
 @Injectable()
 export class UserInvitationsService {
-	readonly repo: OrmRepository<UserModel>
+	private logger = new Logger(UserInvitationsService.name)
+	private repo: OrmRepository<UserModel>
 	constructor(
 		private orm: Orm,
 		private usersService: UsersService, //
+		private globalConfig: GlobalConfig,
 		private emailService: EmailService,
 		private emailCallbackService: EmailCallbackService,
 	) {
@@ -89,12 +92,14 @@ export class UserInvitationsService {
 					to: user.email,
 					subject: "Invitation",
 					html: emailTemplates.inviteUser({
-						ZMAJ_APP_NAME: this.emailService["globalConfig"].name,
+						ZMAJ_APP_NAME: this.globalConfig.name,
 						ZMAJ_URL: url.toString(),
 					}),
 					text: `Go to ${url} to confirm invitation`,
 				})
 			} catch (error) {
+				this.logger.error(`Problem sending invitation email for ${user.email}`)
+
 				// ignore error, since there can be multiple users, we don't want to stop at first
 				// this will create user, but won't create token and send email and
 			}

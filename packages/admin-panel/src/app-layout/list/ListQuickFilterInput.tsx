@@ -1,5 +1,5 @@
 import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
-import { TextInput } from "@admin-panel/ui/TextInput"
+import { TextInput } from "@admin-panel/ui/forms/TextInput"
 import { quickFilterPrefix } from "@zmaj-js/common"
 import { useListContext, useListFilterContext } from "ra-core"
 import { debounce } from "radash"

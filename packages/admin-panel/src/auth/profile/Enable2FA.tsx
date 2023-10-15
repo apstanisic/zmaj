@@ -2,7 +2,7 @@ import { useSdk } from "@admin-panel/context/sdk-context"
 import { PasswordInputField } from "@admin-panel/field-components/password/PasswordInputField"
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { ManualInputField } from "@admin-panel/shared/input/ManualInputField"
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { OtpDisableDto, Struct } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
 import { memo, useCallback, useState } from "react"
@@ -33,7 +33,11 @@ export function Enable2FA(): JSX.Element {
 	return (
 		<div className="center mt-8">
 			{otp ? (
-				<DisplayMfaQrCode refreshCode={enable} {...otp} onConfirm={() => redirect("/profile")} />
+				<DisplayMfaQrCode
+					refreshCode={enable}
+					{...otp}
+					onConfirm={() => redirect("/profile")}
+				/>
 			) : (
 				<Button onPress={enable}>Enable 2FA</Button>
 			)}
@@ -66,7 +70,7 @@ const Disable2FA = memo(() => {
 			<ManualInputField source="password" Component={PasswordInputField} isRequired />
 
 			<div className="flex justify-end">
-				<Button className="ml-auto mt-2" type="submit" outline>
+				<Button className="ml-auto mt-2" type="submit" variant="outlined">
 					Disable 2FA
 				</Button>
 			</div>

@@ -1,5 +1,5 @@
-import { IconButton } from "@admin-panel/ui/IconButton"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { MdAdd, MdRestartAlt } from "react-icons/md"
 import { useToManyInputContext } from "../../../../context/to-many-input-context"
 
@@ -11,10 +11,10 @@ export function ToManyEditHeaderActions(): JSX.Element {
 			{/* Show picker */}
 			<Tooltip text="Add">
 				<IconButton
-					label={`Add ${label}`}
+					aria-label={`Add ${label}`}
 					className="ml-auto"
-					disabled={disabled}
-					onClick={() => setPickerOpen(true)}
+					isDisabled={disabled}
+					onPress={() => setPickerOpen(true)}
 				>
 					<MdAdd />
 				</IconButton>
@@ -23,9 +23,9 @@ export function ToManyEditHeaderActions(): JSX.Element {
 			{/* Reset changes */}
 			<Tooltip text="Reset">
 				<IconButton
-					label="Reset changes"
-					disabled={disabled}
-					onClick={() => {
+					aria-label="Reset changes"
+					isDisabled={disabled}
+					onPress={() => {
 						const sure = confirm("Are you sure?")
 						if (!sure) return
 						changes.setValue({ type: "toMany", added: [], removed: [] })

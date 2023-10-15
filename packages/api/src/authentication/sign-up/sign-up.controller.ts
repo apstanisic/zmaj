@@ -6,6 +6,7 @@ import { emsg } from "@api/errors"
 import { Controller, Get, Post, Query, Redirect } from "@nestjs/common"
 import { AuthUser, SignUpDto, ZodDto, endpoints } from "@zmaj-js/common"
 import { z } from "zod"
+import { AuthenticationConfig } from "../authentication.config"
 import { GetUser } from "../get-user.decorator"
 import { SignUpService } from "./sign-up.service"
 
@@ -21,6 +22,7 @@ export class SignUpController {
 	constructor(
 		private service: SignUpService,
 		private config: GlobalConfig,
+		private authConfig: AuthenticationConfig,
 	) {}
 
 	/**
@@ -50,8 +52,7 @@ export class SignUpController {
 
 	@Get(ep.isAllowed)
 	async isSignUpAllowed(): Promise<{ allowed: boolean }> {
-		const allowed = await this.service.isSignUpAllowed()
-		return { allowed }
+		return { allowed: this.authConfig.allowSignUp }
 	}
 
 	// @Put(ep.setAllowed)

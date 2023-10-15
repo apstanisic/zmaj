@@ -29,12 +29,11 @@ describe("RuntimeSettingsService", () => {
 			{
 				provide: AuthenticationConfig,
 				useValue: {
-					isSignUpDynamic: vi.fn(() => true),
+					allowSignUp: true,
 				} satisfies Partial<AuthenticationConfig>,
 			},
 		]).compile()
 		service = module.get(RuntimeSettingsService)
-		module.get(AuthenticationConfig).isSignUpDynamic = vi.fn(() => true)
 	})
 
 	describe("getSettings", () => {

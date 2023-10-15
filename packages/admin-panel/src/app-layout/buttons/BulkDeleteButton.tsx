@@ -1,5 +1,5 @@
 import { Confirm } from "@admin-panel/ui/Confirm"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { RaRecord, useDeleteMany, useListContext, useNotify } from "ra-core"
 import { isString } from "radash"
 import { useState } from "react"
@@ -40,13 +40,13 @@ export function BulkDeleteButton(props: {
 	return (
 		<>
 			<ResponsiveButton
-				outline
+				variant="outlined"
 				label={props.label ?? "Delete"}
 				aria-label="Delete selected records"
-				disabled={selectedIds.length === 0}
-				variant="error"
+				isDisabled={selectedIds.length === 0}
+				color="error"
 				className="border-transparent"
-				onClick={() => setShowConfirm(true)}
+				onPress={() => setShowConfirm(true)}
 				icon={<MdViewList />}
 			/>
 			<Confirm

@@ -1,6 +1,6 @@
 import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Authz } from "@admin-panel/state/authz-state"
-import { RelationMetadataCollection, systemPermissions } from "@zmaj-js/common"
+import { RelationMetadataCollection } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 import { RelationCreate } from "./RelationCreate"
 import { RelationEdit } from "./RelationEdit"
@@ -18,8 +18,7 @@ export function relationResource(props: { authz: Authz }): JSX.Element {
 			create={modify ? RelationCreate : undefined}
 			edit={modify ? RelationEdit : undefined}
 			options={{
-				label: relation.label ?? "Relations",
-				authzResource: systemPermissions.infra.resource,
+				collection: RelationMetadataCollection,
 			}}
 		/>
 	)

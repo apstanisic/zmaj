@@ -2,7 +2,7 @@ import { MyReferenceField } from "@admin-panel/generator/many-to-one/MyReference
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { BlankShowField } from "@admin-panel/shared/show/BlankShowField"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { FileInfo, IdRecord, isNil, templateParser, User } from "@zmaj-js/common"
 import { ReactNode, useMemo } from "react"
 import { MdDownload } from "react-icons/md"
@@ -22,7 +22,7 @@ function CustomActions(): JSX.Element {
 	const file = useRecord<IdRecord<FileInfo>>()
 	const downloadFile = useDownloadFiles(file ? [file] : [])
 
-	return <ResponsiveButton icon={<MdDownload />} label="Download" onClick={downloadFile} />
+	return <ResponsiveButton icon={<MdDownload />} label="Download" onPress={downloadFile} />
 }
 
 /**
@@ -51,7 +51,7 @@ function FileShowContent(): JSX.Element {
 						label="User"
 						value={
 							<MyReferenceField source="userId" reference="zmajUsers">
-								<BlankShowField render={(r: User) => r.email} />
+								<BlankShowField render={(user: User) => user.email} />
 							</MyReferenceField>
 						}
 					/>

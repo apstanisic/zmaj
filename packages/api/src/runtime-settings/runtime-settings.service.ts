@@ -16,6 +16,8 @@ import { ReadonlyDeep } from "type-fest"
 import { KeyValueStorageService } from "../key-value-storage/key-value-storage.service"
 
 /**
+ * @deprecated For now, to reduce complexity. Nothing prevents users that add custom module
+ * with sign up feature, it's fairly simple
  * @internal
  */
 @Injectable()
@@ -50,7 +52,7 @@ export class RuntimeSettingsService implements OnModuleInit {
 	private parseSettings(val?: string | null): ReadonlyDeep<Settings> {
 		return {
 			data: RuntimeSettingsSchema.parse(JSON.parse(val ?? "{}")),
-			meta: { signUpDynamic: this.authConfig.isSignUpDynamic() },
+			meta: { signUpDynamic: false },
 		}
 	}
 

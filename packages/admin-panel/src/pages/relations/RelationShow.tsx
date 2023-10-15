@@ -2,7 +2,7 @@ import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-proper
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { useUserCollections } from "@admin-panel/hooks/use-user-collections"
 import { Divider } from "@admin-panel/ui/Divider"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { CollectionMetadataCollection, RelationDef } from "@zmaj-js/common"
 import { useRedirect } from "ra-core"
 import { memo, useMemo } from "react"
@@ -29,7 +29,7 @@ function GoToCollection(): JSX.Element {
 	return (
 		<ResponsiveButton
 			icon={<MdViewList />}
-			onClick={() => redirect("show", CollectionMetadataCollection.collectionName, col.id)}
+			onPress={() => redirect("show", CollectionMetadataCollection.collectionName, col.id)}
 			label="Collection"
 		/>
 	)

@@ -65,10 +65,10 @@ describe("PasswordResetController", () => {
 		})
 
 		it("should redirect to admin panel with password reset form", () => {
-			controller.renderPasswordResetForm(res, email, token)
+			controller.renderPasswordResetForm(res, token)
 			expect(res.redirect).toBeCalledWith(
 				303,
-				`http://test.com/#/auth/password-reset?${qsStringify({ email, token })}`,
+				`http://test.com/#/auth/password-reset?${qsStringify({ token })}`,
 			)
 		})
 	})
@@ -83,10 +83,10 @@ describe("PasswordResetController", () => {
 			expect(service.setNewPassword).toBeCalledWith(params)
 		})
 
-		it("should return new email", async () => {
+		it("should return success response", async () => {
 			const params = { email: "email@example.com", password: "pass1234", token: v4() }
 			const res = await controller.resetPassword(params)
-			expect(res).toEqual({ email: "email@example.com" })
+			expect(res).toEqual({ success: true })
 		})
 	})
 })

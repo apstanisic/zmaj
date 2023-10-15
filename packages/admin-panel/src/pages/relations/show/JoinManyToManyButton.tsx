@@ -1,8 +1,8 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { useInfraState } from "@admin-panel/state/useInfraState"
 import { Confirm } from "@admin-panel/ui/Confirm"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { RelationDef } from "@zmaj-js/common"
 import { useNotify, useRefresh } from "ra-core"
 import { memo, useCallback, useState } from "react"
@@ -41,7 +41,11 @@ export const JoinManyToManyButton = memo(() => {
 		return (
 			<Tooltip text="O2O can't be converted to M2M. Remove unique from FK column first.">
 				<div>
-					<ResponsiveButton icon={<MdCallMerge />} label="Join M2M" disabled></ResponsiveButton>
+					<ResponsiveButton
+						icon={<MdCallMerge />}
+						label="Join M2M"
+						isDisabled
+					></ResponsiveButton>
 				</div>
 			</Tooltip>
 		)
@@ -51,7 +55,11 @@ export const JoinManyToManyButton = memo(() => {
 		return (
 			<Tooltip text="There is no compatible FK">
 				<div>
-					<ResponsiveButton icon={<MdCallMerge />} label="Join M2M" disabled></ResponsiveButton>
+					<ResponsiveButton
+						icon={<MdCallMerge />}
+						label="Join M2M"
+						isDisabled
+					></ResponsiveButton>
 				</div>
 			</Tooltip>
 		)
@@ -62,7 +70,7 @@ export const JoinManyToManyButton = memo(() => {
 			<ResponsiveButton
 				icon={<MdCallMerge />}
 				label="Join M2M"
-				onClick={() => setShowConfirm(true)}
+				onPress={() => setShowConfirm(true)}
 			></ResponsiveButton>
 
 			<Confirm

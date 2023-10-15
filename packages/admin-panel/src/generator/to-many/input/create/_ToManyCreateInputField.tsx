@@ -1,5 +1,5 @@
-import { IconButton } from "@admin-panel/ui/IconButton"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { clsx } from "clsx"
 import { memo, useMemo } from "react"
 import { MdAdd } from "react-icons/md"
@@ -21,10 +21,10 @@ export const ToManyCreateInputField = memo(() => {
 			actions={
 				<Tooltip text="Add">
 					<IconButton
-						label={`Add ${label}`}
+						aria-label={`Add ${label}`}
 						className="ml-auto"
-						disabled={disabled}
-						onClick={() => setPickerOpen(true)}
+						isDisabled={disabled}
+						onPress={() => setPickerOpen(true)}
 					>
 						<MdAdd />
 					</IconButton>

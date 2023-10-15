@@ -1,13 +1,13 @@
 import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
-import { Button } from "@admin-panel/ui/Button"
 import { Menu, MenuItemParams } from "@admin-panel/ui/Menu"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { useListContext } from "ra-core"
 import { memo, useMemo } from "react"
 import { MdArrowDownward, MdArrowUpward } from "react-icons/md"
-import { useCollectionContext } from "../../context/collection-context"
+import { useResourceCollection } from "../../hooks/use-resource-collection"
 
 export const ListSortButton = memo(() => {
-	const collection = useCollectionContext()
+	const collection = useResourceCollection()
 	const list = useListContext()
 	const config = useLayoutConfigContext().list
 
@@ -29,10 +29,10 @@ export const ListSortButton = memo(() => {
 				button={(ref, props) => (
 					<Button
 						{...props}
-						onClick={() => ref?.current?.click()}
+						onPress={() => ref?.current?.click()}
 						className="normal-case"
-						variant="transparent"
-						small
+						color="transparent"
+						size="small"
 						startIcon={
 							list.sort.order === "ASC" ? (
 								<MdArrowUpward fontSize="small" />
@@ -41,7 +41,8 @@ export const ListSortButton = memo(() => {
 							)
 						}
 					>
-						{sortableFields.find((sf) => sf.field === list.sort.field)?.label ?? list.sort.field}
+						{sortableFields.find((sf) => sf.field === list.sort.field)?.label ??
+							list.sort.field}
 					</Button>
 				)}
 				items={[
@@ -49,22 +50,24 @@ export const ListSortButton = memo(() => {
 						button: "div",
 						startIcon: (
 							<Button
-								small
-								outline
-								active={list.sort.order === "ASC"}
-								disabled={list.sort.order === "ASC"}
-								onClick={() => list.setSort({ order: "ASC", field: list.sort.field })}
+								size="small"
+								variant="outlined"
+								isDisabled={list.sort.order === "ASC"}
+								onPress={() =>
+									list.setSort({ order: "ASC", field: list.sort.field })
+								}
 							>
 								<MdArrowUpward />
 							</Button>
 						),
 						endIcon: (
 							<Button
-								small
-								outline
-								active={list.sort.order === "DESC"}
-								disabled={list.sort.order === "DESC"}
-								onClick={() => list.setSort({ order: "DESC", field: list.sort.field })}
+								size="small"
+								variant="outlined"
+								isDisabled={list.sort.order === "DESC"}
+								onPress={() =>
+									list.setSort({ order: "DESC", field: list.sort.field })
+								}
 							>
 								<MdArrowDownward />
 							</Button>

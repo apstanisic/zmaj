@@ -1,7 +1,6 @@
-import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { EditBase, RaRecord, TransformData, useResourceDefinition } from "ra-core"
-import { memo, ReactNode, useCallback } from "react"
+import { EditBase, RaRecord, TransformData } from "ra-core"
+import { ReactNode, memo, useCallback } from "react"
 import { NonListToolbar, NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
 import { useSuccessRedirect } from "../../hooks/use-success-redirect"
 import { GeneratedInputLayout } from "../layouts/GeneratedInputLayout"
@@ -16,9 +15,6 @@ type GeneratedEditPageProps = NonListToolbarProps & {
 export const GeneratedEditPage = memo((props: GeneratedEditPageProps) => {
 	const { children, transform, onEdit, ...rest } = props
 
-	const resource = useResourceDefinition()
-	useHtmlTitle(resource, "Edit")
-
 	const successRedirect = useSuccessRedirect()
 
 	const onSuccess = useCallback(
@@ -31,7 +27,11 @@ export const GeneratedEditPage = memo((props: GeneratedEditPageProps) => {
 
 	return (
 		<GeneratedPageProvider action="edit">
-			<EditBase mutationMode="pessimistic" transform={transform} mutationOptions={{ onSuccess }}>
+			<EditBase
+				mutationMode="pessimistic"
+				transform={transform}
+				mutationOptions={{ onSuccess }}
+			>
 				<div className="crud-content">
 					<WaitForData>
 						<NonListToolbar {...rest} />

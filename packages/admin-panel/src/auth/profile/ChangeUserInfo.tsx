@@ -1,5 +1,5 @@
 import { useIsAllowedSystem } from "@admin-panel/hooks/use-is-allowed"
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { ProfileUpdateDto, UserUpdateDto } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
 import { pick } from "radash"
@@ -34,7 +34,12 @@ export function ChangeUserInfo(): JSX.Element {
 			<ManualInputField source="firstName" />
 			<ManualInputField source="lastName" />
 			<div className="flex justify-end">
-				<Button className="ml-auto mt-2" type="submit" outline isDisabled={!canChange}>
+				<Button
+					className="ml-auto mt-2"
+					type="submit"
+					variant="outlined"
+					isDisabled={!canChange}
+				>
 					Update profile
 				</Button>
 			</div>

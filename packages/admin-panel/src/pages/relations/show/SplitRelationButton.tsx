@@ -1,7 +1,7 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { useInfraState } from "@admin-panel/state/useInfraState"
 import { Confirm } from "@admin-panel/ui/Confirm"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { JunctionRelation } from "@zmaj-js/common"
 import { useNotify, useRefresh } from "ra-core"
 import { memo, useCallback, useState } from "react"
@@ -41,7 +41,11 @@ export const SplitRelationButton = memo(() => {
 				onClose={() => setShow(false)}
 				onConfirm={() => void splitRelation()}
 			/>
-			<ResponsiveButton label="Split M2M" onClick={() => setShow(true)} icon={<MdCallSplit />} />
+			<ResponsiveButton
+				label="Split M2M"
+				onPress={() => setShow(true)}
+				icon={<MdCallSplit />}
+			/>
 		</>
 	)
 })

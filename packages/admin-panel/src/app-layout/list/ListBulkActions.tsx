@@ -1,6 +1,6 @@
-import { IconButton } from "@admin-panel/ui/IconButton"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { useListContext, useTranslate } from "ra-core"
-import { memo, ReactNode } from "react"
+import { ReactNode, memo } from "react"
 import { MdClose } from "react-icons/md"
 import { BulkDeleteButton } from "../buttons/BulkDeleteButton"
 
@@ -22,7 +22,11 @@ export const ListBulkActions = memo((props: ListBulkActionsProps) => {
 	return (
 		<div className="mb-2 flex w-full justify-between rounded-lg bg-gray-200 py-3 px-3 dark:bg-slate-600">
 			<div className="flex items-center">
-				<IconButton onClick={() => list.onUnselectItems()} className="mr-2" label="Close">
+				<IconButton
+					onPress={() => list.onUnselectItems()}
+					className="mr-2"
+					aria-label="Close"
+				>
 					<MdClose fontSize="small" />
 				</IconButton>
 				{translate("ra.action.bulk_actions", {

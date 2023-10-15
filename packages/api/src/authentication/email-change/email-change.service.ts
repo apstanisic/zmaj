@@ -6,7 +6,6 @@ import { EmailService } from "@api/email/email.service"
 import { emsg } from "@api/errors"
 import { UsersService } from "@api/users/users.service"
 import { Injectable } from "@nestjs/common"
-import { JwtService } from "@nestjs/jwt"
 import { AuthUser, ChangeEmailDto, getEndpoints } from "@zmaj-js/common"
 import { emailTemplates } from "@zmaj-js/email-templates"
 import { z } from "zod"
@@ -30,7 +29,6 @@ export class EmailChangeService {
 	constructor(
 		private readonly users: UsersService,
 		private readonly authz: AuthorizationService,
-		private readonly jwtService: JwtService,
 		private readonly emailService: EmailService,
 		private readonly globalConfig: GlobalConfig,
 		private readonly emailCallbackService: EmailCallbackService,

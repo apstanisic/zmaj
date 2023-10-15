@@ -1,6 +1,6 @@
-import { Checkbox } from "@admin-panel/ui/Checkbox"
 import { Divider } from "@admin-panel/ui/Divider"
 import { List } from "@admin-panel/ui/List"
+import { CheckboxInput } from "@admin-panel/ui/forms/Checkbox"
 import { isNil } from "@zmaj-js/common"
 import { diff, isArray } from "radash"
 import { useFormContext, useWatch } from "react-hook-form"
@@ -18,7 +18,7 @@ export function PermissionFieldsInput(props: PermissionFieldsInput): JSX.Element
 		<List>
 			<List.Item
 				end={
-					<Checkbox
+					<CheckboxInput
 						// edge="end"
 						// it's checked only if value is null,
 						// because if all fields are specified, in the future if field is added,
@@ -41,7 +41,7 @@ export function PermissionFieldsInput(props: PermissionFieldsInput): JSX.Element
 					<List.Item
 						key={i}
 						end={
-							<Checkbox
+							<CheckboxInput
 								// className="ml-4"
 								// edge="end"
 								aria-label="Select row"

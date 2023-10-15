@@ -1,5 +1,5 @@
 import { buildTestModule } from "@api/testing/build-test-module"
-import { AuthUser, ChangeEmailDto, UUID } from "@zmaj-js/common"
+import { AuthUser, ChangeEmailDto } from "@zmaj-js/common"
 import { AuthUserStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { EmailChangeController } from "./email-change.controller"
@@ -32,7 +32,10 @@ describe("EmailChangeController", () => {
 	describe("requestEmailChange", () => {
 		let dto: ChangeEmailDto
 		beforeEach(() => {
-			dto = new ChangeEmailDto({ newEmail: "my_new_email@example.com", password: "some-password" })
+			dto = new ChangeEmailDto({
+				newEmail: "my_new_email@example.com",
+				password: "some-password",
+			})
 		})
 
 		it("should call service to send email", async () => {
@@ -56,14 +59,13 @@ describe("EmailChangeController", () => {
 	describe("setNewEmail", () => {
 		//
 		it("should call service to set email", async () => {
-			await controller.setNewEmail(userStub.userId as UUID, "token123")
+			await controller.setNewEmail("token123")
 			expect(service.setNewEmail).toBeCalledWith({
-				userId: userStub.userId,
 				token: "token123",
 			})
 		})
 		it("should return new email", async () => {
-			const res = await controller.setNewEmail(userStub.userId as UUID, "new-token")
+			const res = await controller.setNewEmail("new-token")
 			expect(res).toEqual({ email: "new_email@example.com" })
 		})
 	})

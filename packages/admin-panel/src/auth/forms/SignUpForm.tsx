@@ -1,4 +1,4 @@
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { SignUpDto, Struct, throwErr } from "@zmaj-js/common"
 import { Form, useLogin, useNotify, useRedirect } from "ra-core"
 import { useCallback } from "react"
@@ -91,7 +91,7 @@ export function SignUpForm(props: {
 			/>
 			<ManualInputField source="password" isRequired Component={PasswordInputField} />
 
-			<Button type="submit" outline className="ml-auto">
+			<Button type="submit" variant="outline" className="ml-auto">
 				Sign Up
 			</Button>
 		</Form>

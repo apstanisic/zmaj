@@ -1,14 +1,14 @@
 import { SaveButton } from "@admin-panel/app-layout/buttons/SaveButton"
 import { useActionContext } from "@admin-panel/context/action-context"
-import { useCollectionContext } from "@admin-panel/context/collection-context"
-import { Button } from "@admin-panel/ui/Button"
+import { useResourceCollection } from "@admin-panel/hooks/use-resource-collection"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { Form } from "ra-core"
 import { memo } from "react"
 import { useGeneratePropertiesAndSections } from "../../generator/layouts/use-generate-sections"
 import { DefineCrudLayout } from "../DefineCrudLayout"
-import { useStepContext } from "../ui/steps/step-context"
 import { StepSection } from "../ui/steps/StepSection"
 import { StepLayout } from "../ui/steps/StepsLayout"
+import { useStepContext } from "../ui/steps/step-context"
 
 /**
  * Step Input Layout  (1 -> 2 -> 3...)
@@ -20,7 +20,7 @@ import { StepLayout } from "../ui/steps/StepsLayout"
 export const StepsForm = memo(() => {
 	const action = useActionContext()
 	const config =
-		useCollectionContext().layoutConfig.input[action === "edit" ? "edit" : "create"]?.steps
+		useResourceCollection().layoutConfig.input[action === "edit" ? "edit" : "create"]?.steps
 	const sections = useGeneratePropertiesAndSections(config)
 
 	return (
@@ -42,8 +42,8 @@ function Buttons(): JSX.Element {
 		<div className="flex justify-between gap-5 p-6">
 			{/* Back button */}
 			<Button
-				disabled={step === 0}
-				onClick={() => {
+				isDisabled={step === 0}
+				onPress={() => {
 					setStep(step - 1)
 					// setCurrentStep((old) => old - 1)
 					window.scrollTo({ top: 0, behavior: "smooth" })
@@ -54,8 +54,8 @@ function Buttons(): JSX.Element {
 			{/* Show forward if not last page, show save if last page */}
 			{total - 1 > step ? (
 				<Button
-					outline
-					onClick={() => {
+					variant="outlined"
+					onPress={() => {
 						setStep(step + 1)
 						// setCurrentStep((old) => old + 1)
 						window.scrollTo({ top: 0, behavior: "smooth" })

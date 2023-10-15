@@ -105,8 +105,6 @@ export class CrudBaseService<Item extends Struct> {
 
 		this.logger.warn("Crud Problem", error)
 
-		console.log({ error })
-
 		// this.logger.error("Unhandled DB error", error)
 		// any other error from db
 		throw400(723810, emsg.invalidQuery)
@@ -293,8 +291,6 @@ export class CrudBaseService<Item extends Struct> {
 			} else if (collection.relations[key]) {
 				relationsToCheck.push(key)
 			} else {
-				console.log({ key, filter })
-
 				throw403(50852, emsg.invalidQueryKey("filter"))
 			}
 		}

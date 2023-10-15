@@ -1,4 +1,4 @@
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { systemPermissions } from "@zmaj-js/common"
 import { MdCloudUpload } from "react-icons/md"
 import { useIsAllowedSystem } from "../../../hooks/use-is-allowed"
@@ -17,7 +17,7 @@ export function FileActionsToolbar(): JSX.Element {
 			{canUpload && (
 				<ResponsiveButton
 					icon={<MdCloudUpload />}
-					onClick={() => setShowDialog(true)}
+					onPress={() => setShowDialog(true)}
 					label="Upload"
 				/>
 			)}

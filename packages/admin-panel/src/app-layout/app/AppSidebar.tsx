@@ -2,7 +2,6 @@ import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Dialog } from "@admin-panel/ui/Dialog"
 import { List } from "@admin-panel/ui/List"
 import {
-	CollectionDef,
 	CollectionMetadataCollection,
 	FileCollection,
 	RoleCollection,
@@ -10,7 +9,7 @@ import {
 	WebhookCollection,
 } from "@zmaj-js/common"
 import { clsx } from "clsx"
-import { useResourceDefinitions } from "ra-core"
+import { ResourceDefinition, ResourceOptions, useResourceDefinitions } from "ra-core"
 import { ReactNode, memo, useMemo } from "react"
 import {
 	MdHome,
@@ -110,21 +109,20 @@ const SidebarContent = (): JSX.Element => {
 				// show only non system resources that have list page
 				.filter((resource) => !resource.name.startsWith("zmaj") && resource.hasList)
 				// every generated resource should provide collection that was used to generate it
-				.filter((res) => {
-					const collection: CollectionDef = res.options.collection
-					if (collection === undefined || collection.disabled || collection.hidden) {
-						return false
+				.map((res: ResourceDefinition<ResourceOptions>) => {
+					const collection = res.options?.collection
+					if (!collection || collection.disabled || collection.hidden) {
+						return null
 					}
-					return true
+					return (
+						<DrawerItem
+							key={res.name}
+							path={res.name}
+							icon={res.icon}
+							label={collection.label ?? res.name}
+						/>
+					)
 				})
-				.map((resource) => (
-					<DrawerItem
-						key={resource.name}
-						path={resource.name}
-						icon={resource.icon}
-						label={resource.options.label ?? resource.name}
-					/>
-				))
 		)
 	}, [resources])
 
@@ -133,11 +131,19 @@ const SidebarContent = (): JSX.Element => {
 			<DrawerItem path="/" icon={<MdHome />} label="Home" />
 			{/*  */}
 			{allowedSections.files && (
-				<DrawerItem path={FileCollection.collectionName} icon={<MdPermMedia />} label="Files" />
+				<DrawerItem
+					path={FileCollection.collectionName}
+					icon={<MdPermMedia />}
+					label="Files"
+				/>
 			)}
 			{/*  */}
 			{allowedSections.users && ( //
-				<DrawerItem path={UserCollection.collectionName} icon={<MdPerson />} label="Users" />
+				<DrawerItem
+					path={UserCollection.collectionName}
+					icon={<MdPerson />}
+					label="Users"
+				/>
 			)}
 			{/*  */}
 			{allowedSections.authz && (
@@ -157,7 +163,11 @@ const SidebarContent = (): JSX.Element => {
 			)}
 			{/*  */}
 			{allowedSections.webhooks && (
-				<DrawerItem path={WebhookCollection.collectionName} icon={<TbWebhook />} label="Webhooks" />
+				<DrawerItem
+					path={WebhookCollection.collectionName}
+					icon={<TbWebhook />}
+					label="Webhooks"
+				/>
 			)}
 			{/*  */}
 			{allowedSections.settings && (
@@ -168,7 +178,12 @@ const SidebarContent = (): JSX.Element => {
 			{/* <Divider className="my-2" /> */}
 			{/*  */}
 			{allowedCustomSidebarItems.map((p, i) => (
-				<DrawerItem path={p.path} label={p.label} key={"custom_" + i} icon={p.icon ?? <MdWeb />} />
+				<DrawerItem
+					path={p.path}
+					label={p.label}
+					key={"custom_" + i}
+					icon={p.icon ?? <MdWeb />}
+				/>
 			))}
 			{allowedCustomSidebarItems.length > 0 && <div className="du-divider my-2" />}
 			{/*  */}
@@ -184,7 +199,6 @@ const DrawerItem = memo((props: { path: string; icon?: ReactNode; label: string 
 	const href = useHref({ pathname: props.path })
 	return (
 		<List.ButtonItem
-			noPadding
 			className="py-1 pl-3 pr-1"
 			start={props.icon ?? <MdViewList />}
 			href={href}

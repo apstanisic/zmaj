@@ -1,9 +1,9 @@
 import { clsx } from "clsx"
 import { AriaProgressBarProps, useProgressBar } from "react-aria"
 import { Except } from "type-fest"
-import { StyleVariant } from "./StyleVariant"
+import { ButtonStyleColor } from "./StyleVariant"
 
-type Color = Exclude<StyleVariant, "link" | "transparent">
+type Color = Exclude<ButtonStyleColor, "link" | "transparent">
 
 const colors: Record<Color, string> = {
 	accent: "bg-accent",
@@ -45,7 +45,12 @@ export const ProgressBar = (props: ProgressBarProps): JSX.Element => {
 					<span>{progressBarProps["aria-valuetext"]}</span>
 				</div>
 			)}
-			<div className={clsx("min-h-[8px] w-full overflow-hidden rounded-md bg-base-300", className)}>
+			<div
+				className={clsx(
+					"min-h-[8px] w-full overflow-hidden rounded-md bg-base-300",
+					className,
+				)}
+			>
 				<div
 					className={clsx(
 						"rounded-md",

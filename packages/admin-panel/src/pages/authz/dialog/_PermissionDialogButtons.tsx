@@ -1,4 +1,4 @@
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { Permission } from "@zmaj-js/common"
 import { useDelete, useNotify } from "ra-core"
 import { useAuthzDialogState } from "./authz-dialog-state"
@@ -16,16 +16,16 @@ export function PermissionDialogButtons(props: PermissionDialogButtonProps): JSX
 
 	return (
 		<div className="flex justify-between">
-			<Button outline onClick={hideDialog}>
+			<Button variant="outline" onPress={hideDialog}>
 				Cancel
 			</Button>
 
 			<div>
 				{permission && (
 					<Button
-						variant="warning"
+						color="warning"
 						className="ml-auto"
-						onClick={() => {
+						onPress={() => {
 							deleteOne("zmaj_permissions", {
 								id: permission.id,
 								previousData: permission,
@@ -35,13 +35,15 @@ export function PermissionDialogButtons(props: PermissionDialogButtonProps): JSX
 									notify("Successfully removed permission", { type: "success" })
 									props.refreshPermissions()
 								})
-								.catch((r) => notify("Problem removing permission", { type: "error" }))
+								.catch((r) =>
+									notify("Problem removing permission", { type: "error" }),
+								)
 						}}
 					>
 						Forbid
 					</Button>
 				)}
-				<Button type="submit" variant="secondary" className="ml-5">
+				<Button type="submit" color="secondary" className="ml-5">
 					{permission?.id ? "Change" : "Enable"}
 				</Button>
 			</div>

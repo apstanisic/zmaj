@@ -1,4 +1,4 @@
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { CollectionDef } from "@zmaj-js/common"
 import {
 	useRedirect,
@@ -80,7 +80,7 @@ function VisitResourceButton(): JSX.Element {
 	return (
 		<ResponsiveButton
 			icon={<MdNorthEast />}
-			onClick={() => redirect("list", res.name)}
+			onPress={() => redirect("list", res.name)}
 			label="Visit"
 		/>
 	)

@@ -9,6 +9,7 @@ export function Dashboard(): JSX.Element {
 	return (
 		<div>
 			<h1 className="mt-3 mb-8 text-center text-2xl">Admin panel</h1>
+
 			<div className="">
 				{userCollections.length === 0 && (
 					<div className="col-span-3 mt-12  text-center text-xl">No collections</div>
@@ -27,6 +28,7 @@ export function Dashboard(): JSX.Element {
 						</li>
 					))}
 				</ul>
+				F
 			</div>
 		</div>
 	)

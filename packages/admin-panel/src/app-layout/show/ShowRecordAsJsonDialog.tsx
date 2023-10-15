@@ -1,6 +1,6 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { Dialog } from "@admin-panel/ui/Dialog"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { useMemo, useState } from "react"
 import { MdCode } from "react-icons/md"
 import { useActionContext } from "../../context/action-context"
@@ -20,7 +20,7 @@ export function ShowRecordAsJsonDialog(): JSX.Element {
 
 	return (
 		<>
-			<ResponsiveButton icon={<MdCode />} label="JSON" onClick={() => setShow(true)} />
+			<ResponsiveButton icon={<MdCode />} label="JSON" onPress={() => setShow(true)} />
 			<Dialog open={show} onClose={() => setShow(false)} className="flex max-w-3xl">
 				<HighlightCode wrap code={code} language="json" className="" />
 			</Dialog>

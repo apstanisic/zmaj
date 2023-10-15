@@ -59,7 +59,7 @@ export const FieldConfigSchema = z
 				// `showRelative` - for example "3 hours ago"
 				dateTime: z.object({ showRelative: z.boolean().nullish() }).nullish(),
 
-				uuid: z.object({ version: z.number().min(1).max(8).nullish() }).nullish(),
+				uuid: z.object({}).nullish(),
 
 				float: z
 					.object({

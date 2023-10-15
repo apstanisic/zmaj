@@ -1,8 +1,8 @@
 import { useStringValidation } from "@admin-panel/shared/input/useCommonValidators"
-import { ignoreErrors, isNil } from "@zmaj-js/common"
-import { isString } from "radash"
+import { JsonInput } from "@admin-panel/ui/forms/CodeInput/JsonInput"
+import { ignoreErrors } from "@zmaj-js/common"
+import { useInput } from "ra-core"
 import { memo } from "react"
-import { CodeInputField } from "../code/CodeInputField"
 import { InputFieldProps } from "../types/InputFieldProps"
 
 // /**
@@ -51,24 +51,30 @@ const formatJson = (val: string): string =>
 export const JsonInputField = memo((props: InputFieldProps) => {
 	const validate = useStringValidation(props.fieldConfig?.component?.json, props.validate)
 
+	const {
+		field: { ref, ...field },
+		fieldState: { error },
+		isRequired,
+		id,
+	} = useInput({
+		source: props.source,
+		defaultValue: props.defaultValue,
+		control: props.control,
+		disabled: props.disabled,
+		isRequired: props.isRequired,
+		validate,
+	})
+
 	return (
-		<CodeInputField
-			{...props}
-			validate={validate}
-			toInput={(val) => {
-				if (isNil(val)) return null
-				if (isString(val)) return val
-				return JSON.stringify(val, null, 4)
-			}}
-			fromInput={(val) => {
-				if (typeof val === "object") return val
-				if (isNil(val) || val === "") return null
-				return ignoreErrors(() => JSON.parse(String(val))) ?? val
-			}}
-			// find better way. This is expensive since it will convert json <-> string on every change
-			language="json"
-			// defaultValue={props.defaultValue}
-			formatter={formatJson}
+		<JsonInput
+			{...field}
+			isDisabled={field.disabled}
+			id={id}
+			className={props.className}
+			description={props.description ?? undefined}
+			isRequired={isRequired}
+			error={error?.message}
+			label={props.label}
 		/>
 	)
 })

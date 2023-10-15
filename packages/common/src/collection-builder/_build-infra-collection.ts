@@ -24,6 +24,7 @@ export function buildCollection(
 		disabled: false,
 		tableName,
 		displayTemplate: "{id}",
+		authzMustManage: false,
 		fields: {},
 		label: title(tableName),
 		pkColumn: "id",

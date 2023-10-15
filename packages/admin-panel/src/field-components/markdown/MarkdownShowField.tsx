@@ -1,4 +1,4 @@
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import ReactMarkdown from "react-markdown"
 import { useToggle } from "react-use"
 import { RenderShowField } from "../../shared/show/RenderShowField"
@@ -12,7 +12,12 @@ export function MarkdownShowField(props: ShowFieldProps): JSX.Element {
 		<RenderShowField
 			{...props}
 			containerActions={
-				<Button small onClick={() => togglePreview()} variant="transparent" className="ml-auto">
+				<Button
+					size="small"
+					onPress={() => togglePreview()}
+					color="transparent"
+					className="ml-auto"
+				>
 					{isPreview ? "Show text" : "Show Markdown"}
 				</Button>
 			}

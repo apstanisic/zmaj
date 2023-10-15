@@ -5,12 +5,14 @@ import { OrmRepository, RepoManager } from "@zmaj-js/orm"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest"
 
-describe("ProfileController e2e", () => {
+describe("SignUpController e2e", () => {
 	let app: INestApplication
 	let userRepo: OrmRepository<UserModel>
 
 	beforeAll(async () => {
-		app = await getE2ETestModule({ authentication: { allowBasicAuth: true, allowSignUp: true } })
+		app = await getE2ETestModule({
+			authentication: { allowBasicAuth: true, allowSignUp: true },
+		})
 		userRepo = app.get(RepoManager).getRepo(UserModel)
 	})
 

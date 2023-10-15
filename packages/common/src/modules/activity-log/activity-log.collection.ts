@@ -10,6 +10,7 @@ import { ActivityLog, ActivityLogModel } from "./activity-log.model"
  */
 export const ActivityLogCollection = codeCollection(ActivityLogModel, {
 	options: {
+		label: "Activity Log",
 		authzKey: systemPermissions.activityLog.resource,
 		layoutConfig: zodCreate(LayoutConfigSchema, {
 			list: {

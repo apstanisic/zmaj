@@ -717,7 +717,12 @@ export function eCommerceInfra(): {
 							{ label: "Delivered", value: "delivered" },
 						],
 					},
-					"short-text": { regex: null, maxLength: null, minLength: null, regexError: null },
+					"short-text": {
+						regex: null,
+						maxLength: null,
+						minLength: null,
+						regexError: null,
+					},
 				},
 				editHidden: false,
 				listHidden: false,
@@ -816,7 +821,12 @@ export function eCommerceInfra(): {
 			fieldConfig: {
 				width: 12,
 				component: {
-					"short-text": { regex: null, maxLength: null, minLength: null, regexError: null },
+					"short-text": {
+						regex: null,
+						maxLength: null,
+						minLength: null,
+						regexError: null,
+					},
 				},
 				editHidden: false,
 				listHidden: false,
@@ -843,7 +853,12 @@ export function eCommerceInfra(): {
 			fieldConfig: {
 				width: 12,
 				component: {
-					"short-text": { regex: null, maxLength: null, minLength: null, regexError: null },
+					"short-text": {
+						regex: null,
+						maxLength: null,
+						minLength: null,
+						regexError: null,
+					},
 				},
 				editHidden: false,
 				listHidden: false,
@@ -1033,14 +1048,16 @@ export async function initECommerce(sq: SequelizeService, trx: any): Promise<voi
 	const rm = new SequelizeRepoManager(sq, sq["modelsStore"])
 	const createdCols = await rm
 		.getRepo(CollectionMetadataModel)
-		.createMany({ data: data.collections, trx })
+		.createMany({ data: data.collections, trx, overrideCanCreate: true })
 	console.log({ createdCols })
 
-	const createdFields = await rm.getRepo(FieldMetadataModel).createMany({ data: data.fields, trx })
+	const createdFields = await rm
+		.getRepo(FieldMetadataModel)
+		.createMany({ data: data.fields, trx, overrideCanCreate: true })
 	console.log({ createdFields })
 	const createdRels = await rm
 		.getRepo(RelationMetadataModel)
-		.createMany({ data: data.relations, trx })
+		.createMany({ data: data.relations, trx, overrideCanCreate: true })
 	console.log({ createdRels })
 }
 

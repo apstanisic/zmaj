@@ -1,29 +1,35 @@
+import { SwitchInput } from "@admin-panel/ui/forms/SwitchInput"
+import { useInput } from "ra-core"
 import { memo } from "react"
-import { useInputField } from "../../shared/input/useInputField"
-import { Switch } from "../../ui/Switch"
 import { InputFieldProps } from "../types/InputFieldProps"
 
 /**
  * @todo Implement boolean with null
  */
 export const BooleanInputField = memo((props: InputFieldProps): JSX.Element => {
-	const { field, ...rest } = useInputField({
+	const {
+		field,
+		isRequired,
+		fieldState: { error },
+		id,
+	} = useInput({
 		...props,
-		defaultValue: typeof props.defaultValue === "boolean" ? props.defaultValue : false,
+		defaultValue: props.defaultValue ?? false,
 	})
 
 	return (
-		<Switch
-			isSelected={field.value}
+		<SwitchInput
+			isSelected={field.value === true}
 			name={field.name}
-			id={rest.id}
-			className={rest.className}
-			helperText={rest.helperText}
-			error={rest.error?.message}
-			label={rest.label}
-			required={rest.isRequired}
+			onBlur={field.onBlur}
+			isDisabled={field.disabled}
+			id={id}
+			className={props.className}
+			description={props.description ?? undefined}
+			error={error?.message}
+			label={props.label}
+			isRequired={isRequired}
 			onChange={(value) => field.onChange({ target: { value }, currentTarget: { value } })}
-			isDisabled={rest.disabled}
 		/>
 	)
 })

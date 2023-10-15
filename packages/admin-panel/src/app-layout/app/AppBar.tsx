@@ -1,7 +1,7 @@
 import { useIsAllowedSystem } from "@admin-panel/hooks/use-is-allowed"
 import { CircularProgress } from "@admin-panel/ui/CircularProgress"
-import { IconButton } from "@admin-panel/ui/IconButton"
 import { Menu } from "@admin-panel/ui/Menu"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { useIsFetching } from "@tanstack/react-query"
 import { clsx } from "clsx"
 import { useLoading, useLogout, useRedirect } from "ra-core"
@@ -17,11 +17,11 @@ import { ToggleThemeButton } from "./ToggleThemeButton"
 export const AppBar = memo((props: { widthCss: string; heightCss: string }) => {
 	const global = useGlobalConfigContext()
 	// const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-	const fetchingZmaj = useIsFetching()
-	const fetchingRa = useLoading()
 	const logout = useLogout()
 	const [theme] = useTheme()
 	const redirect = useRedirect()
+	const fetchingZmaj = useIsFetching()
+	const fetchingRa = useLoading()
 
 	const fetching = useMemo(() => fetchingZmaj > 0 || fetchingRa, [fetchingZmaj, fetchingRa])
 	const canAccessProfile = useIsAllowedSystem("account", "readProfile")
@@ -56,9 +56,9 @@ export const AppBar = memo((props: { widthCss: string; heightCss: string }) => {
 					button={(ref, props) => {
 						return (
 							<IconButton
-								large
+								size="large"
 								{...props}
-								label="More Actions"
+								aria-label="More Actions"
 								onPress={() => ref?.current?.click()}
 							>
 								<MdPerson />

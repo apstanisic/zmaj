@@ -1,12 +1,10 @@
-import { DropdownChoices } from "@zmaj-js/common"
+import { SelectInput } from "@admin-panel/ui/forms/SelectInput"
 import { choices as choicesValidate } from "ra-core"
 import { useMemo } from "react"
-import { z } from "zod"
 import { useInputField } from "../../shared/input/useInputField"
-import { Select } from "../../ui/Select"
 import { InputFieldProps } from "../types/InputFieldProps"
 
-type DropdownInputFieldProps = InputFieldProps & { choices?: z.infer<typeof DropdownChoices> }
+type DropdownInputFieldProps = InputFieldProps & { choices?: any } // z.infer<typeof DropdownChoices> }
 
 /**
  * I managed to reuse `DefaultInputField`, and most of it's functionality
@@ -20,7 +18,7 @@ export function DropdownInputField(props: DropdownInputFieldProps): JSX.Element 
 		[props.choices, props.fieldConfig],
 	)
 
-	const validate = useMemo(() => choicesValidate(choices.map((o) => o.value)), [choices])
+	const validate = useMemo(() => choicesValidate(choices.map((o: any) => o.value)), [choices])
 
 	const field = useInputField({
 		source: props.source,
@@ -35,17 +33,19 @@ export function DropdownInputField(props: DropdownInputFieldProps): JSX.Element 
 	})
 
 	return (
-		<Select
-			choices={choices as any}
+		<SelectInput
+			options={choices as any}
 			value={field.field.value}
-			disabled={field.disabled}
+			isDisabled={field.disabled}
 			error={field.error?.message}
 			className={field.className}
 			name={field.field.name}
-			required={field.isRequired}
+			isRequired={field.isRequired}
 			label={field.label}
-			onChange={(value) => field.field.onChange({ target: { value }, currentTarget: { value } })}
-			helperText={field.helperText}
+			onChange={(value) =>
+				field.field.onChange({ target: { value }, currentTarget: { value } })
+			}
+			description={field.helperText}
 		/>
 	)
 }

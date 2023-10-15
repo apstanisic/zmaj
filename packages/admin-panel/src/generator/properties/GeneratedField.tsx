@@ -1,15 +1,14 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
+import { FieldDef } from "@zmaj-js/common"
 import { get, isString, title } from "radash"
 import { memo } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useActionContext } from "../../context/action-context"
-import { useCollectionContext } from "../../context/collection-context"
-import { useFieldContext } from "../../context/field-context"
 import { getFieldWidthCss } from "../../crud-layouts/get-field-width-css"
 import { fieldComponents } from "../../field-components/field-components"
 import { CommonFieldProps } from "../../field-components/types/CommonFieldProps"
 import { useIsAllowed } from "../../hooks/use-is-allowed"
-import { throwInApp } from "../../shared/throwInApp"
+import { useResourceCollection } from "../../hooks/use-resource-collection"
 
 /**
  * Renders single field for resource
@@ -25,13 +24,14 @@ import { throwInApp } from "../../shared/throwInApp"
  * This can be used outside of RA if all context providers exists
  * @returns field component
  */
-export const GeneratedField = memo(() => {
+export const GeneratedField = memo((props: { field: FieldDef }) => {
+	const { field } = props
+
 	const [searchParams] = useSearchParams()
 
 	const record = useRecord()
 	const action = useActionContext()
-	const field = useFieldContext() ?? throwInApp("5876234")
-	const collection = useCollectionContext()
+	const collection = useResourceCollection()
 	// we check only if action is allowed, since we already check if "read" is allowed on server
 	const actionAllowed = useIsAllowed(action, collection, field.fieldName)
 
@@ -40,14 +40,13 @@ export const GeneratedField = memo(() => {
 	// It won't allow to render incompatible types
 	if (!Components.availableFor.includes(field.dataType)) {
 		Components = fieldComponents.get(null, field.dataType)
-		// throw new AdminPanelError("#9621")
 	}
 
 	const className = getFieldWidthCss(field.fieldConfig.width ?? 12)
 
 	const source = field.fieldName
 
-	const sharedProps: Omit<CommonFieldProps, "action" | "customProps"> = {
+	const sharedProps: Omit<CommonFieldProps, "action"> = {
 		label: field.label ?? title(source),
 		source,
 		record,
@@ -76,7 +75,6 @@ export const GeneratedField = memo(() => {
 	if (action === "show")
 		return (
 			<Components.Show
-				action="show"
 				{...sharedProps}
 				displayTemplate={field.displayTemplate ?? undefined}
 			/>

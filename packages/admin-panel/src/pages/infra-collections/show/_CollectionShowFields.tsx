@@ -1,6 +1,6 @@
 import { SimpleListLayout } from "@admin-panel/crud-layouts/list/SimpleListLayout"
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
 import { CollectionDef, FieldDef, FieldMetadataCollection } from "@zmaj-js/common"
 import { ResourceContextProvider } from "ra-core"
@@ -29,9 +29,13 @@ export const CollectionShowFields = memo(() => {
 						// linkType="show"
 						primaryText={(field) => field.fieldName}
 						secondaryText={(field) =>
-							`Column: "${field.columnName}" - ${field.componentName ?? field.dataType}`
+							`Column: "${field.columnName}" - ${
+								field.componentName ?? field.dataType
+							}`
 						}
-						endIcon={(field) => <CollectionShowFieldsIcon collection={collection} field={field} />}
+						endIcon={(field) => (
+							<CollectionShowFieldsIcon collection={collection} field={field} />
+						)}
 						rowClassName="border-b"
 						// rowStyle={(r) => ({ borderBottom: "1px solid #ccc" })}
 					/>
@@ -41,7 +45,7 @@ export const CollectionShowFields = memo(() => {
 				endIcon={<MdOutlineAddCircle />}
 				href={newFieldHref}
 				className="mx-auto w-72"
-				variant="transparent"
+				color="transparent"
 			>
 				Add field
 			</Button>

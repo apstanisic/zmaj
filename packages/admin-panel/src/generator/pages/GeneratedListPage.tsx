@@ -1,4 +1,3 @@
-import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useResourceDefinition } from "ra-core"
 import { memo } from "react"
 import { SetOptional } from "type-fest"
@@ -9,7 +8,6 @@ import { GeneratedPageProvider } from "./GeneratedPageProvider"
 export const GeneratedListPage = memo((props: SetOptional<ListPageLayoutProps, "children">) => {
 	const { children, ...layoutProps } = props
 	const resource = useResourceDefinition()
-	useHtmlTitle(resource)
 
 	return (
 		<GeneratedPageProvider action="list">

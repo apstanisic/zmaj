@@ -40,7 +40,7 @@ export class AdminPanelInfoController {
 		if (!this.authConfig.exposePublicInfo) throw403(379995, emsg.noAuthz)
 
 		const info = {
-			signUpAllowed: await this.signUpService.isSignUpAllowed(),
+			signUpAllowed: this.authConfig.allowSignUp,
 			oidc: this.oidcConfig.providers.map((pr) => ({
 				name: pr.name,
 				url: this.config.joinWithApiUrl(`/auth/oidc/${pr.name}/login`),

@@ -4,19 +4,13 @@ import { CommonFieldProps } from "./CommonFieldProps"
  * Props that must be passed to every Show field
  */
 
-export type ShowFieldProps = CommonFieldProps<void> & {
+export type ShowFieldProps = CommonFieldProps & {
 	/** Action */
-	action: "show"
-
-	/**
-	 * When value is null or undefined, should we render special text (NULL, UNKNOWN), or custom value
-	 * For example, in profile page, we don't want to render NULL
-	 */
-	customNilText?: string
+	action?: "show"
 
 	/**
 	 * For example
-	 * "Hello {name}"
+	 * "Hello {value}", or "{value} euros"
 	 */
 	displayTemplate?: string
 }

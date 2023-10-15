@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react"
+import { ReactNode } from "react"
 
 /** Props that are only required react children */
-export type OnlyChildren = Required<PropsWithChildren<void>>
+export type OnlyChildren = { children: ReactNode }

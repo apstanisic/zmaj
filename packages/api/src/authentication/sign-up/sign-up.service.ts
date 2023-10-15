@@ -1,13 +1,11 @@
 import { GlobalConfig } from "@api/app/global-app.config"
-import { throw403 } from "@api/common/throw-http"
+import { Error403, throw403 } from "@api/common/throw-http"
 import { EmailCallbackService } from "@api/email/email-callback.service"
 import { EmailService } from "@api/email/email.service"
 import { emsg } from "@api/errors"
-import { RuntimeSettingsService } from "@api/runtime-settings/runtime-settings.service"
 import { UsersService } from "@api/users/users.service"
 import { Injectable, Logger } from "@nestjs/common"
-import { JwtService } from "@nestjs/jwt"
-import { SignUpDto, User, UserCreateDto, getEndpoints } from "@zmaj-js/common"
+import { PUBLIC_ROLE_ID, SignUpDto, User, UserCreateDto, getEndpoints } from "@zmaj-js/common"
 import { emailTemplates } from "@zmaj-js/email-templates"
 import { SetOptional } from "type-fest"
 import { z } from "zod"
@@ -26,11 +24,9 @@ export class SignUpService {
 	constructor(
 		private readonly usersService: UsersService,
 		private readonly authConfig: AuthenticationConfig,
-		private readonly settings: RuntimeSettingsService,
 		private readonly emailService: EmailService,
 		private readonly emailCallbackService: EmailCallbackService,
 		private readonly globalConfig: GlobalConfig,
-		private readonly jwtService: JwtService,
 	) {}
 
 	/**
@@ -43,11 +39,7 @@ export class SignUpService {
 		data: SetOptional<SignUpDto, "firstName" | "lastName">,
 		additionalData?: Partial<User>,
 	): Promise<User> {
-		const signUpAllowed = await this.isSignUpAllowed()
-		if (!signUpAllowed) throw403(1087289, emsg.noAuthz)
-
-		const settings = this.settings.getSettings()
-		const defaultRole = settings.data.defaultSignUpRole
+		if (!this.authConfig.allowSignUp) throw403(1087289, emsg.noAuthz)
 
 		// const { password, ...userInfo } = data
 		// if user provided status, use that, if email confirmed set active, otherwise check confirm
@@ -55,7 +47,7 @@ export class SignUpService {
 		let status: User["status"]
 		if (additionalData?.status) {
 			status = additionalData.status
-		} else if (additionalData?.confirmedEmail === true) {
+		} else if (additionalData?.confirmedEmail) {
 			status = "active"
 		} else {
 			status = this.authConfig.requireEmailConfirmation ? "emailUnconfirmed" : "active"
@@ -64,7 +56,7 @@ export class SignUpService {
 		const user = await this.usersService.createUser({
 			data: new UserCreateDto({
 				...data,
-				roleId: defaultRole,
+				roleId: PUBLIC_ROLE_ID,
 				...additionalData,
 				status,
 			}),
@@ -97,46 +89,13 @@ export class SignUpService {
 		})
 
 		const user = await this.usersService.findUser({ id: data.sub })
-		if (user?.status !== "emailUnconfirmed") throw403(3678833, emsg.noAuthz)
+		if (user?.status !== "emailUnconfirmed" && user?.status !== "active") {
+			throw new Error403(3678833, emsg.noAuthz)
+		}
 		await this.usersService.updateUser({
 			userId: user.id,
 			data: { confirmedEmail: true, status: "active" },
 		})
 		return { email: user.email }
 	}
-
-	/**
-	 * Check if sign up is allowed
-	 *
-	 * It is stored in DB so admin can easily change that setting
-	 * It will fallback to
-	 */
-	async isSignUpAllowed(): Promise<boolean> {
-		if (this.authConfig.allowSignUp !== "dynamic") return this.authConfig.allowSignUp
-
-		const settings = this.settings.getSettings()
-		return settings.data.signUpAllowed
-	}
-
-	// async setSignUpAllowed(allowed: boolean, user: AuthUser): Promise<void> {
-	// 	if (user.roleId !== ADMIN_ROLE_ID) throw403(784230, emsg.noAuthz)
-	// 	if (typeof this.authConfig.allowSignUp === "boolean") throw403(82033, emsg.settingsReadonly)
-	// 	await this.keyValService.updateOrCreate({
-	// 		key: SettingsKey.ALLOW_SIGN_UP,
-	// 		value: allowed ? "true" : "false",
-	// 		namespace: SettingsKey.NAMESPACE,
-	// 	})
-	// }
-
-	// // todo check first if role exist
-	// async setDefaultRole(roleId: string, user: AuthUser): Promise<void> {
-	//   if (user.roleId !== ADMIN_ROLE_ID) throw403(784230)
-	//   // Check if role exist
-	//   // if (typeof this.authConfig.allowSignUp === "boolean") throw403(82033)
-	//   await this.keyValService.updateOrCreate({
-	//     key: SettingsKey.DEFAULT_ROLE_ID,
-	//     value: roleId,
-	//     namespace: SettingsKey.NAMESPACE,
-	//   })
-	// }
 }

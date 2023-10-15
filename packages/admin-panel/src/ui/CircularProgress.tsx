@@ -1,15 +1,6 @@
-import { clsx } from "clsx"
-import { mapKeys } from "radash"
+import { cn } from "@admin-panel/utils/cn"
 import { CSSProperties } from "react"
-import { useProgressBar } from "react-aria"
-
-type WithCssParams = {
-	[key: string]: unknown
-}
-
-function cssVars(params: WithCssParams): CSSProperties {
-	return mapKeys(params, (key: string) => (key.startsWith("--") ? key : `--${key}`))
-}
+import { ProgressBar } from "react-aria-components"
 
 type CircularProgressProps = {
 	size?: string
@@ -18,23 +9,21 @@ type CircularProgressProps = {
 }
 
 export function CircularProgress(props: CircularProgressProps): JSX.Element {
-	const { progressBarProps } = useProgressBar({ isIndeterminate: true, "aria-label": "Loading" })
-
 	return (
-		<div
-			{...progressBarProps}
-			className={clsx(
-				progressBarProps.className,
-				"du-radial-progress  animate-spin",
-				props.className,
-			)}
-			style={cssVars({
-				value: 70,
-				thickness: props.thickness ? `${props.thickness}px` : undefined,
-				size: props.size,
-			})}
+		<ProgressBar
+			isIndeterminate
+			className={cn("du-radial-progress  animate-spin", props.className)}
+			aria-label="Please wait..."
+			// We are passing this vars that will be read by daisyUI
+			style={
+				{
+					"--value": 70,
+					"--thickness": props.thickness ? `${props.thickness}px` : undefined,
+					"--size": props.size,
+				} as CSSProperties
+			}
 		>
 			{/* hello */}
-		</div>
+		</ProgressBar>
 	)
 }

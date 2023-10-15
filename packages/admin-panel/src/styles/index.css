@@ -58,7 +58,7 @@
 	/* INPUT  */
 	.s-input {
 		@apply min-h-6 relative w-full  bg-transparent
-     p-3 text-left text-black	placeholder:text-gray-400 disabled:bg-stone-200;
+     p-3 text-left text-black	placeholder:text-gray-400 disabled:bg-stone-200 disabled:text-opacity-70;
 		@apply rounded-md border-2 border-stone-300;
 		@apply outline-none focus-within:border-stone-500 focus-within:shadow  focus-within:ring-0;
 		@apply dark:border-slate-600 dark:text-gray-100 dark:focus-within:border-gray-300 dark:disabled:bg-slate-700;
@@ -73,7 +73,7 @@
 		@apply s-input;
 	}
 	.s-input.s-input-error {
-		@apply border-error focus:border-error-content dark:border-error dark:focus:border-error-content;
+		@apply border-error focus:border-error-content/60  dark:border-error dark:focus:border-error-content;
 	}
 	/* .err .input,
 	.err.input {
@@ -154,4 +154,42 @@
 .s-label.s-required::after {
 	content: "*";
 	@apply ml-0.5;
+}
+
+.required-asterisk::after {
+	content: "*";
+	@apply ml-px;
+}
+
+/**
+Taken from Daisy UI
+*/
+.du-checkbox[data-focus-visible="true"] {
+	outline-style: solid;
+	outline-width: 2px;
+	outline-offset: 2px;
+	outline-color: hsl(var(--bc) / 1);
+}
+
+.du-checkbox[data-indeterminate="true"] {
+	--tw-bg-opacity: 1;
+	background-color: hsl(var(--bc) / var(--tw-bg-opacity));
+	background-repeat: no-repeat;
+	animation: checkmark var(--animation-input, 0.2s) ease-out;
+	background-image: linear-gradient(90deg, transparent 80%, hsl(var(--chkbg)) 80%),
+		linear-gradient(-90deg, transparent 80%, hsl(var(--chkbg)) 80%),
+		linear-gradient(
+			0deg,
+			hsl(var(--chkbg)) 43%,
+			hsl(var(--chkfg)) 43%,
+			hsl(var(--chkfg)) 57%,
+			hsl(var(--chkbg)) 57%
+		);
+}
+.du-checkbox[data-disabled="true"] {
+	cursor: not-allowed;
+	border-color: transparent;
+	--tw-bg-opacity: 1;
+	background-color: hsl(var(--bc) / var(--tw-bg-opacity));
+	opacity: 0.2;
 }

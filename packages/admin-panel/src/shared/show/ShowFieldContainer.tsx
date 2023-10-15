@@ -1,5 +1,6 @@
 import { Tooltip } from "@admin-panel/ui/Tooltip"
-import { clsx } from "clsx"
+import { cn } from "@admin-panel/utils/cn"
+import { isNil } from "@zmaj-js/common"
 import { ReactElement, ReactNode } from "react"
 
 type Props = {
@@ -16,11 +17,16 @@ type Props = {
  * Try `DefaultShowField` instead.
  */
 export function ShowFieldContainer(props: Props): JSX.Element {
+	const content = isNil(props.children) ? (
+		<div className="w-8 text-info">
+			<Tooltip text="There is no value provided">-</Tooltip>
+		</div>
+	) : (
+		props.children
+	)
 	return (
 		<div
-			className={clsx(
-				// "flex max-h-[80vh] w-full flex-col overflow-auto rounded-lg border-2 border-gray-50 py-1 px-2 shadow-lg shadow-gray-100  dark:border-neutral-800 dark:shadow-none",
-				// show overflow, since it's hiding tooltip
+			className={cn(
 				"du-card-bordered du-card rounded-xl border-opacity-50 px-2 py-1 shadow-sm",
 				"max-h-[80vh] overflow-auto",
 				props.className,
@@ -28,7 +34,7 @@ export function ShowFieldContainer(props: Props): JSX.Element {
 		>
 			<Title {...props} />
 			<div className="flex min-h-[2rem] flex-col justify-items-stretch overflow-auto border-t border-gray-100 py-2 dark:border-gray-600">
-				{props.children}
+				{content}
 			</div>
 		</div>
 	)

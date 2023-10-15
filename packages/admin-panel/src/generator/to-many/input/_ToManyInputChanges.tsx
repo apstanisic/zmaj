@@ -2,7 +2,7 @@ import { ListPagination } from "@admin-panel/app-layout/list/ListPagination"
 import { useRelationContext } from "@admin-panel/context/relation-context"
 import { useToManyInputContext } from "@admin-panel/context/to-many-input-context"
 import { SimpleListLayout } from "@admin-panel/crud-layouts/list/SimpleListLayout"
-import { IconButton } from "@admin-panel/ui/IconButton"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
 import { AnyFn, templateParser, truncate } from "@zmaj-js/common"
 import { IdType } from "@zmaj-js/orm"
@@ -35,7 +35,9 @@ export const ToManyInputChanges = memo(({ ids, toggleItem }: ToManyInputChangesP
 			>
 				<>
 					<SimpleListLayout
-						primaryText={(r) => truncate(templateParser.parse(template, r), { length: 100 })}
+						primaryText={(r) =>
+							truncate(templateParser.parse(template, r), { length: 100 })
+						}
 						linkType={false}
 						endIcon={(r) => <UndoButton undo={() => toggleItem(r.id)} />}
 					/>
@@ -57,7 +59,7 @@ function Pagination(): JSX.Element {
 
 const UndoButton = memo((props: { undo: AnyFn }) => {
 	return (
-		<IconButton label="Undo changes" onClick={props.undo} className="ml-auto">
+		<IconButton aria-label="Undo changes" onPress={props.undo} className="ml-auto">
 			<Tooltip text="Remove added item" side="left">
 				<MdUndo className="text-blue-800 " />
 			</Tooltip>

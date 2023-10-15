@@ -1,7 +1,8 @@
 import { useSdk } from "@admin-panel/context/sdk-context"
-import { Button } from "@admin-panel/ui/Button"
 import { Dialog } from "@admin-panel/ui/Dialog"
-import { TextInput } from "@admin-panel/ui/TextInput"
+import { Button } from "@admin-panel/ui/buttons/Button"
+import { TextInput } from "@admin-panel/ui/forms/TextInput"
+import { SdkError } from "@zmaj-js/client-sdk"
 import { EnableMfaParams, SignInDto, Struct } from "@zmaj-js/common"
 import { Form, useLogin, useNotify } from "ra-core"
 import { useCallback, useState } from "react"
@@ -9,7 +10,6 @@ import { EmailInputField } from "../../field-components/email/EmailInputField"
 import { PasswordInputField } from "../../field-components/password/PasswordInputField"
 import { ManualInputField } from "../../shared/input/ManualInputField"
 import { DisplayMfaQrCode } from "../components/DisplayMfaQrCode"
-import { SdkError } from "@zmaj-js/client-sdk"
 
 export function SignInForm(): JSX.Element {
 	const login = useLogin()
@@ -68,7 +68,7 @@ export function SignInForm(): JSX.Element {
 					onChange={setMfa}
 					value={mfa ?? ""}
 				/>
-				<Button outline disabled={mfa.length < 6} onClick={mfaSubmit}>
+				<Button variant="outlined" isDisabled={mfa.length < 6} onPress={mfaSubmit}>
 					Confirm
 				</Button>
 			</Dialog>
@@ -85,7 +85,10 @@ export function SignInForm(): JSX.Element {
 						{...createMfaParams!}
 						onConfirm={() => {
 							onSubmit(
-								new SignInDto({ ...emailAndPass!, otpToken: createMfaParams.backupCodes[0] }),
+								new SignInDto({
+									...emailAndPass!,
+									otpToken: createMfaParams.backupCodes[0],
+								}),
 							)
 							setCreateMfaParams(undefined)
 						}}
@@ -107,7 +110,7 @@ export function SignInForm(): JSX.Element {
 				<ManualInputField source="email" isRequired Component={EmailInputField} />
 				<ManualInputField source="password" isRequired Component={PasswordInputField} />
 
-				<Button type="submit" outline className="ml-auto">
+				<Button type="submit" variant="outlined" className="ml-auto">
 					Sign in
 				</Button>
 			</Form>

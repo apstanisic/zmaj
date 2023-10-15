@@ -79,3 +79,30 @@ export function throw400(...params: ErrorParamsWithMessage): never {
 	const meta = handleError(...params)
 	throw new BadRequestException(meta, { cause: meta.cause })
 }
+
+export class Error403 extends ForbiddenException {
+	constructor(...params: ErrorParamsWithMessage) {
+		const meta = handleError(...params)
+		super(meta, { cause: meta.cause })
+	}
+}
+
+export class Error404 extends NotFoundException {
+	constructor(...params: ErrorParamsWithMessage) {
+		const meta = handleError(...params)
+		super(meta, { cause: meta.cause })
+	}
+}
+export class Error401 extends UnauthorizedException {
+	constructor(...params: ErrorParamsWithMessage) {
+		const meta = handleError(...params)
+		super(meta, { cause: meta.cause })
+	}
+}
+
+export class Error500 extends InternalServerErrorException {
+	constructor(...params: ErrorParamsWithMessage) {
+		const meta = handleError(...params)
+		super(meta, { cause: meta.cause })
+	}
+}

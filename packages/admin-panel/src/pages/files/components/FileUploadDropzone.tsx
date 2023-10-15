@@ -1,4 +1,4 @@
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { useRef } from "react"
 import { useDropzone } from "react-dropzone"
 import { MdCloudUpload } from "react-icons/md"
@@ -31,8 +31,8 @@ export function FileUploadDropzone(
 				<StorageProvidersDropdown />
 				{progress.length > 0 && (
 					<Button
-						variant="warning"
-						onClick={() => {
+						color="warning"
+						onPress={() => {
 							abort.current.abort()
 							abort.current = new AbortController()
 						}}
@@ -52,7 +52,9 @@ export function FileUploadDropzone(
 					className="center z-10 min-h-[250px] min-w-[200px] cursor-pointer flex-col overflow-hidden rounded border border-gray-300 "
 				>
 					<input {...(getInputProps() as any)} />
-					<div className="p-3 text-xl">Drop some files here, or click to select files</div>
+					<div className="p-3 text-xl">
+						Drop some files here, or click to select files
+					</div>
 					<MdCloudUpload className="text-6xl text-gray-800 dark:text-gray-200" />
 				</div>
 				{/* ---------------- End Dropzone ---------- */}

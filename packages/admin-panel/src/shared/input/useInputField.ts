@@ -96,6 +96,7 @@ export function useInputField(props: UseInputFieldProps): UseInputFieldResult {
 		// input => record
 		parse: (value) => {
 			const type = props.type ?? "text"
+
 			if (props.fromInput) return props.fromInput(value)
 
 			if (props.keepEmpty && value === "") return ""

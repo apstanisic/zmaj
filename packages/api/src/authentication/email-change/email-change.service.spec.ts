@@ -1,34 +1,23 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { AuthorizationService } from "@api/authorization/authorization.service"
-import { SecurityTokenStub } from "@api/security-tokens/security-token.stub"
-import {
-	CreateTokenFormEmailConfirmationParams,
-	SecurityTokensService,
-} from "@api/security-tokens/security-tokens.service"
+import { EmailCallbackService } from "@api/email/email-callback.service"
+import { EmailService } from "@api/email/email.service"
 import { buildTestModule } from "@api/testing/build-test-module"
 import { UsersService } from "@api/users/users.service"
 import { BadRequestException, ForbiddenException, UnauthorizedException } from "@nestjs/common"
 import { randPassword } from "@ngneat/falso"
-import {
-	asMock,
-	AuthUser,
-	ChangeEmailDto,
-	joinUrl,
-	SecurityToken,
-	User,
-	type UUID,
-} from "@zmaj-js/common"
+import { AuthUser, ChangeEmailDto, User, asMock, joinUrl } from "@zmaj-js/common"
 import { UserStub } from "@zmaj-js/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { EmailChangeService } from "./email-change.service"
 
 describe("EmailChangeService", () => {
 	let service: EmailChangeService
-	// let emailService: EmailService
 	let authzService: AuthorizationService
 	let usersService: UsersService
-	let tokensService: SecurityTokensService
 	let globalConfig: GlobalConfig
+	let emailCallbackService: EmailCallbackService
+	let emailService: EmailService
 	//
 	let fullUser: User
 	let userStub: AuthUser
@@ -41,8 +30,13 @@ describe("EmailChangeService", () => {
 		//
 		service = module.get(EmailChangeService)
 		//
-		// emailService = module.get(EmailService)
-		// emailService.sendEmail = vi.fn()
+		emailService = module.get(EmailService)
+		emailService.sendEmail = vi.fn()
+
+		emailCallbackService = module.get(EmailCallbackService)
+		emailCallbackService.createJwtCallbackUrl = vi.fn(
+			async () => new URL("http://example.com/test?token=test"),
+		)
 		//
 		authzService = module.get(AuthorizationService)
 		authzService.checkSystem = vi.fn(() => true)
@@ -51,10 +45,6 @@ describe("EmailChangeService", () => {
 		usersService.updateUser = vi.fn()
 		usersService.findActiveUser = vi.fn(async () => fullUser)
 		usersService.checkPassword = vi.fn(async () => true)
-		//
-		tokensService = module.get(SecurityTokensService)
-		tokensService.createTokenWithEmailConfirmation = vi.fn(async () => {})
-		tokensService.deleteUserTokens = vi.fn(async () => undefined)
 
 		//
 		globalConfig = module.get(GlobalConfig)
@@ -78,108 +68,73 @@ describe("EmailChangeService", () => {
 
 		it("should throw if user is not allowed to change email", async () => {
 			asMock(authzService.checkSystem).mockImplementation(() => false)
-			await expect(service.requestEmailChange(userStub, dto)).rejects.toThrow(ForbiddenException)
+			await expect(service.requestEmailChange(userStub, dto)).rejects.toThrow(
+				ForbiddenException,
+			)
 		})
 
 		it("should throw if password is incorrect", async () => {
 			asMock(usersService.checkPassword).mockImplementation(async () => false)
-			await expect(service.requestEmailChange(userStub, dto)).rejects.toThrow(BadRequestException)
+			await expect(service.requestEmailChange(userStub, dto)).rejects.toThrow(
+				BadRequestException,
+			)
+		})
+
+		it("should create proper jwt", async () => {
+			await service.requestEmailChange(userStub, dto)
+			expect(emailCallbackService.createJwtCallbackUrl).toBeCalledWith({
+				data: {
+					current: userStub.email,
+					next: "hello_world@example.com",
+				},
+				expiresIn: "6h",
+				path: "/auth/account/email-change/confirm",
+				usedFor: "email-change",
+				userId: userStub.userId,
+			})
 		})
 
 		it("should send email with token to confirm changed email", async () => {
-			let emailParams: CreateTokenFormEmailConfirmationParams["emailParams"] | undefined
-			tokensService.createTokenWithEmailConfirmation = vi.fn(async (p) => {
-				emailParams = p.emailParams
-			})
 			await service.requestEmailChange(userStub, dto)
-			expect(tokensService.createTokenWithEmailConfirmation).toBeCalledWith<
-				[CreateTokenFormEmailConfirmationParams]
-			>({
-				token: {
-					usedFor: "email-change",
-					userId: userStub.userId,
-					validUntil: expect.any(Date) as any,
-					data: dto.newEmail,
-				},
-				urlQuery: { userId: userStub.userId },
-				redirectPath: "/auth/account/email-change/confirm",
-				emailParams: expect.any(Function),
-			})
-			expect(emailParams).toBeDefined()
-			expect(emailParams?.("http://example.com?my-link", "MyApp")).toEqual({
+			expect(emailService.sendEmail).toBeCalledWith({
 				subject: "Confirm email change",
 				to: dto.newEmail,
-				text: "Go to http://example.com?my-link to confirm email change",
-				html: expect.stringContaining("http://example.com?my-link"),
+				text: "Go to http://example.com/test?token=test to confirm email change",
+				html: expect.stringContaining("http://example.com/test?token=test"),
 			})
 		})
-
-		// it("should store token in database", async () => {
-		// 	const now = new Date()
-
-		// 	jest.useFakeTimers()
-		// 	jest.setSystemTime(now)
-
-		// 	await service.requestEmailChange(userStub, dto)
-
-		// 	expect(tokensService.createTokenWithEmailConfirmation).toBeCalledWith({
-		// 		userId: userStub.userId,
-		// 		usedFor: "email-change",
-		// 		validUntil: addHours(now, 3),
-		// 		data: "hello_world@example.com",
-		// 	})
-
-		// 	jest.useRealTimers()
-		// })
-
-		// it("should send email with instructions", async () => {
-		// 	await service.requestEmailChange(userStub, dto)
-		// 	expect(1).toBe(2)
-		// 	// expect(emailService.sendEmail).toBeCalledWith({
-		// 	// 	text: expect.stringContaining(
-		// 	// 		`/test/api/auth/account/email-change/confirm?userId=${userStub.userId}&token=mock_token`,
-		// 	// 	),
-		// 	// 	to: "hello_world@example.com",
-		// 	// })
-		// 	//
-		// })
 	})
 
 	describe("setNewEmail", () => {
-		let tokenStub: SecurityToken
 		let token: string
-		let userId: UUID
 
 		beforeEach(() => {
-			tokenStub = SecurityTokenStub({ data: "hello_world@example.com", usedFor: "email-change" })
-
-			userId = userStub.userId as UUID
-			token = tokenStub.token
-
-			tokensService.findToken = vi.fn().mockResolvedValue(tokenStub)
+			emailCallbackService.verifyJwtCallback = vi.fn(async () => ({
+				sub: userStub.userId,
+				type: "email-change",
+				current: userStub.email,
+				next: "next@example.com",
+			}))
 		})
 
 		it("should throw if user is not allowed to change email", async () => {
 			asMock(authzService.checkSystem).mockImplementation(() => false)
-			await expect(service.setNewEmail({ token, userId })).rejects.toThrow(ForbiddenException)
+			await expect(service.setNewEmail({ token })).rejects.toThrow(ForbiddenException)
 		})
 
 		it("should throw if token does not exists", async () => {
-			asMock(tokensService.findToken).mockResolvedValue(undefined)
-			await expect(service.setNewEmail({ userId, token })).rejects.toThrow(UnauthorizedException)
+			emailCallbackService.verifyJwtCallback = vi
+				.fn()
+				.mockRejectedValue(new UnauthorizedException())
+			await expect(service.setNewEmail({ token })).rejects.toThrow(UnauthorizedException)
 		})
 
 		it("should change user email in db", async () => {
-			await service.setNewEmail({ userId, token })
+			await service.setNewEmail({ token })
 			expect(usersService.updateUser).toBeCalledWith({
 				userId: userStub.userId,
-				data: { email: "hello_world@example.com" },
+				data: { email: "next@example.com" },
 			})
-		})
-
-		it("should delete all user tokens", async () => {
-			await service.setNewEmail({ userId, token })
-			expect(tokensService.deleteUserTokens).toBeCalled()
 		})
 	})
 })

@@ -4,12 +4,14 @@ import { asMock, AuthUser, SignUpDto } from "@zmaj-js/common"
 import { AuthUserStub, UserStub } from "@zmaj-js/test-utils"
 import { v4 } from "uuid"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { AuthenticationConfig } from "../authentication.config"
 import { SignUpController } from "./sign-up.controller"
 import { SignUpService } from "./sign-up.service"
 
 describe("SignUpController", () => {
 	let controller: SignUpController
 	let service: SignUpService
+	let authConfig: AuthenticationConfig
 	let user: AuthUser
 
 	beforeEach(async () => {
@@ -19,7 +21,8 @@ describe("SignUpController", () => {
 		//
 		service = module.get(SignUpService)
 		service.signUp = vi.fn(async () => UserStub())
-		service.isSignUpAllowed = vi.fn(async () => true)
+		authConfig = module.get(AuthenticationConfig)
+		authConfig.allowSignUp = true
 		//
 		user = AuthUserStub()
 	})
@@ -50,7 +53,11 @@ describe("SignUpController", () => {
 		it("should return auth user", async () => {
 			const roleId = v4()
 			const userId = v4()
-			asMock(service.signUp).mockResolvedValue({ email: "test_me@example.com", id: userId, roleId })
+			asMock(service.signUp).mockResolvedValue({
+				email: "test_me@example.com",
+				id: userId,
+				roleId,
+			})
 			const res = await controller.signUp(dto)
 			expect(res).toEqual(new AuthUser({ email: "test_me@example.com", userId, roleId }))
 		})
@@ -62,9 +69,8 @@ describe("SignUpController", () => {
 	 */
 	describe("isSignUpAllowed", () => {
 		it("should return info about sign up status", async () => {
-			asMock(service.isSignUpAllowed).mockResolvedValue(false)
+			authConfig.allowSignUp = false
 			const res = await controller.isSignUpAllowed()
-			expect(service.isSignUpAllowed).toBeCalled()
 			expect(res).toEqual({ allowed: false })
 		})
 	})

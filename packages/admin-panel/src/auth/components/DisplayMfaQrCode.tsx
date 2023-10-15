@@ -1,8 +1,8 @@
 import { useSdk } from "@admin-panel/context/sdk-context"
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { Card } from "@admin-panel/ui/Card"
 import { Divider } from "@admin-panel/ui/Divider"
-import { TextInput } from "@admin-panel/ui/TextInput"
+import { TextInput } from "@admin-panel/ui/forms/TextInput"
 import { intRegex } from "@zmaj-js/common"
 import { useNotify } from "ra-core"
 import { memo, useCallback, useState } from "react"
@@ -55,8 +55,8 @@ export const DisplayMfaQrCode = memo(
 					<Card className="w-full p-4">
 						<h3 className="mb-5 text-xl">Setup 2 factor authentication</h3>
 						<Button
-							variant="warning"
-							onClick={() =>
+							color="warning"
+							onPress={() =>
 								void props.refreshCode().then(() => {
 									setExpired(false)
 									resetTimeout()
@@ -74,8 +74,8 @@ export const DisplayMfaQrCode = memo(
 			<Card className="w-full p-4 max-w-3xl">
 				<h3 className="mb-5 text-xl">{props.title ?? "Setup 2 factor authentication"}</h3>
 				<p>
-					Use your 2FA app (like Google Authenticator) and scan QR code. If you are not able to scan
-					QR code, enter this value in your app manually:
+					Use your 2FA app (like Google Authenticator) and scan QR code. If you are not
+					able to scan QR code, enter this value in your app manually:
 				</p>
 				<pre className="mt-2 text-center text-lg font-bold" data-testid="mfaSecret">
 					{props.secret}
@@ -83,8 +83,8 @@ export const DisplayMfaQrCode = memo(
 				<img src={props.image} alt="QR Code for 2FA" className="mx-auto my-8 h-60 w-60" />
 				<Divider />
 				<div className="my-3">
-					Please copy backup codes so that you can sign in case you lose access to your phone. We
-					will not show them to you again:
+					Please copy backup codes so that you can sign in case you lose access to your
+					phone. We will not show them to you again:
 					<pre className="mt-5 block ">
 						{props.backupCodes.map((code) => (
 							<p key={code}>{code}</p>
@@ -92,7 +92,8 @@ export const DisplayMfaQrCode = memo(
 					</pre>
 				</div>
 				<Divider />
-				After you configured your app, enter a code bellow to ensure everything is working correctly
+				After you configured your app, enter a code bellow to ensure everything is working
+				correctly
 				<div className="mt-2 flex items-center gap-x-4">
 					<TextInput
 						placeholder="123456"
@@ -101,7 +102,11 @@ export const DisplayMfaQrCode = memo(
 						value={verifyCode}
 						maxLength={6}
 					/>
-					<Button outline disabled={verifyCode.length !== 6} onClick={confirmOtp}>
+					<Button
+						variant="outlined"
+						isDisabled={verifyCode.length !== 6}
+						onPress={confirmOtp}
+					>
 						Confirm
 					</Button>
 				</div>

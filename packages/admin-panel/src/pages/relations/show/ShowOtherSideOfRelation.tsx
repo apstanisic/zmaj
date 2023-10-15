@@ -1,5 +1,5 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { RelationDef } from "@zmaj-js/common"
 import { useRedirect } from "ra-core"
 import { memo } from "react"
@@ -25,7 +25,7 @@ export const ShowOtherSideOfRelation = memo(() => {
 	return (
 		<ResponsiveButton
 			label="Other Side"
-			onClick={() => redirect("show", "zmaj_relation_metadata", rightRelation.id)}
+			onPress={() => redirect("show", "zmaj_relation_metadata", rightRelation.id)}
 			icon={<CgCornerUpRight />}
 		/>
 	)

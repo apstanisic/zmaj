@@ -1,7 +1,7 @@
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { useUserCollections } from "@admin-panel/hooks/use-user-collections"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { CollectionMetadataCollection, FieldDef } from "@zmaj-js/common"
 import { useRedirect } from "ra-core"
 import { memo, useMemo } from "react"
@@ -46,7 +46,7 @@ function StartButtons(): JSX.Element {
 	return (
 		<ResponsiveButton
 			icon={<MdViewList />}
-			onClick={() => redirect("show", CollectionMetadataCollection.collectionName, col.id)}
+			onPress={() => redirect("show", CollectionMetadataCollection.collectionName, col.id)}
 			label="Collection"
 		/>
 	)
@@ -74,10 +74,20 @@ const Content = memo(() => {
 					source="dataType"
 					label="Field Data Type"
 					description="First Value is our data type, second is sql data type"
-					render={({ record }) => `${record?.["dataType"]} (${record?.["dbRawDataType"]})`}
+					render={({ record }) =>
+						`${record?.["dataType"]} (${record?.["dbRawDataType"]})`
+					}
 				/>
-				<ManualShowField source="isNullable" label="Is Nullable" Component={BooleanShowField} />
-				<ManualShowField source="sortable" label="Is Sortable" Component={BooleanShowField} />
+				<ManualShowField
+					source="isNullable"
+					label="Is Nullable"
+					Component={BooleanShowField}
+				/>
+				<ManualShowField
+					source="sortable"
+					label="Is Sortable"
+					Component={BooleanShowField}
+				/>
 				<ManualShowField source="label" />
 				<ManualShowField source="description" />
 				<ManualShowField source="displayTemplate" />

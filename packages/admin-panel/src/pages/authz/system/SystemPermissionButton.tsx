@@ -1,10 +1,10 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { ADMIN_ROLE_ID, Permission, Role, SystemResourcePermissions } from "@zmaj-js/common"
 import { title } from "radash"
 import { useMemo } from "react"
-import { useAuthzDialogState } from "../dialog/authz-dialog-state"
 import { PermissionStateIcon } from "../_PermissionStateIcon"
+import { useAuthzDialogState } from "../dialog/authz-dialog-state"
 
 type SystemPermissionButtonProps = {
 	action: string
@@ -20,7 +20,10 @@ export function SystemPermissionButton(props: SystemPermissionButtonProps): JSX.
 	const role = useRecord<Role>()
 
 	const permissionAlreadyAllowed = useMemo(
-		() => allowedPermissions.find((p) => p.action === action && p.resource === permission.resource),
+		() =>
+			allowedPermissions.find(
+				(p) => p.action === action && p.resource === permission.resource,
+			),
 		[allowedPermissions, action, permission.resource],
 	)
 
@@ -31,8 +34,8 @@ export function SystemPermissionButton(props: SystemPermissionButtonProps): JSX.
 	return (
 		<Button
 			// variant="outlined"
-			outline
-			onClick={() =>
+			variant="outlined"
+			onPress={() =>
 				showDialog({
 					action,
 					availableFields: fields === false ? null : fields ?? null,
@@ -41,7 +44,7 @@ export function SystemPermissionButton(props: SystemPermissionButtonProps): JSX.
 				})
 			}
 			className="text-left"
-			disabled={role?.id === ADMIN_ROLE_ID}
+			isDisabled={role?.id === ADMIN_ROLE_ID}
 			startIcon={<PermissionStateIcon permission={permissionAlreadyAllowed} role={role} />}
 		>
 			{label}

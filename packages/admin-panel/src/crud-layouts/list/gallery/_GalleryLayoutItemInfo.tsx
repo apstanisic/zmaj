@@ -2,10 +2,10 @@ import { useLayoutConfigContext } from "@admin-panel/context/layout-config-conte
 import { templateParser } from "@zmaj-js/common"
 import { RaRecord } from "ra-core"
 import { memo } from "react"
-import { useCollectionContext } from "../../../context/collection-context"
+import { useResourceCollection } from "../../../hooks/use-resource-collection"
 
 export const GalleryLayoutItemInfo = memo(({ record }: { record: RaRecord }) => {
-	const collection = useCollectionContext()
+	const collection = useResourceCollection()
 	const allConfig = useLayoutConfigContext().list
 	const config = allConfig.layout?.gallery
 

@@ -13,8 +13,7 @@ export const RenderProperty = memo(({ property }: { property: Property }) => {
 	if (property.type === "field") {
 		return (
 			<FieldContextProvider value={property.field}>
-				{property.Render ? <property.Render /> : <GeneratedField />}
-				{/* <GeneratedField /> */}
+				{property.Render ? <property.Render /> : <GeneratedField field={property.field} />}
 			</FieldContextProvider>
 		)
 	}

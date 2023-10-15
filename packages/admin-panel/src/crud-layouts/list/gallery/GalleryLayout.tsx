@@ -33,7 +33,7 @@ const GalleryLayout = memo(() => {
 	// TODO Return config options
 	const config = useLayoutConfigContext().list
 
-	const size = config.size ?? "normal"
+	const size = config.size
 
 	return (
 		<div className="flex min-h-[300px]">

@@ -1,8 +1,10 @@
+import { CollectionDef } from "@zmaj-js/common"
 import { CoreAdmin, useStoreContext } from "ra-core"
 import polyglotI18nProvider from "ra-i18n-polyglot"
 import englishMessages from "ra-language-english"
 import { Fragment, memo, useMemo } from "react"
 import { useTimeoutFn } from "react-use"
+import { CustomPage, renderCustomPages } from "./app-layout/CustomPage"
 import { AppLayout } from "./app-layout/app/AppLayout"
 import { useSyncBodyTheme } from "./app-layout/app/use-sync-body-theme"
 import { initAuthProvider } from "./auth/auth-provider"
@@ -28,7 +30,6 @@ import { usersResource } from "./pages/users/UsersResource"
 import { webhookResource } from "./pages/webhooks/WebhookResource"
 import { useAuthz } from "./state/authz-state"
 import { useInfraState } from "./state/useInfraState"
-import { CustomPage, renderCustomPages } from "./app-layout/CustomPage"
 import { CircularProgress } from "./ui/CircularProgress"
 
 const messages = { en: englishMessages }
@@ -39,14 +40,7 @@ const i18nProvider = polyglotI18nProvider(
 
 declare module "ra-core" {
 	export interface ResourceOptions {
-		authzResource?: string
-		authzActions?: {
-			list?: string
-			edit?: string
-			show?: string
-			create?: string
-			delete?: string
-		}
+		collection: CollectionDef
 	}
 }
 
@@ -140,13 +134,6 @@ export function AdminPanel(props: { customPages?: CustomPage[] }): JSX.Element {
 		</CoreAdmin>
 	)
 }
-const Title = () => {
-	console.log("Called")
-
-	// const r = useResourceContext()
-	return <>Zmaj | {"hello"}</>
-}
-
 const Loading = memo(() => {
 	const sdk = useSdk()
 	// if after 20 seconds page is not showing, sign user out and reload the page

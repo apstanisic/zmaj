@@ -1,6 +1,6 @@
 import { Accordion } from "@admin-panel/ui/Accordion"
 import { Divider } from "@admin-panel/ui/Divider"
-import { ToggleButton } from "@admin-panel/ui/ToggleButton"
+import { ToggleButton } from "@admin-panel/ui/buttons/ToggleButton"
 import { RelationCreateDto } from "@zmaj-js/common"
 import { useWatch } from "react-hook-form"
 import { ManualInputField } from "../../../shared/input/ManualInputField"

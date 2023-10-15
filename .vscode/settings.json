@@ -32,7 +32,12 @@
 		".vscode-insiders",
 		"pnpm-lock.yaml"
 	],
-	"tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],
+	"tailwindCSS.experimental.classRegex": [
+		// ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+		// ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+		["clsx\\(([^]*)\\)", "(?:'|\"|`)([^\"'`]*)(?:'|\"|`)"],
+		["cn\\(([^]*)\\)", "(?:'|\"|`)([^\"'`]*)(?:'|\"|`)"]
+	],
 	// Valid words that are not in dictonary
 	"cSpell.words": [
 		"Aleksandar",

@@ -1,12 +1,11 @@
-import { notNil } from "@zmaj-js/common"
-import { clsx } from "clsx"
-import { isString } from "radash"
-import { memo, ReactNode } from "react"
+import { isNil } from "@zmaj-js/common"
+import { memo, ReactNode, useMemo } from "react"
 import { ShowFieldProps } from "../../field-components/types/ShowFieldProps"
+import { ensureValidChild } from "../ensure-valid-child"
 import { ShowFieldContainer } from "./ShowFieldContainer"
 
 type RenderShowFieldProps = ShowFieldProps & {
-	render: (props: ShowFieldProps) => ReactNode
+	render?: (props: ShowFieldProps) => ReactNode
 	containerActions?: ReactNode
 }
 /**
@@ -16,23 +15,22 @@ type RenderShowFieldProps = ShowFieldProps & {
  */
 
 export const RenderShowField = memo((props: RenderShowFieldProps) => {
-	const { label, source, render, description, record, value } = props
-	let nilText = value === null ? "NULL" : value === undefined ? "UNKNOWN" : undefined
+	const { label, source, render, description, value } = props
 
-	if (nilText && notNil(props.customNilText)) {
-		nilText = props.customNilText
-	}
+	const content = useMemo(() => {
+		if (isNil(value)) return null
+		if (render) return render(props)
+		return ensureValidChild(value)
+	}, [props, render, value])
 
 	return (
 		<ShowFieldContainer
 			label={label ?? source}
 			description={description}
-			className={clsx(props.className)}
+			className={props.className}
 			actions={props.containerActions}
 		>
-			{/* &#8203; ensures that field is always full height */}
-			{/* Add flex to div so space does not go to second row */}
-			{isString(nilText) ? <p className="no-show-value">{nilText}</p> : <>{render(props)}</>}
+			{content}
 		</ShowFieldContainer>
 	)
 })

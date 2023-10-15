@@ -1,6 +1,6 @@
 import { CommonFieldProps } from "./CommonFieldProps"
 
-export type ListFieldProps = CommonFieldProps<void> & {
+export type ListFieldProps = CommonFieldProps & {
 	/** Action */
 	action: "list"
 	/**

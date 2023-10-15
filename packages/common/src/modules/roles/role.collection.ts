@@ -25,6 +25,7 @@ export const RoleCollection = codeCollection(RoleModel, {
 	},
 	options: {
 		authzKey: systemPermissions.authorization.resource,
+		authzMustManage: true,
 		label: "Roles",
 		displayTemplate: "{name}",
 		layoutConfig: zodCreate(LayoutConfigSchema, {

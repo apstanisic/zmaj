@@ -1,7 +1,7 @@
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { clsx } from "clsx"
 import { useListContext, useResourceDefinition } from "ra-core"
-import { memo, ReactNode } from "react"
+import { ReactNode, memo } from "react"
 import { TbFilterOff } from "react-icons/tb"
 import { CreateButton } from "../buttons/CreateButton"
 import { ListSortButton } from "./ListSortButton"
@@ -40,10 +40,11 @@ export const ListActions = memo((props: CustomListActionProps) => {
 				{props.hideDefaultActions !== true && (
 					<>
 						<ShowFilterDialogButton />
-						{Object.keys(list?.filterValues).filter((f) => !f.startsWith("_")).length > 0 && (
+						{Object.keys(list?.filterValues).filter((f) => !f.startsWith("_")).length >
+							0 && (
 							<ResponsiveButton
 								label="Remove Filters"
-								onClick={() => list.setFilters({}, {})}
+								onPress={() => list.setFilters({}, {})}
 								icon={<TbFilterOff />}
 							/>
 						)}

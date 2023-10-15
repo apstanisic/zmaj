@@ -48,35 +48,24 @@ export const CurrentlyActiveFilters = memo(() => {
 
 	const arrayFilter = get(filterValues, "$and")
 	if (!Array.isArray(arrayFilter)) {
-		return (
-			<Chip
-				outline
-				text="Custom Filter"
-				// color="secondary"
-				variant="primary"
-
-				// className="my-0"
-				// size="small"
-			/>
-		)
+		return <Chip variant="outlined" text="Custom Filter" color="primary" />
 	}
 	// Make it transparent if quick filter is active, since quick filter removes normal filters
 	// we don't want to remove space since then ui will jump
 	return (
 		<div
-			className={clsx("flex flex-wrap items-center gap-2 py-2", quickFilterActive && "opacity-0")}
+			className={clsx(
+				"flex flex-wrap items-center gap-2 py-2",
+				quickFilterActive && "opacity-0",
+			)}
 		>
 			{arrayFilter.map((filter, i) => {
 				const flat = toFlatFilter(filter)
 				return (
 					<Chip
-						variant="primary"
-						outline
+						color="primary"
+						variant="outlined"
 						key={i.toString()}
-						// color="secondary"
-						// variant="outlined"
-						// className="my-0"
-						// size="small"
 						text={
 							<span>
 								{flat === false ? (

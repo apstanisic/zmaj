@@ -1,5 +1,5 @@
-import { Button } from "@admin-panel/ui/Button"
 import { Dialog } from "@admin-panel/ui/Dialog"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { useCallback, useState } from "react"
 import { useShowFilterDialog } from "../use-show-filter-dialog"
 import { JsonFilterForm } from "./JsonFilterForm"
@@ -28,8 +28,8 @@ export function FilterDialog(): JSX.Element {
 				<Button
 					className="ml-auto"
 					// variant="text"
-					variant="transparent"
-					onClick={() => setType(type === "json" ? "ui" : "json")}
+					color="transparent"
+					onPress={() => setType(type === "json" ? "ui" : "json")}
 				>
 					Switch Mode
 				</Button>

@@ -1,4 +1,4 @@
-import { IconButton } from "@admin-panel/ui/IconButton"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { RaRecord, useRedirect } from "ra-core"
 import { memo } from "react"
 import { MdOutlineEdit, MdOutlineVisibility } from "react-icons/md"
@@ -29,19 +29,23 @@ export const ToManyShowRowActions = memo((props: ToManyShowRowActionsProps) => {
 		<div className="flex">
 			{/* Show */}
 			<IconButton
-				label="show"
+				aria-label="show"
 				// role="link"
-				onClick={() => redirect("show", `/${relation.otherSide.collectionName}`, props.record.id)}
+				onPress={() =>
+					redirect("show", `/${relation.otherSide.collectionName}`, props.record.id)
+				}
 			>
 				<MdOutlineVisibility />
 			</IconButton>
 
 			{/* Edit */}
 			<IconButton
-				label="edit"
-				disabled={!canEdit}
+				aria-label="edit"
+				isDisabled={!canEdit}
 				// role="link"
-				onClick={() => redirect("edit", `/${relation.otherSide.collectionName}`, props.record.id)}
+				onPress={() =>
+					redirect("edit", `/${relation.otherSide.collectionName}`, props.record.id)
+				}
 			>
 				<MdOutlineEdit />
 			</IconButton>

@@ -1,6 +1,6 @@
 import { clsx } from "clsx"
 import { ReactNode } from "react"
-import { StyleVariant } from "./StyleVariant"
+import { ButtonStyleColor } from "./StyleVariant"
 
 type Props = JSX.IntrinsicElements["ul"] & {
 	steps: ReactNode[]
@@ -18,17 +18,24 @@ export function Stepper(props: Props): JSX.Element {
 	return (
 		<ul
 			{...rest}
-			className={clsx(" du-steps w-full ", props.vertical && "du-steps-vertical", props.className)}
+			className={clsx(
+				" du-steps w-full ",
+				props.vertical && "du-steps-vertical",
+				props.className,
+			)}
 		>
 			{steps.map((step, i) => (
-				<li key={i} className={clsx("du-step", currentStep >= i && colors[variant ?? "normal"])}>
+				<li
+					key={i}
+					className={clsx("du-step", currentStep >= i && colors[variant ?? "normal"])}
+				>
 					{step}
 				</li>
 			))}
 		</ul>
 	)
 }
-type Variant = Exclude<StyleVariant, "link" | "transparent">
+type Variant = Exclude<ButtonStyleColor, "link" | "transparent">
 
 const colors: Record<Variant, string> = {
 	primary: "du-step-primary",

@@ -2,7 +2,7 @@ import { useSdk } from "@admin-panel/context/sdk-context"
 import { EmailInputField } from "@admin-panel/field-components/email/EmailInputField"
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { ManualInputField } from "@admin-panel/shared/input/ManualInputField"
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { isEmail, Struct } from "@zmaj-js/common"
 import { Form, useNotify } from "ra-core"
 import { useCallback, useState } from "react"
@@ -32,7 +32,9 @@ export function RequestPasswordResetPage(): JSX.Element {
 			sdk.auth
 				.sendPasswordResetEmail(email)
 				.then(() =>
-					notify("Password reset email sent. Please check you email", { type: "success" }),
+					notify("Password reset email sent. Please check you email", {
+						type: "success",
+					}),
 				)
 				.catch(() => notify("Problem sending password reset email.", { type: "error" }))
 				.finally(() => setDisabled(false))
@@ -59,7 +61,7 @@ export function RequestPasswordResetPage(): JSX.Element {
 					placeholder="Your email"
 				/>
 
-				<Button className="mt-4" type="submit" disabled={disabled}>
+				<Button className="mt-4" type="submit" isDisabled={disabled}>
 					Send password reset email
 				</Button>
 				<Link to={"/login"} className="ml-autok du-link mt-5">

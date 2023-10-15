@@ -72,7 +72,9 @@ class FieldCrudComponents {
 		const comp =
 			this.#components[name ?? "_"] ??
 			this.#components[dbType ?? "_"] ??
+			this.#components["text"] ??
 			this.#components["short-text"]
+
 		if (!comp) throw new AdminPanelError(`#7203 ${name} ${dbType}`)
 		return comp
 	}

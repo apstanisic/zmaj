@@ -1,15 +1,14 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { ActivityLogCollection } from "@zmaj-js/common"
 import { clsx } from "clsx"
 import { ShowBase } from "ra-core"
 import { memo } from "react"
 import { ActionContextProvider } from "../../context/action-context"
-import { CollectionContextProvider, useCollectionContext } from "../../context/collection-context"
 import { TabsLayout } from "../../crud-layouts/ui/tabs/TabsLayout"
 import { TabsSection } from "../../crud-layouts/ui/tabs/TabsSection"
 import { DateTimeShowField } from "../../field-components/datetime/DateTimeShowField"
 import { JsonShowField } from "../../field-components/json/JsonShowField"
 import { ToOneShowField } from "../../generator/many-to-one/_ToOneShowField"
+import { useResourceCollection } from "../../hooks/use-resource-collection"
 import { ManualShowField } from "../../shared/show/ManualShowField"
 import { ActivityLogChanges } from "./ActivityLogChanges"
 import { ActivityLogEventIcon } from "./ActivityLogEventIcon"
@@ -17,12 +16,9 @@ import { ActivityLogEventIcon } from "./ActivityLogEventIcon"
 export const ActivityLogShow = memo(() => {
 	return (
 		<ActionContextProvider value="show">
-			<CollectionContextProvider value={ActivityLogCollection}>
-				{/* <ShowBase component="div" actions={<NonListToolbar />}> */}
-				<ShowBase>
-					<Content />
-				</ShowBase>
-			</CollectionContextProvider>
+			<ShowBase>
+				<Content />
+			</ShowBase>
 		</ActionContextProvider>
 	)
 
@@ -31,7 +27,7 @@ export const ActivityLogShow = memo(() => {
 
 const Content = memo(() => {
 	const record = useRecord()
-	const col = useCollectionContext()
+	const col = useResourceCollection()
 	return (
 		<TabsLayout sections={["Main", "Changes", "Advanced"]}>
 			<TabsSection>

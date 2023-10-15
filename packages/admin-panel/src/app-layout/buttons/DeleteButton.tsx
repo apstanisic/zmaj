@@ -1,6 +1,7 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { Confirm } from "@admin-panel/ui/Confirm"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import {
 	RaRecord,
 	useDelete,
@@ -54,17 +55,26 @@ export function DeleteButton(props: {
 
 	return (
 		<>
-			<ResponsiveButton
-				outline
-				label={props.label ?? "Delete"}
-				aria-label={`Delete record ${record?.id ?? ""}`}
-				disabled={record?.id === undefined || props.disabled}
-				variant="error"
-				className="border-transparent"
-				onClick={() => setShowConfirm(true)}
-				icon={<MdDelete />}
-				display={props.onlyIcon ? "icon" : undefined}
-			/>
+			{props.onlyIcon ? (
+				<IconButton
+					aria-label={`Delete record ${record?.id}`}
+					isDisabled={record?.id === undefined || props.disabled}
+					onPress={() => setShowConfirm(true)}
+					color="error"
+				>
+					<MdDelete />
+				</IconButton>
+			) : (
+				<ResponsiveButton
+					icon={<MdDelete />}
+					label="Delete"
+					color="error"
+					variant="text"
+					aria-label={`Delete record ${record?.id}`}
+					onPress={() => setShowConfirm(true)}
+					isDisabled={record?.id === undefined || props.disabled}
+				/>
+			)}
 			<Confirm
 				onClose={() => setShowConfirm(false)}
 				open={showConfirm}

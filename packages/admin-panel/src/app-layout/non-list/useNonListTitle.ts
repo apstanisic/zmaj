@@ -3,12 +3,12 @@ import { templateParser } from "@zmaj-js/common"
 import { singular } from "pluralize"
 import { useMemo } from "react"
 import { useActionContext } from "../../context/action-context"
-import { useCollectionContext } from "../../context/collection-context"
+import { useResourceCollection } from "../../hooks/use-resource-collection"
 import { throwInApp } from "../../shared/throwInApp"
 
 export function useTitle(): string {
 	const action = useActionContext()
-	const collection = useCollectionContext() ?? throwInApp("287423")
+	const collection = useResourceCollection() ?? throwInApp("287423")
 	const record = useRecord()
 
 	const memoized = useMemo(() => {

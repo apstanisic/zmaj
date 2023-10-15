@@ -1,5 +1,5 @@
 import { useIsAllowedSystem } from "@admin-panel/hooks/use-is-allowed"
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { Struct, UserUpdatePasswordDto } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
 import { useCallback } from "react"
@@ -38,7 +38,12 @@ export function ChangePassword(): JSX.Element {
 			<ConfirmPassword />
 
 			<div className="flex justify-end">
-				<Button className="ml-auto mt-2" type="submit" outline isDisabled={!canChange}>
+				<Button
+					className="ml-auto mt-2"
+					type="submit"
+					variant="outline"
+					isDisabled={!canChange}
+				>
 					Change Password
 				</Button>
 			</div>

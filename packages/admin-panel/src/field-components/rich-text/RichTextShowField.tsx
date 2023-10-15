@@ -1,4 +1,4 @@
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { useToggle } from "react-use"
 import { RenderShowField } from "../../shared/show/RenderShowField"
 import { HighlightCode } from "../code/HighlightCode"
@@ -12,7 +12,12 @@ export function RichTextShowField(props: ShowFieldProps): JSX.Element {
 		<RenderShowField
 			{...props}
 			containerActions={
-				<Button small onClick={() => togglePreview()} variant="transparent" className="ml-auto">
+				<Button
+					size="small"
+					onPress={() => togglePreview()}
+					color="transparent"
+					className="ml-auto"
+				>
 					{isPreview ? "Show Raw" : "Show Pretty"}
 				</Button>
 			}

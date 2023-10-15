@@ -1,5 +1,5 @@
 import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { memo } from "react"
 import { MdFilterList } from "react-icons/md"
 import { useShowFilterDialog } from "./use-show-filter-dialog"
@@ -18,7 +18,7 @@ export const ShowFilterDialogButton = memo(() => {
 
 	return (
 		<ResponsiveButton
-			onClick={() => setShowDialog(true)}
+			onPress={() => setShowDialog(true)}
 			label="Add filter" //
 			icon={<MdFilterList />}
 		/>

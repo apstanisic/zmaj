@@ -1,24 +1,23 @@
 import { Validator } from "ra-core"
-import { HTMLInputTypeAttribute } from "react"
 // import { InputProps } from "../../ui/input-types"
+import { Control } from "react-hook-form"
 import { CommonFieldProps } from "./CommonFieldProps"
 
 /** Props for input field */
-export type InputFieldProps<T = any> = CommonFieldProps<T> & {
+export type InputFieldProps = CommonFieldProps & {
+	control?: Control
+
 	/** Input action */
-	action: "edit" | "create"
+	action?: "edit" | "create"
 
 	/** Is field disabled */
-	disabled: boolean
+	disabled?: boolean
 
 	/** Is field required */
-	isRequired: boolean
+	isRequired?: boolean
 
 	/** Validation that react-admin uses */
 	validate?: Validator[]
-
-	/** Type that is passed to HTML input component. Not all components use this prop */
-	type?: HTMLInputTypeAttribute
 
 	/** Convert value from record to input (record => input) */
 	toInput?: (value: unknown) => unknown

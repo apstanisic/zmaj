@@ -58,7 +58,7 @@ describe("EmailService", () => {
 						pass: "password",
 					},
 				},
-				{ from: "test@example.com", subject: "Zmaj App" },
+				{ from: "test@example.com" },
 			)
 		})
 

@@ -2,7 +2,7 @@ import { DeleteButton } from "@admin-panel/app-layout/buttons/DeleteButton"
 import { EditButton } from "@admin-panel/app-layout/buttons/EditButton"
 import { ShowButton } from "@admin-panel/app-layout/buttons/ShowButton"
 import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
-import { Checkbox } from "@admin-panel/ui/Checkbox"
+import { CheckboxInput } from "@admin-panel/ui/forms/Checkbox"
 import { Table } from "@admin-panel/ui/Table"
 import {
 	ColumnDef,
@@ -18,9 +18,9 @@ import { clsx } from "clsx"
 import { RecordContextProvider, useListContext, useResourceDefinition } from "ra-core"
 import { isFunction, objectify, title } from "radash"
 import { memo, useCallback, useMemo } from "react"
-import { useCollectionContext } from "../../../context/collection-context"
 import { usePropertiesContext } from "../../../context/property-context"
 import { RenderProperty } from "../../../generator/properties/RenderProperty"
+import { useResourceCollection } from "../../../hooks/use-resource-collection"
 import { Property } from "../../../types/Property"
 
 function orderFields(fields: readonly Property[], order?: readonly string[]): readonly Property[] {
@@ -34,7 +34,7 @@ const helper = createColumnHelper<Struct>()
 export const TableLayout = memo(() => {
 	const { data, onSelect, selectedIds, ...list } = useListContext()
 	const properties = usePropertiesContext()
-	const collection = useCollectionContext()
+	const collection = useResourceCollection()
 	const resource = useResourceDefinition()
 	const config = useLayoutConfigContext().list
 	// const redirect = useRedirect()
@@ -50,7 +50,7 @@ export const TableLayout = memo(() => {
 		const checkbox = helper.display({
 			id: "$select",
 			header: ({ table }) => (
-				<Checkbox
+				<CheckboxInput
 					// className="aspect-square"
 					aria-label="Select all"
 					isSelected={table.getIsAllRowsSelected()}
@@ -60,7 +60,7 @@ export const TableLayout = memo(() => {
 				/>
 			),
 			cell: ({ row }) => (
-				<Checkbox
+				<CheckboxInput
 					aria-label="Select row"
 					// className="aspect-square"
 					isSelected={row.getIsSelected()}
@@ -151,7 +151,9 @@ export const TableLayout = memo(() => {
 	return (
 		<>
 			<Table
-				className={clsx(" max-h-[80vh] w-full overflow-x-auto whitespace-nowrap dark:text-white")}
+				className={clsx(
+					" max-h-[80vh] w-full overflow-x-auto whitespace-nowrap dark:text-white",
+				)}
 			>
 				<Table.Head
 					allSelected={table.getIsAllRowsSelected()}
@@ -170,7 +172,10 @@ export const TableLayout = memo(() => {
 								>
 									{header.isPlaceholder
 										? null
-										: flexRender(header.column.columnDef.header, header.getContext())}
+										: flexRender(
+												header.column.columnDef.header,
+												header.getContext(),
+										  )}
 								</Table.HeaderColumn>
 							))}
 						</Table.HeaderRow>
@@ -196,7 +201,10 @@ export const TableLayout = memo(() => {
 								// }}
 							>
 								{row.getVisibleCells().map((cell) => {
-									const Component = cell.column.id === "$select" ? Table.HeaderColumn : Table.Column
+									const Component =
+										cell.column.id === "$select"
+											? Table.HeaderColumn
+											: Table.Column
 									const prop = propertiesMap[cell.column.id]
 
 									return (
@@ -204,14 +212,19 @@ export const TableLayout = memo(() => {
 											key={cell.id}
 											className={clsx(
 												"bg-inherit",
-												cell.column.id === "$select" && " sticky left-0 z-20 w-12 shadow-inner",
-												cell.column.id === "$actions" && "sticky right-0 z-20 shadow-inner ", //
+												cell.column.id === "$select" &&
+													" sticky left-0 z-20 w-12 shadow-inner",
+												cell.column.id === "$actions" &&
+													"sticky right-0 z-20 shadow-inner ", //
 											)}
 										>
 											{prop ? (
 												<RenderProperty property={prop} />
 											) : (
-												flexRender(cell.column.columnDef.cell, cell.getContext())
+												flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext(),
+												)
 											)}
 										</Component>
 									)

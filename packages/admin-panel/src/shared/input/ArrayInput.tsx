@@ -1,5 +1,5 @@
-import { Button } from "@admin-panel/ui/Button"
-import { IconButton } from "@admin-panel/ui/IconButton"
+import { Button } from "@admin-panel/ui/buttons/Button"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { ReactNode } from "react"
 import { useFieldArray, useFormContext } from "react-hook-form"
 import {
@@ -40,9 +40,9 @@ export function ArrayInput(props: ArrayInputProps): JSX.Element {
 						<div className="flex items-center justify-between">
 							<span className="text-sm">Value {i + 1}</span>
 							<IconButton
-								label="Remove item"
+								aria-label="Remove item"
 								className="ml-2"
-								variant="error"
+								color="error"
 								onPress={() => controller.remove(i)}
 							>
 								<MdDelete />
@@ -54,8 +54,8 @@ export function ArrayInput(props: ArrayInputProps): JSX.Element {
 						{i < controller.fields.length - 1 && (
 							<div className="center w-full">
 								<Button
-									small
-									variant="transparent"
+									size="small"
+									color="transparent"
 									onPress={() => controller.swap(i, i + 1)}
 									startIcon={<MdArrowUpward />}
 									endIcon={<MdArrowDownward />}
@@ -69,7 +69,7 @@ export function ArrayInput(props: ArrayInputProps): JSX.Element {
 			})}
 			<div className="flex w-full justify-end">
 				<Button
-					variant="transparent"
+					color="transparent"
 					onPress={() => controller.append(props.defaultValue ?? "")}
 					endIcon={<MdAddCircleOutline />}
 				>

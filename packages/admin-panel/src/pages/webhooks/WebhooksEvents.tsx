@@ -1,5 +1,5 @@
-import { IconButton } from "@admin-panel/ui/IconButton"
 import { Table } from "@admin-panel/ui/Table"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { useMemo } from "react"
 import { MdCheck, MdClose } from "react-icons/md"
 import { useUserCollections } from "../../hooks/use-user-collections"
@@ -64,8 +64,8 @@ function EventButton(
 	const checked = events?.includes(event)
 	return (
 		<IconButton
-			label={`${checked ? "Disable" : "Enable"} event ${event}`}
-			onClick={() => props.onClick?.(`${action}.${collection}`, !checked ?? true)}
+			aria-label={`${checked ? "Disable" : "Enable"} event ${event}`}
+			onPress={() => props.onClick?.(`${action}.${collection}`, !checked ?? true)}
 			className="mx-auto"
 		>
 			{checked ? <MdCheck color="success" data-testid="CheckIcon" /> : <MdClose />}

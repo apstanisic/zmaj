@@ -1,9 +1,9 @@
 import { autoUpdate, flip, offset, shift, useFloating } from "@floating-ui/react-dom"
 import { clsx } from "clsx"
 import { ReactNode, useState } from "react"
-import { StyleVariant } from "./StyleVariant"
+import { ButtonStyleColor } from "./StyleVariant"
 
-type Color = Exclude<StyleVariant, "link" | "transparent">
+type Color = Exclude<ButtonStyleColor, "link" | "transparent">
 
 const colors: Record<Color, string> = {
 	accent: "bg-accent  text-accent-content",

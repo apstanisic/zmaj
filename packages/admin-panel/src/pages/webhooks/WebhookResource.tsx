@@ -1,6 +1,6 @@
 import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Authz } from "@admin-panel/state/authz-state"
-import { systemPermissions, WebhookCollection } from "@zmaj-js/common"
+import { WebhookCollection } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 import { GeneratedListPage } from "../../generator/pages/GeneratedListPage"
 import { WebhookCreate } from "./WebhookCreate"
@@ -22,8 +22,7 @@ export function webhookResource(props: { authz: Authz }): JSX.Element {
 			edit={edit ? WebhookEdit : undefined}
 			create={create ? WebhookCreate : undefined}
 			options={{
-				label: webhook.label ?? undefined,
-				authzResource: systemPermissions.webhooks.resource, //
+				collection: WebhookCollection,
 			}}
 		/>
 	)

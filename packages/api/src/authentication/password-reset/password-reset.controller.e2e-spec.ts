@@ -1,22 +1,16 @@
 import { EmailService } from "@api/email/email.service"
 import { EncryptionService } from "@api/encryption/encryption.service"
-import { SecurityTokenStub } from "@api/security-tokens/security-token.stub"
-import { getE2ETestModule } from "@api/testing/e2e-test-module"
+import { createTestServer, TestSdk } from "@api/testing/e2e-test-module"
 import { UsersService } from "@api/users/users.service"
 import { INestApplication } from "@nestjs/common"
-import { randFutureDate } from "@ngneat/falso"
 import {
 	ADMIN_ROLE_ID,
 	AnyFn,
+	extractUrl,
 	PasswordResetDto,
-	qsStringify,
-	SecurityToken,
-	SecurityTokenModel,
 	User,
 	UserCreateDto,
 } from "@zmaj-js/common"
-import { OrmRepository, RepoManager } from "@zmaj-js/orm"
-import { omit } from "radash"
 import supertest from "supertest"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -30,19 +24,19 @@ vi.mock("@zmaj-js/common", async () => ({
 const newPasswordRaw = "e2e_test_password"
 
 describe("PasswordResetController e2e", () => {
+	let testSdk: TestSdk
 	let app: INestApplication
 	let emailService: EmailService
 	let encService: EncryptionService
 	let usersService: UsersService
 	//
-	let tokenRepo: OrmRepository<SecurityTokenModel>
-	//
 	let user: User
 	//
 	beforeAll(async () => {
-		app = await getE2ETestModule({
+		testSdk = await createTestServer({
 			authentication: { allowBasicAuth: true, passwordReset: "reset-email" },
 		})
+		app = testSdk.app
 		//
 		encService = app.get(EncryptionService)
 
@@ -50,13 +44,11 @@ describe("PasswordResetController e2e", () => {
 		emailService.sendEmail = vi.fn()
 		//
 		usersService = app.get(UsersService)
-		//
-		tokenRepo = app.get(RepoManager).getRepo(SecurityTokenModel)
 	})
 
 	afterAll(async () => {
 		await usersService.repo.deleteWhere({ where: { id: user.id } })
-		await app.close()
+		await testSdk.destroy()
 	})
 
 	beforeEach(async () => {
@@ -72,7 +64,6 @@ describe("PasswordResetController e2e", () => {
 	})
 
 	afterEach(async () => {
-		await tokenRepo.deleteWhere({ where: { userId: user.id } })
 		await usersService.repo.deleteById({ id: user.id })
 	})
 
@@ -85,81 +76,49 @@ describe("PasswordResetController e2e", () => {
 			expect(res.statusCode).toEqual(201)
 			expect(res.body).toEqual({ email: user.email })
 
-			const tokens = await tokenRepo.findWhere({ where: { userId: user.id } })
-			expect(tokens).toHaveLength(1)
-
-			const token = tokens[0]!
-			expect(token).toMatchObject({
-				usedFor: "password-reset",
-				userId: user.id,
-			})
-			const url =
-				"http://localhost:7100/api/auth/password-reset/reset?" +
-				qsStringify({ email: user.email, token: token.token })
-
 			expect(emailService.sendEmail).toBeCalledWith({
 				to: "e2e_pass_reset@example.com",
 				subject: "Reset password",
-				html: expect.stringContaining(url),
-				text: "Go to " + url + " to reset password",
+				html: expect.stringContaining("http"),
+				text: expect.stringContaining("http"),
 			})
 		})
 	})
 
 	describe("GET /auth/password-reset/reset", () => {
-		let token: SecurityToken
-
-		beforeEach(async () => {
-			token = await tokenRepo.createOne({
-				data: omit(
-					SecurityTokenStub({
-						usedFor: "password-reset",
-						userId: user.id,
-					}),
-					["createdAt"],
-				),
-			})
-		})
-
-		it("should redirect to ui to change password", async () => {
-			const query = qsStringify({ email: user.email, token: token.token })
+		it("should redirect to ui to change password with token", async () => {
 			const res = await supertest(app.getHttpServer()).get(
-				`/api/auth/password-reset/reset?${query}`,
+				`/api/auth/password-reset/reset?token=hello_world`,
 			)
 
 			expect(res.redirect).toEqual(true)
 			expect(res.statusCode).toEqual(303)
 			expect(res.headers.location).toEqual(
-				`http://localhost:7100/admin#/auth/password-reset?${query}`,
+				`http://localhost:7100/admin#/auth/password-reset?token=hello_world`,
 			)
 		})
 	})
 
 	describe("POST /auth/password-reset/reset", () => {
-		let token: SecurityToken
 		beforeEach(async () => {
-			token = await tokenRepo.createOne({
-				data: omit(
-					SecurityTokenStub({
-						usedFor: "password-reset",
-						userId: user.id,
-						validUntil: randFutureDate(),
-					}),
-					["createdAt"],
-				),
-			})
+			vi.mocked(emailService.sendEmail).mockClear()
 		})
 
 		it("should change password", async () => {
+			const emailSend = vi.spyOn(emailService, "sendEmail")
+			await supertest(app.getHttpServer())
+				.put("/api/auth/password-reset/request")
+				.send({ email: user.email })
+
+			const emailText = emailSend.mock.lastCall?.[0].text?.toString()
+
+			const url = extractUrl(emailText ?? "")
+			expect(url).toBeDefined()
+			const token = new URL(url!).searchParams.get("token") ?? ""
+
 			const res = await supertest(app.getHttpServer())
 				.put("/api/auth/password-reset/reset")
-				.send(
-					new PasswordResetDto({
-						email: user.email,
-						password: newPasswordRaw,
-						token: token.token,
-					}),
-				)
+				.send(new PasswordResetDto({ password: "new_password", token }))
 
 			expect(res.statusCode).toEqual(200)
 			expect(res.body).toEqual({ email: user.email })

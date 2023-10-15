@@ -1,15 +1,11 @@
-import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
-import { ShowBase, useResourceDefinition } from "ra-core"
-import { memo, ReactNode } from "react"
+import { ShowBase } from "ra-core"
+import { PropsWithChildren, memo } from "react"
 import { NonListToolbar, NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
 import { GeneratedShowLayout } from "../layouts/GeneratedShowLayout"
 import { GeneratedPageProvider } from "./GeneratedPageProvider"
 
-export const GeneratedShowPage = memo((props: NonListToolbarProps & { children?: ReactNode }) => {
+export const GeneratedShowPage = memo((props: PropsWithChildren<NonListToolbarProps>) => {
 	const { children, ...rest } = props
-
-	const resource = useResourceDefinition()
-	useHtmlTitle(resource, "Display")
 
 	return (
 		<GeneratedPageProvider action="show">

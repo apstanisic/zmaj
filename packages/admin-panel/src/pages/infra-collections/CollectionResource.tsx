@@ -1,6 +1,6 @@
 import { checkSystem } from "@admin-panel/hooks/use-is-allowed"
 import { Authz } from "@admin-panel/state/authz-state"
-import { CollectionMetadataCollection, systemPermissions } from "@zmaj-js/common"
+import { CollectionMetadataCollection } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 import { CollectionCreate } from "./CollectionCreate"
 import { CollectionEdit } from "./CollectionEdit"
@@ -19,8 +19,7 @@ export function collectionResource(props: { authz: Authz }): JSX.Element {
 			edit={modify ? CollectionEdit : undefined}
 			create={modify ? CollectionCreate : undefined}
 			options={{
-				label: col.label ?? "Collections",
-				authzResource: systemPermissions.infra.resource,
+				collection: CollectionMetadataCollection,
 			}}
 		/>
 	)

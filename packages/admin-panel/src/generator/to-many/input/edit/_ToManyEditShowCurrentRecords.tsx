@@ -1,8 +1,8 @@
 import { ListPagination } from "@admin-panel/app-layout/list/ListPagination"
 import { SimpleListLayout } from "@admin-panel/crud-layouts/list/SimpleListLayout"
-import { IconButton } from "@admin-panel/ui/IconButton"
 import { IconToggleButton } from "@admin-panel/ui/IconToggleButton"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { isUUID, templateParser, truncate } from "@zmaj-js/common"
 import { useListContext } from "ra-core"
 import { memo } from "react"
@@ -31,11 +31,12 @@ export const ToManyEditShowCurrentRecords = memo(() => {
 							<Tooltip text="View record" side="left">
 								{/* There has to be prettier way, to still use this button, and not link */}
 								<IconButton
-									label={`Display ${truncated(templateParser.parse(template, r))}`}
+									aria-label={`Display ${truncated(
+										templateParser.parse(template, r),
+									)}`}
 									// label="Display"
-									elementType="a"
 									// open in new tab since opening in same tab will destroy form
-									onClick={() => window.open(showRecordUrl, "_blank")}
+									onPress={() => window.open(showRecordUrl, "_blank")}
 								>
 									<MdOutlineVisibility />
 								</IconButton>
@@ -53,13 +54,14 @@ export const ToManyEditShowCurrentRecords = memo(() => {
 							>
 								<IconToggleButton
 									// data-testid={(isRemoved ? "Undo " : "Remove ") + templateParser.parse(template, r)}
-									label={
-										(isRemoved ? "Undo " : "Remove ") + truncated(templateParser.parse(template, r))
+									aria-label={
+										(isRemoved ? "Undo " : "Remove ") +
+										truncated(templateParser.parse(template, r))
 									}
 									// label={isRemoved ? "Undo" : "Remove"}
 									type="button"
-									onClick={() => changes.toggle("removed", r.id)}
-									disabled={disabled || !deletable}
+									onPress={() => changes.toggle("removed", r.id)}
+									isDisabled={disabled || !deletable}
 									className="ml-auto"
 									isOn={isRemoved}
 									on={<MdUndo className="text-info" />}

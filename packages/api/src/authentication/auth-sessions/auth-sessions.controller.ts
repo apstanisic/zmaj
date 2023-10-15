@@ -7,9 +7,9 @@ import {
 	AuthSessionCollection,
 	AuthUser,
 	Data,
-	endpoints,
 	PublicAuthSession,
 	REFRESH_COOKIE_NAME,
+	endpoints,
 	type Struct,
 	type UUID,
 } from "@zmaj-js/common"

@@ -2,15 +2,15 @@ import { useLayoutConfigContext } from "@admin-panel/context/layout-config-conte
 import { useAuthz } from "@admin-panel/state/authz-state"
 import { clsx } from "clsx"
 import { RaRecord, useResourceDefinition } from "ra-core"
-import { memo, ReactNode, useCallback, useMemo } from "react"
+import { ReactNode, memo, useCallback, useMemo } from "react"
 import { useActionContext } from "../../context/action-context"
-import { useCollectionContext } from "../../context/collection-context"
+import { useResourceCollection } from "../../hooks/use-resource-collection"
 import { useSuccessRedirect } from "../../hooks/use-success-redirect"
 import { throwInApp } from "../../shared/throwInApp"
+import { CrudBreadcrumbs } from "../CrudBreadcrumbs"
 import { DeleteButton } from "../buttons/DeleteButton"
 import { EditButton } from "../buttons/EditButton"
 import { ShowButton } from "../buttons/ShowButton"
-import { CrudBreadcrumbs } from "../CrudBreadcrumbs"
 import { ShowChangesButton } from "../show/ShowChangesButton"
 // import { ShowChangesButton } from "../show/ShowChangesButton"
 import { ShowRecordAsJsonDialog } from "../show/ShowRecordAsJsonDialog"
@@ -34,7 +34,7 @@ export const NonListToolbar = memo((props: NonListToolbarProps) => {
 	const action = useActionContext()
 
 	const title = useTitle()
-	const collection = useCollectionContext() ?? throwInApp("42351")
+	const collection = useResourceCollection() ?? throwInApp("42351")
 
 	const successRedirect = useSuccessRedirect()
 	const authz = useAuthz()

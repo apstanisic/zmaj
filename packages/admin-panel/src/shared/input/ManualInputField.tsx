@@ -18,7 +18,7 @@ export const ManualInputField = memo((props: ManualInputFieldProps) => {
 	const field = useFieldContext()
 
 	const [searchParams] = useSearchParams()
-	const action: "edit" | "create" = props.action ?? "create"
+	// const action: "edit" | "create" = props.action ?? "create"
 	const source = props.source
 
 	const disabledWithQuery = searchParams.get(`disable_${source}`) === "true"
@@ -26,7 +26,7 @@ export const ManualInputField = memo((props: ManualInputFieldProps) => {
 	const joined: InputFieldProps = {
 		...props,
 		source,
-		action,
+		action: props.action,
 		record,
 		disabled: props.disabled || disabledWithQuery,
 		isRequired: props.isRequired ?? false,
@@ -35,10 +35,6 @@ export const ManualInputField = memo((props: ManualInputFieldProps) => {
 		fieldConfig: props.fieldConfig ?? field?.fieldConfig,
 		placeholder: props.placeholder,
 	}
-
-	// if (joined.render) {
-	//   return <DefaultInputField {...joined} /> //render={joined.render} />
-	// }
 
 	return <Component {...joined} />
 })

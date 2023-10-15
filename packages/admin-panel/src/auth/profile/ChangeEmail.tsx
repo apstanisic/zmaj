@@ -1,12 +1,10 @@
 import { useIsAllowedSystem } from "@admin-panel/hooks/use-is-allowed"
-import { Button } from "@admin-panel/ui/Button"
+import { FormEmailInput, FormPasswordInput } from "@admin-panel/ui/Controlled"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { ChangeEmailDto, Struct } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
 import { useCallback } from "react"
 import { useSdk } from "../../context/sdk-context"
-import { EmailInputField } from "../../field-components/email/EmailInputField"
-import { PasswordInputField } from "../../field-components/password/PasswordInputField"
-import { ManualInputField } from "../../shared/input/ManualInputField"
 
 export function ChangeEmail(): JSX.Element {
 	const sdk = useSdk()
@@ -31,11 +29,16 @@ export function ChangeEmail(): JSX.Element {
 
 	return (
 		<Form defaultValues={{ newEmail: "", password: "" }} onSubmit={onSubmit}>
-			<ManualInputField source="newEmail" Component={EmailInputField} isRequired />
-			<ManualInputField source="password" Component={PasswordInputField} isRequired />
+			<FormEmailInput label="New email" name="newEmail" isRequired />
+			<FormPasswordInput label="Current password" name="password" isRequired />
 
 			<div className="flex justify-end">
-				<Button className="ml-auto mt-2" type="submit" outline isDisabled={!canChange}>
+				<Button
+					className="ml-auto mt-2"
+					type="submit"
+					variant="outlined"
+					isDisabled={!canChange}
+				>
 					Update email
 				</Button>
 			</div>

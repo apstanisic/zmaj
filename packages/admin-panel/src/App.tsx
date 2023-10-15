@@ -7,6 +7,7 @@ import { IconContext } from "react-icons"
 import { HashRouter } from "react-router-dom"
 import { SetOptional } from "type-fest"
 import { AdminPanel } from "./AdminPanel"
+import { CustomPage } from "./app-layout/CustomPage"
 import { ZmajQueryClientProvider } from "./app-query-client"
 import {
 	GlobalConfig,
@@ -21,7 +22,6 @@ import {
 } from "./hooks/use-register-crud-layouts"
 import { useRegisterFieldComponents } from "./hooks/use-register-field-components"
 import { useRegisterTemplatePipes } from "./hooks/use-register-template-pipes"
-import { CustomPage } from "./app-layout/CustomPage"
 
 export type AppProps = SetOptional<
 	GlobalConfig,
@@ -61,10 +61,7 @@ export function App(props: AppProps): JSX.Element {
 						<StoreContextProvider value={memoryStore()}>
 							<ZmajQueryClientProvider>
 								<ReactQueryDevtools />
-
-								{/* <QueryClientProvider client={appQueryClient}> */}
 								<AdminPanel customPages={props.customPages} />
-								{/* </QueryClientProvider> */}
 							</ZmajQueryClientProvider>
 						</StoreContextProvider>
 					</HashRouter>

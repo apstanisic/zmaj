@@ -220,6 +220,7 @@ export class InfraStateService {
 		return {
 			...collection,
 			definedInCode: false,
+			authzMustManage: false,
 			pkType: pkField.isAutoIncrement ? "auto-increment" : "uuid",
 			pkColumn: pkField.columnName,
 			pkField: pkField.fieldName,

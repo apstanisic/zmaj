@@ -3,16 +3,16 @@ import { fullWidthFieldCss } from "@admin-panel/crud-layouts/get-field-width-css
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { Role } from "@zmaj-js/common"
 import { clsx } from "clsx"
-import { useCollectionContext } from "../../context/collection-context"
 import { RelationContextProvider } from "../../context/relation-context"
 import { TabsSection } from "../../crud-layouts/ui/tabs/TabsSection"
 import { OneToManyField } from "../../generator/one-to-many/OneToManyField"
+import { useResourceCollection } from "../../hooks/use-resource-collection"
 
 /**
  * Show users that have current role
  */
 export function RoleUsers(): JSX.Element {
-	const col = useCollectionContext()
+	const col = useResourceCollection()
 	const rel = col.relations["users"]
 	const role = useRecord<Role>()
 	if (!rel) return <></>
@@ -27,9 +27,8 @@ export function RoleUsers(): JSX.Element {
 					label="Add new user"
 					query={`?source=${JSON.stringify({ roleId: role?.id })}`}
 					resource={"zmajUsers"}
-					small={false}
-					variant="normal"
-					outline
+					color="normal"
+					variant="outlined"
 					className="w-80"
 					isDisabled={role?.id === undefined}
 				/>

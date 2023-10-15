@@ -12,9 +12,9 @@ export function ToggleThemeButton(): JSX.Element {
 
 	return (
 		<IconToggleButton
-			onClick={changeTheme}
-			label="Toggle Theme"
-			large
+			onPress={changeTheme}
+			aria-label="Toggle Theme"
+			size="large"
 			isOn={theme === "light"}
 			on={<MdBrightness7 />}
 			off={<MdBrightness4 />}

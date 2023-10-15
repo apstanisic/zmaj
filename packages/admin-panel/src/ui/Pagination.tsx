@@ -1,5 +1,8 @@
+import { cn } from "@admin-panel/utils/cn"
 import { clsx } from "clsx"
 import { max, unique } from "radash"
+import { useId } from "react"
+import { Label } from "react-aria-components"
 import {
 	//
 	MdChevronLeft,
@@ -7,8 +10,9 @@ import {
 	MdFirstPage,
 	MdLastPage,
 } from "react-icons/md"
-import { IconButton } from "./IconButton"
-import { Select } from "./Select"
+import { IconButton } from "./buttons/IconButton"
+import { SelectInput } from "./forms/SelectInput"
+import { getLabelCss } from "./forms/forms-css"
 
 export type PaginationProps = {
 	total: number
@@ -42,13 +46,17 @@ export function Pagination(props: PaginationProps): JSX.Element {
 				/>
 			)}
 
-			<IconButton label="First page" disabled={props.page === 1} onClick={() => setPage(1)}>
+			<IconButton
+				aria-label="First page"
+				isDisabled={props.page === 1}
+				onPress={() => setPage(1)}
+			>
 				<MdFirstPage />
 			</IconButton>
 			<IconButton
-				label="Previous page"
-				disabled={props.page === 1}
-				onClick={() => setPage(page - 1)}
+				aria-label="Previous page"
+				isDisabled={props.page === 1}
+				onPress={() => setPage(page - 1)}
 			>
 				<MdChevronLeft />
 			</IconButton>
@@ -59,17 +67,17 @@ export function Pagination(props: PaginationProps): JSX.Element {
 			</div>
 
 			<IconButton
-				label="Next page"
-				disabled={totalPages === props.page}
-				onClick={() => setPage(page + 1)}
+				aria-label="Next page"
+				isDisabled={totalPages === props.page}
+				onPress={() => setPage(page + 1)}
 			>
 				<MdChevronRight />
 			</IconButton>
 
 			<IconButton
-				label="Last page"
-				disabled={totalPages === props.page}
-				onClick={() => setPage(totalPages)}
+				aria-label="Last page"
+				isDisabled={totalPages === props.page}
+				onPress={() => setPage(totalPages)}
 			>
 				<MdLastPage />
 			</IconButton>
@@ -85,24 +93,27 @@ type PerPageProps = {
 }
 
 function PaginationPerPage(props: PerPageProps): JSX.Element {
+	const id = useId()
 	return (
-		<div className={clsx("mr-4", props.className)}>
-			<Select
+		<div className={clsx("mr-4 flex gap-x-2 items-center", props.className)}>
+			<Label htmlFor={id} className={cn(getLabelCss({}), "whitespace-nowrap")}>
+				Per page
+			</Label>
+			<SelectInput
+				aria-label="Per page"
+				id={id}
 				// hideHelperText
-				required
+				isRequired
 				// hideAsterisk
-				labelPosition="right"
-				label="Per Page"
 				// buttonClassName="p-1"
-				buttonProps={{ className: "py-1 !h-10" }}
-				className="!flex-row-reverse items-center"
+				// buttonProps={{ className: "py-1 !h-10" }}
 				// className="h-8 w-40"
 				name="perPage"
-				hideRequiredSign
-				disabled={props.options.length === 0 || props.disabled}
+				// hideRequiredSign
+				isDisabled={props.options.length === 0 || props.disabled}
 				value={props.current}
-				choices={props.options.map((op) => ({ value: op }))} //
-				onChange={(val: number) => props.onChange(val)}
+				options={props.options.map((op) => ({ value: op }))} //
+				onChange={(val) => props.onChange(val as number)}
 			/>
 		</div>
 	)

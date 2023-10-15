@@ -31,12 +31,9 @@ export class EmailCallbackService {
 		private globalConfig: GlobalConfig,
 	) {}
 
-	/**
-	 * Create URL that can be used to verify action.
-	 * It forces good practices, such as forcing to say purpose of JWT,
-	 * scoping JWT to user and forcing expiration.
-	 */
-	async createJwtCallbackUrl<T extends z.AnyZodObject>(params: CreateUrlParams<T>): Promise<URL> {
+	private async createJwtCallbackToken<T extends z.AnyZodObject>(
+		params: CreateUrlParams<T>,
+	): Promise<string> {
 		const jwtToken = await this.jwtService.signAsync(
 			{
 				...params.data,
@@ -47,6 +44,16 @@ export class EmailCallbackService {
 				expiresIn: params.expiresIn,
 			},
 		)
+		return jwtToken
+	}
+
+	/**
+	 * Create URL that can be used to verify action.
+	 * It forces good practices, such as forcing to say purpose of JWT,
+	 * scoping JWT to user and forcing expiration.
+	 */
+	async createJwtCallbackUrl<T extends z.AnyZodObject>(params: CreateUrlParams<T>): Promise<URL> {
+		const jwtToken = await this.createJwtCallbackToken(params)
 		const url = this.globalConfig.withApiUrl(params.path, { token: jwtToken })
 		return url
 	}

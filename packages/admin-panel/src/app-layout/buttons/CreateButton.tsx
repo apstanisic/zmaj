@@ -1,4 +1,4 @@
-import { ResponsiveButton, ResponsiveButtonProps } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton, ResponsiveButtonProps } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { useResourceContext } from "ra-core"
 import { MdAdd } from "react-icons/md"
 import { useHref } from "react-router"
@@ -17,7 +17,7 @@ export function CreateButton(props: CreateButtonProps): JSX.Element {
 
 	return (
 		<ResponsiveButton
-			small
+			size="small"
 			label="Create"
 			aria-label="Create record"
 			href={href}

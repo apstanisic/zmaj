@@ -1,10 +1,10 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { IconButton } from "@admin-panel/ui/IconButton"
 import { Table } from "@admin-panel/ui/Table"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { ADMIN_ROLE_ID, CollectionDef, Permission, Role } from "@zmaj-js/common"
 import { ReactElement, useCallback, useMemo } from "react"
-import { useAuthzDialogState } from "../dialog/authz-dialog-state"
 import { PermissionStateIcon } from "../_PermissionStateIcon"
+import { useAuthzDialogState } from "../dialog/authz-dialog-state"
 
 export function CollectionPermissionsRow(props: {
 	allowedPermissions: Permission[]
@@ -33,13 +33,16 @@ export function CollectionPermissionsRow(props: {
 				<Table.Column className="text-center">
 					<IconButton
 						// size="large"
-						label={`Show permission dialog for ${action} ${resource}`}
-						disabled={role?.id === ADMIN_ROLE_ID}
-						onClick={() =>
+						aria-label={`Show permission dialog for ${action} ${resource}`}
+						isDisabled={role?.id === ADMIN_ROLE_ID}
+						onPress={() =>
 							showDialog({
 								action,
 								resource,
-								availableFields: action === "delete" ? null : Object.keys(props.collection.fields),
+								availableFields:
+									action === "delete"
+										? null
+										: Object.keys(props.collection.fields),
 								fields: permission?.fields?.concat() ?? null,
 							})
 						}

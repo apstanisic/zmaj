@@ -1,4 +1,4 @@
-import { ResponsiveButton } from "@admin-panel/ui/ResponsiveButton"
+import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { FileInfo, systemPermissions } from "@zmaj-js/common"
 import { useListContext, useNotify } from "ra-core"
 import { useCallback } from "react"
@@ -30,5 +30,5 @@ export function BulkFileDownloadButton(): JSX.Element {
 	const allowed = useIsAllowed(actions.read.key, resource)
 	if (!allowed) return <></>
 
-	return <ResponsiveButton onClick={download} label="Download" icon={<MdGetApp />} />
+	return <ResponsiveButton onPress={download} label="Download" icon={<MdGetApp />} />
 }

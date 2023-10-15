@@ -1,6 +1,7 @@
 export * from "./as-mock"
 export * from "./camel-case-keys"
 export * from "./create-basic-token"
+export * from "./extract-url"
 export * from "./filter-struct"
 export * from "./from-base-64"
 export * from "./get-authz-key"

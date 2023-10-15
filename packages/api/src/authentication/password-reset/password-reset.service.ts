@@ -1,6 +1,6 @@
 import { GlobalConfig } from "@api/app/global-app.config"
 import { AuthorizationService } from "@api/authorization/authorization.service"
-import { throw403 } from "@api/common/throw-http"
+import { Error401, Error403 } from "@api/common/throw-http"
 import { EmailCallbackService } from "@api/email/email-callback.service"
 import { EmailService } from "@api/email/email.service"
 import { EncryptionService } from "@api/encryption/encryption.service"
@@ -36,8 +36,14 @@ export class PasswordResetService {
 		private config: GlobalConfig,
 		private encryptionService: EncryptionService,
 		private emailCallbackService: EmailCallbackService,
+		private globalConfig: GlobalConfig,
 	) {}
 
+	/**
+	 * Password is hashed + encrypted, we take last 12 chars of that string,
+	 * and use it to create unique identifier. That will guarantee that only
+	 * can only use password reset if password wasn't changed
+	 */
 	passwordToHmac(fullPasswordHash: string): { sectionUsed: string; hmac: string } {
 		const sectionUsed = fullPasswordHash.slice(-12)
 		const hmac = this.encryptionService.createHmac(sectionUsed)
@@ -50,7 +56,9 @@ export class PasswordResetService {
 	 * @param email to send reset instructions
 	 */
 	async sendResetPasswordEmail(email: Email): Promise<void> {
-		if (this.authnConfig.passwordReset !== "reset-email") throw403(270903, emsg.noAuthz)
+		if (this.authnConfig.passwordReset !== "reset-email") {
+			throw new Error403(270903, emsg.noAuthz)
+		}
 
 		// Don't throw if user does not exists, simply return
 		// we do not want user to know if this account exists
@@ -91,7 +99,7 @@ export class PasswordResetService {
 			subject: "Reset password",
 			text: `Go to ${url.toString()} to reset password`,
 			html: emailTemplates.passwordReset({
-				ZMAJ_APP_NAME: this.emailService["globalConfig"].name,
+				ZMAJ_APP_NAME: this.globalConfig.name,
 				ZMAJ_URL: url.toString(),
 			}),
 		})
@@ -118,17 +126,18 @@ export class PasswordResetService {
 			where: { id: jwtData.sub, status: "active", confirmedEmail: true },
 		})
 
-		if (!fullUser) throw403(89932, emsg.emailTokenExpired)
+		if (!fullUser) throw new Error401(89932, emsg.emailTokenExpired)
 
 		const { sectionUsed } = this.passwordToHmac(fullUser.password)
 		if (!this.encryptionService.verifyHmac(sectionUsed, hmac)) {
-			throw403(93999, emsg.emailTokenExpired)
+			throw new Error403(93999, emsg.emailTokenExpired)
 		}
 
 		const user = AuthUser.fromUser(fullUser)
 
-		this.authzService.checkSystem("account", "resetPassword", { user }) ||
-			throw403(927134, emsg.noAuthz)
+		if (!this.authzService.checkSystem("account", "resetPassword", { user })) {
+			throw new Error403(927134, emsg.noAuthz)
+		}
 
 		await this.usersService.setPassword({ newPassword: password, userId: user.userId })
 	}

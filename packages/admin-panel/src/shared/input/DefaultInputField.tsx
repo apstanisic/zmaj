@@ -1,9 +1,9 @@
-import { TextInput, TextInputProps } from "@admin-panel/ui/TextInput"
+import { TextInput } from "@admin-panel/ui/forms/TextInput"
 import { memo } from "react"
 import { InputFieldProps } from "../../field-components/types/InputFieldProps"
 import { useInputField } from "./useInputField"
 
-export const DefaultInputField = memo((props: InputFieldProps<TextInputProps<"input">>) => {
+export const DefaultInputField = memo((props: InputFieldProps<any>) => {
 	const inp = useInputField({
 		source: props.source,
 		description: props.description,
@@ -27,7 +27,7 @@ export const DefaultInputField = memo((props: InputFieldProps<TextInputProps<"in
 		<TextInput
 			label={inp.label}
 			description={inp.helperText}
-			errorMessage={inp.error?.message}
+			error={inp.error?.message}
 			className={inp.className}
 			isDisabled={inp.disabled}
 			isRequired={inp.isRequired}
@@ -35,7 +35,6 @@ export const DefaultInputField = memo((props: InputFieldProps<TextInputProps<"in
 			type={inp.type}
 			// name={ip.name}
 			{...inp.field}
-			{...props.customProps!}
 		/>
 	)
 })

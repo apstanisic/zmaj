@@ -11,7 +11,8 @@ const defaultUserConfig: ConfigureAppParams = {
 		requireEmailConfirmation: true,
 		exposePublicInfo: true,
 		allowAdminInitialize: true,
-		allowSignUp: "dynamic",
+		allowSignUp: false,
+		// allowSignUp: "dynamic",
 		encryptPasswordHash: true,
 	},
 	authorization: { exposeAllowedPermissions: true },
@@ -32,7 +33,7 @@ const defaultUserConfig: ConfigureAppParams = {
 }
 
 const devConfig: ConfigureAppParams = merge(defaultUserConfig, {
-	authentication: { allowBasicAuth: true, allowSignUp: "dynamic" },
+	authentication: { allowBasicAuth: true, allowSignUp: true },
 	migrations: { runDynamicMigrations: false, autoRunMigrations: true },
 	security: { exposeErrorDetails: true },
 	// cache: { enabled: false },

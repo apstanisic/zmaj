@@ -31,7 +31,6 @@ export const DateTimeFieldConfigShow = (): JSX.Element => {
 			source="fieldConfig.component.dateTime.showRelative"
 			Component={BooleanShowField}
 			label="Show Relative Date In List"
-			__fallbackValue={false}
 		/>
 	)
 }

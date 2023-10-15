@@ -1,6 +1,6 @@
 import { SimpleListLayout } from "@admin-panel/crud-layouts/list/SimpleListLayout"
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { Button } from "@admin-panel/ui/Button"
+import { Button } from "@admin-panel/ui/buttons/Button"
 import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
 import { CollectionDef, RelationDef, RelationMetadataCollection } from "@zmaj-js/common"
 import { ResourceContextProvider } from "ra-core"
@@ -44,7 +44,7 @@ export const CollectionShowRelations = memo(() => {
 			<Button
 				className="mx-auto w-72"
 				endIcon={<MdOutlineAddCircle />}
-				variant="transparent"
+				color="transparent"
 				href={newRelationHref}
 			>
 				<span>Add relation</span>
