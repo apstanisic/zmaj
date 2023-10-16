@@ -1,10 +1,10 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { Dialog } from "@admin-panel/ui/Dialog"
+import { HighlightCode } from "@admin-panel/ui/HighlightedCode"
 import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { useMemo, useState } from "react"
 import { MdCode } from "react-icons/md"
 import { useActionContext } from "../../context/action-context"
-import { HighlightCode } from "../../field-components/code/HighlightCode"
 
 /**
  * Renders button that when clicked shows Record as JSON

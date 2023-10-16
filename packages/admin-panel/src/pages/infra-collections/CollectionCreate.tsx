@@ -1,13 +1,16 @@
 import { SaveButton } from "@admin-panel/app-layout/buttons/SaveButton"
-import { JsonInputField } from "@admin-panel/field-components/json/JsonInputField"
+import {
+	FormJsonInput,
+	FormSelectInput,
+	FormSwitchInput,
+	FormTextInput,
+} from "@admin-panel/ui/Controlled"
 import { LayoutConfigSchema } from "@zmaj-js/common"
 import { RaRecord } from "ra-core"
 import { memo } from "react"
-import { ManualInputLayout } from "../../crud-layouts/input"
+import { CustomInputLayout } from "../../crud-layouts/input"
 import { StepSection } from "../../crud-layouts/ui/steps/StepSection"
 import { StepLayout } from "../../crud-layouts/ui/steps/StepsLayout"
-import { BooleanInputField } from "../../field-components/boolean/BooleanInputField"
-import { DropdownInputField } from "../../field-components/dropdown/DropdownInputField"
 import { GeneratedCreatePage } from "../../generator/pages/GeneratedCreatePage"
 import { shortTextDbColumnValidation } from "../../shared/db-column-form-validation"
 import { ManualInputField } from "../../shared/input/ManualInputField"
@@ -18,7 +21,7 @@ export const CollectionCreate = memo(() => {
 
 	return (
 		<GeneratedCreatePage onCreate={async (col: RaRecord) => infra.refetch()}>
-			<ManualInputLayout
+			<CustomInputLayout
 				actions={<></>}
 				defaultValues={{ layoutConfig: LayoutConfigSchema.parse({}) }}
 			>
@@ -44,30 +47,23 @@ export const CollectionCreate = memo(() => {
 							disabled
 						/>
 
-						<ManualInputField
-							source="pkType"
-							Component={DropdownInputField}
+						<FormSelectInput
+							name="pkType"
 							defaultValue="uuid"
-							fieldConfig={{
-								component: {
-									dropdown: {
-										choices: [{ value: "uuid" }, { value: "auto-increment" }], //
-									},
-								},
-							}}
+							options={[{ value: "uuid" }, { value: "auto-increment" }]}
 							isRequired
 						/>
 					</StepSection>
 
 					<StepSection index={1}>
-						<ManualInputField source="label" />
-						<ManualInputField source="displayTemplate" />
-						<ManualInputField source="disabled" Component={BooleanInputField} />
-						<ManualInputField source="hidden" Component={BooleanInputField} />
-						<ManualInputField source="layoutConfig" Component={JsonInputField} defaultValue={{}} />
+						<FormTextInput name="label" />
+						<FormTextInput name="displayTemplate" />
+						<FormSwitchInput name="disabled" defaultValue={false} />
+						<FormSwitchInput name="hidden" defaultValue={false} />
+						<FormJsonInput name="layoutConfig" defaultValue={{}} />
 					</StepSection>
 				</StepLayout>
-			</ManualInputLayout>
+			</CustomInputLayout>
 		</GeneratedCreatePage>
 	)
 })

@@ -44,7 +44,7 @@
 	"dependencies": {
 		"@zmaj-js/orm": "workspace:*",
 		"@zmaj-js/orm-sq": "workspace:*",
-		"type-fest": "^4.3.1"
+		"type-fest": "^4.4.0"
 	},
 	"devDependencies": {
 		"@zmaj-js/test-utils": "workspace:*"

@@ -1,7 +1,7 @@
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { FormMultilineTextInput, FormTextInput } from "@admin-panel/ui/Controlled"
 import { memo } from "react"
-import { ManualInputLayout } from "../../crud-layouts/input/ManualInputLayout"
+import { CustomInputLayout } from "../../crud-layouts/input/ManualInputLayout"
 import { GeneratedEditPage } from "../../generator/pages/GeneratedEditPage"
 
 export const FileEdit = memo(() => {
@@ -9,10 +9,10 @@ export const FileEdit = memo(() => {
 
 	return (
 		<GeneratedEditPage>
-			<ManualInputLayout>
+			<CustomInputLayout>
 				<FormTextInput name="name" label="Name" />
 				<FormMultilineTextInput name="description" label="Description" />
-			</ManualInputLayout>
+			</CustomInputLayout>
 		</GeneratedEditPage>
 	)
 })

@@ -3,7 +3,7 @@ import { memo } from "react"
 import { InputFieldProps } from "../../field-components/types/InputFieldProps"
 import { useInputField } from "./useInputField"
 
-export const DefaultInputField = memo((props: InputFieldProps<any>) => {
+export const DefaultInputField = memo((props: InputFieldProps & { type?: string }) => {
 	const inp = useInputField({
 		source: props.source,
 		description: props.description,

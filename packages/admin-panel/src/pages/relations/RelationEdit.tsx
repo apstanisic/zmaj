@@ -2,7 +2,7 @@ import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-proper
 import { useInfraState } from "@admin-panel/state/useInfraState"
 import { RelationDef, RelationUpdateDto } from "@zmaj-js/common"
 import { memo } from "react"
-import { ManualInputLayout } from "../../crud-layouts/input"
+import { CustomInputLayout } from "../../crud-layouts/input"
 import { GeneratedEditPage } from "../../generator/pages/GeneratedEditPage"
 import { shortTextDbColumnValidation } from "../../shared/db-column-form-validation"
 import { ManualInputField } from "../../shared/input/ManualInputField"
@@ -18,11 +18,15 @@ export const RelationEdit = memo(() => {
 			onEdit={async () => infra.refetch()}
 			transform={(r: RelationDef) => new RelationUpdateDto(r.relation)}
 		>
-			<ManualInputLayout>
+			<CustomInputLayout>
 				<ManualInputField source="type" disabled />
 				<Columns>
 					<ManualInputField source="tableName" disabled />
-					<ManualInputField source="otherSide.tableName" label="Table Name (other side)" disabled />
+					<ManualInputField
+						source="otherSide.tableName"
+						label="Table Name (other side)"
+						disabled
+					/>
 				</Columns>
 				<Columns>
 					<ManualInputField source="columnName" disabled />
@@ -42,7 +46,7 @@ export const RelationEdit = memo(() => {
 					<ManualInputField source="relation.label" label="Label" />
 					<ManualInputField source="relation.template" label="Display Template" />
 				</div>
-			</ManualInputLayout>
+			</CustomInputLayout>
 		</GeneratedEditPage>
 	)
 })

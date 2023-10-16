@@ -1,7 +1,7 @@
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { FieldConfigSchema, FieldDef, zodCreate } from "@zmaj-js/common"
 import { memo } from "react"
-import { ManualInputLayout } from "../../crud-layouts/input/ManualInputLayout"
+import { CustomInputLayout } from "../../crud-layouts/input/ManualInputLayout"
 import { GeneratedEditPage } from "../../generator/pages/GeneratedEditPage"
 import { useInfraState } from "../../state/useInfraState"
 import { FieldForm } from "./input/_FieldForm"
@@ -22,9 +22,9 @@ export const FieldEdit = memo(() => {
 			transform={transform}
 			onEdit={async () => infra.refetch()}
 		>
-			<ManualInputLayout actions={<></>}>
+			<CustomInputLayout actions={<></>}>
 				<FieldForm />
-			</ManualInputLayout>
+			</CustomInputLayout>
 		</GeneratedEditPage>
 	)
 })

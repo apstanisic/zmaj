@@ -12,6 +12,9 @@ type ManualInputFieldProps = Partial<InputFieldProps> & {
 	// passProps?:
 }
 
+/**
+ * @deprecated
+ */
 export const ManualInputField = memo((props: ManualInputFieldProps) => {
 	const Component = props.Component ?? DefaultInputField
 	const record = useRecord()

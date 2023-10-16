@@ -5,9 +5,7 @@ import { MdClose } from "react-icons/md"
 import { BulkDeleteButton } from "../buttons/BulkDeleteButton"
 
 type ListBulkActionsProps = {
-	startButtons?: ReactNode
-	endButtons?: ReactNode
-	hideDefaultActions?: boolean
+	render?: (props: { defaultActions: ReactNode }) => ReactNode
 }
 
 /**
@@ -35,9 +33,11 @@ export const ListBulkActions = memo((props: ListBulkActionsProps) => {
 				})}
 			</div>
 			<div className="flex items-center">
-				{props.startButtons}
-				{props.hideDefaultActions !== true && <BulkDeleteButton />}
-				{props.endButtons}
+				{props.render ? (
+					props.render({ defaultActions: <BulkDeleteButton /> })
+				) : (
+					<BulkDeleteButton />
+				)}
 			</div>
 		</div>
 	)

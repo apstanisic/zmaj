@@ -1,6 +1,6 @@
 import { useStringValidation } from "@admin-panel/shared/input/useCommonValidators"
-import { email } from "ra-core"
-import { DefaultInputField } from "../../shared/input/DefaultInputField"
+import { useInputAdapter } from "@admin-panel/shared/input/useInputField"
+import { EmailInput, EmailInputProps } from "@admin-panel/ui/forms/EmailInput"
 import { InputFieldProps } from "../types/InputFieldProps"
 
 /**
@@ -8,5 +8,6 @@ import { InputFieldProps } from "../types/InputFieldProps"
  */
 export const EmailInputField = (props: InputFieldProps): JSX.Element => {
 	const validate = useStringValidation(props.fieldConfig?.component?.email, props.validate)
-	return <DefaultInputField {...props} validate={[...validate, email()]} type="email" />
+	const toPass = useInputAdapter<EmailInputProps>(props, { validate })
+	return <EmailInput {...toPass} />
 }

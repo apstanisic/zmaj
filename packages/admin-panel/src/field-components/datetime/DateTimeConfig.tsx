@@ -1,7 +1,6 @@
+import { FormSwitchInput } from "@admin-panel/ui/Controlled"
 import { useActionContext } from "../../context/action-context"
-import { ManualInputField } from "../../shared/input/ManualInputField"
 import { ManualShowField } from "../../shared/show/ManualShowField"
-import { BooleanInputField } from "../boolean/BooleanInputField"
 import { BooleanShowField } from "../boolean/BooleanShowField"
 
 export const DateTimeFieldConfigInput = (): JSX.Element => {
@@ -16,11 +15,10 @@ export const DateTimeFieldConfigInput = (): JSX.Element => {
 		)
 	}
 	return (
-		<ManualInputField
-			Component={BooleanInputField}
-			source="fieldConfig.component.dateTime.showRelative"
-			defaultValue={false}
+		<FormSwitchInput
+			name="fieldConfig.component.dateTime.showRelative"
 			label="Show Relative Date"
+			defaultValue={false}
 		/>
 	)
 }

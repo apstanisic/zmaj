@@ -12,6 +12,7 @@ type CustomListActionProps = {
 	actionsStart?: ReactNode
 	actionsEnd?: ReactNode
 	hideDefaultActions?: boolean
+	render?: (props: { defaultActions: ReactNode }) => ReactNode
 }
 
 /**
@@ -19,8 +20,6 @@ type CustomListActionProps = {
  * @todo file is called differently from component
  */
 export const ListActions = memo((props: CustomListActionProps) => {
-	const resource = useResourceDefinition()
-	const list = useListContext()
 	return (
 		<div
 			className={clsx(
@@ -36,26 +35,33 @@ export const ListActions = memo((props: CustomListActionProps) => {
 			)} */}
 
 			<div className={clsx("ml-auto flex h-full flex-wrap items-center gap-x-3")}>
-				{props.actionsStart}
-				{props.hideDefaultActions !== true && (
-					<>
-						<ShowFilterDialogButton />
-						{Object.keys(list?.filterValues).filter((f) => !f.startsWith("_")).length >
-							0 && (
-							<ResponsiveButton
-								label="Remove Filters"
-								onPress={() => list.setFilters({}, {})}
-								icon={<TbFilterOff />}
-							/>
-						)}
-
-						{resource.hasCreate && <CreateButton />}
-						{/* {resource.hasCreate && <CreateButton />} */}
-						<ListSortButton />
-					</>
+				{props.render ? (
+					props.render({ defaultActions: <DefaultActions /> })
+				) : (
+					<DefaultActions />
 				)}
-				{props.actionsEnd}
 			</div>
 		</div>
 	)
 })
+
+function DefaultActions() {
+	const list = useListContext()
+	const resource = useResourceDefinition()
+	return (
+		<>
+			<ShowFilterDialogButton />
+			{Object.keys(list?.filterValues).filter((f) => !f.startsWith("_")).length > 0 && (
+				<ResponsiveButton
+					label="Remove Filters"
+					onPress={() => list.setFilters({}, {})}
+					icon={<TbFilterOff />}
+				/>
+			)}
+
+			{resource.hasCreate && <CreateButton />}
+			{/* {resource.hasCreate && <CreateButton />} */}
+			<ListSortButton />
+		</>
+	)
+}

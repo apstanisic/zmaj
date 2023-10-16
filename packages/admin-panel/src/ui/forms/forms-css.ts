@@ -1,13 +1,13 @@
 import { cn } from "@admin-panel/utils/cn"
 import { NumberFieldProps, SelectProps, TextFieldProps } from "react-aria-components"
 import { CheckboxProps } from "./Checkbox"
-import { ToggleProps } from "./SwitchInput"
+import { SwitchInputProps } from "./SwitchInput"
 
 type CommonProps = { error?: string } & (
 	| TextFieldProps
 	| NumberFieldProps
 	| SelectProps<object>
-	| ToggleProps
+	| SwitchInputProps
 	| CheckboxProps
 )
 

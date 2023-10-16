@@ -1,20 +1,16 @@
 import { Button } from "@admin-panel/ui/buttons/Button"
 import { MdSave } from "react-icons/md"
 // import { SaveButton as SB, useSaveContext } from "ra-core"
-import { useSaveContext } from "ra-core"
-import { useFormContext } from "react-hook-form"
+import { useFormState } from "react-hook-form"
 
 export function SaveButton(props: { className?: string }): JSX.Element {
-	const save = useSaveContext()
-	const form = useFormContext()
+	const { isSubmitting, isDirty } = useFormState()
 
 	return (
 		<Button
 			className={props.className}
-			// isDisabled={save.saving || form.formState.isDirty !== true}
-			isDisabled={save.saving}
+			isDisabled={isSubmitting || !isDirty}
 			endIcon={<MdSave />}
-			// onPress={() => save.save!(form.getValues())}
 			type="submit"
 		>
 			Save

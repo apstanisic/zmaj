@@ -6,6 +6,7 @@ import { useUserCollections } from "../../hooks/use-user-collections"
 
 type WebhooksEventsProps = {
 	events?: readonly string[]
+	/** If no `onClick` handler is provided, it will be read only (show screen) */
 	onClick?: (event: string, newValue: boolean) => unknown
 }
 
@@ -52,7 +53,7 @@ function EventButton(
 ): JSX.Element {
 	const { action, collection, events, onClick } = props
 
-	if (onClick === undefined) {
+	if (!onClick) {
 		return events?.includes(`${action}.${collection}`) ? (
 			<MdCheck color="success" className="my-1 mx-auto" data-testid="CheckIcon" />
 		) : (

@@ -8,7 +8,7 @@ export function RichTextListField(props: ListFieldProps): JSX.Element {
 			{...props} //
 			render={(props) => {
 				return (
-					<div className="w-full">
+					<div className="w-full truncate max-w-[16rem]">
 						{/* limit to only first 100 chars */}
 						{safeDom(props.value, { stripTags: true }).substring(0, 100)}
 					</div>

@@ -1,7 +1,6 @@
 import { useSdk } from "@admin-panel/context/sdk-context"
-import { PasswordInputField } from "@admin-panel/field-components/password/PasswordInputField"
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
-import { ManualInputField } from "@admin-panel/shared/input/ManualInputField"
+import { FormPasswordInput } from "@admin-panel/ui/Controlled"
 import { Button } from "@admin-panel/ui/buttons/Button"
 import { OtpDisableDto, Struct } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
@@ -67,7 +66,7 @@ const Disable2FA = memo(() => {
 	return (
 		<Form defaultValues={{ password: "" }} onSubmit={onSubmit}>
 			<p className="mb-6 mt-3 text-center text-xl">Disable 2FA</p>
-			<ManualInputField source="password" Component={PasswordInputField} isRequired />
+			<FormPasswordInput name="password" isRequired />
 
 			<div className="flex justify-end">
 				<Button className="ml-auto mt-2" type="submit" variant="outlined">

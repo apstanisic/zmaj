@@ -1,13 +1,10 @@
+import { HighlightCode } from "@admin-panel/ui/HighlightedCode"
 import { memo } from "react"
 import { RenderShowField } from "../../shared/show/RenderShowField"
 import { ShowFieldProps } from "../types/ShowFieldProps"
-import { HighlightCode } from "./HighlightCode"
-
-export type CodeFormatter = (code: string) => string
 
 type CodeShowFieldProps = ShowFieldProps & {
 	language?: string
-	formatter?: CodeFormatter
 }
 
 /**
@@ -20,10 +17,7 @@ export const CodeShowField = memo((props: CodeShowFieldProps) => {
 		<RenderShowField
 			{...props}
 			render={({ value }) => (
-				<HighlightCode
-					code={props.formatter?.(value) ?? value}
-					language={language ?? "plaintext"}
-				/>
+				<HighlightCode code={value} language={language ?? "plaintext"} />
 			)}
 		/>
 	)

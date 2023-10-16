@@ -4,7 +4,6 @@ import { ReadonlyDeep, SetOptional } from "type-fest"
 import { AdminPanelError } from "../shared/AdminPanelError"
 import { BooleanComponents } from "./boolean"
 import { CodeComponents } from "./code"
-import { CsvComponents } from "./csv"
 import { DateComponents } from "./date"
 import { DateTimeComponents } from "./datetime"
 import { DropdownComponents } from "./dropdown"
@@ -33,7 +32,6 @@ class FieldCrudComponents {
 	constructor() {
 		this.add(BooleanComponents)
 		this.add(CodeComponents)
-		this.add(CsvComponents)
 		this.add(DateComponents)
 		this.add(DateTimeComponents)
 		this.add(DropdownComponents)

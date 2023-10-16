@@ -11,9 +11,17 @@ export function FilesList(): JSX.Element {
 		<>
 			<FileUploadDialog />
 			<GeneratedListPage
-				actionsStart={<FileActionsToolbar />}
-				bulkActionsStart={<BulkFileDownloadButton />}
-				// sidebar={<FoldersSidebar />}
+				renderActions={({ defaultActions }) => (
+					<>
+						<FileActionsToolbar /> {defaultActions}{" "}
+					</>
+				)}
+				renderBulkActions={({ defaultActions }) => (
+					<>
+						{defaultActions}
+						<BulkFileDownloadButton />
+					</>
+				)}
 			/>
 		</>
 	)

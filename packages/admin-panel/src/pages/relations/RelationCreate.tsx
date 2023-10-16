@@ -8,13 +8,13 @@ import {
 } from "@zmaj-js/common"
 import { plural, singular } from "pluralize"
 import { useNotify, useRedirect } from "ra-core"
+import { construct, crush } from "radash"
 import { memo, useEffect, useMemo } from "react"
-import { ManualInputLayout } from "../../crud-layouts/input/ManualInputLayout"
+import { CustomInputLayout } from "../../crud-layouts/input/ManualInputLayout"
 import { GeneratedCreatePage } from "../../generator/pages/GeneratedCreatePage"
 import { useUserCollections } from "../../hooks/use-user-collections"
 import { useInfraState } from "../../state/useInfraState"
 import { RelationCreateForm } from "./create/RelationCreateForm"
-import { crush, construct } from "radash"
 
 function removeEmptyValues(val: any): unknown {
 	const flat = filterStruct(crush(val), (v) => notNil(v) && v !== "")
@@ -55,9 +55,8 @@ function Content(): JSX.Element {
 	}, [leftCollection, notify, redirect, collectionNames])
 
 	return (
-		<ManualInputLayout
+		<CustomInputLayout
 			className="mt-3 mb-20"
-			enableNoChangeSubmit
 			// we have to provide tables, otherwise values can't be pre-filled
 			defaultValues={
 				{
@@ -76,6 +75,6 @@ function Content(): JSX.Element {
 			}
 		>
 			<RelationCreateForm collections={collectionNames} />
-		</ManualInputLayout>
+		</CustomInputLayout>
 	)
 }

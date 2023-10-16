@@ -1,6 +1,6 @@
 import { FieldConfigSchema, FieldDef, zodCreate } from "@zmaj-js/common"
 import { memo } from "react"
-import { ManualInputLayout } from "../../crud-layouts/input/ManualInputLayout"
+import { CustomInputLayout } from "../../crud-layouts/input/ManualInputLayout"
 import { GeneratedCreatePage } from "../../generator/pages/GeneratedCreatePage"
 import { useInfraState } from "../../state/useInfraState"
 import { FieldForm } from "./input/_FieldForm"
@@ -14,7 +14,7 @@ export const FieldCreate = memo(() => {
 	const infra = useInfraState()
 	return (
 		<GeneratedCreatePage transform={transform} onCreate={async () => infra.refetch()}>
-			<ManualInputLayout
+			<CustomInputLayout
 				defaultValues={{
 					dataType: "text",
 					componentName: "short-text",
@@ -24,7 +24,7 @@ export const FieldCreate = memo(() => {
 			>
 				{/* <Tool /> */}
 				<FieldForm />
-			</ManualInputLayout>
+			</CustomInputLayout>
 		</GeneratedCreatePage>
 	)
 })

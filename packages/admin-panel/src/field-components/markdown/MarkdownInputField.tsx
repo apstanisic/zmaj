@@ -1,9 +1,13 @@
 import { useStringValidation } from "@admin-panel/shared/input/useCommonValidators"
+import { useInputAdapter } from "@admin-panel/shared/input/useInputField"
+import { MarkdownInput, MarkdownInputProps } from "@admin-panel/ui/forms/CodeInput/MarkdownInput"
 import { memo } from "react"
-import { CodeInputField } from "../code/CodeInputField"
 import { InputFieldProps } from "../types/InputFieldProps"
 
 export const MarkdownInputField = memo((props: InputFieldProps) => {
 	const validate = useStringValidation(props.fieldConfig?.component?.markdown, props.validate)
-	return <CodeInputField {...props} validate={validate} language="markdown" />
+
+	const asProps = useInputAdapter<MarkdownInputProps>(props, { validate })
+
+	return <MarkdownInput {...asProps} />
 })

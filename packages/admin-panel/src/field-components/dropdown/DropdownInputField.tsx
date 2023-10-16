@@ -1,7 +1,7 @@
-import { SelectInput } from "@admin-panel/ui/forms/SelectInput"
+import { SelectInput, SelectInputProps } from "@admin-panel/ui/forms/SelectInput"
 import { choices as choicesValidate } from "ra-core"
 import { useMemo } from "react"
-import { useInputField } from "../../shared/input/useInputField"
+import { useInputAdapter } from "../../shared/input/useInputField"
 import { InputFieldProps } from "../types/InputFieldProps"
 
 type DropdownInputFieldProps = InputFieldProps & { choices?: any } // z.infer<typeof DropdownChoices> }
@@ -17,35 +17,17 @@ export function DropdownInputField(props: DropdownInputFieldProps): JSX.Element 
 		() => props.choices ?? props.fieldConfig?.component?.dropdown?.choices ?? [],
 		[props.choices, props.fieldConfig],
 	)
-
 	const validate = useMemo(() => choicesValidate(choices.map((o: any) => o.value)), [choices])
 
-	const field = useInputField({
-		source: props.source,
-		defaultValue: props.defaultValue,
-		description: props.description,
-		disabled: props.disabled,
-		label: props.label,
-		placeholder: props.placeholder,
-		isRequired: props.isRequired,
-		validate: [validate, ...(props.validate ?? [])],
-		className: props.className,
-	})
+	const asProps = useInputAdapter<SelectInputProps>(props, { validate })
 
 	return (
 		<SelectInput
+			{...asProps}
 			options={choices as any}
-			value={field.field.value}
-			isDisabled={field.disabled}
-			error={field.error?.message}
-			className={field.className}
-			name={field.field.name}
-			isRequired={field.isRequired}
-			label={field.label}
-			onChange={(value) =>
-				field.field.onChange({ target: { value }, currentTarget: { value } })
-			}
-			description={field.helperText}
+			// onChange={(value) =>
+			// 	field.field.onChange({ target: { value }, currentTarget: { value } })
+			// }
 		/>
 	)
 }

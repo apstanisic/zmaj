@@ -47,7 +47,7 @@ export const UserCollection = codeCollection(UserModel, {
 		},
 		status: {
 			componentName: "dropdown",
-			dbDefaultValue: "disabled",
+			// dbDefaultValue: "disabled",
 			fieldConfig: {
 				component: {
 					dropdown: {

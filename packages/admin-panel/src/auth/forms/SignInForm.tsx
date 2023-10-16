@@ -1,4 +1,5 @@
 import { useSdk } from "@admin-panel/context/sdk-context"
+import { FormEmailInput, FormPasswordInput } from "@admin-panel/ui/Controlled"
 import { Dialog } from "@admin-panel/ui/Dialog"
 import { Button } from "@admin-panel/ui/buttons/Button"
 import { TextInput } from "@admin-panel/ui/forms/TextInput"
@@ -6,9 +7,6 @@ import { SdkError } from "@zmaj-js/client-sdk"
 import { EnableMfaParams, SignInDto, Struct } from "@zmaj-js/common"
 import { Form, useLogin, useNotify } from "ra-core"
 import { useCallback, useState } from "react"
-import { EmailInputField } from "../../field-components/email/EmailInputField"
-import { PasswordInputField } from "../../field-components/password/PasswordInputField"
-import { ManualInputField } from "../../shared/input/ManualInputField"
 import { DisplayMfaQrCode } from "../components/DisplayMfaQrCode"
 
 export function SignInForm(): JSX.Element {
@@ -107,8 +105,8 @@ export function SignInForm(): JSX.Element {
 				onSubmit={onSubmit}
 				defaultValues={{ email: "", password: "" }}
 			>
-				<ManualInputField source="email" isRequired Component={EmailInputField} />
-				<ManualInputField source="password" isRequired Component={PasswordInputField} />
+				<FormEmailInput name="email" isRequired />
+				<FormPasswordInput name="password" isRequired />
 
 				<Button type="submit" variant="outlined" className="ml-auto">
 					Sign in

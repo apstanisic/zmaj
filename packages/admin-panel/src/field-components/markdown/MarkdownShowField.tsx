@@ -1,8 +1,8 @@
+import { HighlightCode } from "@admin-panel/ui/HighlightedCode"
 import { Button } from "@admin-panel/ui/buttons/Button"
 import ReactMarkdown from "react-markdown"
 import { useToggle } from "react-use"
 import { RenderShowField } from "../../shared/show/RenderShowField"
-import { HighlightCode } from "../code/HighlightCode"
 import { ShowFieldProps } from "../types/ShowFieldProps"
 
 export function MarkdownShowField(props: ShowFieldProps): JSX.Element {

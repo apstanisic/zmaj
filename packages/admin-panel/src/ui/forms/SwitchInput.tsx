@@ -12,7 +12,7 @@ const sizes: Record<SizeVariant, string> = {
 	small: cn("du-toggle-sm"),
 }
 
-export type ToggleProps = Except<SwitchProps, "defaultSelected" | "isSelected"> & {
+export type SwitchInputProps = Except<SwitchProps, "defaultSelected" | "isSelected" | "value"> & {
 	size?: SizeVariant
 	label?: string
 	isRequired?: boolean
@@ -22,9 +22,10 @@ export type ToggleProps = Except<SwitchProps, "defaultSelected" | "isSelected"> 
 	value?: boolean
 }
 
-export function SwitchInput(props: ToggleProps): JSX.Element {
+export function SwitchInput(props: SwitchInputProps): JSX.Element {
 	const { size = "medium", label, defaultValue, value, description, error, ...raProps } = props
 	const id = useId()
+
 	return (
 		<div className={cn("my-3", props.className)}>
 			<FormControl

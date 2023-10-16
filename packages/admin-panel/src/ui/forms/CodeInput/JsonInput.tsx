@@ -3,8 +3,12 @@ import { Except } from "type-fest"
 import { CodeInput, CodeInputProps } from "./CodeInput"
 
 // TODO Maybe replace any. But that would make using this input hard to use
-type JsonInputProps = Except<CodeInputProps, "language" | "onChange" | "value"> & {
+export type JsonInputProps = Except<
+	CodeInputProps,
+	"language" | "onChange" | "value" | "defaultValue"
+> & {
 	value?: any
+	defaultValue?: any
 	onChange?: (newValue: any) => unknown
 }
 
@@ -20,7 +24,7 @@ export function JsonInput(props: JsonInputProps): JSX.Element {
 		props.value
 			? typeof props.value === "string"
 				? props.value
-				: JSON.stringify(props.value)
+				: JSON.stringify(props.value, null, 4)
 			: "",
 	)
 
@@ -35,6 +39,5 @@ export function JsonInput(props: JsonInputProps): JSX.Element {
 		},
 		[props],
 	)
-	// const value = props.value ?? ''
 	return <CodeInput {...props} language="json" value={internalValue} onChange={onChange} />
 }

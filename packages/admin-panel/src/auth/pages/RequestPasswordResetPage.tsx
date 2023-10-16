@@ -1,8 +1,7 @@
 import { useSdk } from "@admin-panel/context/sdk-context"
-import { EmailInputField } from "@admin-panel/field-components/email/EmailInputField"
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
-import { ManualInputField } from "@admin-panel/shared/input/ManualInputField"
 import { Button } from "@admin-panel/ui/buttons/Button"
+import { FormEmailInput } from "@admin-panel/ui/Controlled"
 import { isEmail, Struct } from "@zmaj-js/common"
 import { Form, useNotify } from "ra-core"
 import { useCallback, useState } from "react"
@@ -54,12 +53,7 @@ export function RequestPasswordResetPage(): JSX.Element {
 				defaultValues={{ email: "" }}
 				className="grid w-full gap-y-1"
 			>
-				<ManualInputField
-					source="email"
-					isRequired
-					Component={EmailInputField}
-					placeholder="Your email"
-				/>
+				<FormEmailInput name="email" isRequired placeholder="Your email" />
 
 				<Button className="mt-4" type="submit" isDisabled={disabled}>
 					Send password reset email

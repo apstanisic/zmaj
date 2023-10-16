@@ -10,6 +10,7 @@ import {
 } from "@zmaj-js/common"
 import { clsx } from "clsx"
 import { ResourceDefinition, ResourceOptions, useResourceDefinitions } from "ra-core"
+import { title } from "radash"
 import { ReactNode, memo, useMemo } from "react"
 import {
 	MdHome,
@@ -114,12 +115,13 @@ const SidebarContent = (): JSX.Element => {
 					if (!collection || collection.disabled || collection.hidden) {
 						return null
 					}
+
 					return (
 						<DrawerItem
 							key={res.name}
 							path={res.name}
 							icon={res.icon}
-							label={collection.label ?? res.name}
+							label={collection.label ?? title(res.name)}
 						/>
 					)
 				})

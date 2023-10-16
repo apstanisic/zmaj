@@ -1,20 +1,14 @@
-import { ManualInputField } from "../../shared/input/ManualInputField"
+import { FormSelectInput } from "@admin-panel/ui/Controlled"
+import { Highlight } from "@admin-panel/ui/forms/CodeInput/highlight.lib"
 import { ManualShowField } from "../../shared/show/ManualShowField"
-import { DropdownInputField } from "../dropdown/DropdownInputField"
-import { Highlight } from "./highlight"
 
 export const CodeFieldConfigInput = (): JSX.Element => {
 	return (
 		<>
-			<ManualInputField
-				Component={DropdownInputField}
-				source="fieldConfig.component.code.syntaxLanguage"
+			<FormSelectInput
+				name="fieldConfig.component.code.syntaxLanguage"
 				label="Language"
-				fieldConfig={{
-					component: {
-						dropdown: { choices: Highlight.listLanguages().map((lang) => ({ value: lang })) },
-					},
-				}}
+				options={Highlight.listLanguages().map((lang) => ({ value: lang }))}
 			/>
 		</>
 	)
@@ -23,7 +17,10 @@ export const CodeFieldConfigInput = (): JSX.Element => {
 export const CodeFieldConfigShow = (): JSX.Element => {
 	return (
 		<>
-			<ManualShowField source="fieldConfig.component.code.syntaxLanguage" label="Min Number" />
+			<ManualShowField
+				source="fieldConfig.component.code.syntaxLanguage"
+				label="Min Number"
+			/>
 		</>
 	)
 }

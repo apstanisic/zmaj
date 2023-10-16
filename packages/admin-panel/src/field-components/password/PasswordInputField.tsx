@@ -1,6 +1,6 @@
 import { useStringValidation } from "@admin-panel/shared/input/useCommonValidators"
-import { PasswordInput } from "@admin-panel/ui/forms/PasswordInput"
-import { useInput } from "ra-core"
+import { useInputAdapter } from "@admin-panel/shared/input/useInputField"
+import { PasswordInput, PasswordInputProps } from "@admin-panel/ui/forms/PasswordInput"
 import { memo } from "react"
 import { InputFieldProps } from "../types/InputFieldProps"
 
@@ -8,31 +8,6 @@ import { InputFieldProps } from "../types/InputFieldProps"
 export const PasswordInputField = memo((props: InputFieldProps) => {
 	const validate = useStringValidation(props.fieldConfig?.component?.password, props.validate)
 
-	const {
-		field: { ref, ...field },
-		id,
-		isRequired,
-		fieldState: { error },
-	} = useInput({
-		source: props.source,
-		control: props.control,
-		isRequired: props.isRequired,
-		defaultValue: props.defaultValue,
-		disabled: props.disabled,
-		validate,
-	})
-
-	return (
-		<PasswordInput
-			{...field}
-			isRequired={isRequired}
-			id={id}
-			className={props.className}
-			label={props.label}
-			description={props.description ?? undefined}
-			error={error?.message}
-			placeholder={props.placeholder}
-			isDisabled={props.disabled}
-		/>
-	)
+	const asProps = useInputAdapter<PasswordInputProps>(props, { validate })
+	return <PasswordInput {...asProps} />
 })

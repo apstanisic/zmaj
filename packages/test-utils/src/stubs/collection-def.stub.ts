@@ -53,7 +53,9 @@ export const CollectionDefStub = stub<CollectionDef>((modify) => {
 			])
 			// if fk here, any field not pk, otherwise pk
 			const field =
-				type === "many-to-one" || type === "owner-one-to-one" ? rand(fields.slice(1)) : fields[0]!
+				type === "many-to-one" || type === "owner-one-to-one"
+					? rand(fields.slice(1))
+					: fields[0]!
 			return RelationDefStub({
 				tableName: base.tableName,
 				collectionName: base.collectionName,
@@ -71,6 +73,7 @@ export const CollectionDefStub = stub<CollectionDef>((modify) => {
 		relations: Object.fromEntries(relations.map((r) => [r.propertyName, r])),
 		fields: Object.fromEntries(fields.map((r) => [r.fieldName, r])),
 		isJunctionTable: false, //random(1, 10) > 9,
+		authzMustManage: false,
 		pkColumn: pkField.columnName,
 		pkField: pkField.fieldName,
 		pkType: pkType,

@@ -1,17 +1,12 @@
-import { ManualInputField } from "../../shared/input/ManualInputField"
+import { FormNumberInput } from "@admin-panel/ui/Controlled"
 import { ManualShowField } from "../../shared/show/ManualShowField"
-import { IntInputField } from "./IntInputField"
 
 export const IntFieldConfigInput = (): JSX.Element => {
 	return (
 		<>
-			<ManualInputField source="fieldConfig.int.min" label="Min number" Component={IntInputField} />
-			<ManualInputField source="fieldConfig.int.max" label="Max number" Component={IntInputField} />
-			<ManualInputField
-				Component={IntInputField}
-				source="fieldConfig.int.step"
-				label="Increment By"
-			/>
+			<FormNumberInput step={1} name="fieldConfig.int.min" label="Min number" />
+			<FormNumberInput name="fieldConfig.int.max" label="Max number" step={1} />
+			<FormNumberInput name="fieldConfig.int.step" label="Increment By" step={1} />
 		</>
 	)
 }

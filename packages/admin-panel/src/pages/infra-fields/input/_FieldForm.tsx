@@ -1,4 +1,10 @@
 import { shortTextDbColumnValidation } from "@admin-panel/shared/db-column-form-validation"
+import {
+	FormMultilineTextInput,
+	FormSelectInput,
+	FormSwitchInput,
+	FormTextInput,
+} from "@admin-panel/ui/Controlled"
 import { ignoreErrors, times } from "@zmaj-js/common"
 import { columnTypes } from "@zmaj-js/orm"
 import { memo, useMemo } from "react"
@@ -6,10 +12,8 @@ import { useWatch } from "react-hook-form"
 import { useActionContext } from "../../../context/action-context"
 import { StepSection } from "../../../crud-layouts/ui/steps/StepSection"
 import { StepLayout } from "../../../crud-layouts/ui/steps/StepsLayout"
-import { BooleanInputField } from "../../../field-components/boolean/BooleanInputField"
 import { DropdownInputField } from "../../../field-components/dropdown/DropdownInputField"
 import { fieldComponents } from "../../../field-components/field-components"
-import { TextareaInputField } from "../../../field-components/textarea/TextareaInputField"
 import { ManualInputField } from "../../../shared/input/ManualInputField"
 import { FieldInfoInputComponentName } from "./_FieldInfoInputComponentName"
 import { FieldInfoInputDefaultValue } from "./_FieldInfoInputDefaultValue"
@@ -50,37 +54,24 @@ const Step1 = memo(() => {
 				description="Field name at which value can be accessed (leave empty for default)"
 			/>
 
-			<ManualInputField
+			<FormSelectInput
 				isRequired
-				source="dataType"
-				disabled={isEdit}
-				Component={DropdownInputField}
-				fieldConfig={{
-					component: {
-						dropdown: {
-							choices: columnTypes
-								.filter((t) => !t.startsWith("array"))
-								.map((type) => ({ value: type })),
-						},
-					},
-				}}
+				name="dataType"
+				isDisabled={isEdit}
+				options={columnTypes
+					.filter((t) => !t.startsWith("array"))
+					.map((type) => ({ value: type }))}
 			/>
 
 			<FieldInfoInputComponentName />
 			<FieldInfoInputDefaultValue />
 
-			<ManualInputField
-				label="Value Optional"
-				source="isNullable"
-				Component={BooleanInputField}
-				// disabled={isEdit}
-				defaultValue={true}
-			/>
+			<FormSwitchInput label="Value Optional" name="isNullable" defaultValue={true} />
 
-			<ManualInputField source="label" />
-			<ManualInputField source="description" Component={TextareaInputField} />
-			<ManualInputField
-				source="displayTemplate"
+			<FormTextInput name="label" />
+			<FormMultilineTextInput name="description" />
+			<FormTextInput
+				name="displayTemplate"
 				description="For example: 'Hello {value}'. {value} will be replaced by field. Key is always 'value'."
 			/>
 		</StepSection>
@@ -91,49 +82,17 @@ const Step2 = memo(() => {
 	const isEdit = useActionContext() === "edit"
 	return (
 		<StepSection index={1}>
-			<ManualInputField
-				source="isUnique"
+			<FormSwitchInput
+				name="isUnique"
 				label="Unique"
-				Component={BooleanInputField}
 				defaultValue={false}
 				// disabled={isEdit}
 				isRequired
 			/>
 
-			<ManualInputField
-				source="canRead"
-				Component={BooleanInputField}
-				defaultValue={true}
-				isRequired
-			/>
-			<ManualInputField
-				source="canCreate"
-				Component={BooleanInputField}
-				defaultValue={true}
-				isRequired
-			/>
-			<ManualInputField
-				source="canUpdate"
-				Component={BooleanInputField}
-				defaultValue={true}
-				isRequired
-			/>
-
-			{/* <ManualInputField
-        source="beforeUpdate"
-        label="Update Hooks"
-        Component={JsonInputField}
-        defaultValue={[]}
-        isRequired
-      /> */}
-
-			{/* <ManualInputField
-        source="beforeCreate"
-        label="Create Hooks"
-        Component={JsonInputField}
-        defaultValue={[]}
-        isRequired
-      /> */}
+			<FormSwitchInput name="canRead" defaultValue={true} isRequired />
+			<FormSwitchInput name="canCreate" defaultValue={true} isRequired />
+			<FormSwitchInput name="canUpdate" defaultValue={true} isRequired />
 		</StepSection>
 	)
 
@@ -159,32 +118,31 @@ const Step3 = memo(() => {
 					fieldConfig={{
 						component: {
 							dropdown: {
-								choices: times(12).map((i) => ({ value: i + 1, label: `${i + 1} / 12` })),
+								choices: times(12).map((i) => ({
+									value: i + 1,
+									label: `${i + 1} / 12`,
+								})),
 							},
 						},
 					}}
 				/>
-				<ManualInputField
-					Component={BooleanInputField}
-					source="fieldConfig.listHidden"
+				<FormSwitchInput
+					name="fieldConfig.listHidden"
 					label="Hide field in list page"
 					defaultValue={false}
 				/>
-				<ManualInputField
-					Component={BooleanInputField}
-					source="fieldConfig.showHidden"
+				<FormSwitchInput
+					name="fieldConfig.showHidden"
 					label="Hide field in show page"
 					defaultValue={false}
 				/>
-				<ManualInputField
-					Component={BooleanInputField}
-					source="fieldConfig.editHidden"
+				<FormSwitchInput
+					name="fieldConfig.editHidden"
 					label="Hide field in edit page"
 					defaultValue={false}
 				/>
-				<ManualInputField
-					Component={BooleanInputField}
-					source="fieldConfig.createHidden"
+				<FormSwitchInput
+					name="fieldConfig.createHidden"
 					label="Hide field in create page"
 					defaultValue={false}
 				/>
@@ -192,8 +150,8 @@ const Step3 = memo(() => {
 				{Config ? (
 					<>
 						<p className="mx-auto max-w-xl text-center text-gray-800 dark:text-white">
-							Custom UI component config and validation. This config does not have impact on API.
-							This only does client side validation.
+							Custom UI component config and validation. This config does not have
+							impact on API. This only does client side validation.
 						</p>
 						<Config />
 					</>

@@ -16,18 +16,9 @@ export type ListPageLayoutProps = {
 	children: ReactNode
 	/** Current page sidebar */
 	sidebar?: ReactNode
-	/** Bulk action that are added on the beginning of the row */
-	bulkActionsStart?: ReactNode
-	/** Bulk action that are added on the end of the row */
-	bulkActionsEnd?: ReactNode
-	/** Should we hide bulk actions that are show by default */
-	bulkHideDefaultActions?: boolean
-	/** Action that are added on the beginning of the row */
-	actionsStart?: ReactNode
-	/** Action that are added on the end of the row */
-	actionsEnd?: ReactNode
-	/** Should we hide actions that are show by default */
-	hideDefaultActions?: boolean
+	/** Render */
+	renderActions?: (props: { defaultActions: ReactNode }) => ReactNode
+	renderBulkActions?: (props: { defaultActions: ReactNode }) => ReactNode
 	/** Title of the page */
 	title?: string | ReactNode
 	/** Should we completely hide the toolbar */
@@ -63,23 +54,18 @@ function ListLayout(props: ListPageLayoutProps): JSX.Element {
 	const list = useListContext(props)
 	const collection = useResourceCollection() ?? throwInApp("572934")
 	const config = useLayoutConfigContext().list
-	const title = collection.label ?? collection.tableName
+	const title = props.title ?? collection.label ?? collection.collectionName
 
 	return (
 		<div className="flex w-full">
 			{props.sidebar}
 			<div className="crud-content">
 				<div className="my-2 items-center gap-x-2 gap-y-4 sm:flex sm:justify-between">
-					{props.title && typeof props.title !== "string" ? (
-						props.title
-					) : (
-						<h1 className="m-2 text-xl">{props.title ?? title}</h1>
-					)}
+					{typeof title === "string" ? <h1 className="m-2 text-xl">{title}</h1> : title}
 					<ListQuickFilterInput />
 				</div>
 				<FilterDialog />
 				<CurrentlyActiveFilters />
-				{/* {list.selectedIds.length > 0 ? <ListBulkActions /> : <ListActions />} */}
 				<div
 					className={clsx(
 						"flex h-20 w-full items-center ",
@@ -87,31 +73,16 @@ function ListLayout(props: ListPageLayoutProps): JSX.Element {
 					)}
 				>
 					{list.selectedIds.length > 0 ? (
-						<ListBulkActions
-							hideDefaultActions={props.bulkHideDefaultActions}
-							endButtons={props.bulkActionsEnd}
-							startButtons={props.bulkActionsStart}
-						/>
+						<ListBulkActions render={props.renderBulkActions} />
 					) : (
-						<ListActions
-							actionsEnd={props.actionsEnd}
-							actionsStart={props.actionsStart}
-							hideDefaultActions={props.hideDefaultActions}
-						/>
+						<ListActions render={props.renderActions} />
 					)}
 				</div>
 				{props.children}
 
-				{config.hidePagination !== true && (
+				{!config.hidePagination && (
 					<ListPagination perPageOptions={config.perPage?.options} />
 				)}
-				{/* {config.hidePagination !== true && (
-					<Pagination
-						rowsPerPageOptions={config.perPage?.options}
-						// Empty text that is shown when there is no results, this removes text
-						limit={<span></span>}
-					/>
-				)} */}
 			</div>
 		</div>
 	)

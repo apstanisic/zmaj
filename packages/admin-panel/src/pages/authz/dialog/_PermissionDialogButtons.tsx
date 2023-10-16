@@ -16,7 +16,7 @@ export function PermissionDialogButtons(props: PermissionDialogButtonProps): JSX
 
 	return (
 		<div className="flex justify-between">
-			<Button variant="outline" onPress={hideDialog}>
+			<Button variant="outlined" onPress={hideDialog}>
 				Cancel
 			</Button>
 

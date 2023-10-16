@@ -1,17 +1,17 @@
-import { clsx } from "clsx"
+import { cn } from "@admin-panel/utils/cn"
 import { memo, useMemo } from "react"
-import { Highlight } from "./highlight"
+import { Highlight } from "./forms/CodeInput/highlight.lib"
 
 type HighlightedCodeProps = {
+	className?: string
 	/**
-	 * Programing language. Pass `plaintext` for no highlight
+	 * Programming language. Pass `plaintext` for no highlight
 	 */
 	language: string
 	/**
 	 * Code to display
 	 */
 	code: string
-	className?: string
 	/**
 	 * Should we wrap lines
 	 */
@@ -32,7 +32,7 @@ export const HighlightCode = memo((props: HighlightedCodeProps) => {
 	)
 
 	return (
-		<pre className={clsx(className, wrap && "whitespace-pre-wrap")}>
+		<pre className={cn(wrap && "whitespace-pre-wrap", className)}>
 			{/* Code is escaped, it's safe */}
 			<code className="hljs" dangerouslySetInnerHTML={{ __html: highlighted.value }}></code>
 		</pre>

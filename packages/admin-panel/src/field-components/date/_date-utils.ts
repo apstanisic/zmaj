@@ -13,6 +13,7 @@ import { isDate, isNumber } from "radash"
 export function extractDate(date: string | Date | number): string {
 	if (isDate(date)) return format(date, "yyyy-MM-dd")
 	if (isNumber(date)) return format(new Date(date), "yyyy-MM-dd")
+	if (typeof date === "string") return format(new Date(date), "yyyy-MM-dd")
 
 	return date
 }

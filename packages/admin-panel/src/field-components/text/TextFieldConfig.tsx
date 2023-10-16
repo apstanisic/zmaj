@@ -1,4 +1,4 @@
-import { ManualInputField } from "../../shared/input/ManualInputField"
+import { FormTextInput } from "@admin-panel/ui/Controlled"
 import { ManualShowField } from "../../shared/show/ManualShowField"
 
 export function createTextFieldConfigShow(componentName: string): () => JSX.Element {
@@ -20,15 +20,15 @@ export function createTextFieldConfigInput(componentName: string): () => JSX.Ele
 	const prefix = `fieldConfig.component.${componentName}.`
 	return () => (
 		<>
-			<ManualInputField source={prefix + "minLength"} label="Min Length" />
-			<ManualInputField source={prefix + "maxLength"} label="Max Length" />
-			<ManualInputField
-				source={prefix + "regex"}
+			<FormTextInput name={prefix + "minLength"} label="Min Length" />
+			<FormTextInput name={prefix + "maxLength"} label="Max Length" />
+			<FormTextInput
+				name={prefix + "regex"}
 				label="Regular expression"
 				description="Regex string, for example '^[a-z0-9]+$'"
 			/>
-			<ManualInputField
-				source={prefix + "regexError"}
+			<FormTextInput
+				name={prefix + "regexError"}
 				label="Regular expression"
 				description="What error to show if regex fails"
 			/>

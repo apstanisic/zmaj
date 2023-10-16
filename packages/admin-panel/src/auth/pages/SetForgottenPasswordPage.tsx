@@ -1,8 +1,7 @@
 import { useSdk } from "@admin-panel/context/sdk-context"
-import { PasswordInputField } from "@admin-panel/field-components/password/PasswordInputField"
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
-import { ManualInputField } from "@admin-panel/shared/input/ManualInputField"
 import { Button } from "@admin-panel/ui/buttons/Button"
+import { FormPasswordInput } from "@admin-panel/ui/Controlled"
 import { PasswordResetDto, PasswordSchema, sleep, Struct } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
 import { useCallback } from "react"
@@ -52,9 +51,9 @@ export function SetForgottenPasswordPage(): JSX.Element {
 				defaultValues={{ password: "" }}
 				className="grid w-full gap-y-1"
 			>
-				<ManualInputField source="password" isRequired Component={PasswordInputField} />
+				<FormPasswordInput name="password" isRequired />
 
-				<Button type="submit" variant="outline" className="ml-auto">
+				<Button type="submit" variant="outlined" className="ml-auto">
 					Change Password
 				</Button>
 			</Form>

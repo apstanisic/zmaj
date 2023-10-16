@@ -1,4 +1,5 @@
 import {
+	FormJsonInput,
 	FormMultilineTextInput,
 	FormSelectInput,
 	FormSwitchInput,
@@ -7,9 +8,9 @@ import {
 import { Form } from "ra-core"
 import { StepSection } from "../../crud-layouts/ui/steps/StepSection"
 import { StepLayout } from "../../crud-layouts/ui/steps/StepsLayout"
-import { KeyValueInputField } from "../../field-components/key-value/KeyValueInputField"
-import { ManualInputField } from "../../shared/input/ManualInputField"
 import { WebhookEventsInputField } from "./WebhookEventsInputField"
+
+const options = ["GET", "POST", "PUT", "PATCH", "DELETE"].map((value) => ({ value }))
 
 export function WebhookForm(): JSX.Element {
 	return (
@@ -22,19 +23,16 @@ export function WebhookForm(): JSX.Element {
 						label="HTTP Method"
 						isRequired
 						defaultValue="GET"
-						options={["GET", "POST", "PUT", "PATCH", "DELETE"].map((value) => ({
-							value,
-						}))}
+						options={options}
 					/>
 					<FormMultilineTextInput label="Description" name="description" />
 					<FormSwitchInput name="enabled" label="Enabled" defaultValue={false} />
 					<FormSwitchInput label="Send data" name="sendData" defaultValue={false} />
 					<FormTextInput label="URL" name="url" isRequired />
-					{/* 					Component={UrlInputField} /> */}
-					<ManualInputField
-						source="httpHeaders"
+					<FormJsonInput
+						name="httpHeaders"
 						label="HTTP Headers (as JSON)"
-						Component={KeyValueInputField}
+						defaultValue={{}}
 					/>
 				</StepSection>
 				<StepSection index={1}>

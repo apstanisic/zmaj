@@ -48,6 +48,7 @@ export function buildFields<TModel extends BaseModel>(
 			tableName,
 			...additionalConfig,
 			...field,
+			isNullable: field.nullable,
 			dataType: field.dataType as any, // TODO FIX THIS
 			isPrimaryKey: field.isPk,
 			fieldName: property,

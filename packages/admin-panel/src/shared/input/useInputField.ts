@@ -1,7 +1,7 @@
 import { InputFieldProps } from "@admin-panel/field-components/types/InputFieldProps"
-import { InputProps } from "@admin-panel/ui/Input"
+import { CommonInputProps } from "@admin-panel/ui/forms/utils/CommonInputProps"
 import { isNil } from "@zmaj-js/common"
-import { required, useInput, Validator } from "ra-core"
+import { InputProps, required, useInput, Validator } from "ra-core"
 import { title } from "radash"
 import { HTMLInputTypeAttribute } from "react"
 import { ControllerRenderProps, FieldError } from "react-hook-form"
@@ -143,38 +143,80 @@ export function useInputField(props: UseInputFieldProps): UseInputFieldResult {
 		className: props.className,
 	}
 }
-export const toInputProps = (props: UseInputFieldResult): InputProps => {
-	const {
-		error,
-		disabled,
-		field,
-		helperText,
-		id,
-		inputRef,
-		isDirty,
-		isRequired,
-		isTouched,
-		label,
-		name,
-		source,
-		type,
-		className,
-		placeholder,
-		status,
-	} = props
+// export const toInputProps = (props: UseInputFieldResult): InputProps => {
+// 	const {
+// 		error,
+// 		disabled,
+// 		field,
+// 		helperText,
+// 		id,
+// 		inputRef,
+// 		isDirty,
+// 		isRequired,
+// 		isTouched,
+// 		label,
+// 		name,
+// 		source,
+// 		type,
+// 		className,
+// 		placeholder,
+// 		status,
+// 	} = props
+// 	return {
+// 		helperText,
+// 		id,
+// 		label,
+// 		// name,
+// 		// ref: inputRef,
+// 		type,
+// 		className,
+// 		placeholder,
+// 		error: error?.message,
+// 		disabled,
+// 		required: isRequired,
+// 		...field,
+// 	}
+// 	// return props
+// }
+
+export function inputPropsAdapter(props: InputFieldProps): CommonInputProps {
 	return {
-		helperText,
-		id,
-		label,
-		// name,
-		// ref: inputRef,
-		type,
-		className,
-		placeholder,
-		error: error?.message,
-		disabled,
-		required: isRequired,
-		...field,
+		label: props.label,
+		description: props.description ?? undefined,
+		placeholder: props.placeholder,
+		isRequired: props.isRequired,
+		isDisabled: props.disabled,
+		className: props.className,
+		defaultValue: props.defaultValue as any,
+		name: props.source,
 	}
-	// return props
+}
+
+export function useInputAdapter<T extends CommonInputProps>(
+	props: InputFieldProps,
+	custom?: Partial<InputProps<any>>,
+): T {
+	const {
+		id,
+		isRequired,
+		field,
+		fieldState: { error },
+	} = useInput({
+		source: props.source,
+		control: props.control,
+		defaultValue: props.defaultValue,
+		disabled: props.disabled,
+		...custom,
+	})
+	return {
+		isRequired, // why does `useInput` always return false
+		...inputPropsAdapter(props),
+		id,
+		error: error?.message,
+		onChange: field.onChange,
+		name: field.name,
+		onBlur: field.onBlur,
+		value: field.value,
+		isDisabled: field.disabled,
+	} satisfies CommonInputProps as any
 }

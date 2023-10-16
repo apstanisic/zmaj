@@ -28,7 +28,6 @@ export function Dashboard(): JSX.Element {
 						</li>
 					))}
 				</ul>
-				F
 			</div>
 		</div>
 	)

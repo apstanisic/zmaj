@@ -1,7 +1,7 @@
 import { SaveButton } from "@admin-panel/app-layout/buttons/SaveButton"
 import { useRecord } from "@admin-panel/hooks/use-record"
+import { cn } from "@admin-panel/utils/cn"
 import { Struct } from "@zmaj-js/common"
-import { clsx } from "clsx"
 import { Form } from "ra-core"
 import { memo, PropsWithChildren, ReactNode } from "react"
 
@@ -9,23 +9,26 @@ type ManualInputLayoutProps = PropsWithChildren<{
 	actions?: ReactNode
 	defaultValues?: Struct
 	className?: string
-	enableNoChangeSubmit?: boolean
 }>
 
 /**
  * Default input layout
  */
-export const ManualInputLayout = memo((props: ManualInputLayoutProps) => {
+export const CustomInputLayout = memo((props: ManualInputLayoutProps) => {
+	const { actions, children, className, defaultValues } = props
 	const record = useRecord()
+
 	return (
 		<Form
-			className={clsx("crud-content", props.className)}
-			defaultValues={props.defaultValues ?? record}
+			className={cn("crud-content", className)}
+			defaultValues={defaultValues ?? record}
 			shouldUnregister={false}
 			sanitizeEmptyValues={false}
 		>
-			{props.children}
-			{props.actions ?? (
+			{children}
+			{actions !== undefined ? (
+				actions
+			) : (
 				<div className="flex w-full justify-end">
 					<SaveButton className="ml-auto" />
 				</div>

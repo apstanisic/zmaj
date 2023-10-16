@@ -4,12 +4,7 @@ import { CodeShowField } from "../code/CodeShowField"
 import { ShowFieldProps } from "../types/ShowFieldProps"
 
 export const JsonShowField = (props: ShowFieldProps): JSX.Element => (
-	<CodeShowField
-		{...props}
-		language="json"
-		// Format JSON
-		formatter={formatJson}
-	/>
+	<CodeShowField {...props} value={formatJson(props.value) ?? props.value} language="json" />
 )
 
 function formatJson(val: unknown): string {

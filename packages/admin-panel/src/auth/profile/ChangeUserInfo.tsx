@@ -1,11 +1,11 @@
 import { useIsAllowedSystem } from "@admin-panel/hooks/use-is-allowed"
+import { FormTextInput } from "@admin-panel/ui/Controlled"
 import { Button } from "@admin-panel/ui/buttons/Button"
 import { ProfileUpdateDto, UserUpdateDto } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
 import { pick } from "radash"
 import { useCallback } from "react"
 import { useSdk } from "../../context/sdk-context"
-import { ManualInputField } from "../../shared/input/ManualInputField"
 import { useUserProfile } from "./useUserProfile"
 
 export function ChangeUserInfo(): JSX.Element {
@@ -31,8 +31,8 @@ export function ChangeUserInfo(): JSX.Element {
 
 	return (
 		<Form onSubmit={onSubmit} defaultValues={pick(profile.data!, ["firstName", "lastName"])}>
-			<ManualInputField source="firstName" />
-			<ManualInputField source="lastName" />
+			<FormTextInput name="firstName" />
+			<FormTextInput name="lastName" />
 			<div className="flex justify-end">
 				<Button
 					className="ml-auto mt-2"

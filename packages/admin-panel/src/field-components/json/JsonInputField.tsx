@@ -1,7 +1,7 @@
 import { useStringValidation } from "@admin-panel/shared/input/useCommonValidators"
-import { JsonInput } from "@admin-panel/ui/forms/CodeInput/JsonInput"
+import { useInputAdapter } from "@admin-panel/shared/input/useInputField"
+import { JsonInput, JsonInputProps } from "@admin-panel/ui/forms/CodeInput/JsonInput"
 import { ignoreErrors } from "@zmaj-js/common"
-import { useInput } from "ra-core"
 import { memo } from "react"
 import { InputFieldProps } from "../types/InputFieldProps"
 
@@ -51,30 +51,7 @@ const formatJson = (val: string): string =>
 export const JsonInputField = memo((props: InputFieldProps) => {
 	const validate = useStringValidation(props.fieldConfig?.component?.json, props.validate)
 
-	const {
-		field: { ref, ...field },
-		fieldState: { error },
-		isRequired,
-		id,
-	} = useInput({
-		source: props.source,
-		defaultValue: props.defaultValue,
-		control: props.control,
-		disabled: props.disabled,
-		isRequired: props.isRequired,
-		validate,
-	})
+	const asProps = useInputAdapter<JsonInputProps>(props, { validate })
 
-	return (
-		<JsonInput
-			{...field}
-			isDisabled={field.disabled}
-			id={id}
-			className={props.className}
-			description={props.description ?? undefined}
-			isRequired={isRequired}
-			error={error?.message}
-			label={props.label}
-		/>
-	)
+	return <JsonInput {...asProps} />
 })

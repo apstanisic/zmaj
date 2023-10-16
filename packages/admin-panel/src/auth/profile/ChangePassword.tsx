@@ -1,14 +1,19 @@
 import { useIsAllowedSystem } from "@admin-panel/hooks/use-is-allowed"
+import { FormPasswordInput } from "@admin-panel/ui/Controlled"
 import { Button } from "@admin-panel/ui/buttons/Button"
-import { Struct, UserUpdatePasswordDto } from "@zmaj-js/common"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { UserUpdatePasswordDto } from "@zmaj-js/common"
 import { Form, useNotify, useRedirect } from "ra-core"
 import { useCallback } from "react"
-import { useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 import { useSdk } from "../../context/sdk-context"
-import { PasswordInputField } from "../../field-components/password/PasswordInputField"
-import { ManualInputField } from "../../shared/input/ManualInputField"
 
-// type Values = ChangePasswordDto & { confirmPassword: string }
+const schema = z.object({
+	oldPassword: z.string().min(4),
+	newPassword: z.string().min(8),
+	confirmPassword: z.string().min(8),
+})
 /**
  *  Change password form
  */
@@ -19,7 +24,10 @@ export function ChangePassword(): JSX.Element {
 	const canChange = useIsAllowedSystem("account", "updatePassword")
 
 	const onSubmit = useCallback(
-		async (data: Struct) => {
+		async (data: z.infer<typeof schema>) => {
+			if (data.newPassword !== data.confirmPassword) {
+				return notify("New passwords do not match", { type: "error" })
+			}
 			await sdk.auth.profile
 				.changePassword(UserUpdatePasswordDto.fromUnknown(data))
 				.then((res) => {
@@ -31,36 +39,42 @@ export function ChangePassword(): JSX.Element {
 		[notify, redirect, sdk.auth.profile],
 	)
 
+	const { control, handleSubmit } = useForm({
+		defaultValues: { oldPassword: "", newPassword: "", confirmPassword: "" },
+		resolver: zodResolver(schema),
+	})
+
 	return (
-		<Form onSubmit={onSubmit}>
-			<ManualInputField Component={PasswordInputField} isRequired source="oldPassword" />
-			<ManualInputField Component={PasswordInputField} isRequired source="newPassword" />
-			<ConfirmPassword />
+		<Form onSubmit={handleSubmit(onSubmit)}>
+			<FormPasswordInput
+				control={control}
+				label="Current password"
+				isRequired
+				name="oldPassword"
+			/>
+			<FormPasswordInput
+				control={control}
+				label="New password"
+				isRequired
+				name="newPassword"
+			/>
+			<FormPasswordInput
+				control={control}
+				label="Confirm password"
+				isRequired
+				name="confirmPassword"
+			/>
 
 			<div className="flex justify-end">
 				<Button
 					className="ml-auto mt-2"
 					type="submit"
-					variant="outline"
+					variant="outlined"
 					isDisabled={!canChange}
 				>
 					Change Password
 				</Button>
 			</div>
 		</Form>
-	)
-}
-
-/** Need to be separate function to access form context */
-function ConfirmPassword(): JSX.Element {
-	const newPassword = useWatch({ name: "newPassword" })
-
-	return (
-		<ManualInputField
-			Component={PasswordInputField}
-			isRequired
-			source="confirmPassword"
-			validate={[(val) => (val !== newPassword ? "Not same" : undefined)]}
-		/>
 	)
 }

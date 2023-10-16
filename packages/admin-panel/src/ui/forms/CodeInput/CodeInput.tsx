@@ -19,6 +19,7 @@ export type CodeInputProps = Pick<
 	| "isRequired"
 	| "name"
 	| "id"
+	| "defaultValue"
 > & {
 	language?: string
 }
@@ -30,19 +31,21 @@ export const CodeInput = memo((props: CodeInputProps) => {
 		isDisabled,
 		description,
 		error,
+		defaultValue,
 		id = "test",
 		onChange: propsOnChange,
 		language = "plain",
 	} = props
 
-	const [internalValue, setInternalValue] = useState("")
+	const [internalValue, setInternalValue] = useState(defaultValue ?? "")
 
 	const value = props.value ?? internalValue
 	const onChange = useCallback(
-		(val: string) => {
-			propsOnChange ? propsOnChange(val) : setInternalValue(val)
+		(newValue: string) => {
+			props.value ? propsOnChange?.(newValue) : setInternalValue(newValue)
+			// propsOnChange ? propsOnChange(val) : setInternalValue(val)
 		},
-		[propsOnChange],
+		[props.value, propsOnChange],
 	)
 
 	const inputRef = useRef<HTMLElement>(null)

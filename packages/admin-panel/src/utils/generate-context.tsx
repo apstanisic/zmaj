@@ -20,12 +20,10 @@ type GenerateContextValue<T> = [
  * This provides option to not provide default value, but will throw if we try to access it
  * and value is undefined. It's type safe, since it will throw error.
  */
-// prettier-ignore
 export function generateContext<T>(
 	defaultValue: T | undefined,
 	options: { throwOnNil: true },
 ): GenerateContextValue<T>
-// prettier-ignore
 export function generateContext<T>(
 	defaultValue: T,
 	options?: { throwOnNil?: false },

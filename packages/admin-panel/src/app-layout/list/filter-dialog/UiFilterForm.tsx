@@ -1,10 +1,10 @@
+import { FormSelectInput } from "@admin-panel/ui/Controlled"
 import { AnyFn, FieldDef, ignoreErrors, joinFilters } from "@zmaj-js/common"
 import { Form, useListContext } from "ra-core"
 import { get } from "radash"
 import { memo, useCallback, useEffect, useMemo } from "react"
 import { useFormContext } from "react-hook-form"
 import { FieldContextProvider } from "../../../context/field-context"
-import { DropdownInputField } from "../../../field-components/dropdown/DropdownInputField"
 import { fieldComponents } from "../../../field-components/field-components"
 import { GuiComparison } from "../../../field-components/types/CrudComponentDefinition"
 import { ManualInputField } from "../../../shared/input/ManualInputField"
@@ -52,39 +52,31 @@ const FormFields = memo((props: { filterableFields: FieldDef[] }) => {
 
 	return (
 		<>
-			<ManualInputField
-				source="field"
-				Component={DropdownInputField}
+			<FormSelectInput
+				name="field"
 				isRequired
-				fieldConfig={{
-					component: {
-						dropdown: {
-							choices: props.filterableFields.map((f) => ({
-								value: f.fieldName,
-								label: f.label ?? f.fieldName,
-							})),
-						},
-					},
-				}}
+				options={props.filterableFields.map((f) => ({
+					value: f.fieldName,
+					label: f.label ?? f.fieldName,
+				}))}
 			/>
 
-			<ManualInputField
+			<FormSelectInput
 				source="comparison"
 				isRequired
-				Component={DropdownInputField}
-				fieldConfig={{
-					component: {
-						dropdown: {
-							choices: comparisons.map((c) => ({ value: c, label: comparisonLabels[c] })),
-						},
-					},
-				}}
+				options={comparisons.map((c) => ({
+					value: c,
+					label: comparisonLabels[c],
+				}))}
 			/>
 			<FieldContextProvider value={currentField ?? ({} as any)}>
 				<ManualInputField
 					source="value"
 					//   Disabled if no component (should not happen), or testing for null
-					disabled={Component === undefined || ["$exists", "$not_exists"].includes(comparisonValue)}
+					disabled={
+						Component === undefined ||
+						["$exists", "$not_exists"].includes(comparisonValue)
+					}
 					isRequired
 					Component={Component?.SmallInput}
 				/>

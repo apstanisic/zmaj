@@ -1,11 +1,9 @@
+import { FormEmailInput, FormPasswordInput, FormTextInput } from "@admin-panel/ui/Controlled"
 import { Button } from "@admin-panel/ui/buttons/Button"
 import { SignUpDto, Struct, throwErr } from "@zmaj-js/common"
 import { Form, useLogin, useNotify, useRedirect } from "ra-core"
 import { useCallback } from "react"
 import { useSdk } from "../../context/sdk-context"
-import { EmailInputField } from "../../field-components/email/EmailInputField"
-import { PasswordInputField } from "../../field-components/password/PasswordInputField"
-import { ManualInputField } from "../../shared/input/ManualInputField"
 import { usePublicInfo } from "../hooks/use-public-info"
 
 /**
@@ -81,17 +79,12 @@ export function SignUpForm(props: {
 
 	return (
 		<Form className="grid w-full" onSubmit={onSubmit} defaultValues={props.defaultData}>
-			<ManualInputField source="firstName" />
-			<ManualInputField source="lastName" />
-			<ManualInputField
-				source="email"
-				isRequired
-				Component={EmailInputField}
-				disabled={props.type === "invitation"}
-			/>
-			<ManualInputField source="password" isRequired Component={PasswordInputField} />
+			<FormTextInput name="firstName" />
+			<FormTextInput name="lastName" />
+			<FormEmailInput name="email" isRequired isDisabled={props.type === "invitation"} />
+			<FormPasswordInput name="password" isRequired />
 
-			<Button type="submit" variant="outline" className="ml-auto">
+			<Button type="submit" variant="outlined" className="ml-auto">
 				Sign Up
 			</Button>
 		</Form>
