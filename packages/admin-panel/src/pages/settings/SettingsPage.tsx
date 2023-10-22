@@ -4,6 +4,7 @@ import { ChoicesDialogAndButton } from "@admin-panel/shared/choices/ChoicesDialo
 import { useInputField } from "@admin-panel/shared/input/useInputField"
 import { Card } from "@admin-panel/ui/Card"
 import { CircularProgress } from "@admin-panel/ui/CircularProgress"
+import { FormSwitchInput } from "@admin-panel/ui/Controlled"
 import { Button } from "@admin-panel/ui/buttons/Button"
 import { useQuery } from "@tanstack/react-query"
 import { ADMIN_ROLE_ID, ChangeSettingsDto } from "@zmaj-js/common"
@@ -12,8 +13,6 @@ import { memo, useCallback } from "react"
 import { Route } from "react-router"
 import { usePublicInfo } from "../../auth/hooks/use-public-info"
 import { useSdk } from "../../context/sdk-context"
-import { BooleanInputField } from "../../field-components/boolean/BooleanInputField"
-import { ManualInputField } from "../../shared/input/ManualInputField"
 
 export function settingsPage(): JSX.Element {
 	return (
@@ -54,12 +53,11 @@ const Settings = memo(() => {
 				<p className="my-2 border-b pb-4 text-center text-lg">Settings </p>
 				{/*  { signUpAllowed: settings.data.data., defaultSignUpRole: "" } */}
 				<Form defaultValues={settings.data.data} onSubmit={onSubmit as any}>
-					<ManualInputField
-						Component={BooleanInputField}
+					<FormSwitchInput
 						isRequired
-						source="signUpAllowed"
+						name="signUpAllowed"
 						label="Sign Up Allowed"
-						disabled={!settings.data.meta.signUpDynamic}
+						isDisabled={!settings.data.meta.signUpDynamic}
 					/>
 					<DefaultRoleInput />
 					<Button type="submit">Change</Button>

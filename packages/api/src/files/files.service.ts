@@ -53,7 +53,7 @@ export class FilesService {
 		const { id, user, size } = params
 
 		// need info so we can set proper mime/type
-		const fileInfo = await this.repo.findById({ id })
+		const fileInfo = await this.repo.findById({ id, includeHidden: true })
 		if (!fileInfo) throw404(4381923, emsg.notFound("File"))
 
 		// We only check if user can access file ID, if it can, he/she can access file

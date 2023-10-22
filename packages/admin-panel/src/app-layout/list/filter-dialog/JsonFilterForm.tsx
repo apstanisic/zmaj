@@ -24,7 +24,7 @@ export const JsonFilterForm = memo((props: { hideDialog: () => void }) => {
 			}}
 			defaultValues={{ filter: filterValues }}
 		>
-			<FormJsonInput name="filter" />
+			<FormJsonInput label="Json filter" name="filter" />
 
 			<FilterSubmitButton />
 		</Form>

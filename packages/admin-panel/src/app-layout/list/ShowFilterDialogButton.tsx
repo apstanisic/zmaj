@@ -1,4 +1,4 @@
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useListLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { memo } from "react"
 import { MdFilterList } from "react-icons/md"
@@ -8,7 +8,7 @@ import { useShowFilterDialog } from "./use-show-filter-dialog"
  * Button that displays filter dialog
  */
 export const ShowFilterDialogButton = memo(() => {
-	const config = useLayoutConfigContext().list
+	const config = useListLayoutConfig()
 
 	const [, setShowDialog] = useShowFilterDialog()
 

@@ -29,7 +29,7 @@ export function MultilineTextInput(props: MultilineTextInputProps): JSX.Element 
 						// do not show placeholder when input is disabled
 						rows={lines}
 						placeholder={props.isDisabled ? undefined : placeholder}
-						className={inputCss}
+						className={cn(inputCss, "py-2")}
 					/>
 				</div>
 			</FormControl>

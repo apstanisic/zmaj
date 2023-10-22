@@ -1,8 +1,7 @@
+import { FormSelectInput } from "@admin-panel/ui/Controlled"
 import { RelationCreateDto } from "@zmaj-js/common"
 import { useEffect, useMemo } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { DropdownInputField } from "../../../field-components/dropdown/DropdownInputField"
-import { ManualInputField } from "../../../shared/input/ManualInputField"
 import { throwInApp } from "../../../shared/throwInApp"
 import { useGetCollection } from "../../../state/use-get-collection"
 import { AdvancedOptions } from "./AdvancedOptions"
@@ -63,44 +62,35 @@ export const RelationCreateForm = ({ collections }: RelationFormProps): JSX.Elem
 		<div className="crud-content">
 			<p className="mb-3 text-xl">Create Relation</p>
 
-			<ManualInputField
+			<FormSelectInput
 				isRequired
-				source="type"
+				name="type"
 				defaultValue="many-to-one"
 				className="col-span-2"
-				Component={DropdownInputField}
-				fieldConfig={{
-					component: {
-						dropdown: {
-							choices: [
-								{ value: "many-to-one", label: ">-- Many to One" },
-								{ value: "one-to-many", label: "--< One to Many " },
-								{ value: "owner-one-to-one", label: "--- One to One (fk here)" },
-								{ value: "ref-one-to-one", label: "--- One to One (fk in other table)" },
-								{ value: "many-to-many", label: ">-< Many to Many" },
-							],
-						},
-					},
-				}}
+				options={[
+					{ value: "many-to-one", label: ">-- Many to One" },
+					{ value: "one-to-many", label: "--< One to Many " },
+					{ value: "owner-one-to-one", label: "--- One to One (fk here)" },
+					{ value: "ref-one-to-one", label: "--- One to One (fk in other table)" },
+					{ value: "many-to-many", label: ">-< Many to Many" },
+				]}
 			/>
 
 			<div className="flex gap-x-3">
-				<ManualInputField
+				<FormSelectInput
 					isRequired
-					source="leftCollection"
+					name="leftCollection"
 					label="Collection"
-					disabled
-					Component={DropdownInputField}
-					fieldConfig={{ component: { dropdown: { choices: leftTableChoices } } }}
+					isDisabled
+					options={leftTableChoices}
 				/>
-				<ManualInputField
+				<FormSelectInput
 					isRequired
-					source="rightCollection"
+					name="rightCollection"
 					label="Collection (other side)"
-					disabled={rightTableChoices.length === 0}
-					defaultValue={rightTableChoices[0]}
-					Component={DropdownInputField}
-					fieldConfig={{ component: { dropdown: { choices: rightTableChoices } } }}
+					isDisabled={rightTableChoices.length === 0}
+					defaultValue={rightTableChoices[0]?.value}
+					options={rightTableChoices}
 				/>
 			</div>
 

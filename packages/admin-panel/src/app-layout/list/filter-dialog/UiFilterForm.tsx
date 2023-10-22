@@ -3,11 +3,10 @@ import { AnyFn, FieldDef, ignoreErrors, joinFilters } from "@zmaj-js/common"
 import { Form, useListContext } from "ra-core"
 import { get } from "radash"
 import { memo, useCallback, useEffect, useMemo } from "react"
-import { useFormContext } from "react-hook-form"
+import { Controller, useFormContext } from "react-hook-form"
 import { FieldContextProvider } from "../../../context/field-context"
 import { fieldComponents } from "../../../field-components/field-components"
 import { GuiComparison } from "../../../field-components/types/CrudComponentDefinition"
-import { ManualInputField } from "../../../shared/input/ManualInputField"
 import { SingleFilter } from "../single-filter.type"
 import { FilterSubmitButton } from "./FilterSubmitButton"
 import { useFilterableFields } from "./use-filterable-fields"
@@ -54,6 +53,7 @@ const FormFields = memo((props: { filterableFields: FieldDef[] }) => {
 		<>
 			<FormSelectInput
 				name="field"
+				label="Field"
 				isRequired
 				options={props.filterableFields.map((f) => ({
 					value: f.fieldName,
@@ -62,7 +62,8 @@ const FormFields = memo((props: { filterableFields: FieldDef[] }) => {
 			/>
 
 			<FormSelectInput
-				source="comparison"
+				name="comparison"
+				label="Comparison"
 				isRequired
 				options={comparisons.map((c) => ({
 					value: c,
@@ -70,15 +71,23 @@ const FormFields = memo((props: { filterableFields: FieldDef[] }) => {
 				}))}
 			/>
 			<FieldContextProvider value={currentField ?? ({} as any)}>
-				<ManualInputField
-					source="value"
-					//   Disabled if no component (should not happen), or testing for null
+				<Controller
+					name="value"
 					disabled={
 						Component === undefined ||
 						["$exists", "$not_exists"].includes(comparisonValue)
 					}
-					isRequired
-					Component={Component?.SmallInput}
+					render={({ field }) => {
+						const ToRender = Component!.SmallInput
+						return (
+							<ToRender
+								label="Value"
+								source={field.name}
+								disabled={field.disabled}
+								value={field.value}
+							/>
+						)
+					}}
 				/>
 			</FieldContextProvider>
 		</>

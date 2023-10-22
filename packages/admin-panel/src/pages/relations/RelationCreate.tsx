@@ -1,14 +1,8 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
-import {
-	CollectionMetadataCollection,
-	RelationCreateDto,
-	filterStruct,
-	notNil,
-} from "@zmaj-js/common"
+import { CollectionMetadataCollection, RelationCreateDto } from "@zmaj-js/common"
 import { plural, singular } from "pluralize"
 import { useNotify, useRedirect } from "ra-core"
-import { construct, crush } from "radash"
 import { memo, useEffect, useMemo } from "react"
 import { CustomInputLayout } from "../../crud-layouts/input/ManualInputLayout"
 import { GeneratedCreatePage } from "../../generator/pages/GeneratedCreatePage"
@@ -16,17 +10,33 @@ import { useUserCollections } from "../../hooks/use-user-collections"
 import { useInfraState } from "../../state/useInfraState"
 import { RelationCreateForm } from "./create/RelationCreateForm"
 
-function removeEmptyValues(val: any): unknown {
-	const flat = filterStruct(crush(val), (v) => notNil(v) && v !== "")
-	return construct(flat) as unknown
-}
+// function removeEmptyValues(val: any): unknown {
+// 	const flat = filterStruct(crush(val), (v) => notNil(v) && v !== "")
+// 	return construct(flat) as unknown
+// }
 
 export const RelationCreate = memo(() => {
 	const infra = useInfraState()
 	return (
 		<GeneratedCreatePage
-			transform={removeEmptyValues}
-			onCreate={async (relation) => infra.refetch()}
+			// transform={removeEmptyValues}
+			onSuccess={async (relation) => infra.refetch()}
+			defaultValues={(record) => {
+				const leftCollection = String(record?.["leftCollection"] ?? "") ?? "zmajUsers"
+				return {
+					type: "many-to-one",
+					rightCollection: "",
+					leftCollection: leftCollection,
+					left: {
+						propertyName: "",
+						column: undefined as any,
+					},
+					right: {
+						propertyName: plural(leftCollection),
+						column: undefined as any,
+					},
+				} satisfies Partial<RelationCreateDto>
+			}}
 		>
 			<Content />
 		</GeneratedCreatePage>

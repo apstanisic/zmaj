@@ -59,12 +59,12 @@ export class FileModel extends BaseModel {
 		 * Path where file is stored. This is provider specific.
 		 * It's not public url, it's path for provider service to access
 		 */
-		uri: f.text({ canUpdate: false }),
+		uri: f.text({ canUpdate: false, canRead: false }),
 
 		/**
 		 * Storage name that is used. config for storage is in .env
 		 */
-		storageProvider: f.text({ canUpdate: false }),
+		storageProvider: f.text({ canUpdate: false, canRead: false }),
 	}))
 
 	user = this.manyToOne(() => UserModel, { fkField: "userId" })

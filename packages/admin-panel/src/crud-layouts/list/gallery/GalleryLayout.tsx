@@ -1,4 +1,4 @@
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useListLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { clsx } from "clsx"
 import { RaRecord, useListContext } from "ra-core"
 import { memo } from "react"
@@ -31,7 +31,7 @@ const GalleryLayout = memo(() => {
 
 	// const config = collection.views?.list ?? {}
 	// TODO Return config options
-	const config = useLayoutConfigContext().list
+	const config = useListLayoutConfig()
 
 	const size = config.size
 

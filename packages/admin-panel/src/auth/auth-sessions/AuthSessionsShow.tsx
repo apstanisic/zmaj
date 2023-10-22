@@ -1,4 +1,5 @@
 import { DeleteButton } from "@admin-panel/app-layout/buttons/DeleteButton"
+import { ShowRecordAsJsonDialog } from "@admin-panel/app-layout/show/ShowRecordAsJsonDialog"
 import { BooleanShowField } from "@admin-panel/field-components/boolean/BooleanShowField"
 import { useIsAllowedSystem } from "@admin-panel/hooks/use-is-allowed"
 import { memo } from "react"
@@ -13,12 +14,23 @@ import { useIsCurrentDevice } from "./useIsCurrentDevice"
  */
 export const AuthSessionsShow = memo(() => {
 	return (
-		<GeneratedShowPage startButtons={<RemoveSessionButton />}>
+		<GeneratedShowPage
+			actions={
+				<>
+					<ShowRecordAsJsonDialog />
+					<RemoveSessionButton />
+				</>
+			}
+		>
 			<LayoutSection largeGap>
 				<IsCurrentDevice />
 				<ManualShowField source="browser.name" label="Browser" />
 				<ManualShowField source="os.name" label="OS" />
-				<ManualShowField source="createdAt" label="Logged In At" Component={DateTimeShowField} />
+				<ManualShowField
+					source="createdAt"
+					label="Logged In At"
+					Component={DateTimeShowField}
+				/>
 				<ManualShowField source="lastUsed" Component={DateTimeShowField} />
 				<ManualShowField source="ip" label="IP Address" />
 			</LayoutSection>

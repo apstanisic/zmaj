@@ -1,4 +1,4 @@
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useShowLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { memo } from "react"
 import { crudLayouts } from "../../crud-layouts/layouts"
 
@@ -8,7 +8,7 @@ import { crudLayouts } from "../../crud-layouts/layouts"
  *
  */
 export const GeneratedShowLayout = memo((): JSX.Element => {
-	const layoutType = useLayoutConfigContext().show.type
+	const layoutType = useShowLayoutConfig().type
 	const { Layout } = crudLayouts.getShow(layoutType)
 
 	return <Layout />

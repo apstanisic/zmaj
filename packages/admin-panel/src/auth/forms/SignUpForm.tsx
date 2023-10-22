@@ -79,10 +79,15 @@ export function SignUpForm(props: {
 
 	return (
 		<Form className="grid w-full" onSubmit={onSubmit} defaultValues={props.defaultData}>
-			<FormTextInput name="firstName" />
-			<FormTextInput name="lastName" />
-			<FormEmailInput name="email" isRequired isDisabled={props.type === "invitation"} />
-			<FormPasswordInput name="password" isRequired />
+			<FormTextInput label="First name" name="firstName" />
+			<FormTextInput label="Last name" name="lastName" />
+			<FormEmailInput
+				label="Email"
+				name="email"
+				isRequired
+				isDisabled={props.type === "invitation"}
+			/>
+			<FormPasswordInput label="Password" name="password" isRequired />
 
 			<Button type="submit" variant="outlined" className="ml-auto">
 				Sign Up

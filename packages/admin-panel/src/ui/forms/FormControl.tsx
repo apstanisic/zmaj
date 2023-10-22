@@ -22,7 +22,7 @@ export const FormControl = (
 
 			<div className="min-h-[16px]">
 				{description && !error && (
-					<Text slot="description" className="text-sm text-neutral/70" id={ariaId}>
+					<Text slot="description" className="text-sm text-base-content/60" id={ariaId}>
 						{description}
 					</Text>
 				)}

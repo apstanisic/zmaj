@@ -25,26 +25,17 @@ export const UuidInput = (props: UuidInputProps): JSX.Element => {
 			{...props}
 			value={value}
 			onChange={onChange}
-			endIcon={
-				<GenerateUuidButton onPress={() => onChange(v4())} isDisabled={props.isDisabled} />
-			}
+			endIcon={!props.isDisabled && <GenerateUuidButton onPress={() => onChange(v4())} />}
 		/>
 	)
 }
 
-const GenerateUuidButton = memo(
-	({ onPress, isDisabled }: { onPress: () => void; isDisabled?: boolean }) => {
-		return (
-			<Tooltip text={isDisabled ? "" : "Generate random UUID"} side="left" className="center">
-				<IconButton
-					aria-label="Generate random UUID"
-					onPress={onPress}
-					isDisabled={isDisabled}
-					size="small"
-				>
-					<MdAutorenew />
-				</IconButton>
-			</Tooltip>
-		)
-	},
-)
+const GenerateUuidButton = memo(({ onPress }: { onPress: () => void }) => {
+	return (
+		<Tooltip text={"Generate random UUID"} side="left" className="center">
+			<IconButton aria-label="Generate random UUID" onPress={onPress} size="small">
+				<MdAutorenew />
+			</IconButton>
+		</Tooltip>
+	)
+})

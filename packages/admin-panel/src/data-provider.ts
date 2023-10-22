@@ -14,7 +14,7 @@ import {
 } from "@zmaj-js/common"
 import { IdType } from "@zmaj-js/orm"
 import { DataProvider, RaRecord } from "ra-core"
-import { isEqual, mapValues } from "radash"
+import { construct, crush, isEqual, mapValues } from "radash"
 import { v4 } from "uuid"
 import { z } from "zod"
 import { AdminPanelError } from "./shared/AdminPanelError"
@@ -54,7 +54,9 @@ function parseFilter(filter: unknown): Filter<RaRecord> {
  * @returns Data Provider
  */
 export function initDataProvider(sdk: ZmajSdk, collections?: CollectionDef[]): DataProvider {
-	const pkFields = Object.fromEntries(collections?.map((c) => [c.collectionName, c.pkField]) ?? [])
+	const pkFields = Object.fromEntries(
+		collections?.map((c) => [c.collectionName, c.pkField]) ?? [],
+	)
 
 	// transform record whose primary key is different than id to id, so that react-admin works
 	function transformRecord(resource: string, record: Struct): RaRecord {
@@ -178,8 +180,8 @@ export function initDataProvider(sdk: ZmajSdk, collections?: CollectionDef[]): D
 		async create(resource, { data }): Promise<{ data: DpRecord }> {
 			// remove empty string, and send null instead
 
-			const values = mapValues(data, (v) => (v === "" ? null : v))
-			const result = await startCrud(resource).createOne({ data: values })
+			const values = mapValues(crush(data), (v) => (v === "" ? null : v))
+			const result = await startCrud(resource).createOne({ data: construct(values) })
 			return { data: transformRecord(resource, result) }
 		},
 

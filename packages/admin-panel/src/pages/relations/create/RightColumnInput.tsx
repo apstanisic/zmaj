@@ -1,8 +1,8 @@
+import { FormTextInput } from "@admin-panel/ui/Controlled"
 import { CollectionDef, RelationCreateDto, snakeCase } from "@zmaj-js/common"
 import { singular } from "pluralize"
 import { useCallback, useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { ManualInputField } from "../../../shared/input/ManualInputField"
 import { getFreeFkColumn } from "./get-free-fk-column"
 
 /**
@@ -28,7 +28,9 @@ export function RightColumnInput({
 			return rightCollection.pkField
 		} else {
 			const defaultName = snakeCase(singular(leftCollection) + "Id")
-			const free = !Object.values(rightCollection.fields).some((f) => f.columnName === defaultName)
+			const free = !Object.values(rightCollection.fields).some(
+				(f) => f.columnName === defaultName,
+			)
 			return free ? defaultName : getFreeFkColumn(rightCollection, leftCollection)
 		}
 	}, [leftCollection, rightCollection, type])
@@ -38,9 +40,9 @@ export function RightColumnInput({
 	}, [getDefaultValue, rightCollection, setValue, type])
 
 	return (
-		<ManualInputField
-			source="right.column"
-			disabled={type !== "one-to-many" && type !== "ref-one-to-one"}
+		<FormTextInput
+			name="right.column"
+			isDisabled={type !== "one-to-many" && type !== "ref-one-to-one"}
 			defaultValue={getDefaultValue()}
 			label="Database Column (other side)"
 			isRequired

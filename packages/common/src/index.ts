@@ -14,3 +14,5 @@ export * from "./system-models"
 export * from "./types"
 export * from "./utils/mod"
 export * from "./zod"
+
+export { type Class } from "type-fest"

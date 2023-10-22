@@ -1,4 +1,3 @@
-import { shortTextDbColumnValidation } from "@admin-panel/shared/db-column-form-validation"
 import {
 	FormMultilineTextInput,
 	FormSelectInput,
@@ -12,9 +11,7 @@ import { useWatch } from "react-hook-form"
 import { useActionContext } from "../../../context/action-context"
 import { StepSection } from "../../../crud-layouts/ui/steps/StepSection"
 import { StepLayout } from "../../../crud-layouts/ui/steps/StepsLayout"
-import { DropdownInputField } from "../../../field-components/dropdown/DropdownInputField"
 import { fieldComponents } from "../../../field-components/field-components"
-import { ManualInputField } from "../../../shared/input/ManualInputField"
 import { FieldInfoInputComponentName } from "./_FieldInfoInputComponentName"
 import { FieldInfoInputDefaultValue } from "./_FieldInfoInputDefaultValue"
 
@@ -33,45 +30,41 @@ const Step1 = memo(() => {
 
 	return (
 		<StepSection index={0}>
-			<ManualInputField
-				source="collectionName"
-				fieldConfig={shortTextDbColumnValidation}
-				isRequired
-				disabled
-			/>
+			<FormTextInput name="collectionName" isRequired isDisabled label="Collection" />
 
-			<ManualInputField
-				source="columnName"
-				fieldConfig={shortTextDbColumnValidation}
-				disabled={isEdit}
+			<FormTextInput
+				name="columnName"
+				isDisabled={isEdit}
+				label="Column"
 				isRequired
 				description="Column name in database"
 			/>
 
-			<ManualInputField
-				source="fieldName"
-				fieldConfig={shortTextDbColumnValidation}
+			<FormTextInput
+				label="Field"
+				name="fieldName"
 				description="Field name at which value can be accessed (leave empty for default)"
 			/>
 
 			<FormSelectInput
 				isRequired
 				name="dataType"
+				label="Data type"
 				isDisabled={isEdit}
 				options={columnTypes
 					.filter((t) => !t.startsWith("array"))
 					.map((type) => ({ value: type }))}
 			/>
-
 			<FieldInfoInputComponentName />
 			<FieldInfoInputDefaultValue />
 
 			<FormSwitchInput label="Value Optional" name="isNullable" defaultValue={true} />
 
-			<FormTextInput name="label" />
-			<FormMultilineTextInput name="description" />
+			<FormTextInput name="label" label="Label" />
+			<FormMultilineTextInput name="description" label="Description" />
 			<FormTextInput
 				name="displayTemplate"
+				label="Display template"
 				description="For example: 'Hello {value}'. {value} will be replaced by field. Key is always 'value'."
 			/>
 		</StepSection>
@@ -90,9 +83,9 @@ const Step2 = memo(() => {
 				isRequired
 			/>
 
-			<FormSwitchInput name="canRead" defaultValue={true} isRequired />
-			<FormSwitchInput name="canCreate" defaultValue={true} isRequired />
-			<FormSwitchInput name="canUpdate" defaultValue={true} isRequired />
+			<FormSwitchInput label="Can read" name="canRead" defaultValue={true} isRequired />
+			<FormSwitchInput label="Can create" name="canCreate" defaultValue={true} isRequired />
+			<FormSwitchInput label="Can update" name="canUpdate" defaultValue={true} isRequired />
 		</StepSection>
 	)
 
@@ -110,21 +103,15 @@ const Step3 = memo(() => {
 	return (
 		<StepSection index={2}>
 			<div className="min-h-[200px]">
-				<ManualInputField
+				<FormSelectInput
 					isRequired
-					source="fieldConfig.width"
-					Component={DropdownInputField}
+					label="Width"
+					name="fieldConfig.width"
 					defaultValue={12}
-					fieldConfig={{
-						component: {
-							dropdown: {
-								choices: times(12).map((i) => ({
-									value: i + 1,
-									label: `${i + 1} / 12`,
-								})),
-							},
-						},
-					}}
+					options={times(12).map((i) => ({
+						value: i + 1,
+						label: `${i + 1} / 12`,
+					}))}
 				/>
 				<FormSwitchInput
 					name="fieldConfig.listHidden"

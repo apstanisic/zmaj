@@ -1,36 +1,69 @@
-import { CreateBase, RaRecord, TransformData } from "ra-core"
-import { ReactNode, memo, useCallback } from "react"
-import { NonListToolbar, NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
+import { CreatePageHeader } from "@admin-panel/app-layout/create/CreatePageHeader"
+import { useRecord } from "@admin-panel/hooks/use-record"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Struct } from "@zmaj-js/common"
+import { CreateBase, Form, RaRecord } from "ra-core"
+import { ReactNode, memo, useCallback, useMemo } from "react"
+import { FieldValues } from "react-hook-form"
+import { z } from "zod"
 import { useSuccessRedirect } from "../../hooks/use-success-redirect"
-import { GeneratedInputLayout } from "../layouts/GeneratedInputLayout"
+import { GeneratedCreateLayout } from "../layouts/GeneratedCreateLayout"
 import { GeneratedPageProvider } from "./GeneratedPageProvider"
 
-type GeneratedCreatePageProps = NonListToolbarProps & {
+type GeneratedCreatePageProps = {
+	onSuccess?: (created: RaRecord) => Promise<unknown>
+	header?: ReactNode
 	children?: ReactNode
-	onCreate?: (item: RaRecord) => Promise<unknown> | unknown
-	transform?: TransformData
+	defaultValues?: FieldValues | ((record?: Struct) => FieldValues)
+	schema?: z.AnyZodObject
 }
 
 export const GeneratedCreatePage = memo((props: GeneratedCreatePageProps) => {
-	const { children, onCreate, ...rest } = props
+	const { children, onSuccess: propsOnSuccess, defaultValues, header, schema } = props
 	const successRedirect = useSuccessRedirect()
 
 	const onSuccess = useCallback(
 		async (data: RaRecord) => {
 			successRedirect(data, "create")
-			await onCreate?.(data)
+			await propsOnSuccess?.(data)
 		},
-		[onCreate, successRedirect],
+		[propsOnSuccess, successRedirect],
 	)
 
 	return (
 		<GeneratedPageProvider action="create">
-			<CreateBase mutationOptions={{ onSuccess }} transform={props.transform}>
-				<div className="crud-content">
-					<NonListToolbar {...rest} />
-					{children ?? <GeneratedInputLayout />}
-				</div>
+			<CreateBase mutationOptions={{ onSuccess }}>
+				<CreateForm defaultValues={defaultValues} schema={schema}>
+					<div className="crud-content">
+						{header ?? <CreatePageHeader />}
+						{children ?? <GeneratedCreateLayout />}
+					</div>
+				</CreateForm>
 			</CreateBase>
 		</GeneratedPageProvider>
 	)
 })
+
+function CreateForm(props: {
+	children: ReactNode
+	defaultValues?: FieldValues | ((record?: Struct) => FieldValues)
+	schema?: z.AnyZodObject
+}): JSX.Element {
+	const record = useRecord()
+	const defaultValues = useMemo(() => {
+		if (typeof props.defaultValues === "function") return props.defaultValues(record)
+		return props.defaultValues
+	}, [props, record])
+
+	return (
+		<Form
+			defaultValues={defaultValues}
+			noValidate // Remove browser validation
+			sanitizeEmptyValues={false} // Do not strip empty string. This completely removes property
+			resolver={props.schema ? zodResolver(props.schema) : undefined}
+			className="w-full h-full"
+		>
+			{props.children}
+		</Form>
+	)
+}

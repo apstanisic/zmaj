@@ -42,8 +42,8 @@
 	},
 	"dependencies": {
 		"@aws-sdk/abort-controller": "^3.370.0",
-		"@aws-sdk/client-s3": "^3.429.0",
-		"@aws-sdk/lib-storage": "^3.429.0",
+		"@aws-sdk/client-s3": "^3.433.0",
+		"@aws-sdk/lib-storage": "^3.433.0",
 		"@zmaj-js/common": "workspace:*",
 		"@zmaj-js/storage-core": "workspace:*",
 		"zod": "^3.22.4"

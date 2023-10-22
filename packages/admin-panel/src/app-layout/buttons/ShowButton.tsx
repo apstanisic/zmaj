@@ -23,7 +23,7 @@ export function ShowButton(props: { onlyIcon?: boolean }): JSX.Element {
 	return (
 		<ResponsiveButton
 			icon={<MdVisibility />}
-			label="Show"
+			label="See detailed"
 			aria-label={`Show record ${record?.id}`}
 			href={href}
 			isDisabled={disabled}

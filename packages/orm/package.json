@@ -41,6 +41,6 @@
 		"test-watch": "cd ../.. && vitest watch packages/orm --passWithNoTests"
 	},
 	"dependencies": {
-		"type-fest": "^4.4.0"
+		"type-fest": "^4.5.0"
 	}
 }

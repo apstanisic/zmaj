@@ -1,30 +1,23 @@
 import { SaveButton } from "@admin-panel/app-layout/buttons/SaveButton"
-import { useRecord } from "@admin-panel/hooks/use-record"
 import { cn } from "@admin-panel/utils/cn"
 import { Struct } from "@zmaj-js/common"
-import { Form } from "ra-core"
-import { memo, PropsWithChildren, ReactNode } from "react"
+import { ReactNode, memo } from "react"
 
-type ManualInputLayoutProps = PropsWithChildren<{
+type ManualInputLayoutProps = {
 	actions?: ReactNode
 	defaultValues?: Struct
 	className?: string
-}>
+	children?: ReactNode
+}
 
 /**
  * Default input layout
  */
 export const CustomInputLayout = memo((props: ManualInputLayoutProps) => {
 	const { actions, children, className, defaultValues } = props
-	const record = useRecord()
 
 	return (
-		<Form
-			className={cn("crud-content", className)}
-			defaultValues={defaultValues ?? record}
-			shouldUnregister={false}
-			sanitizeEmptyValues={false}
-		>
+		<div className={cn("crud-content", className)}>
 			{children}
 			{actions !== undefined ? (
 				actions
@@ -33,6 +26,6 @@ export const CustomInputLayout = memo((props: ManualInputLayoutProps) => {
 					<SaveButton className="ml-auto" />
 				</div>
 			)}
-		</Form>
+		</div>
 	)
 })

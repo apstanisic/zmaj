@@ -81,7 +81,7 @@ export const CodeInput = memo((props: CodeInputProps) => {
 	}, [language])
 
 	return (
-		<div>
+		<div className={props.className}>
 			<FormControl description={description} error={error} isRequired={props.isRequired}>
 				<input
 					type="hidden"

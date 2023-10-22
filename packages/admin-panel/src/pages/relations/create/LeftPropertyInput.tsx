@@ -1,10 +1,9 @@
+import { FormTextInput } from "@admin-panel/ui/Controlled"
 import { RelationCreateDto } from "@zmaj-js/common"
 import { plural, singular } from "pluralize"
 import { camel } from "radash"
 import { useCallback, useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { shortTextDbColumnValidation } from "../../../shared/db-column-form-validation"
-import { ManualInputField } from "../../../shared/input/ManualInputField"
 
 /**
  * Property name for left column
@@ -32,12 +31,5 @@ export function LeftPropertyInput(): JSX.Element {
 		setValue("left.propertyName", defaultPropertyName(rightCollection))
 	}, [defaultPropertyName, rightCollection, setValue])
 
-	return (
-		<ManualInputField
-			source="left.propertyName"
-			label="Property"
-			fieldConfig={shortTextDbColumnValidation}
-			isRequired
-		/>
-	)
+	return <FormTextInput name="left.propertyName" label="Property" isRequired />
 }

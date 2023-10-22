@@ -1,10 +1,9 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
+import { FormSelectInput } from "@admin-panel/ui/Controlled"
 import { FieldDef } from "@zmaj-js/common"
 import { memo, useEffect, useMemo } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { DropdownInputField } from "../../../field-components/dropdown/DropdownInputField"
 import { fieldComponents } from "../../../field-components/field-components"
-import { ManualInputField } from "../../../shared/input/ManualInputField"
 
 // wait react hook form
 export const FieldInfoInputComponentName = memo(() => {
@@ -33,28 +32,22 @@ export const FieldInfoInputComponentName = memo(() => {
 	}, [availableComponents, componentName, dataType, setValue])
 
 	return (
-		<ManualInputField
-			source="componentName"
+		<FormSelectInput
+			name="componentName"
+			label="Component name"
 			isRequired
-			Component={DropdownInputField}
 			defaultValue=""
-			fieldConfig={{
-				component: {
-					dropdown: {
-						choices: availableComponents.map((c) => ({ value: c, label: c })),
-					},
-				},
-			}}
-			fromInput={(value) => {
-				// If it's the same component as in start, we will restore old value
-				// it prevents problem when users changes components and returns to already existing
-				// We don't care if it's edit or create since create won't have value
-				if (startValues?.componentName === value) {
-					setValue("fieldConfig", startValues?.fieldConfig ?? {})
-				} else {
-					setValue("fieldConfig", {})
-				}
-			}}
+			options={availableComponents.map((c) => ({ value: c, label: c }))}
+			// fromInput={(value) => {
+			// 	// If it's the same component as in start, we will restore old value
+			// 	// it prevents problem when users changes components and returns to already existing
+			// 	// We don't care if it's edit or create since create won't have value
+			// 	if (startValues?.componentName === value) {
+			// 		setValue("fieldConfig", startValues?.fieldConfig ?? {})
+			// 	} else {
+			// 		setValue("fieldConfig", {})
+			// 	}
+			// }}
 		/>
 	)
 })

@@ -1,3 +1,4 @@
+import { ShowPageActions } from "@admin-panel/app-layout/show/ShowPageActions"
 import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { CollectionDef } from "@zmaj-js/common"
 import {
@@ -23,7 +24,12 @@ export const CollectionShow = memo(() => {
 
 	return (
 		<GeneratedShowPage
-			startButtons={<VisitResourceButton />}
+			actions={
+				<>
+					<VisitResourceButton />
+					<ShowPageActions />
+				</>
+			}
 			onDelete={async (res) => {
 				const col = res as CollectionDef
 				await infraState.refetch()

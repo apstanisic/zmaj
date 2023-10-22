@@ -105,8 +105,8 @@ export function SignInForm(): JSX.Element {
 				onSubmit={onSubmit}
 				defaultValues={{ email: "", password: "" }}
 			>
-				<FormEmailInput name="email" isRequired />
-				<FormPasswordInput name="password" isRequired />
+				<FormEmailInput label="Email" name="email" isRequired />
+				<FormPasswordInput label="Password" name="password" isRequired />
 
 				<Button type="submit" variant="outlined" className="ml-auto">
 					Sign in

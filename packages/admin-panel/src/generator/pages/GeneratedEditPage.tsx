@@ -1,19 +1,23 @@
+import { EditPageHeader } from "@admin-panel/app-layout/edit/EditPageHeader"
 import { useRecord } from "@admin-panel/hooks/use-record"
-import { EditBase, RaRecord, TransformData } from "ra-core"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { EditBase, Form, RaRecord } from "ra-core"
 import { ReactNode, memo, useCallback } from "react"
-import { NonListToolbar, NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
+import { z } from "zod"
+import { NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
 import { useSuccessRedirect } from "../../hooks/use-success-redirect"
-import { GeneratedInputLayout } from "../layouts/GeneratedInputLayout"
+import { GeneratedEditLayout } from "../layouts/GeneratedEditLayout"
 import { GeneratedPageProvider } from "./GeneratedPageProvider"
 
 type GeneratedEditPageProps = NonListToolbarProps & {
+	onSuccess?: (created: RaRecord) => Promise<unknown>
+	header?: ReactNode
 	children?: ReactNode
-	transform?: TransformData
-	onEdit?: (data: RaRecord) => Promise<unknown> | unknown
+	schema?: z.AnyZodObject
 }
 
 export const GeneratedEditPage = memo((props: GeneratedEditPageProps) => {
-	const { children, transform, onEdit, ...rest } = props
+	const { children, onSuccess: onEdit, ...rest } = props
 
 	const successRedirect = useSuccessRedirect()
 
@@ -27,16 +31,13 @@ export const GeneratedEditPage = memo((props: GeneratedEditPageProps) => {
 
 	return (
 		<GeneratedPageProvider action="edit">
-			<EditBase
-				mutationMode="pessimistic"
-				transform={transform}
-				mutationOptions={{ onSuccess }}
-			>
+			<EditBase mutationMode="pessimistic" mutationOptions={{ onSuccess }}>
 				<div className="crud-content">
-					<WaitForData>
-						<NonListToolbar {...rest} />
-						{children ?? <GeneratedInputLayout />}
-					</WaitForData>
+					<EditForm>
+						{/* <NonListToolbar {...rest} /> */}
+						{props.header ?? <EditPageHeader />}
+						{children ?? <GeneratedEditLayout />}
+					</EditForm>
 				</div>
 			</EditBase>
 		</GeneratedPageProvider>
@@ -47,9 +48,26 @@ export const GeneratedEditPage = memo((props: GeneratedEditPageProps) => {
  * RA will render form without data, and then update.
  * This can cause problem with Select input
  */
-function WaitForData({ children }: { children: ReactNode }): JSX.Element {
+function EditForm({
+	children,
+	schema,
+}: {
+	children: ReactNode
+
+	schema?: z.AnyZodObject
+}): JSX.Element {
 	const data = useRecord()
 
-	if (data?.id === undefined) return <></>
-	return <>{children}</>
+	if (data === undefined) return <></>
+
+	return (
+		<Form
+			noValidate // Remove browser validation
+			sanitizeEmptyValues={false} // Do not strip empty string. This completely removes property
+			resolver={schema ? zodResolver(schema) : undefined}
+			className="w-full h-full"
+		>
+			{children}
+		</Form>
+	)
 }

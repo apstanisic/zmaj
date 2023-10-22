@@ -15,7 +15,7 @@ import { useState } from "react"
 import { MdDelete } from "react-icons/md"
 
 export function DeleteButton(props: {
-	onSuccess?: (record: RaRecord) => void | Promise<unknown>
+	onSuccess?: (record: RaRecord) => Promise<unknown>
 	label?: string
 	disabled?: boolean
 	onlyIcon?: boolean
@@ -42,6 +42,7 @@ export function DeleteButton(props: {
 				})
 				if (record) unselect([record.id])
 				redirect("list", resource)
+				return
 			},
 			onError(error: Error | string) {
 				setShowConfirm(false)
@@ -67,7 +68,7 @@ export function DeleteButton(props: {
 			) : (
 				<ResponsiveButton
 					icon={<MdDelete />}
-					label="Delete"
+					label={props.label ?? "Delete"}
 					color="error"
 					variant="text"
 					aria-label={`Delete record ${record?.id}`}

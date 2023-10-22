@@ -45,7 +45,7 @@ export function ChangePassword(): JSX.Element {
 	})
 
 	return (
-		<Form onSubmit={handleSubmit(onSubmit)}>
+		<Form onSubmit={handleSubmit(onSubmit) as any}>
 			<FormPasswordInput
 				control={control}
 				label="Current password"

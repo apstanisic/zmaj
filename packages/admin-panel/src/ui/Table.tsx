@@ -1,3 +1,4 @@
+import { cn } from "@admin-panel/utils/cn"
 import { clsx } from "clsx"
 import { memo } from "react"
 
@@ -107,16 +108,7 @@ Table.Row = memo(
 
 Table.Column = memo(({ children, ...props }: JSX.IntrinsicElements["td"]) => {
 	return (
-		<td
-			{...props}
-			className={clsx(
-				"whitespace-nowrap px-3 py-2  ",
-				props.className,
-				props.className?.includes("text-lg") || props.className?.includes("text-base")
-					? ""
-					: "text-sm",
-			)}
-		>
+		<td {...props} className={cn("whitespace-nowrap px-3 py-2  ", "text-sm", props.className)}>
 			{children}
 		</td>
 	)

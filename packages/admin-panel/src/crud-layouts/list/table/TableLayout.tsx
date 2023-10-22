@@ -1,7 +1,7 @@
 import { DeleteButton } from "@admin-panel/app-layout/buttons/DeleteButton"
 import { EditButton } from "@admin-panel/app-layout/buttons/EditButton"
 import { ShowButton } from "@admin-panel/app-layout/buttons/ShowButton"
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useListLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { CheckboxInput } from "@admin-panel/ui/forms/Checkbox"
 import { Table } from "@admin-panel/ui/Table"
 import {
@@ -36,7 +36,7 @@ export const TableLayout = memo(() => {
 	const properties = usePropertiesContext()
 	const collection = useResourceCollection()
 	const resource = useResourceDefinition()
-	const config = useLayoutConfigContext().list
+	const config = useListLayoutConfig()
 	// const redirect = useRedirect()
 	// let res =
 	const propertiesMap = useMemo(

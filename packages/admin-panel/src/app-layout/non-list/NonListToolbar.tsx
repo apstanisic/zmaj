@@ -1,4 +1,4 @@
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { useAuthz } from "@admin-panel/state/authz-state"
 import { clsx } from "clsx"
 import { RaRecord, useResourceDefinition } from "ra-core"
@@ -11,7 +11,6 @@ import { CrudBreadcrumbs } from "../CrudBreadcrumbs"
 import { DeleteButton } from "../buttons/DeleteButton"
 import { EditButton } from "../buttons/EditButton"
 import { ShowButton } from "../buttons/ShowButton"
-import { ShowChangesButton } from "../show/ShowChangesButton"
 // import { ShowChangesButton } from "../show/ShowChangesButton"
 import { ShowRecordAsJsonDialog } from "../show/ShowRecordAsJsonDialog"
 import { useTitle } from "./useNonListTitle"
@@ -39,7 +38,7 @@ export const NonListToolbar = memo((props: NonListToolbarProps) => {
 	const successRedirect = useSuccessRedirect()
 	const authz = useAuthz()
 
-	const config = useLayoutConfigContext()
+	const config = useLayoutConfig()
 	// const redirect = useRedirect()
 
 	const hasDelete = useMemo(
@@ -74,7 +73,6 @@ export const NonListToolbar = memo((props: NonListToolbarProps) => {
 					{resourceInfo.hasEdit && action === "show" && <EditButton />}
 
 					{config.hideDisplayAsJsonButton !== true && <ShowRecordAsJsonDialog />}
-					<ShowChangesButton />
 					{hasDelete && <DeleteButton onSuccess={onDeleteSuccess} />}
 
 					{/* {hasDelete && (

@@ -1,5 +1,4 @@
-import { useActionContext } from "@admin-panel/context/action-context"
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
@@ -20,8 +19,7 @@ import { useHref } from "react-router"
  * Do not use, for now
  */
 export function ShowChangesButton(): JSX.Element {
-	const config = useLayoutConfigContext()
-	const action = useActionContext()
+	const config = useLayoutConfig()
 	const resource = useResourceContext()
 	const id = useRecord()?.id
 
@@ -36,12 +34,8 @@ export function ShowChangesButton(): JSX.Element {
 	// show button if action is "show", id is provided, is not activity table,
 	// and user didn't disable showing changes
 	const showActivityButton = useMemo(
-		() =>
-			action === "show" && //
-			!isNil(id) &&
-			!resource.startsWith("zmaj") &&
-			config.hideChangesButton !== false,
-		[action, config.hideChangesButton, id, resource],
+		() => !isNil(id) && !resource.startsWith("zmaj") && config.hideChangesButton !== false,
+		[config.hideChangesButton, id, resource],
 	)
 
 	if (!showActivityButton) return <></>

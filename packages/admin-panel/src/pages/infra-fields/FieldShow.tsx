@@ -1,3 +1,4 @@
+import { ShowPageActions } from "@admin-panel/app-layout/show/ShowPageActions"
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { useUserCollections } from "@admin-panel/hooks/use-user-collections"
@@ -19,9 +20,12 @@ export const FieldShow = memo(() => {
 	const onDelete = useOnInfraPropertyDelete()
 	return (
 		<GeneratedShowPage
-			disableDeleteRedirect
-			onDelete={onDelete} //
-			startButtons={<StartButtons />}
+			actions={
+				<>
+					<StartButtons />
+					<ShowPageActions onDelete={onDelete} />
+				</>
+			}
 		>
 			<Content />
 		</GeneratedShowPage>
@@ -110,9 +114,9 @@ const Content = memo(() => {
 				<ManualShowField source="id" />
 				{/* <ManualShowField source="collectionId" /> */}
 				<ManualShowField
-					source="hidden"
+					source="canRead"
 					Component={BooleanShowField}
-					label="Hidden"
+					label="Visible"
 					description="Field exists in API but won't show up in UI"
 				/>
 				<ManualShowField

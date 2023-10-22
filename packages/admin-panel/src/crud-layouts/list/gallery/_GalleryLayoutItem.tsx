@@ -1,4 +1,4 @@
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useListLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { RaRecord, useListContext, useRedirect, useResourceContext } from "ra-core"
 import { memo } from "react"
 import { DisplayZmajFile } from "../../../ui/display-file"
@@ -9,7 +9,7 @@ export const GalleryLayoutItem = memo(({ record }: { record: RaRecord }) => {
 	const { selectedIds, onToggleItem } = useListContext()
 	const id = record.id
 	const redirect = useRedirect()
-	const config = useLayoutConfigContext().list
+	const config = useListLayoutConfig()
 	const resourceName = useResourceContext()
 
 	return (

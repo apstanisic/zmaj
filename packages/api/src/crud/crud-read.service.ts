@@ -12,7 +12,7 @@ import {
 	zodCreate,
 } from "@zmaj-js/common"
 import { BaseModel, FindManyOptions, GetReadFields, IdType } from "@zmaj-js/orm"
-import { isEmpty, isString } from "radash"
+import { get, isEmpty, isString } from "radash"
 import { Except, PartialDeep } from "type-fest"
 import { v4 } from "uuid"
 import { CrudBaseService } from "./crud-base.service"
@@ -178,7 +178,7 @@ export class CrudReadService<Item extends Struct = Struct> extends CrudBaseServi
 	 * @returns object that can be passed to orm `where` property
 	 */
 	private parseFilter(event: ReadBeforeEvent<Item>): Filter {
-		const superFilter = event.options.filter["$q"]
+		const superFilter = get(event.options.filter, "$q.$eq") ?? event.options.filter["$q"]
 
 		// string check is for ts
 		// if no super filter, use normal filter, or ids

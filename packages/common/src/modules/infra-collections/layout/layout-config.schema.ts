@@ -12,18 +12,6 @@ export const LayoutConfigSchema = z
 		 */
 		version: z.literal(0).optional(),
 		/**
-		 * Should delete button be shown
-		 */
-		hideDeleteButton: z.boolean().default(false),
-		/**
-		 * Should button to show changes on current record be shown
-		 */
-		hideChangesButton: z.boolean().default(false),
-		/**
-		 * Hide option to display record as JSON in Dialog
-		 */
-		hideDisplayAsJsonButton: z.boolean().default(false),
-		/**
 		 * List layout config
 		 */
 		list: ListConfigSchema.default({}),

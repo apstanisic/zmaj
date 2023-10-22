@@ -26,6 +26,18 @@ export const ShowConfigSchema = z.object({
 			tabs: sections,
 		})
 		.optional(),
+	/**
+	 * Should delete button be shown
+	 */
+	hideDeleteButton: z.boolean().default(false),
+	/**
+	 * Should button to show changes on current record be shown
+	 */
+	hideChangesButton: z.boolean().default(false),
+	/**
+	 * Hide option to display record as JSON in Dialog
+	 */
+	hideDisplayAsJsonButton: z.boolean().default(false),
 })
 
 const edit = z
@@ -49,7 +61,7 @@ const create = z
 
 export const InputConfigSchema = z
 	.object({
-		edit,
+		edit: edit,
 		create,
 	})
 	.transform((val) => {

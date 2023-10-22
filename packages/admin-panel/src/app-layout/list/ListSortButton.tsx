@@ -1,4 +1,4 @@
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useListLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { Menu, MenuItemParams } from "@admin-panel/ui/Menu"
 import { Button } from "@admin-panel/ui/buttons/Button"
 import { useListContext } from "ra-core"
@@ -9,7 +9,7 @@ import { useResourceCollection } from "../../hooks/use-resource-collection"
 export const ListSortButton = memo(() => {
 	const collection = useResourceCollection()
 	const list = useListContext()
-	const config = useLayoutConfigContext().list
+	const config = useListLayoutConfig()
 
 	// We are first checking if schema info provided fields that are allowed to be sorted by
 	// and take them, or all fields are sortable

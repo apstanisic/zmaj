@@ -99,22 +99,19 @@ function PaginationPerPage(props: PerPageProps): JSX.Element {
 			<Label htmlFor={id} className={cn(getLabelCss({}), "whitespace-nowrap")}>
 				Per page
 			</Label>
-			<SelectInput
-				aria-label="Per page"
-				id={id}
-				// hideHelperText
-				isRequired
-				// hideAsterisk
-				// buttonClassName="p-1"
-				// buttonProps={{ className: "py-1 !h-10" }}
-				// className="h-8 w-40"
-				name="perPage"
-				// hideRequiredSign
-				isDisabled={props.options.length === 0 || props.disabled}
-				value={props.current}
-				options={props.options.map((op) => ({ value: op }))} //
-				onChange={(val) => props.onChange(val as number)}
-			/>
+			{/* -mb remove description space */}
+			<div className="-mb-4">
+				<SelectInput
+					aria-label="Per page"
+					id={id}
+					isRequired
+					name="perPage"
+					isDisabled={props.options.length === 0 || props.disabled}
+					value={props.current}
+					options={props.options.map((op) => ({ value: op }))} //
+					onChange={(val) => props.onChange(val as number)}
+				/>
+			</div>
 		</div>
 	)
 }

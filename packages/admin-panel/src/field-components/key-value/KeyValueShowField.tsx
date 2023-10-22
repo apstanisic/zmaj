@@ -14,8 +14,12 @@ export const KeyValueShowField = (props: ShowFieldProps): JSX.Element => {
 					<Table noBorder>
 						<Table.Head>
 							<Table.Row>
-								<Table.Column>Key</Table.Column>
-								<Table.Column>Value</Table.Column>
+								<Table.Column className="font-bold text-base-200-content/70 text-sm">
+									Key
+								</Table.Column>
+								<Table.Column className="font-bold text-base-200-content/70 text-sm">
+									Value
+								</Table.Column>
 							</Table.Row>
 						</Table.Head>
 						<Table.Body>

@@ -1,4 +1,4 @@
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useListLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { clsx } from "clsx"
 import { ListBase, ListControllerProps, useListContext } from "ra-core"
 import { ReactNode } from "react"
@@ -32,7 +32,7 @@ export type ListPageLayoutProps = {
  */
 export function ListPageLayout(props: ListPageLayoutProps): JSX.Element {
 	const { children, queryOptions, ...passthrough } = props
-	const config = useLayoutConfigContext().list
+	const config = useListLayoutConfig()
 
 	return (
 		<ListBase
@@ -53,7 +53,7 @@ export function ListPageLayout(props: ListPageLayoutProps): JSX.Element {
 function ListLayout(props: ListPageLayoutProps): JSX.Element {
 	const list = useListContext(props)
 	const collection = useResourceCollection() ?? throwInApp("572934")
-	const config = useLayoutConfigContext().list
+	const config = useListLayoutConfig()
 	const title = props.title ?? collection.label ?? collection.collectionName
 
 	return (

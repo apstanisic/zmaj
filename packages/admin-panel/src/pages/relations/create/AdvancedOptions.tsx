@@ -1,9 +1,9 @@
 import { Accordion } from "@admin-panel/ui/Accordion"
+import { FormTextInput } from "@admin-panel/ui/Controlled"
 import { Divider } from "@admin-panel/ui/Divider"
 import { ToggleButton } from "@admin-panel/ui/buttons/ToggleButton"
 import { RelationCreateDto } from "@zmaj-js/common"
 import { useWatch } from "react-hook-form"
-import { ManualInputField } from "../../../shared/input/ManualInputField"
 import { Columns } from "../../../ui/Columns"
 import { FkOptionsInput } from "./FkOptionsInput"
 import { JunctionOptions } from "./JunctionOptions"
@@ -31,26 +31,26 @@ export function AdvancedOptions(): JSX.Element {
 				)}
 			>
 				<Columns>
-					<ManualInputField
-						source="left.label"
+					<FormTextInput
+						name="left.label"
 						label="Label"
 						description="Leave empty for default value"
 					/>
-					<ManualInputField
-						source="right.label"
+					<FormTextInput
+						name="right.label"
 						label="Label (other side)"
 						description="Leave empty for default value"
 					/>
 				</Columns>
 
 				<Columns>
-					<ManualInputField
-						source="left.template"
+					<FormTextInput
+						name="left.template"
 						description="Leave empty for default value"
 						label="Template"
 					/>
-					<ManualInputField
-						source="right.template"
+					<FormTextInput
+						name="right.template"
 						description="Leave empty for default value"
 						label="Template (other side)"
 					/>

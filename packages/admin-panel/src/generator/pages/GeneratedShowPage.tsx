@@ -1,17 +1,22 @@
+import { ShowPageHeader } from "@admin-panel/app-layout/show/ShowPageHeader"
 import { ShowBase } from "ra-core"
-import { PropsWithChildren, memo } from "react"
-import { NonListToolbar, NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
+import { ReactNode, memo } from "react"
 import { GeneratedShowLayout } from "../layouts/GeneratedShowLayout"
 import { GeneratedPageProvider } from "./GeneratedPageProvider"
 
-export const GeneratedShowPage = memo((props: PropsWithChildren<NonListToolbarProps>) => {
-	const { children, ...rest } = props
+type GeneratedShowPageProps = {
+	header?: ReactNode
+	actions?: ReactNode
+	children?: ReactNode
+}
 
+export const GeneratedShowPage = memo((props: GeneratedShowPageProps) => {
+	const { children, header, actions } = props
 	return (
 		<GeneratedPageProvider action="show">
 			<ShowBase>
 				<div className="crud-content">
-					<NonListToolbar {...rest} />
+					{header ?? <ShowPageHeader actions={actions} />}
 					{children ?? <GeneratedShowLayout />}
 				</div>
 			</ShowBase>

@@ -3,9 +3,9 @@ import { Table } from "@admin-panel/ui/Table"
 import { DropdownChoices } from "@zmaj-js/common"
 import { isEmpty, trim } from "radash"
 // import { useSimpleFormIterator } from "ra-core"
+import { FormTextInput } from "@admin-panel/ui/Controlled"
 import { useRef } from "react"
 import { z } from "zod"
-import { ManualInputField } from "../../shared/input/ManualInputField"
 import { ManualShowField } from "../../shared/show/ManualShowField"
 import { InputWrapper } from "../../ui/InputWrapper"
 
@@ -27,14 +27,18 @@ export const DropdownInputConfig = (): JSX.Element => {
 					source="fieldConfig.component.dropdown.choices"
 					render={(n, v) => (
 						<div className="gap-2 md:flex ">
-							<ManualInputField
+							<FormTextInput
 								isRequired
-								source={n + ".value" ?? "_"}
+								name={n + ".value" ?? "_"}
 								value={v.value}
 								label="Value"
 							/>
 
-							<ManualInputField source={n + ".label" ?? "_"} value={v.label} label="Label" />
+							<FormTextInput
+								name={n + ".label" ?? "_"}
+								value={v.label}
+								label="Label"
+							/>
 						</div>
 					)}
 				/>

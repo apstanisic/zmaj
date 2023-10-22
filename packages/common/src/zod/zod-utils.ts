@@ -3,7 +3,11 @@ import { isNil } from "@common/utils/lodash"
 import { z } from "zod"
 
 /** Zod validation for db column and table name  */
-export const DbFieldSchema = z.string().regex(columnNameRegex).min(2).max(100)
+export const DbFieldSchema = z
+	.string()
+	.regex(columnNameRegex, "Invalid name. Must be valid database name")
+	.min(2)
+	.max(100)
 
 /** Zod validation for password */
 export function ZodPassword(): z.ZodString {

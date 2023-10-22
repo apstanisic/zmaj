@@ -1,3 +1,4 @@
+import { ShowPageActions } from "@admin-panel/app-layout/show/ShowPageActions"
 import { MyReferenceField } from "@admin-panel/generator/many-to-one/MyReferenceField"
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useRecord } from "@admin-panel/hooks/use-record"
@@ -12,7 +13,14 @@ import { useDownloadFiles } from "./hooks/use-download-files"
 
 export function FilesShow(): JSX.Element {
 	return (
-		<GeneratedShowPage startButtons={<CustomActions />}>
+		<GeneratedShowPage
+			actions={
+				<>
+					<CustomActions />
+					<ShowPageActions />
+				</>
+			}
+		>
 			<FileShowContent />
 		</GeneratedShowPage>
 	)

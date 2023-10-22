@@ -1,3 +1,4 @@
+import { ShowPageActions } from "@admin-panel/app-layout/show/ShowPageActions"
 import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { useUserCollections } from "@admin-panel/hooks/use-user-collections"
@@ -39,15 +40,13 @@ export const RelationShow = memo(() => {
 	const onDelete = useOnInfraPropertyDelete()
 	return (
 		<GeneratedShowPage
-			// onDelete={async () => infra.refetch()}
-			disableDeleteRedirect
-			onDelete={onDelete}
-			startButtons={
+			actions={
 				<>
 					<ShowOtherSideOfRelation />
 					<SplitRelationButton />
 					<JoinManyToManyButton />
 					<GoToCollection />
+					<ShowPageActions onDelete={onDelete} />
 				</>
 			}
 		>

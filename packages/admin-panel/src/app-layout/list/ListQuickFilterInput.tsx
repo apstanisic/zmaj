@@ -1,9 +1,10 @@
-import { useLayoutConfigContext } from "@admin-panel/context/layout-config-context"
+import { useListLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { TextInput } from "@admin-panel/ui/forms/TextInput"
 import { quickFilterPrefix } from "@zmaj-js/common"
 import { useListContext, useListFilterContext } from "ra-core"
 import { debounce } from "radash"
 import { memo, useMemo, useState } from "react"
+import { MdSearch } from "react-icons/md"
 
 const BaseQuickFilterInput = memo(({ field, disabled }: { field: string; disabled?: boolean }) => {
 	const { setFilters, filterValues } = useListFilterContext()
@@ -22,6 +23,7 @@ const BaseQuickFilterInput = memo(({ field, disabled }: { field: string; disable
 	return (
 		<div className="w-full sm:max-w-sm">
 			<TextInput
+				startIcon={<MdSearch />}
 				isDisabled={disabled}
 				placeholder="Quick Search"
 				name={field}
@@ -39,7 +41,7 @@ const BaseQuickFilterInput = memo(({ field, disabled }: { field: string; disable
 export function ListQuickFilterInput(): JSX.Element {
 	const selected = useListContext().selectedIds
 
-	const config = useLayoutConfigContext().list
+	const config = useListLayoutConfig()
 	const { quickFilter, disableFilter } = config
 
 	if (quickFilter === false || disableFilter) return <></>
