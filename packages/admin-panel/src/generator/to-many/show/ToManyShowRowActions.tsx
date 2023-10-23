@@ -31,6 +31,7 @@ export const ToManyShowRowActions = memo((props: ToManyShowRowActionsProps) => {
 			<IconButton
 				aria-label="show"
 				// role="link"
+				size="small"
 				onPress={() =>
 					redirect("show", `/${relation.otherSide.collectionName}`, props.record.id)
 				}
@@ -42,6 +43,7 @@ export const ToManyShowRowActions = memo((props: ToManyShowRowActionsProps) => {
 			<IconButton
 				aria-label="edit"
 				isDisabled={!canEdit}
+				size="small"
 				// role="link"
 				onPress={() =>
 					redirect("edit", `/${relation.otherSide.collectionName}`, props.record.id)

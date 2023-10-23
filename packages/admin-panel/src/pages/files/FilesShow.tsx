@@ -1,7 +1,8 @@
 import { ShowPageActions } from "@admin-panel/app-layout/show/ShowPageActions"
-import { MyReferenceField } from "@admin-panel/generator/many-to-one/MyReferenceField"
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
 import { useRecord } from "@admin-panel/hooks/use-record"
+import { ManyToOneLink } from "@admin-panel/relation-components/many-to-one/ManyToOneLink"
+import { ManyToOneReference } from "@admin-panel/relation-components/many-to-one/ManyToOneReference"
 import { BlankShowField } from "@admin-panel/shared/show/BlankShowField"
 import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { FileInfo, IdRecord, isNil, templateParser, User } from "@zmaj-js/common"
@@ -58,9 +59,17 @@ function FileShowContent(): JSX.Element {
 					<FileInfoItem
 						label="User"
 						value={
-							<MyReferenceField source="userId" reference="zmajUsers">
-								<BlankShowField render={(user: User) => user.email} />
-							</MyReferenceField>
+							<ManyToOneReference
+								source="userId"
+								reference="zmajUsers"
+								empty={"TEST ME"}
+							>
+								<BlankShowField
+									render={(user: User) => (
+										<ManyToOneLink>{user.email}</ManyToOneLink>
+									)}
+								/>
+							</ManyToOneReference>
 						}
 					/>
 					<FileInfoItem label="Storage provider" value={file.storageProvider} />

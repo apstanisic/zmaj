@@ -1,4 +1,6 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
+import { ManyToOneShowField } from "@admin-panel/relation-components/many-to-one/ManyToOneShowField"
+import { UserCollection } from "@zmaj-js/common"
 import { clsx } from "clsx"
 import { ShowBase } from "ra-core"
 import { memo } from "react"
@@ -7,7 +9,6 @@ import { TabsLayout } from "../../crud-layouts/ui/tabs/TabsLayout"
 import { TabsSection } from "../../crud-layouts/ui/tabs/TabsSection"
 import { DateTimeShowField } from "../../field-components/datetime/DateTimeShowField"
 import { JsonShowField } from "../../field-components/json/JsonShowField"
-import { ToOneShowField } from "../../generator/many-to-one/_ToOneShowField"
 import { useResourceCollection } from "../../hooks/use-resource-collection"
 import { ManualShowField } from "../../shared/show/ManualShowField"
 import { ActivityLogChanges } from "./ActivityLogChanges"
@@ -40,12 +41,11 @@ const Content = memo(() => {
 					<ManualShowField source="createdAt" Component={DateTimeShowField} />
 					<ManualShowField source="itemId" />
 					<ManualShowField source="createdAt" Component={DateTimeShowField} />
-					<ToOneShowField
-						mainRecord={record}
-						template="{email}"
+					<ManyToOneShowField
 						label="User"
-						field={col.fields["userId"]!}
-						relation={col.relations["user"]!}
+						reference={UserCollection.collectionName}
+						source="userId"
+						template="{email}"
 					/>
 					<ManualShowField source="comment" />
 					<ManualShowField source="additionalInfo" Component={JsonShowField} />

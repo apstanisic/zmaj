@@ -137,9 +137,9 @@ export class InfraStateService {
 		const fields = dbState.fieldMetadata.map((field) => this.expandField(field, dbState))
 
 		// Expand relations
-		const relations = dbState.relationMetadata.map((relation) =>
-			this.expandRelation(relation, dbState),
-		)
+		const relations = dbState.relationMetadata
+			.map((relation) => this.expandRelation(relation, dbState))
+			.filter(notNil)
 
 		// Expand collections
 		const userCollections = dbState.collectionMetadata
@@ -185,8 +185,11 @@ export class InfraStateService {
 		}
 	}
 
-	private expandRelation(relation: RelationMetadata, dbState: InitialDbState): RelationDef {
-		return this.expandRelationsService.expand(relation, {
+	private expandRelation(
+		relation: RelationMetadata,
+		dbState: InitialDbState,
+	): RelationDef | undefined {
+		const rel = this.expandRelationsService.expand(relation, {
 			fks: dbState.fks,
 			compositeUniqueKeys: dbState.compositeUniqueKeys,
 			fields: dbState.fieldMetadata,
@@ -198,6 +201,11 @@ export class InfraStateService {
 				),
 			],
 		})
+		// we only support relations that point to primary key on other side
+		const referencedColumn =
+			dbState.columns[rel.otherSide.tableName]?.[rel.otherSide.columnName]
+		if (referencedColumn?.primaryKey !== true) return undefined
+		return rel
 		//
 	}
 

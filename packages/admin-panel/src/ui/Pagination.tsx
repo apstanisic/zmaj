@@ -48,6 +48,7 @@ export function Pagination(props: PaginationProps): JSX.Element {
 
 			<IconButton
 				aria-label="First page"
+				size="small"
 				isDisabled={props.page === 1}
 				onPress={() => setPage(1)}
 			>
@@ -55,6 +56,7 @@ export function Pagination(props: PaginationProps): JSX.Element {
 			</IconButton>
 			<IconButton
 				aria-label="Previous page"
+				size="small"
 				isDisabled={props.page === 1}
 				onPress={() => setPage(page - 1)}
 			>
@@ -68,6 +70,7 @@ export function Pagination(props: PaginationProps): JSX.Element {
 
 			<IconButton
 				aria-label="Next page"
+				size="small"
 				isDisabled={totalPages === props.page}
 				onPress={() => setPage(page + 1)}
 			>
@@ -76,6 +79,7 @@ export function Pagination(props: PaginationProps): JSX.Element {
 
 			<IconButton
 				aria-label="Last page"
+				size="small"
 				isDisabled={totalPages === props.page}
 				onPress={() => setPage(totalPages)}
 			>

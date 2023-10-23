@@ -32,7 +32,7 @@ List.Item = (
 				// disabled && "du-disabled", //
 				"items-center",
 				"flex w-full flex-row",
-				noPadding !== true && "py-3 px-2",
+				noPadding !== true && "py-2 px-1",
 				hover && "hover:bg-base-200",
 				rest.className,
 			)}
