@@ -6,11 +6,11 @@ import { useFieldContext } from "../../context/field-context"
 import { useRelationContext } from "../../context/relation-context"
 import { getFieldWidthCss } from "../../crud-layouts/get-field-width-css"
 import { throwInApp } from "../../shared/throwInApp"
+import { GeneratedManyToOneInputField } from "../references/many-to-one/GeneratedManyToOneInputField"
 import { GeneratedManyToOneListField } from "../references/many-to-one/GeneratedManyToOneListField"
 import { GeneratedManyToOneShowField } from "../references/many-to-one/GeneratedManyToOneShowField"
 import { useRelationRightSide } from "../use-relation-right-side"
 import { ToOneInternalProps } from "./ToOneInternalProps.type"
-import { ToOneInputField } from "./_ToOneInputField"
 
 /**
  * Many to one field (CRUD)
@@ -47,6 +47,7 @@ export const ToOneField = memo((props: { readonly?: boolean }) => {
 	} else if (action === "show") {
 		return <GeneratedManyToOneShowField />
 	} else {
-		return <ToOneInputField {...shared} className={widthClasses} />
+		return <GeneratedManyToOneInputField />
+		// return <ToOneInputField {...shared} className={widthClasses} />
 	}
 })

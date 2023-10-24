@@ -67,7 +67,12 @@ export const Dialog = (props: DialogProps): JSX.Element => {
 					>
 						{props.children}
 
-						<button className="sr-only" onClick={() => props.onClose(true)}>
+						{/* Do I need this? */}
+						<button
+							className="sr-only"
+							tabIndex={-1}
+							onClick={() => props.onClose(true)}
+						>
 							Close Dialog
 						</button>
 					</HeadlessDialog.Panel>

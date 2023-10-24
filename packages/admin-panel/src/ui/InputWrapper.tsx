@@ -51,24 +51,6 @@ export function InputHelperText(props: { text?: string; error?: boolean }): JSX.
 	return <p className={helperTextCss(props)}>{props.text}</p>
 }
 
-export function InputStartIcon(props: { icon?: ReactNode }): JSX.Element {
-	if (!props.icon) return <></>
-	return (
-		<div className="absolute left-0 top-0 bottom-0">
-			<div className="relative h-full w-full">{props.icon}</div>
-		</div>
-	)
-}
-
-export function InputEndIcon(props: { icon?: ReactNode }): JSX.Element {
-	if (!props.icon) return <></>
-	return (
-		<div className="absolute right-0 top-0 bottom-0">
-			<div className="center relative h-full w-full">{props.icon}</div>
-		</div>
-	)
-}
-
 // It's responsive, it switches to top when on small screens
 // export const labelPositionCss = {
 // 	left: /* tw */ "flex flex-1 sm:flex-row sm:items-center flex-col items-start ",

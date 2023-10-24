@@ -1,10 +1,10 @@
-import { clsx } from "clsx"
+import { cn } from "@admin-panel/utils/cn"
 import { ReactNode } from "react"
 
 export function List(props: JSX.IntrinsicElements["ul"] & { divider?: boolean }): JSX.Element {
 	const { divider, className, children, ...rest } = props
 	return (
-		<ul {...rest} className={clsx("", className, divider && "divide-y")}>
+		<ul {...rest} className={cn("", className, divider && "divide-y")}>
 			{children}
 		</ul>
 	)
@@ -26,7 +26,7 @@ List.Item = (
 	return (
 		<li
 			{...rest}
-			className={clsx(
+			className={cn(
 				// "du-menu-item ",
 				// active && "du-active", //
 				// disabled && "du-disabled", //
@@ -61,7 +61,7 @@ List.ButtonItem = (
 		<li>
 			<Component
 				{...rest}
-				className={clsx(
+				className={cn(
 					// "du-menu-item ",
 					// active && "du-active", //
 					// disabled && "du-disabled", //
@@ -73,7 +73,8 @@ List.ButtonItem = (
 				)}
 			>
 				{start && <div className="mr-2">{start}</div>}
-				<div className="flex-grow">{rest.children}</div>
+				{/* <div className="flex-grow">{}</div> */}
+				{rest.children}
 				{end && <div className="ml-auto p-0">{end}</div>}
 			</Component>
 		</li>

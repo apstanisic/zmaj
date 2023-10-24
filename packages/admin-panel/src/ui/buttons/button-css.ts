@@ -25,7 +25,7 @@ const sizes: Record<SizeVariant, string> = {
 const variants: Record<ButtonVariant, string> = {
 	normal: cn(""),
 	outlined: cn("du-btn-outline"),
-	text: cn("border-none ring-0 outline-none bg-transparent focus-visible:bg-neutral/20"),
+	text: cn("border-none bg-transparent focus-visible:bg-neutral/20"),
 }
 
 export function getButtonCss(props: ButtonProps | IconButtonProps): string {

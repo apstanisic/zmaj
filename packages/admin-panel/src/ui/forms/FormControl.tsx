@@ -28,7 +28,7 @@ export const FormControl = (
 				)}
 
 				{error && (
-					<Text slot="errorMessage" className="text-sm text-error" id={ariaId}>
+					<Text slot="errorMessage" className={inputErrorCss} id={ariaId}>
 						{error}
 					</Text>
 				)}
@@ -36,3 +36,7 @@ export const FormControl = (
 		</div>
 	)
 }
+
+export const inputErrorCss = cn("text-sm text-error")
+export const inputHintCss = cn("text-sm text-base-content/60")
+export const inputContainerCss = cn("mt-1 mb-0.5")
