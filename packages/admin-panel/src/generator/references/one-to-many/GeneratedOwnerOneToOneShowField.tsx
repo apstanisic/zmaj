@@ -1,13 +1,13 @@
 import { getFieldWidthCss } from "@admin-panel/crud-layouts/get-field-width-css"
-import { ManyToOneShowField } from "@admin-panel/relation-components/many-to-one/ManyToOneShowField"
+import { OwnerOneToOneShowField } from "@admin-panel/relation-components/owner-one-to-one/OwnerOneToOneShowField"
 import { memo } from "react"
-import { useManyToOneFieldProps } from "./useManyToOneFieldProps"
+import { useManyToOneFieldProps } from "../many-to-one/useManyToOneFieldProps"
 
-export const GeneratedManyToOneShowField = memo(() => {
+export const GeneratedOwnerOneToOneShowField = memo(() => {
 	const { template, label, field, relation } = useManyToOneFieldProps()
 
 	return (
-		<ManyToOneShowField
+		<OwnerOneToOneShowField
 			source={field.fieldName}
 			reference={relation.otherSide.collectionName}
 			label={label}

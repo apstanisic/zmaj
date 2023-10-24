@@ -1,9 +1,9 @@
 import { ManyToOneListField } from "@admin-panel/relation-components/many-to-one/ManyToOneListField"
 import { memo } from "react"
-import { useToOneField } from "./useToOneField"
+import { useManyToOneFieldProps } from "./useManyToOneFieldProps"
 
 export const GeneratedManyToOneListField = memo(() => {
-	const { field, relation, label, template, className } = useToOneField()
+	const { field, relation, label, template } = useManyToOneFieldProps()
 
 	return (
 		<ManyToOneListField
@@ -11,7 +11,6 @@ export const GeneratedManyToOneListField = memo(() => {
 			template={template}
 			source={field.fieldName}
 			reference={relation.otherSide.collectionName}
-			className={className}
 		/>
 	)
 })

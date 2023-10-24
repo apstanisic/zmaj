@@ -1,12 +1,21 @@
 import { useFieldContext } from "@admin-panel/context/field-context"
 import { useRelationContext } from "@admin-panel/context/relation-context"
-import { ToOneInternalProps } from "@admin-panel/generator/many-to-one/ToOneInternalProps.type"
 import { useRelationRightSide } from "@admin-panel/generator/use-relation-right-side"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { throwInApp } from "@admin-panel/shared/throwInApp"
+import { FieldDef, RelationDef } from "@zmaj-js/common"
+import { RaRecord } from "ra-core"
 import { title } from "radash"
 
-export function useToOneField() {
+type UseManyToOneFieldPropsResult = {
+	label: string
+	template: string
+	mainRecord?: RaRecord
+	field: FieldDef
+	relation: RelationDef
+}
+
+export function useManyToOneFieldProps(): UseManyToOneFieldPropsResult {
 	const relation = useRelationContext() ?? throwInApp("10400")
 	const field = useFieldContext() ?? throwInApp("380123")
 	const rightSide = useRelationRightSide()
@@ -19,7 +28,7 @@ export function useToOneField() {
 	// use relation template, but fall back to other collection template if not provided
 	const template = relation.relation.template ?? rightSide?.displayTemplate ?? "{id}"
 
-	const shared: ToOneInternalProps = {
+	const shared = {
 		label,
 		template,
 		field,

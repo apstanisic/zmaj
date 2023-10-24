@@ -4,9 +4,10 @@ import { RelationContextProvider } from "../../context/relation-context"
 import { AdminPanelError } from "../../shared/AdminPanelError"
 import { Property } from "../../types/Property"
 import { ManyToManyField } from "../many-to-many/ManyToManyField"
-import { ToOneField } from "../many-to-one/ToOneField"
 import { OneToManyField } from "../one-to-many/OneToManyField"
 import { RefOneToOneField } from "../ref-one-to-one/RefOneToOneField"
+import { GeneratedManyToOneRouterField } from "../references/many-to-one/GeneratedManyToOneRouterField"
+import { GeneratedOwnerOneToOneRouterField } from "../references/one-to-many/GeneratedOwnerOneToOneRouterField"
 import { GeneratedField } from "./GeneratedField"
 
 export const RenderProperty = memo(({ property }: { property: Property }) => {
@@ -17,11 +18,22 @@ export const RenderProperty = memo(({ property }: { property: Property }) => {
 			</FieldContextProvider>
 		)
 	}
-	if (property.type === "many-to-one" || property.type === "owner-one-to-one") {
+	if (property.type === "many-to-one") {
 		return (
 			<FieldContextProvider value={property.field}>
 				<RelationContextProvider value={property.relation}>
-					<ToOneField />
+					<GeneratedManyToOneRouterField />
+				</RelationContextProvider>
+			</FieldContextProvider>
+		)
+	}
+
+	if (property.type === "owner-one-to-one") {
+		// TODO
+		return (
+			<FieldContextProvider value={property.field}>
+				<RelationContextProvider value={property.relation}>
+					<GeneratedOwnerOneToOneRouterField />
 				</RelationContextProvider>
 			</FieldContextProvider>
 		)

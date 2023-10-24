@@ -83,6 +83,7 @@ export async function createBlogTables(qi: QueryInterface, trx: Transaction): Pr
 			id: columns.id,
 			post_id: {
 				type: DataTypes.UUID,
+				unique: true,
 				references: {
 					model: "posts",
 					key: "id",

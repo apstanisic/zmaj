@@ -293,6 +293,7 @@ export class BuildTestDbService {
 				...pick(getRequiredColumns(), ["id"]),
 				post_id: {
 					type: DataTypes.UUID,
+					unique: true,
 					references: {
 						model: "posts",
 						key: "id",

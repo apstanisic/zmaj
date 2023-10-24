@@ -1,13 +1,10 @@
-import { MyReferenceInput } from "@admin-panel/generator/many-to-one/MyReferenceInput"
 import { useHtmlTitle } from "@admin-panel/hooks/use-html-title"
-import { ChoicesDialogAndButton } from "@admin-panel/shared/choices/ChoicesDialogAndButton"
-import { useInputField } from "@admin-panel/shared/input/useInputField"
 import { Card } from "@admin-panel/ui/Card"
 import { CircularProgress } from "@admin-panel/ui/CircularProgress"
 import { FormSwitchInput } from "@admin-panel/ui/Controlled"
 import { Button } from "@admin-panel/ui/buttons/Button"
 import { useQuery } from "@tanstack/react-query"
-import { ADMIN_ROLE_ID, ChangeSettingsDto } from "@zmaj-js/common"
+import { ChangeSettingsDto } from "@zmaj-js/common"
 import { CustomRoutes, Form, useNotify } from "ra-core"
 import { memo, useCallback } from "react"
 import { Route } from "react-router"
@@ -59,7 +56,6 @@ const Settings = memo(() => {
 						label="Sign Up Allowed"
 						isDisabled={!settings.data.meta.signUpDynamic}
 					/>
-					<DefaultRoleInput />
 					<Button type="submit">Change</Button>
 				</Form>
 				<br />
@@ -67,19 +63,3 @@ const Settings = memo(() => {
 		</Card>
 	)
 })
-
-function DefaultRoleInput(): JSX.Element {
-	const field = useInputField({
-		source: "defaultSignUpRole",
-	})
-	return (
-		<MyReferenceInput
-			reference="zmajRoles"
-			source="defaultSignUpRole"
-			// you can't set admin as default role. This is big footgun
-			filter={{ id: { $ne: ADMIN_ROLE_ID } }}
-		>
-			<ChoicesDialogAndButton template="{name}" field={field} />
-		</MyReferenceInput>
-	)
-}

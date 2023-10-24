@@ -3,10 +3,10 @@ import { getFieldWidthCss } from "@admin-panel/crud-layouts/get-field-width-css"
 import { useIsAllowed } from "@admin-panel/hooks/use-is-allowed"
 import { ManyToOneInputField } from "@admin-panel/relation-components/many-to-one/ManyToOneInputField/ManyToOneInputField"
 import { memo } from "react"
-import { useToOneField } from "./useToOneField"
+import { useManyToOneFieldProps } from "./useManyToOneFieldProps"
 
 export const GeneratedManyToOneInputField = memo(() => {
-	const { template, label, field, relation } = useToOneField()
+	const { template, label, field, relation } = useManyToOneFieldProps()
 
 	const action = useActionContext()
 	// FIX ME. I should pass authzKey
