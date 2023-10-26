@@ -1,5 +1,6 @@
 import { memo } from "react"
 import { useActionContext } from "../../../context/action-context"
+import { GeneratedOwnerOneToOneInputField } from "./GeneratedOwnerOneToOneInputField"
 import { GeneratedOwnerOneToOneListField } from "./GeneratedOwnerOneToOneListField"
 import { GeneratedOwnerOneToOneShowField } from "./GeneratedOwnerOneToOneShowField"
 
@@ -14,6 +15,6 @@ export const GeneratedOwnerOneToOneRouterField = memo(() => {
 	} else if (action === "show") {
 		return <GeneratedOwnerOneToOneShowField />
 	} else {
-		return <>TODO!!!</>
+		return <GeneratedOwnerOneToOneInputField />
 	}
 })

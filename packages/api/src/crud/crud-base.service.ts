@@ -286,6 +286,8 @@ export class CrudBaseService<Item extends Struct> {
 		const fieldsToCheck = []
 		const relationsToCheck = []
 		for (const key of Object.keys(filter)) {
+			if (key === "postInfo") {
+			}
 			if (collection.fields[key]) {
 				fieldsToCheck.push(key)
 			} else if (collection.relations[key]) {

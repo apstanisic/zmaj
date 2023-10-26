@@ -7,7 +7,8 @@ import { ManyToManyField } from "../many-to-many/ManyToManyField"
 import { OneToManyField } from "../one-to-many/OneToManyField"
 import { RefOneToOneField } from "../ref-one-to-one/RefOneToOneField"
 import { GeneratedManyToOneRouterField } from "../references/many-to-one/GeneratedManyToOneRouterField"
-import { GeneratedOwnerOneToOneRouterField } from "../references/one-to-many/GeneratedOwnerOneToOneRouterField"
+import { GeneratedOneToManyRouterField } from "../references/one-to-many/GeneratedOneToManyRouterField"
+import { GeneratedOwnerOneToOneRouterField } from "../references/owner-one-to-one/GeneratedOwnerOneToOneRouterField"
 import { GeneratedField } from "./GeneratedField"
 
 export const RenderProperty = memo(({ property }: { property: Property }) => {
@@ -42,6 +43,7 @@ export const RenderProperty = memo(({ property }: { property: Property }) => {
 	if (property.type === "one-to-many") {
 		return (
 			<RelationContextProvider value={property.relation}>
+				<GeneratedOneToManyRouterField />
 				<OneToManyField />
 			</RelationContextProvider>
 		)

@@ -30,7 +30,7 @@ List.Item = (
 				// "du-menu-item ",
 				// active && "du-active", //
 				// disabled && "du-disabled", //
-				"items-center",
+				"w-full items-center",
 				"flex w-full flex-row",
 				noPadding !== true && "py-2 px-1",
 				hover && "hover:bg-base-200",
@@ -38,7 +38,8 @@ List.Item = (
 			)}
 		>
 			{start && <div className="mr-2 flex">{start}</div>}
-			<div className="flex-grow">{rest.children}</div>
+			{/* <div className="flex-grow">{rest.children}</div> */}
+			{rest.children}
 			{end && <div className="ml-auto flex p-0">{end}</div>}
 		</li>
 	)
@@ -81,11 +82,11 @@ List.ButtonItem = (
 	)
 }
 
-List.TitleAndSub = (props: { title: string; subtitle?: string }) => {
+List.TitleAndSub = (props: { title: ReactNode; subtitle?: string }) => {
 	return (
-		<div>
-			<p className="">{props.title}</p>
+		<>
+			{typeof props.title === "string" ? <p className="">{props.title}</p> : props.title}
 			<p className="text-sm opacity-75">{props.subtitle}</p>
-		</div>
+		</>
 	)
 }

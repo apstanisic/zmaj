@@ -3,7 +3,7 @@ import { RaRecord, useCreatePath, useListContext, useResourceDefinition } from "
 import { ReactNode, useCallback } from "react"
 
 type SimpleListProps<T = RaRecord> = {
-	primaryText: (r: T) => string
+	primaryText: (r: T) => ReactNode
 	secondaryText?: (r: T) => string
 	startIcon?: (r: T) => ReactNode
 	endIcon?: (r: T) => ReactNode

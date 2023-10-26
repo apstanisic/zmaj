@@ -45,7 +45,9 @@ export const RoleCollection = codeCollection(RoleModel, {
 					simple: { fields: ["name", "description", "requireMfa"] },
 				},
 			},
-			hideChangesButton: true,
+			show: {
+				hideChangesButton: true,
+			},
 		}),
 	},
 })

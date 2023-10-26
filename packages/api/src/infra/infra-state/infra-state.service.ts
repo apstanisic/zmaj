@@ -204,7 +204,8 @@ export class InfraStateService {
 		// we only support relations that point to primary key on other side
 		const referencedColumn =
 			dbState.columns[rel.otherSide.tableName]?.[rel.otherSide.columnName]
-		if (referencedColumn?.primaryKey !== true) return undefined
+		/* TODO This is incorrect and is not working for some reason  */
+		// if (referencedColumn?.primaryKey !== true) return undefined
 		return rel
 		//
 	}

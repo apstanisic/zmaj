@@ -14,7 +14,7 @@ type ManyToOneShowFieldProps = {
 	template?: string
 }
 
-export function OwnerOneToOneShowField(props: ManyToOneShowFieldProps) {
+export function OwnerOneToOneShowField(props: ManyToOneShowFieldProps): JSX.Element {
 	return (
 		<ManyToOneReference
 			// this is fk field that point to the other table

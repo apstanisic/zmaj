@@ -3,6 +3,7 @@ import { useState } from "react"
 // import { ToOneInternalProps } from "./ToOneInternalProps.type"
 import { ReferencePickerButton } from "@admin-panel/relation-components/shared/ReferencePickerButton"
 import { ReferencesPickerDialog } from "@admin-panel/relation-components/shared/ReferencePickerDialog"
+import { Struct } from "@zmaj-js/common"
 import { useFormContext } from "react-hook-form"
 import { ManyToOneReferenceInput } from "./ManyToOneReferenceInput"
 
@@ -12,16 +13,17 @@ type ManyToOneInputFieldProps = {
 	label?: string
 	disabled?: boolean
 	template?: string
-	className: string
+	className?: string
+	filter?: Struct
 }
 
 export function ManyToOneInputField(props: ManyToOneInputFieldProps): JSX.Element {
-	const { source, reference, label, disabled, template, className } = props
+	const { source, reference, label, disabled, template, className, filter } = props
 	const [show, setShow] = useState(false)
 	const { setValue } = useFormContext()
 	return (
 		<>
-			<ManyToOneReferenceInput source={source} reference={reference}>
+			<ManyToOneReferenceInput source={source} reference={reference} filter={filter}>
 				<ReferencePickerButton
 					showPicker={setShow}
 					source={source}

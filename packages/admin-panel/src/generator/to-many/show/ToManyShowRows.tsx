@@ -3,7 +3,7 @@ import { useRelationContext } from "@admin-panel/context/relation-context"
 import { SimpleListLayout } from "@admin-panel/crud-layouts/list/SimpleListLayout"
 import { FileInfo, IdRecord, templateParser, truncate } from "@zmaj-js/common"
 import { useListContext } from "ra-core"
-import { memo, ReactNode } from "react"
+import { ReactNode, memo } from "react"
 import { DisplayZmajFile } from "../../../ui/display-file"
 import { ToManyShowRowActions } from "./ToManyShowRowActions"
 
@@ -18,7 +18,7 @@ type ShowManyRowsProps = {
 	actions?: (row: IdRecord) => ReactNode
 }
 
-export const ShowManyRows = memo((props: ShowManyRowsProps) => {
+const ShowManyRows = memo((props: ShowManyRowsProps) => {
 	const { data } = useListContext()
 	return (
 		<>

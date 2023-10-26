@@ -26,9 +26,6 @@ export const AuthSessionCollection = codeCollection(AuthSessionModel, {
 		pkColumn: "id",
 		displayTemplate: "{ip} - {lastUsed|date}",
 		layoutConfig: zodCreate(LayoutConfigSchema, {
-			hideDeleteButton: true,
-			hideChangesButton: true,
-			hideDisplayAsJsonButton: true,
 			list: {
 				// hidePagination: true,
 				hideDelete: true,
@@ -42,6 +39,11 @@ export const AuthSessionCollection = codeCollection(AuthSessionModel, {
 				layout: {
 					table: { fields: ["lastUsed", "ip", "createdAt"] },
 				},
+			},
+			show: {
+				hideDeleteButton: true,
+				hideChangesButton: true,
+				hideDisplayAsJsonButton: true,
 			},
 		}),
 	},
