@@ -4,11 +4,12 @@ import { isNil } from "@zmaj-js/common"
 import { ReactElement, ReactNode } from "react"
 
 type Props = {
-	label: string | ReactElement
+	label?: string | ReactElement
 	children: ReactNode
 	description?: string | null
 	className?: string
 	actions?: ReactNode
+	header?: ReactNode
 }
 
 /**
@@ -32,7 +33,7 @@ export function ShowFieldContainer(props: Props): JSX.Element {
 				props.className,
 			)}
 		>
-			<Title {...props} />
+			{props.header ?? <ShowFieldContainerTitle {...props} />}
 			<div className="flex min-h-[2rem] flex-col justify-items-stretch overflow-auto border-t border-gray-100 py-2 dark:border-gray-600">
 				{content}
 			</div>
@@ -40,7 +41,7 @@ export function ShowFieldContainer(props: Props): JSX.Element {
 	)
 }
 
-function Title(props: Props): JSX.Element {
+function ShowFieldContainerTitle(props: Props): JSX.Element {
 	const { label, description } = props
 
 	return (

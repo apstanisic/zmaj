@@ -3,8 +3,8 @@ import { useState } from "react"
 // import { ToOneInternalProps } from "./ToOneInternalProps.type"
 import { ReferencePickerButton } from "@admin-panel/relation-components/shared/ReferencePickerButton"
 import { ReferencesPickerDialog } from "@admin-panel/relation-components/shared/ReferencePickerDialog"
-import { Struct } from "@zmaj-js/common"
-import { useFormContext } from "react-hook-form"
+import { Struct, castArray } from "@zmaj-js/common"
+import { useFormContext, useWatch } from "react-hook-form"
 import { ManyToOneReferenceInput } from "./ManyToOneReferenceInput"
 
 type ManyToOneInputFieldProps = {
@@ -21,6 +21,7 @@ export function ManyToOneInputField(props: ManyToOneInputFieldProps): JSX.Elemen
 	const { source, reference, label, disabled, template, className, filter } = props
 	const [show, setShow] = useState(false)
 	const { setValue } = useFormContext()
+	const value = useWatch({ name: source })
 	return (
 		<>
 			<ManyToOneReferenceInput source={source} reference={reference} filter={filter}>
@@ -34,10 +35,11 @@ export function ManyToOneInputField(props: ManyToOneInputFieldProps): JSX.Elemen
 				/>
 				<ReferencesPickerDialog
 					setShow={setShow}
+					selected={castArray(value)}
 					show={show}
 					template={template}
-					onSelect={(record) =>
-						setValue(source, record.id, { shouldTouch: true, shouldDirty: true })
+					onSelect={(id) =>
+						setValue(source, id, { shouldTouch: true, shouldDirty: true })
 					}
 				/>
 			</ManyToOneReferenceInput>

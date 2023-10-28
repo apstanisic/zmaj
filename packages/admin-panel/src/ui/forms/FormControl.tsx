@@ -15,9 +15,7 @@ export const FormControl = (
 	const { isRequired, error, children, description, label, ariaId } = props
 	return (
 		<div className="mt-1 mb-0.5">
-			{label && (
-				<Label className={cn(getLabelCss({ error, isRequired }), "pb-0")}>{label}</Label>
-			)}
+			{label && <Label className={cn(getLabelCss({ error, isRequired }))}>{label}</Label>}
 			{children}
 
 			<div className="min-h-[16px]">

@@ -1,3 +1,4 @@
+import { cn } from "@admin-panel/utils/cn"
 import { Dialog as HeadlessDialog, Transition, TransitionClasses } from "@headlessui/react"
 import { clsx } from "clsx"
 import { ElementType, Fragment, PropsWithChildren, ReactNode } from "react"
@@ -33,7 +34,7 @@ export const Dialog = (props: DialogProps): JSX.Element => {
 			<HeadlessDialog
 				onClose={props.onClose}
 				as={props.as ?? "div"}
-				className={clsx("du-modal du-modal-open")}
+				className={cn("du-modal du-modal-open")}
 				data-testid="s-dialog"
 			>
 				<Transition.Child

@@ -65,7 +65,7 @@ export const ReferencePickerButton = memo((props: CurrentValueProps) => {
 				aria-haspopup="dialog"
 				aria-description={error}
 				onPress={() => showPicker(true)}
-				className="s-input"
+				className={cn("s-input", "h-[52px]")}
 			>
 				{content}
 			</Button>

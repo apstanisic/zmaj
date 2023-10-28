@@ -1,20 +1,12 @@
-import { ListPagination } from "@admin-panel/app-layout/list/ListPagination"
-import { SimpleListLayout } from "@admin-panel/crud-layouts/list/SimpleListLayout"
 import { ShowFieldContainer } from "@admin-panel/shared/show/ShowFieldContainer"
 import { IconButton } from "@admin-panel/ui/buttons/IconButton"
-import { templateParser } from "@zmaj-js/common"
-import {
-	RaRecord,
-	useCreatePath,
-	useListContext,
-	useRedirect,
-	useResourceDefinition,
-} from "ra-core"
+import { RaRecord, useCreatePath, useRedirect, useResourceDefinition } from "ra-core"
 import { memo } from "react"
 import { MdOutlineEdit, MdOutlineVisibility } from "react-icons/md"
 import { OneToManyReference } from "./OneToManyReference"
+import { OneToManyRowsList } from "./shared/OneToManyRowsList"
 
-type OneToManyShowFieldProps = {
+export type OneToManyShowFieldProps = {
 	target: string
 	reference: string
 	label: string
@@ -33,36 +25,15 @@ export function OneToManyShowField(props: OneToManyShowFieldProps): JSX.Element 
 				target={target}
 				perPage={10}
 			>
-				<RowsList template={template} />
+				<OneToManyRowsList
+					template={template}
+					actions={(record) => <ShowRowActions record={record} />}
+				/>
 			</OneToManyReference>
 		</ShowFieldContainer>
 	)
 }
-function RowsList(props: { template?: string }): JSX.Element {
-	const { data } = useListContext()
-
-	return (
-		<>
-			<SimpleListLayout
-				primaryText={(record) => (
-					<div className="overflow-hidden">
-						<p className="truncate w-full">
-							{templateParser.parse(props.template ?? "", record, {
-								fallback: record.id,
-							})}
-						</p>
-					</div>
-				)}
-				linkType={false}
-				endIcon={(record) => <RowActions record={record} />}
-			/>
-
-			{data?.length > 0 && <ListPagination />}
-		</>
-	)
-}
-
-const RowActions = memo((props: { record: RaRecord }) => {
+const ShowRowActions = memo((props: { record: RaRecord }) => {
 	const redirect = useRedirect()
 	const { hasEdit = true, hasShow, name: resource } = useResourceDefinition()
 	const createPath = useCreatePath()

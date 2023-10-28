@@ -86,7 +86,7 @@ List.TitleAndSub = (props: { title: ReactNode; subtitle?: string }) => {
 	return (
 		<>
 			{typeof props.title === "string" ? <p className="">{props.title}</p> : props.title}
-			<p className="text-sm opacity-75">{props.subtitle}</p>
+			{props.subtitle && <p className="text-sm opacity-75">{props.subtitle}</p>}
 		</>
 	)
 }

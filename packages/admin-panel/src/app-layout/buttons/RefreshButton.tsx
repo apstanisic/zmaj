@@ -9,7 +9,12 @@ export function RefreshButton(): JSX.Element {
 	const refresh = useRefresh()
 
 	return (
-		<IconButton size="large" aria-label="Refresh records" onPress={refresh}>
+		<IconButton
+			size="large"
+			className={"text-white"}
+			aria-label="Refresh records"
+			onPress={refresh}
+		>
 			<MdRefresh />
 		</IconButton>
 	)

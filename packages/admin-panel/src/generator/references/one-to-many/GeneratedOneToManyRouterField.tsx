@@ -1,5 +1,7 @@
 import { memo } from "react"
 import { useActionContext } from "../../../context/action-context"
+import { GeneratedOneToManyCreateField } from "./GeneratedOneToManyCreateField"
+import { GeneratedOneToManyEditField } from "./GeneratedOneToManyEditField"
 import { GeneratedOneToManyShowField } from "./GeneratedOneToManyShowFIeld"
 
 /**
@@ -13,8 +15,8 @@ export const GeneratedOneToManyRouterField = memo(() => {
 	} else if (action === "show") {
 		return <GeneratedOneToManyShowField />
 	} else if (action === "create") {
-		return null
+		return <GeneratedOneToManyCreateField />
 	} else {
-		return null
+		return <GeneratedOneToManyEditField />
 	}
 })

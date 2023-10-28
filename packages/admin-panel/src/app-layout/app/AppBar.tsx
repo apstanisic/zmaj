@@ -60,6 +60,7 @@ export const AppBar = memo((props: { widthCss: string; heightCss: string }) => {
 								{...props}
 								aria-label="More Actions"
 								onPress={() => ref?.current?.click()}
+								className="text-white"
 							>
 								<MdPerson />
 							</IconButton>

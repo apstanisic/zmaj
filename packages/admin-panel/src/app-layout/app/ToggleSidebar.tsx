@@ -1,22 +1,18 @@
-import { IconButton } from "@admin-panel/ui/buttons/IconButton"
-import { clsx } from "clsx"
+import { IconToggleButton } from "@admin-panel/ui/IconToggleButton"
+import { cn } from "@admin-panel/utils/cn"
 import { MdClose, MdMenu } from "react-icons/md"
 import { useSidebarOpen } from "./use-sidebar-open"
 export function ToggleSidebar(): JSX.Element {
 	const [open, setOpen] = useSidebarOpen()
 
 	return (
-		<IconButton
+		<IconToggleButton
 			onPress={() => setOpen(!open)}
 			aria-label="Open sidebar"
-			className={clsx("du-swap du-swap-rotate relative md:!hidden", open && "du-swap-active")}
-		>
-			<span className={clsx("du-swap-on absolute")}>
-				<MdClose />
-			</span>
-			<span className={clsx("du-swap-off absolute")}>
-				<MdMenu />
-			</span>
-		</IconButton>
+			className={cn("du-swap-rotate md:!hidden text-white")}
+			on={<MdClose />}
+			off={<MdMenu />}
+			isOn={open}
+		></IconToggleButton>
 	)
 }

@@ -9,6 +9,7 @@ type SimpleListProps<T = RaRecord> = {
 	endIcon?: (r: T) => ReactNode
 	rowClassName?: string
 	linkType?: false
+	className?: string
 }
 
 /**
@@ -41,7 +42,7 @@ export function SimpleListLayout<T extends RaRecord = RaRecord>(
 	const Item = props.linkType !== false ? List.ButtonItem : List.Item
 
 	return (
-		<List>
+		<List className={props.className}>
 			{list.data?.map((item) => (
 				<Item
 					key={item.id}

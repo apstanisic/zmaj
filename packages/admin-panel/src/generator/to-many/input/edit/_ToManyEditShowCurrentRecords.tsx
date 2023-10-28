@@ -45,7 +45,7 @@ export const ToManyEditShowCurrentRecords = memo(() => {
 							<Tooltip
 								text={
 									!deletable
-										? "Value can't be null. You must either delete record, or change it's value"
+										? "Value can't be null. You must either delete record, or change its value"
 										: isRemoved
 										? "Restore record"
 										: "Mark record relation for deletion"
