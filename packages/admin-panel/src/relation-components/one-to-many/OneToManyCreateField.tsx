@@ -2,7 +2,6 @@ import { ShowFieldContainer } from "@admin-panel/shared/show/ShowFieldContainer"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
 import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { cn } from "@admin-panel/utils/cn"
-import { ToManyChange } from "@zmaj-js/common"
 import { IdType } from "@zmaj-js/orm"
 import { ChoicesContextProvider } from "ra-core"
 import { get, toggle } from "radash"
@@ -11,7 +10,8 @@ import { useFormContext } from "react-hook-form"
 import { MdAdd } from "react-icons/md"
 import { ReferencesPickerDialog } from "../shared/ReferencePickerDialog"
 import { OneToManyReference } from "./OneToManyReference"
-import { OneToManyAddedItems } from "./shared/OneToManyAddedItems"
+import { getEmptyToManyChanges } from "./getEmptyToManyChanges"
+import { OneToManyAddedItems } from "./shared/OneToManyChangedItems"
 import { useOneToManyCreateChoices } from "./shared/useOneToManyCreateChoices"
 
 type OneToManyCreateFieldProps = {
@@ -24,14 +24,12 @@ type OneToManyCreateFieldProps = {
 	disabled?: boolean
 }
 
-const getEmpty = (): ToManyChange => ({ type: "toMany", added: [], removed: [] })
-
 export function OneToManyCreateField(props: OneToManyCreateFieldProps): JSX.Element {
 	const { disabled = false, label, template, source, reference, target } = props
 	const [pickerOpen, setPickerOpen] = useState(false)
 	// const { field } = useController({ name: source, defaultValue: getEmpty(), disabled })
 	const { setValue, watch } = useFormContext()
-	const value = watch(source, getEmpty())
+	const value = watch(source, getEmptyToManyChanges())
 
 	const choices = useOneToManyCreateChoices({
 		reference,
@@ -81,7 +79,7 @@ export function OneToManyCreateField(props: OneToManyCreateFieldProps): JSX.Elem
 						template={template}
 						added={value.added}
 						reference={reference}
-						toggle={toggleId}
+						onRevert={toggleId}
 					/>
 				</ShowFieldContainer>
 			</ChoicesContextProvider>

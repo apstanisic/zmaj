@@ -7,19 +7,22 @@ type OneToManyRowsListProps = {
 	template?: string
 	actions?: (record: RaRecord) => JSX.Element
 	className?: string
+	data?: any[]
 }
 
 export function OneToManyRowsList(props: OneToManyRowsListProps): JSX.Element {
-	const { data } = useListContext()
+	// User can override data if they want. We will first try data, then fallback to list context
+	const { data = [] } = useListContext({ data: props.data, perPage: 10 })
 
 	return (
 		<>
 			<SimpleListLayout
 				className={props.className}
+				data={data}
 				primaryText={(record) => (
 					<div className="overflow-hidden">
 						<p className="truncate w-full">
-							{templateParser.parse(props.template ?? "", record, {
+							{templateParser.parse(props.template ?? "{id}", record, {
 								fallback: record.id,
 							})}
 						</p>
@@ -29,7 +32,7 @@ export function OneToManyRowsList(props: OneToManyRowsListProps): JSX.Element {
 				endIcon={props.actions}
 			/>
 
-			{data?.length > 0 && <ListPagination perPageOptions={[5, 10, 20]} />}
+			{data.length > 0 && <ListPagination perPageOptions={[5, 10, 20]} />}
 		</>
 	)
 }

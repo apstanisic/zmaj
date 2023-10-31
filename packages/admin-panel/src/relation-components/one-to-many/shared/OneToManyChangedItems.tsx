@@ -12,7 +12,7 @@ export function OneToManyAddedItems(props: {
 	added: IdType[]
 	reference: string
 	template?: string
-	toggle: (id: IdType) => unknown
+	onRevert: (id: IdType) => unknown
 }): JSX.Element {
 	if (props.added.length === 0) return <p className="my-5 text-center">No Items</p>
 
@@ -36,7 +36,7 @@ export function OneToManyAddedItems(props: {
 						)}
 						rowClassName="truncate w-full overflow-hidden"
 						linkType={false}
-						endIcon={(r) => <UndoButton undo={() => props.toggle(r.id)} />}
+						endIcon={(r) => <UndoButton undo={() => props.onRevert(r.id)} />}
 					/>
 					<ListPagination />
 				</>

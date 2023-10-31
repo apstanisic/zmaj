@@ -10,6 +10,7 @@ type SimpleListProps<T = RaRecord> = {
 	rowClassName?: string
 	linkType?: false
 	className?: string
+	data?: any[]
 }
 
 /**
@@ -18,7 +19,7 @@ type SimpleListProps<T = RaRecord> = {
 export function SimpleListLayout<T extends RaRecord = RaRecord>(
 	props: SimpleListProps<T>,
 ): JSX.Element {
-	const list = useListContext()
+	const list = useListContext({ data: props.data })
 	// const redirect = useRedirect()
 	const resource = useResourceDefinition()
 	const toPath = useCreatePath()

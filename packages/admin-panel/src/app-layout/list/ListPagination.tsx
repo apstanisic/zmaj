@@ -10,20 +10,20 @@ export function ListPagination(
 
 	const perPageOptions = useMemo(() => {
 		const base = props.perPageOptions ?? [10, 20, 40]
-		return unique(base.concat(list.perPage).sort())
+		if (list.perPage) return unique([...base, list.perPage].sort())
+		return base.toSorted()
 	}, [list.perPage, props.perPageOptions])
 
 	return (
 		<Pagination
 			className="self-end"
 			page={list.page ?? 1}
-			perPage={list.perPage}
+			perPage={list.perPage ?? 10}
 			setPage={list.setPage}
 			total={list.total ?? 0}
 			setPerPage={list.setPerPage}
 			perPageOptions={perPageOptions}
 			hidePerPage={props.hidePerPage}
-			// perPageOptions={list.}
 		/>
 	)
 }

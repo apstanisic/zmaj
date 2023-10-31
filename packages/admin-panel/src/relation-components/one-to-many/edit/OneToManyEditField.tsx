@@ -1,18 +1,17 @@
 import { TabsLayout } from "@admin-panel/crud-layouts/ui/tabs/TabsLayout"
 import { TabsSection } from "@admin-panel/crud-layouts/ui/tabs/TabsSection"
-import { useRecord } from "@admin-panel/hooks/use-record"
 import { ShowFieldContainer } from "@admin-panel/shared/show/ShowFieldContainer"
-import { IconToggleButton } from "@admin-panel/ui/IconToggleButton"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
-import { Button } from "@admin-panel/ui/buttons/Button"
-import { Identifier, RaRecord } from "ra-core"
-import { get } from "radash"
-import { memo, useMemo } from "react"
-import { useFormContext } from "react-hook-form"
-import { MdPlaylistRemove, MdUndo } from "react-icons/md"
-import { OneToManyReference } from "../OneToManyReference"
-import { OneToManyRowsList } from "../shared/OneToManyRowsList"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
+import { cn } from "@admin-panel/utils/cn"
+import { ToManyChange } from "@zmaj-js/common"
+import { useMemo } from "react"
+import { useFormContext, useWatch } from "react-hook-form"
+import { MdAdd, MdRestartAlt } from "react-icons/md"
+import { getEmptyToManyChanges } from "../getEmptyToManyChanges"
+import { OneToManyAddedItems } from "../shared/OneToManyChangedItems"
 import { toManyChangeUtils } from "../shared/toManyChangeUtils"
+import { OneToManyEditCurrentItems } from "./OneToManyEditCurrentItems"
 
 export type OneToManyEditFieldProps = {
 	source: string
@@ -22,39 +21,34 @@ export type OneToManyEditFieldProps = {
 	className?: string
 	template?: string
 	fkNullable?: boolean
+	disabled?: boolean
 }
 
 export function OneToManyEditField(props: OneToManyEditFieldProps): JSX.Element {
+	const { setValue, resetField } = useFormContext()
+	const value = useWatch({
+		name: props.source,
+		defaultValue: getEmptyToManyChanges(),
+	}) as ToManyChange
 	return (
 		<ShowFieldContainer
-			header={
-				<div className="flex-grow flex justify-between items-center">
-					<p>Hello</p>
-
-					<div className=" mb-2 mt-1 flex gap-x-1">
-						<Button size="small" color="transparent" className="!text-info font-normal">
-							Current items
-						</Button>
-						<Button
-							size="small"
-							color="transparent"
-							className="!text-success font-normal"
-						>
-							To be added
-						</Button>
-						<Button
-							size="small"
-							color="transparent"
-							className="!text-warning-content font-normal"
-						>
-							To be deleted
-						</Button>
-					</div>
-
-					<p>Add</p>
+			label={props.label}
+			className={cn(props.className, "h-[460px]")}
+			actions={
+				<div className="flex ml-auto gap-x-2">
+					<AddItems disabled={props.disabled} />
+					<ResetChanges
+						disabled={props.disabled}
+						value={value}
+						reset={() =>
+							resetField(props.source, {
+								keepDirty: false,
+								defaultValue: getEmptyToManyChanges(),
+							})
+						}
+					/>
 				</div>
 			}
-			className={props.className}
 		>
 			<TabsLayout
 				size="small"
@@ -63,115 +57,95 @@ export function OneToManyEditField(props: OneToManyEditFieldProps): JSX.Element 
 						Current
 					</p>,
 					<p key={1} className="text-success">
-						To add
+						To be added
 					</p>,
-					<p key={2} className="text-warning-content">
-						To delete
+					<p key={2} className="text-error-content">
+						To be deleted
 					</p>,
 				]}
 			>
-				<TabsSection>
-					<CurrentItems
-						source={props.source}
-						reference={props.reference}
-						target={props.target}
-						template={props.template}
-						fkNullable={props.fkNullable}
-					/>
-				</TabsSection>
-				<TabsSection>
-					<AddedItems
-						source={props.source}
-						reference={props.reference}
-						target={props.target}
-						template={props.template}
-						fkNullable={props.fkNullable}
-					/>
-				</TabsSection>
-				<TabsSection>3</TabsSection>
+				<div className="mt-3">
+					<TabsSection>
+						<OneToManyEditCurrentItems
+							source={props.source}
+							reference={props.reference}
+							target={props.target}
+							template={props.template}
+							fkNullable={props.fkNullable}
+						/>
+					</TabsSection>
+					<TabsSection className="w-full flex flex-col">
+						<OneToManyAddedItems
+							added={value.added}
+							reference={props.reference}
+							template={props.template}
+							onRevert={function (id) {
+								const newVal = toManyChangeUtils.remove(value, "added", id)
+								setValue(props.source, newVal, {
+									shouldDirty: true,
+									shouldTouch: true,
+								})
+							}}
+						/>
+					</TabsSection>
+					<TabsSection className="w-full flex flex-col">
+						<OneToManyAddedItems
+							added={value.removed}
+							reference={props.reference}
+							template={props.template}
+							onRevert={function (id) {
+								const newVal = toManyChangeUtils.remove(value, "removed", id)
+								setValue(props.source, newVal, {
+									shouldDirty: true,
+									shouldTouch: true,
+								})
+							}}
+						/>
+					</TabsSection>
+				</div>
 			</TabsLayout>
 		</ShowFieldContainer>
 	)
 }
 
-export function CurrentItems(
-	props: Pick<
-		OneToManyEditFieldProps,
-		"reference" | "target" | "template" | "source" | "fkNullable"
-	>,
-): JSX.Element {
-	const record = useRecord()
-	const { reference, target, template } = props
-
-	const id = record?.id
-	if (!id) return <></>
-
-	return (
-		<OneToManyReference
-			reference={reference}
-			filter={{ [target]: id }}
-			// we need fk field, not right property: should be comments.postId
-			target={target}
-			perPage={5}
-		>
-			<OneToManyRowsList
-				className="h-[250px] overflow-auto"
-				template={template}
-				actions={(record) => (
-					<ShowRowActions
-						record={record}
-						source={props.source}
-						canDelete={props.fkNullable !== false}
-					/>
-				)}
-			/>
-		</OneToManyReference>
+function ResetChanges(props: { disabled?: boolean; reset: () => unknown; value: ToManyChange }) {
+	const noChanges = useMemo(
+		() => props.value.added.length === 0 && props.value.removed.length === 0,
+		[props.value.added, props.value.removed],
 	)
-}
-
-export function AddedItems(
-	props: Pick<
-		OneToManyEditFieldProps,
-		"reference" | "target" | "template" | "source" | "fkNullable"
-	>,
-): JSX.Element {
-	return <div>hello</div>
-}
-
-const ShowRowActions = memo((props: { record: RaRecord; source: string; canDelete: boolean }) => {
-	const { watch, setValue } = useFormContext()
-	const changes = watch(props.source)
-	const toDelete = get(changes, "removed", [] as Identifier[])
-	const isRemoved = useMemo(() => toDelete.includes(props.record.id), [props.record.id, toDelete])
-
 	return (
-		<div className="flex">
-			<Tooltip
-				text={
-					!props.canDelete
-						? "Value can't be null. You must either delete record, or change its value"
-						: isRemoved
-						? "Remove mark for records disconnect"
-						: "Mark for records disconnect"
-				}
-				side="left"
+		<Tooltip text={noChanges ? "There are no changes" : "Revert changes"}>
+			<IconButton
+				size="small"
+				aria-label="Reset changes"
+				isDisabled={props.disabled || noChanges}
+				className="mb-1"
+				variant="text"
+				onPress={() => {
+					const sure = confirm("Are you sure?")
+					if (!sure) return
+					props.reset()
+					// changes.setValue({ type: "toMany", added: [], removed: [] })
+				}}
 			>
-				<IconToggleButton
-					aria-label="Remove item from current record"
-					color="warning"
-					isOn={toDelete.includes(props.record.id)}
-					on={<MdUndo />}
-					off={<MdPlaylistRemove />}
-					isDisabled={!props.canDelete}
-					size="small"
-					onPress={() => {
-						setValue(
-							props.source,
-							toManyChangeUtils.toggle(changes, "removed", props.record.id),
-						)
-					}}
-				/>
-			</Tooltip>
-		</div>
+				<MdRestartAlt />
+			</IconButton>
+		</Tooltip>
 	)
-})
+}
+
+function AddItems(props: { disabled?: boolean }) {
+	return (
+		<Tooltip text="Add">
+			<IconButton
+				size="small"
+				aria-label={`Add records`}
+				className="ml-auto"
+				isDisabled={props.disabled}
+				// onPress={() => setPickerOpen(true)}
+			>
+				<MdAdd />
+			</IconButton>
+		</Tooltip>
+	)
+}

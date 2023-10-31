@@ -33,6 +33,7 @@ export function OneToManyShowField(props: OneToManyShowFieldProps): JSX.Element 
 		</ShowFieldContainer>
 	)
 }
+
 const ShowRowActions = memo((props: { record: RaRecord }) => {
 	const redirect = useRedirect()
 	const { hasEdit = true, hasShow, name: resource } = useResourceDefinition()

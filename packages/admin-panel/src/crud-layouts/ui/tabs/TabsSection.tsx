@@ -1,3 +1,4 @@
+import { cn } from "@admin-panel/utils/cn"
 import { Tab } from "@headlessui/react"
 import { clsx } from "clsx"
 import { forwardRef, memo, PropsWithChildren } from "react"
@@ -8,7 +9,7 @@ import { forwardRef, memo, PropsWithChildren } from "react"
 export const TabsSection = memo((props: PropsWithChildren<any>) => {
 	return (
 		// <Tab.Panel as={LayoutSection} {...props}>
-		<Tab.Panel {...props} className={clsx("grid gap-y-4", props.className)}>
+		<Tab.Panel {...props} className={cn("grid gap-y-4", props.className)}>
 			{props.children}
 		</Tab.Panel>
 	)
