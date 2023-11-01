@@ -1,11 +1,12 @@
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { IconToggleButton } from "@admin-panel/ui/IconToggleButton"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
-import { Identifier, RaRecord } from "ra-core"
+import { IconButton } from "@admin-panel/ui/buttons/IconButton"
+import { Identifier, RaRecord, useCreatePath, useResourceDefinition } from "ra-core"
 import { get } from "radash"
 import { memo, useMemo } from "react"
 import { useFormContext } from "react-hook-form"
-import { MdPlaylistRemove, MdUndo } from "react-icons/md"
+import { MdOutlineVisibility, MdPlaylistRemove, MdUndo } from "react-icons/md"
 import { OneToManyReference } from "../OneToManyReference"
 import { OneToManyRowsList } from "../shared/OneToManyRowsList"
 import { toManyChangeUtils } from "../shared/toManyChangeUtils"
@@ -51,9 +52,22 @@ const ShowRowActions = memo((props: { record: RaRecord; source: string; canDelet
 	const changes = watch(props.source)
 	const toDelete = get(changes, "removed", [] as Identifier[])
 	const isRemoved = useMemo(() => toDelete.includes(props.record.id), [props.record.id, toDelete])
+	const { hasShow = false, name } = useResourceDefinition()
+	const createPath = useCreatePath()
 
 	return (
-		<div className="flex">
+		<div className="flex gap-x-2">
+			<IconButton
+				aria-label="Show record"
+				size="small"
+				isDisabled={!hasShow}
+				onPress={() => {
+					const path = createPath({ resource: name, type: "show", id: props.record.id })
+					window.open(`#${path}`, "_blank")
+				}}
+			>
+				<MdOutlineVisibility />
+			</IconButton>
 			<Tooltip
 				text={
 					!props.canDelete
@@ -70,7 +84,7 @@ const ShowRowActions = memo((props: { record: RaRecord; source: string; canDelet
 					isOn={toDelete.includes(props.record.id)}
 					on={<MdUndo />}
 					off={<MdPlaylistRemove />}
-					// isDisabled={!props.canDelete}
+					isDisabled={!props.canDelete}
 					size="small"
 					onPress={() => {
 						setValue(

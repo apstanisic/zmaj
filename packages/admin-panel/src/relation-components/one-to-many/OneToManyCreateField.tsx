@@ -58,6 +58,7 @@ export function OneToManyCreateField(props: OneToManyCreateFieldProps): JSX.Elem
 						<Tooltip text="Add">
 							<IconButton
 								aria-label={`Add ${label}`}
+								size="small"
 								className="ml-auto"
 								isDisabled={disabled}
 								onPress={() => setPickerOpen(true)}

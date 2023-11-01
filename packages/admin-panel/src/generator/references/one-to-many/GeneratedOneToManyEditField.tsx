@@ -3,7 +3,7 @@ import { useRelationRightSide } from "@admin-panel/generator/use-relation-right-
 import { OneToManyEditField } from "@admin-panel/relation-components/one-to-many/edit/OneToManyEditField"
 import { useOneToManyFieldProps } from "./useOneToManyFieldProps"
 
-export function GeneratedOneToManyEditField() {
+export function GeneratedOneToManyEditField(): JSX.Element {
 	const { template, label, relation } = useOneToManyFieldProps()
 	const rightSide = useRelationRightSide()
 

@@ -11,30 +11,31 @@ type UseOneToManyCreateChoicesProps = {
 	target: string
 	source: string
 	selected: IdType[]
+	filter?: Struct
 }
 
 export function useOneToManyCreateChoices(
-	params: UseOneToManyCreateChoicesProps,
+	props: UseOneToManyCreateChoicesProps,
 ): ChoicesContextValue<any> {
-	const [sort, setSort] = useState<SortPayload>(params.sort ?? { field: "id", order: "ASC" })
+	const [sort, setSort] = useState<SortPayload>(props.sort ?? { field: "id", order: "ASC" })
 	const [pagination, setPagination] = useState<PaginationPayload>(
-		params.pagination ?? { page: 1, perPage: 10 },
+		props.pagination ?? { page: 1, perPage: 10 },
 	)
-	const [userFilter, setUserFilter] = useState<Struct>({})
+	const [userFilter, setUserFilter] = useState<Struct>(props.filter ?? {})
 
 	const list = useGetList(
-		params.reference,
+		props.reference,
 		{
 			sort,
 			pagination,
 			filter: userFilter,
 			meta: {
-				otmFkField: params.target,
+				otmFkField: props.target,
 				otmShowForbidden: false,
 			},
 		},
 		{
-			enabled: params.enabled,
+			enabled: props.enabled,
 			keepPreviousData: true,
 		},
 	)
@@ -51,9 +52,9 @@ export function useOneToManyCreateChoices(
 		hasPreviousPage: pagination.page > 1,
 		hasNextPage: list.pageInfo?.hasNextPage ?? false,
 		refetch: list.refetch,
-		resource: params.reference,
+		resource: props.reference,
 		total: list.total ?? list.data?.length ?? 0,
-		source: params.source,
+		source: props.source,
 		filter: userFilter,
 		setFilters: (filter) => setUserFilter(filter),
 		availableChoices: list.data ?? [],
@@ -63,7 +64,7 @@ export function useOneToManyCreateChoices(
 		showFilter: () => {},
 		error: list.error?.message,
 		isFromReference: true,
-		selectedChoices: params.selected,
+		selectedChoices: props.selected,
 		filterValues: {},
 	}
 }

@@ -29,7 +29,7 @@ export function ShowFieldContainer(props: Props): JSX.Element {
 		<div
 			className={cn(
 				"du-card-bordered du-card rounded-xl border-opacity-50 px-2 py-1 shadow-sm",
-				"max-h-[80vh] overflow-auto",
+				"max-h-[80vh] overflow-auto my-3",
 				props.className,
 			)}
 		>

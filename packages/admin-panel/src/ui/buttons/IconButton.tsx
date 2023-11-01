@@ -45,3 +45,14 @@ export const IconButton = forwardRef<any, IconButtonProps>(function (props, ref)
 		</Button>
 	)
 })
+
+export function getIconButtonCss(
+	props: Pick<IconButtonProps, "shape" | "className" | "color" | "variant" | "size">,
+): string {
+	return cn(
+		getButtonCss(props),
+		"center",
+		props.shape === "square" ? "du-btn-square" : "du-btn-circle",
+		props.className,
+	)
+}

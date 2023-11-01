@@ -28,7 +28,7 @@ const variants: Record<ButtonVariant, string> = {
 	text: cn("du-btn-outline border-none bg-transparent focus-visible:bg-neutral/20"),
 }
 
-export function getButtonCss(props: ButtonProps | IconButtonProps): string {
+export function getButtonCss(props: Partial<ButtonProps | IconButtonProps>): string {
 	const { className, size = "medium", color = "normal", variant = "normal" } = props
 	return cn(
 		"du-btn gap-x-1",

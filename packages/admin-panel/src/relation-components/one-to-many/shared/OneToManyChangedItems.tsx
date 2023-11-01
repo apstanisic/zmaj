@@ -20,7 +20,7 @@ export function OneToManyAddedItems(props: {
 		<ResourceContextProvider value={props.reference}>
 			<ListBase
 				disableSyncWithLocation
-				perPage={10}
+				perPage={5}
 				filter={{ id: { $in: props.added } }} //
 			>
 				<>
@@ -36,7 +36,11 @@ export function OneToManyAddedItems(props: {
 						)}
 						rowClassName="truncate w-full overflow-hidden"
 						linkType={false}
-						endIcon={(r) => <UndoButton undo={() => props.onRevert(r.id)} />}
+						endIcon={(r) => (
+							<>
+								<UndoButton undo={() => props.onRevert(r.id)} />
+							</>
+						)}
 					/>
 					<ListPagination />
 				</>

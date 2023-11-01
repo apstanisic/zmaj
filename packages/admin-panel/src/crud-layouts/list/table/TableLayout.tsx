@@ -74,8 +74,8 @@ export const TableLayout = memo(() => {
 				const toRender =
 					property.type === "many-to-one" ||
 					property.type === "field" ||
-					property.type === "owner-one-to-one" ||
-					property.type === "ref-one-to-one"
+					property.type === "owner-one-to-one"
+				// property.type === "ref-one-to-one"
 
 				if (!toRender) return
 				// const field = "field" in property ? property.field : undefined
