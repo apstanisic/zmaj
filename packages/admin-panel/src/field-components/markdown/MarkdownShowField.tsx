@@ -16,9 +16,9 @@ export function MarkdownShowField(props: ShowFieldProps): JSX.Element {
 					size="small"
 					onPress={() => togglePreview()}
 					color="transparent"
-					className="ml-auto"
+					className="ml-auto mb-1"
 				>
-					{isPreview ? "Show text" : "Show Markdown"}
+					{isPreview ? "Show raw text" : "Show Markdown"}
 				</Button>
 			}
 			render={({ value }) =>

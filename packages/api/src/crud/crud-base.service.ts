@@ -104,6 +104,7 @@ export class CrudBaseService<Item extends Struct> {
 		if (isUnknownFieldError) throw400(901732, emsg.noProperty)
 
 		this.logger.warn("Crud Problem", error)
+		this.logger.warn("Cause", error.cause)
 
 		// this.logger.error("Unhandled DB error", error)
 		// any other error from db

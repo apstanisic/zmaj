@@ -1,5 +1,5 @@
 import { getFieldWidthCss } from "@admin-panel/crud-layouts/get-field-width-css"
-import { RefOneToOneEditField } from "@admin-panel/relation-components/ref-one-to-one/RefOneToOneShowField"
+import { RefOneToOneEditField } from "@admin-panel/relation-components/ref-one-to-one/RefOneToOneEditField"
 import { memo } from "react"
 import { useOneToManyFieldProps } from "../one-to-many/useOneToManyFieldProps"
 

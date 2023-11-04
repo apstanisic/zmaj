@@ -245,6 +245,9 @@ importers:
       file-saver:
         specifier: ^2.0.5
         version: 2.0.5
+      flat:
+        specifier: ^6.0.1
+        version: 6.0.1
       highlight.js:
         specifier: ^11.9.0
         version: 11.9.0

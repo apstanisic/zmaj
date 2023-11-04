@@ -13,8 +13,9 @@ import {
 	transformQuickFilter,
 } from "@zmaj-js/common"
 import { IdType } from "@zmaj-js/orm"
+import { flatten, unflatten } from "flat"
 import { DataProvider, RaRecord } from "ra-core"
-import { construct, crush, isEqual, mapValues } from "radash"
+import { isEqual, mapValues } from "radash"
 import { v4 } from "uuid"
 import { z } from "zod"
 import { AdminPanelError } from "./shared/AdminPanelError"
@@ -180,8 +181,10 @@ export function initDataProvider(sdk: ZmajSdk, collections?: CollectionDef[]): D
 		async create(resource, { data }): Promise<{ data: DpRecord }> {
 			// remove empty string, and send null instead
 
-			const values = mapValues(crush(data), (v) => (v === "" ? null : v))
-			const result = await startCrud(resource).createOne({ data: construct(values) })
+			const flatData = flatten(data)
+			const values = mapValues(flatData as any, (v) => (v === "" ? null : v))
+
+			const result = await startCrud(resource).createOne({ data: unflatten(values) })
 			return { data: transformRecord(resource, result) }
 		},
 

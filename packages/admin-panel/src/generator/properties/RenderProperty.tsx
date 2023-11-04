@@ -4,7 +4,7 @@ import { RelationContextProvider } from "../../context/relation-context"
 import { AdminPanelError } from "../../shared/AdminPanelError"
 import { Property } from "../../types/Property"
 import { ManyToManyField } from "../many-to-many/ManyToManyField"
-import { RefOneToOneField } from "../ref-one-to-one/RefOneToOneField"
+import { GeneratedManyToManyRouterField } from "../references/many-to-many/GeneratedManyToManyRouterField"
 import { GeneratedManyToOneRouterField } from "../references/many-to-one/GeneratedManyToOneRouterField"
 import { GeneratedOneToManyRouterField } from "../references/one-to-many/GeneratedOneToManyRouterField"
 import { GeneratedOwnerOneToOneRouterField } from "../references/owner-one-to-one/GeneratedOwnerOneToOneRouterField"
@@ -51,9 +51,7 @@ export const RenderProperty = memo(({ property }: { property: Property }) => {
 	if (property.type === "ref-one-to-one") {
 		return (
 			<RelationContextProvider value={property.relation}>
-				{/* TODO RefOneToOne */}
 				<GeneratedRefOneToOneRouterField />
-				<RefOneToOneField />
 			</RelationContextProvider>
 		)
 	}
@@ -62,17 +60,10 @@ export const RenderProperty = memo(({ property }: { property: Property }) => {
 		return (
 			<RelationContextProvider value={property.relation}>
 				<ManyToManyField />
+				<GeneratedManyToManyRouterField />
 			</RelationContextProvider>
 		)
 	}
-
-	// if (property.type === "owner-one-to-one" || property.type === 'ref-one-to-one') {
-	//   return (
-	//     <RelationContextProvider value={property.relation}>
-	//       <OneToManyField />
-	//     </RelationContextProvider>
-	//   )
-	// }
 
 	throw new AdminPanelError("#91263192")
 })

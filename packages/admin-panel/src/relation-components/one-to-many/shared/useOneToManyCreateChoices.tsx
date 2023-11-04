@@ -8,6 +8,7 @@ type UseOneToManyCreateChoicesProps = {
 	sort?: SortPayload
 	pagination?: PaginationPayload
 	reference: string
+	/** `null` allows use with m2m */
 	target: string
 	source: string
 	selected: IdType[]

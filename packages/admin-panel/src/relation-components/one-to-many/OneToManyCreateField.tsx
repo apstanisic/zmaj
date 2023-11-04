@@ -4,7 +4,7 @@ import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { cn } from "@admin-panel/utils/cn"
 import { IdType } from "@zmaj-js/orm"
 import { ChoicesContextProvider } from "ra-core"
-import { get, toggle } from "radash"
+import { get } from "radash"
 import { useCallback, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { MdAdd } from "react-icons/md"
@@ -12,9 +12,10 @@ import { ReferencesPickerDialog } from "../shared/ReferencePickerDialog"
 import { OneToManyReference } from "./OneToManyReference"
 import { getEmptyToManyChanges } from "./getEmptyToManyChanges"
 import { OneToManyAddedItems } from "./shared/OneToManyChangedItems"
+import { toManyChangeUtils } from "./shared/toManyChangeUtils"
 import { useOneToManyCreateChoices } from "./shared/useOneToManyCreateChoices"
 
-type OneToManyCreateFieldProps = {
+export type OneToManyCreateFieldProps = {
 	source: string
 	reference: string
 	target: string
@@ -41,7 +42,9 @@ export function OneToManyCreateField(props: OneToManyCreateFieldProps): JSX.Elem
 
 	const toggleId = useCallback(
 		(id: IdType) => {
-			const newValue = { ...value, added: toggle(value.added, id) }
+			console.log({ value })
+
+			const newValue = toManyChangeUtils.toggle(value, "added", id)
 			setValue(source, newValue, { shouldDirty: true, shouldTouch: true })
 		},
 		[setValue, source, value],

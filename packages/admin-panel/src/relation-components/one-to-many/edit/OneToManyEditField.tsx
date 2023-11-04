@@ -5,7 +5,7 @@ import { Tooltip } from "@admin-panel/ui/Tooltip"
 import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { cn } from "@admin-panel/utils/cn"
 import { ToManyChange } from "@zmaj-js/common"
-import { useMemo, useState } from "react"
+import { ReactNode, useMemo, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import { MdAdd, MdRestartAlt } from "react-icons/md"
 import { getEmptyToManyChanges } from "../getEmptyToManyChanges"
@@ -23,6 +23,7 @@ export type OneToManyEditFieldProps = {
 	template?: string
 	fkNullable?: boolean
 	disabled?: boolean
+	currentItems?: ReactNode
 }
 
 export function OneToManyEditField(props: OneToManyEditFieldProps): JSX.Element {
@@ -84,13 +85,15 @@ export function OneToManyEditField(props: OneToManyEditFieldProps): JSX.Element 
 				>
 					<div className="mt-3">
 						<TabsSection>
-							<OneToManyEditCurrentItems
-								source={props.source}
-								reference={props.reference}
-								target={props.target}
-								template={props.template}
-								fkNullable={props.fkNullable}
-							/>
+							{props.currentItems ?? (
+								<OneToManyEditCurrentItems
+									source={props.source}
+									reference={props.reference}
+									target={props.target}
+									template={props.template}
+									fkNullable={props.fkNullable}
+								/>
+							)}
 						</TabsSection>
 						<TabsSection className="w-full flex flex-col">
 							<OneToManyAddedItems
