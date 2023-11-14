@@ -33,7 +33,13 @@ export function ShowFieldContainer(props: Props): JSX.Element {
 				props.className,
 			)}
 		>
-			{props.header ?? <ShowFieldContainerTitle {...props} />}
+			{props.header ?? (
+				<div className="flex w-full items-center justify-between">
+					<ShowFieldContainerTitle {...props} />
+					{props.actions}
+				</div>
+			)}
+
 			<div className="flex min-h-[2rem] flex-col justify-items-stretch overflow-auto border-t border-gray-100 py-2 dark:border-gray-600">
 				{content}
 			</div>
@@ -41,17 +47,14 @@ export function ShowFieldContainer(props: Props): JSX.Element {
 	)
 }
 
-function ShowFieldContainerTitle(props: Props): JSX.Element {
+export function ShowFieldContainerTitle(props: Pick<Props, "label" | "description">): JSX.Element {
 	const { label, description } = props
 
 	return (
-		<div className="flex w-full items-center justify-between">
-			<Tooltip text={description ?? ""} side="top">
-				<span className="my-0.5 min-h-[1.25rem] text-sm font-normal text-base-content/[0.7] ">
-					{label}
-				</span>
-			</Tooltip>
-			{props.actions}
-		</div>
+		<Tooltip text={description ?? ""} side="top">
+			<span className="my-0.5 min-h-[1.25rem] text-sm font-normal text-base-content/[0.7] ">
+				{label}
+			</span>
+		</Tooltip>
 	)
 }

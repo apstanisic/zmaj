@@ -3,7 +3,6 @@ import { FieldContextProvider } from "../../context/field-context"
 import { RelationContextProvider } from "../../context/relation-context"
 import { AdminPanelError } from "../../shared/AdminPanelError"
 import { Property } from "../../types/Property"
-import { ManyToManyField } from "../many-to-many/ManyToManyField"
 import { GeneratedManyToManyRouterField } from "../references/many-to-many/GeneratedManyToManyRouterField"
 import { GeneratedManyToOneRouterField } from "../references/many-to-one/GeneratedManyToOneRouterField"
 import { GeneratedOneToManyRouterField } from "../references/one-to-many/GeneratedOneToManyRouterField"
@@ -59,7 +58,6 @@ export const RenderProperty = memo(({ property }: { property: Property }) => {
 	if (property.type === "many-to-many") {
 		return (
 			<RelationContextProvider value={property.relation}>
-				<ManyToManyField />
 				<GeneratedManyToManyRouterField />
 			</RelationContextProvider>
 		)

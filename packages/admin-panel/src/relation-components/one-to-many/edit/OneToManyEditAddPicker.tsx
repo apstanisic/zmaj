@@ -56,13 +56,12 @@ export function OneToManyEditAddPicker(props: OneToManyEditAddPickerProps): JSX.
 			onClose={() => setOpen(false)}
 			className="min-h-[400px] max-w-2xl px-3 py-6"
 		>
-			<p className="pl-3 text-lg">Add items</p>
+			<p className="pl-2 pb-4 text-lg">Add items</p>
 			<ResourceContextProvider value={reference}>
 				<ChoicesContextProvider value={choices}>
 					<ChoicesPicker
 						template={template}
 						isSelected={(r) => value.added.includes(r.id)}
-						// isSelected={(r) => changes.value.added.some((item) => item === r.id)}
 						onClick={(r) => {
 							setOpen(false)
 							addItem(r.id)

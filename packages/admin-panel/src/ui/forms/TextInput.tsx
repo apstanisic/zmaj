@@ -16,11 +16,9 @@ export type TextInputProps = TextFieldProps & {
 	className?: string
 }
 
-export const TextInput = (props: TextInputProps) => {
+export function TextInput(props: TextInputProps) {
 	// do not pass id currently, it causes error
 	const { label, description, error, placeholder, startIcon, id, endIcon, ...raProps } = props
-
-	console.log({ props: props.isRequired, label })
 
 	return (
 		<TextField {...raProps} className={cn("my-1", props.className)}>

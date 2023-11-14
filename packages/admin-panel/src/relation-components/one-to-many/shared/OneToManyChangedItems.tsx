@@ -25,6 +25,7 @@ export function OneToManyAddedItems(props: {
 			>
 				<>
 					<SimpleListLayout
+						className="h-[330px]"
 						primaryText={(record) => (
 							<div className="overflow-hidden">
 								<p className="truncate w-full">

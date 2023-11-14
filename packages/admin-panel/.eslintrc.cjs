@@ -23,4 +23,9 @@ module.exports = {
 		// Benefit of runtime type checking is not enough to have to define prop types everywhere.
 		"react/prop-types": 0,
 	},
+	overrides: {
+		files: ["*.tsx"],
+		// We are usually returning only component in tsx, so it makes it repetitive to write return type
+		"@typescript-eslint/explicit-function-return-type": ["off"],
+	},
 }

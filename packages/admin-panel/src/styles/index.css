@@ -116,7 +116,7 @@
 
 /* Make crud content have max width */
 .crud-content {
-	@apply mx-auto mb-8 mt-2 w-full max-w-7xl !important;
+	@apply mx-auto mb-8 mt-2 w-full max-w-5xl !important;
 }
 
 /* Array input is not prettiest. This is basic styling */

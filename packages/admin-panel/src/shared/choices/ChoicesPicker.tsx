@@ -1,14 +1,12 @@
-import { Avatar } from "@admin-panel/ui/Avatar"
-import { DisplayZmajFile } from "@admin-panel/ui/display-file"
-import { List } from "@admin-panel/ui/List"
+import { ListItemButton, ListV2 } from "@admin-panel/ui/List"
 import { Pagination } from "@admin-panel/ui/Pagination"
 import { Tooltip } from "@admin-panel/ui/Tooltip"
-import { FileInfo, isStruct, templateParser } from "@zmaj-js/common"
+import { templateParser, truncate } from "@zmaj-js/common"
 import { clsx } from "clsx"
 import { RaRecord, useChoicesContext } from "ra-core"
 import { isInt } from "radash"
-import { Fragment, memo } from "react"
-import { MdRadioButtonChecked } from "react-icons/md"
+import { memo } from "react"
+import { MdRadioButtonChecked, MdRadioButtonUnchecked } from "react-icons/md"
 
 export type ChoicesPickerProps = {
 	onClick: (record: RaRecord) => unknown
@@ -23,52 +21,51 @@ export function ChoicesPicker(props: ChoicesPickerProps): JSX.Element {
 
 	return (
 		<div
-			className={clsx("flex flex-1 flex-grow flex-col items-stretch justify-between", className)}
+			className={clsx(
+				"flex flex-1 flex-grow flex-col items-stretch justify-between",
+				className,
+			)}
 		>
-			<List className="my-4" divider>
-				{choices.availableChoices.map((record: RaRecord, i) => {
-					if (!isStruct(record)) return <Fragment key={i}></Fragment>
-
+			<ListV2
+				divider
+				items={choices.availableChoices}
+				getKey={(choice) => choice.id}
+				render={(record) => {
 					const selected =
 						isSelected?.(record) ??
 						choices.selectedChoices.some(
 							(sel: RaRecord | undefined) => sel?.id === record.id, //
 						)
 
-					const item = (
-						<List.ButtonItem
-							type="button"
-							noPadding
-							key={i}
-							className={choices.resource === "zmajFiles" ? "py-1" : "px-1 py-2"}
-							onClick={() => onClick(record)}
+					return (
+						<ListItemButton
+							onPress={() => onClick(record)}
 							end={
-								selected ? (
-									<Tooltip text="Currently selected">
+								<Tooltip
+									text={
+										selected
+											? `Deselect ${truncate(record.id, { length: 10 })}`
+											: `Select ${truncate(record.id, { length: 10 })}`
+									}
+								>
+									{selected ? (
 										<MdRadioButtonChecked />
-									</Tooltip>
-								) : undefined
-							}
-							start={
-								choices.resource === "zmajFiles" ? (
-									<Avatar>
-										<DisplayZmajFile file={record as FileInfo} size="thumbnail" />
-									</Avatar>
-								) : undefined
+									) : (
+										<MdRadioButtonUnchecked />
+									)}
+								</Tooltip>
 							}
 						>
-							{templateParser.parse(template ?? "", record ?? {}, { fallback: record.id })}
-						</List.ButtonItem>
+							<p className="truncate">
+								{templateParser.parse(template ?? "", record ?? {}, {
+									fallback: record.id,
+								})}
+							</p>
+						</ListItemButton>
 					)
-					return template ? (
-						<Tooltip text={record?.id ?? ""} key={i} side="top">
-							{item}
-						</Tooltip>
-					) : (
-						item
-					)
-				})}
-			</List>
+				}}
+			/>
+
 			<ChoicesPagination />
 		</div>
 	)

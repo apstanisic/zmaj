@@ -201,7 +201,7 @@ const DrawerItem = memo((props: { path: string; icon?: ReactNode; label: string 
 	const href = useHref({ pathname: props.path })
 	return (
 		<List.ButtonItem
-			className="py-1 pl-3 pr-1"
+			className="py-2 pl-3 pr-1"
 			start={props.icon ?? <MdViewList />}
 			href={href}
 		>

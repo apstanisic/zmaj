@@ -9,7 +9,7 @@ import { LayoutSection } from "../ui/LayoutSection"
 const ShowLayout = memo(() => {
 	const properties = useRenderedProperties()
 
-	return <LayoutSection largeGap>{properties.map((p) => p.rendered)}</LayoutSection>
+	return <LayoutSection>{properties.map((p) => p.rendered)}</LayoutSection>
 })
 
 export const SimpleShowLayout = DefineCrudLayout({
