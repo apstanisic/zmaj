@@ -3,15 +3,15 @@ import { PropsWithChildren } from "react"
 import { Label, Text } from "react-aria-components"
 import { getLabelCss } from "./forms-css"
 
-export const FormControl = (
-	props: PropsWithChildren<{
-		label?: string
-		error?: string
-		description?: string
-		isRequired?: boolean
-		ariaId?: string
-	}>,
-): JSX.Element => {
+type FormControlProps = PropsWithChildren<{
+	label?: string
+	error?: string
+	description?: string
+	isRequired?: boolean
+	ariaId?: string
+}>
+
+export const FormControl = (props: FormControlProps) => {
 	const { isRequired, error, children, description, label, ariaId } = props
 	return (
 		<div className="mt-1 mb-0.5">

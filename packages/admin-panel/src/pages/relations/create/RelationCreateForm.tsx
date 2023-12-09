@@ -68,6 +68,7 @@ export const RelationCreateForm = ({ collections }: RelationFormProps): JSX.Elem
 				name="type"
 				defaultValue="many-to-one"
 				className="col-span-2"
+				aria-label="Relation type"
 				options={[
 					{ value: "many-to-one", label: ">-- Many to One" },
 					{ value: "one-to-many", label: "--< One to Many " },

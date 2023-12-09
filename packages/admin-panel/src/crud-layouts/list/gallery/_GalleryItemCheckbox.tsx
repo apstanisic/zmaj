@@ -1,4 +1,4 @@
-import { CheckboxInput } from "@admin-panel/ui/forms/Checkbox"
+import { CheckboxInput } from "@admin-panel/ui/forms/CheckboxInput"
 import { IdType } from "@zmaj-js/orm"
 import { clsx } from "clsx"
 import { useListContext } from "ra-core"

@@ -4,7 +4,7 @@ import { PasswordInputProps } from "../PasswordInput"
 import { SelectInputProps } from "../SelectInput"
 import { SwitchInputProps } from "../SwitchInput"
 import { TextInputProps } from "../TextInput"
-import { UuidInputProps } from "../UuuidInput"
+import { UuidInputProps } from "../UuidInput"
 
 export type CommonInputProps =
 	| TextInputProps

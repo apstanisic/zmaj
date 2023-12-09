@@ -1,6 +1,6 @@
 import { Divider } from "@admin-panel/ui/Divider"
 import { List } from "@admin-panel/ui/List"
-import { CheckboxInput } from "@admin-panel/ui/forms/Checkbox"
+import { CheckboxInput } from "@admin-panel/ui/forms/CheckboxInput"
 import { isNil } from "@zmaj-js/common"
 import { diff, isArray } from "radash"
 import { useFormContext, useWatch } from "react-hook-form"

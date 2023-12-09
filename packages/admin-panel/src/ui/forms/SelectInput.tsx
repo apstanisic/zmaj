@@ -36,7 +36,7 @@ export type SelectInputProps = Except<
 	onChange?: (value: string | number | null) => unknown
 }
 
-export function SelectInput(props: SelectInputProps): JSX.Element {
+export function SelectInput(props: SelectInputProps) {
 	const {
 		value,
 		onChange,
@@ -64,7 +64,7 @@ export function SelectInput(props: SelectInputProps): JSX.Element {
 			onSelectionChange={onChange as SelectProps<any>["onSelectionChange"]}
 			disabledKeys={disabledItems}
 			className={cn("w-full my-1", raProps.className)}
-			aria-label={label}
+			aria-label={raProps["aria-label"] ?? label}
 		>
 			<FormControl
 				description={description}
@@ -126,7 +126,7 @@ export function SelectInput(props: SelectInputProps): JSX.Element {
 	)
 }
 
-function ClearButton(): JSX.Element {
+function ClearButton() {
 	const { selectedKey, setSelectedKey } = useContext(SelectStateContext)
 	if (isEmpty(selectedKey)) return <></>
 	return (

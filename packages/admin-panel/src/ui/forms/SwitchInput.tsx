@@ -32,7 +32,7 @@ export function SwitchInput(props: SwitchInputProps): JSX.Element {
 				description={description}
 				isRequired={raProps.isRequired}
 				error={error}
-				ariaId={id}
+				ariaId={props.id ?? id}
 			>
 				<Switch
 					{...raProps}

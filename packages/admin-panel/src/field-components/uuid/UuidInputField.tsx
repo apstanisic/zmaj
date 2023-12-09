@@ -1,5 +1,5 @@
 import { useInputAdapter } from "@admin-panel/shared/input/useInputField"
-import { UuidInput, UuidInputProps } from "@admin-panel/ui/forms/UuuidInput"
+import { UuidInput, UuidInputProps } from "@admin-panel/ui/forms/UuidInput"
 import { uuidRegex } from "@zmaj-js/common"
 import { regex } from "ra-core"
 import { useMemo } from "react"

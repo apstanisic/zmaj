@@ -8,7 +8,7 @@ import { PasswordInput } from "./forms/PasswordInput"
 import { SelectInput } from "./forms/SelectInput"
 import { SwitchInput } from "./forms/SwitchInput"
 import { TextInput } from "./forms/TextInput"
-import { UuidInput } from "./forms/UuuidInput"
+import { UuidInput } from "./forms/UuidInput"
 
 type Base = { name?: string; defaultValue?: any; isDisabled?: boolean }
 
