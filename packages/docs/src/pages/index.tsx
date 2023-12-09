@@ -7,7 +7,7 @@ import React from "react"
 
 import styles from "./index.module.css"
 
-export default function Home(): JSX.Element {
+export default function Home() {
 	const { siteConfig } = useDocusaurusContext()
 	return (
 		<Layout title={`${siteConfig.title}`} description="Zmaj is simple to use CMS">

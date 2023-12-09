@@ -48,7 +48,7 @@ function CreateForm(props: {
 	children: ReactNode
 	defaultValues?: FieldValues | ((record?: Struct) => FieldValues)
 	schema?: z.AnyZodObject
-}): JSX.Element {
+}) {
 	const record = useRecord()
 	const defaultValues = useMemo(() => {
 		if (typeof props.defaultValues === "function") return props.defaultValues(record)

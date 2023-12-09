@@ -3,7 +3,7 @@ import { diff, unique } from "radash"
 import { useFormContext, useWatch } from "react-hook-form"
 import { WebhooksEvents } from "./WebhooksEvents"
 
-export function WebhookEventsInputField(): JSX.Element {
+export function WebhookEventsInputField() {
 	const { setValue } = useFormContext<Partial<Webhook>>()
 	const events = useWatch({ name: "events" })
 

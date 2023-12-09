@@ -8,7 +8,7 @@ import { FilesShow } from "./FilesShow"
 
 const file = FileCollection
 
-export function filesResource(props: { authz: Authz }): JSX.Element {
+export function filesResource(props: { authz: Authz }) {
 	const read = checkSystem(props.authz, "files", "read")
 	const edit = checkSystem(props.authz, "files", "update")
 	return (

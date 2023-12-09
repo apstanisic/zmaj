@@ -25,7 +25,7 @@ export type OneToManyCreateFieldProps = {
 	disabled?: boolean
 }
 
-export function OneToManyCreateField(props: OneToManyCreateFieldProps): JSX.Element {
+export function OneToManyCreateField(props: OneToManyCreateFieldProps) {
 	const { disabled = false, label, template, source, reference, target } = props
 	const [pickerOpen, setPickerOpen] = useState(false)
 	// const { field } = useController({ name: source, defaultValue: getEmpty(), disabled })

@@ -30,9 +30,7 @@ export const ManyToOneListField = memo((props: ManyToOneListFieldProps) => {
 /**
  * Needs to be separate component so we can access referenced record context
  */
-function Renderer(
-	props: Pick<ManyToOneListFieldProps, "label" | "template" | "className">,
-): JSX.Element {
+function Renderer(props: Pick<ManyToOneListFieldProps, "label" | "template" | "className">) {
 	const record = useRecord()
 
 	const content = templateParser.parse(props.template ?? "", record, { fallback: record?.id })

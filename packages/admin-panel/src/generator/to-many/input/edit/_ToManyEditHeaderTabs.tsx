@@ -3,7 +3,7 @@ import { PropsWithChildren } from "react"
 
 export function Amount(
 	props: PropsWithChildren<{ amount: string | number; color: "success" | "error" | "info" }>,
-): JSX.Element {
+) {
 	return (
 		<>
 			<div>{props.children}</div>

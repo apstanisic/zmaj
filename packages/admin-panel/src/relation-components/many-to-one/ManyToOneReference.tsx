@@ -17,7 +17,7 @@ type ReferenceFieldProps = {
 /**
  *
  */
-export function ManyToOneReference(props: ReferenceFieldProps): JSX.Element {
+export function ManyToOneReference(props: ReferenceFieldProps) {
 	const record = useRecord()
 	const fkValue = record?.[props.source]
 

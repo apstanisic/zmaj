@@ -5,7 +5,7 @@ import { useToggle } from "react-use"
 import { RenderShowField } from "../../shared/show/RenderShowField"
 import { ShowFieldProps } from "../types/ShowFieldProps"
 
-export function MarkdownShowField(props: ShowFieldProps): JSX.Element {
+export function MarkdownShowField(props: ShowFieldProps) {
 	const [isPreview, togglePreview] = useToggle(true)
 
 	return (

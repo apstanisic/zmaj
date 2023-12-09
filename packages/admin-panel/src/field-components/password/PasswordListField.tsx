@@ -5,6 +5,6 @@ import { ListFieldProps } from "../types/ListFieldProps"
  * If password exists, just provide fixed text (In most cases API should not return password)
  */
 
-export function PasswordListField(props: ListFieldProps): JSX.Element {
+export function PasswordListField(props: ListFieldProps) {
 	return <RenderListField {...props} render={() => "******"} />
 }

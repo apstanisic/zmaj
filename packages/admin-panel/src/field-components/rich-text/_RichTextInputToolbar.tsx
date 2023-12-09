@@ -26,7 +26,7 @@ function TextButton(props: {
 	onClick: () => any
 	icon: (props: { fontSize?: "small" }) => JSX.Element
 	disabled?: boolean
-}): JSX.Element {
+}) {
 	const Icon = props.icon
 	return (
 		<button
@@ -72,7 +72,7 @@ export const RichTextToolbar = ({ editor, openPicker }: Props): JSX.Element => {
 	)
 }
 
-function Media({ editor, openPicker }: { openPicker: () => void; editor: Editor }): JSX.Element {
+function Media({ editor, openPicker }: { openPicker: () => void; editor: Editor }) {
 	return (
 		<div className="flex h-10">
 			<TextButton
@@ -90,7 +90,7 @@ function Media({ editor, openPicker }: { openPicker: () => void; editor: Editor 
 	)
 }
 
-function List({ editor }: { editor: Editor }): JSX.Element {
+function List({ editor }: { editor: Editor }) {
 	return (
 		<div className="flex h-10">
 			<TextButton
@@ -107,7 +107,7 @@ function List({ editor }: { editor: Editor }): JSX.Element {
 	)
 }
 
-function Marks({ editor }: { editor: Editor }): JSX.Element {
+function Marks({ editor }: { editor: Editor }) {
 	return (
 		<div className="flex h-10">
 			<TextButton
@@ -148,7 +148,7 @@ function Marks({ editor }: { editor: Editor }): JSX.Element {
 	)
 }
 
-function Align({ editor }: { editor: Editor }): JSX.Element {
+function Align({ editor }: { editor: Editor }) {
 	return (
 		<div className="flex h-10">
 			<TextButton
@@ -176,7 +176,7 @@ function Align({ editor }: { editor: Editor }): JSX.Element {
 	)
 }
 
-function Headings({ editor }: { editor: Editor }): JSX.Element {
+function Headings({ editor }: { editor: Editor }) {
 	return (
 		<div className=" flex h-10 w-40">
 			<SelectInput

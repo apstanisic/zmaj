@@ -8,7 +8,7 @@ import { RelationShow } from "./RelationShow"
 
 const relation = RelationMetadataCollection
 
-export function relationResource(props: { authz: Authz }): JSX.Element {
+export function relationResource(props: { authz: Authz }) {
 	const read = checkSystem(props.authz, "infra", "read")
 	const modify = checkSystem(props.authz, "infra", "modify")
 	return (

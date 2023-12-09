@@ -15,7 +15,7 @@ export type ManyToManyReferenceProps = {
 	troughTarget: string
 	children?: ReactNode
 }
-export function ManyToManyReference(props: ManyToManyReferenceProps): JSX.Element {
+export function ManyToManyReference(props: ManyToManyReferenceProps) {
 	const { reference, trough, troughSource, troughTarget } = props
 	const [page, setPage] = useState(1)
 	const [perPage, setPerPage] = useState(5)

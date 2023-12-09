@@ -5,6 +5,6 @@ import { RefOneToOneInternalProps } from "./ref-one-to-one-props.type"
  * It would require simple picker, but we would have to send special data
  * to be handled
  */
-export function RefOneToOneInputField(props: RefOneToOneInternalProps): JSX.Element {
+export function RefOneToOneInputField(props: RefOneToOneInternalProps) {
 	return <></>
 }

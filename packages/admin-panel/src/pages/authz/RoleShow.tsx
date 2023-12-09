@@ -6,10 +6,10 @@ import { memo } from "react"
 import { TabsLayout } from "../../crud-layouts/ui/tabs/TabsLayout"
 import { TabsSection } from "../../crud-layouts/ui/tabs/TabsSection"
 import { GeneratedShowPage } from "../../generator/pages/GeneratedShowPage"
+import { RoleUsers } from "./_RoleUsers"
 import { PermissionsTable } from "./collections/_PermissionsTable"
 import { PermissionDialog } from "./dialog/_PermissionDialog"
 import { SystemPermissionsTab } from "./system/_SystemPermissionsTab"
-import { RoleUsers } from "./_RoleUsers"
 
 /**
  * TODO Add ability for plugins to inject permissions
@@ -22,7 +22,7 @@ export const RoleShow = memo(() => {
 	)
 })
 
-function Content(): JSX.Element {
+function Content() {
 	const role = useRecord<Role>()
 
 	const permissions = useListController<Permission>({

@@ -13,7 +13,7 @@ import { GeneratedShowPage } from "./pages/GeneratedShowPage"
  * `react-admin` expects that children of `Admin` be `Resource` components,
  * so this is a function that returns element, and it won't be visible in vDOM.
  */
-export function generateResource(collection: CollectionDef, authz: AnyMongoAbility): JSX.Element {
+export function generateResource(collection: CollectionDef, authz: AnyMongoAbility) {
 	return (
 		<Resource
 			options={{ collection }}

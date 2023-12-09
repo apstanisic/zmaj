@@ -4,7 +4,7 @@ import { MdOutlineLock } from "react-icons/md"
 import { OnlyChildren } from "../../types/OnlyChildren"
 import { NoLayoutPage } from "../pages/_NoLayoutPage"
 
-export function AuthPageLayout({ children }: OnlyChildren): JSX.Element {
+export function AuthPageLayout({ children }: OnlyChildren) {
 	const globalConfig = useGlobalConfigContext()
 
 	return (

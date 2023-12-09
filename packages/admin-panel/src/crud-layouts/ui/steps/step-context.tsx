@@ -12,6 +12,6 @@ export function useStepContext(): StepContext {
 	return useContext(Ctx)
 }
 
-export function StepContextProvider(props: PropsWithChildren<{ value: StepContext }>): JSX.Element {
+export function StepContextProvider(props: PropsWithChildren<{ value: StepContext }>) {
 	return <Ctx.Provider value={props.value}>{props.children}</Ctx.Provider>
 }

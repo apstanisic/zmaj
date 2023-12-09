@@ -16,7 +16,7 @@ type OwnerToOneInputFieldProps = {
 	template?: string
 }
 
-export function OwnerOneToOneInputField(props: OwnerToOneInputFieldProps): JSX.Element {
+export function OwnerOneToOneInputField(props: OwnerToOneInputFieldProps) {
 	const { source, referenceProperty } = props
 	const fkValue = useRecord()?.[source]
 	// get where other side ID is fkValue, or, it does not have relation

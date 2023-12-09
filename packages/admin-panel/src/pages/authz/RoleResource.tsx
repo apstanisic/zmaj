@@ -11,7 +11,7 @@ import { RoleShow } from "./RoleShow"
 
 const role = RoleCollection
 //
-export function roleResource(props: { authz: Authz }): JSX.Element {
+export function roleResource(props: { authz: Authz }) {
 	const read = checkSystem(props.authz, "authorization", "read")
 	const modify = checkSystem(props.authz, "authorization", "modify")
 

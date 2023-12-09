@@ -1,7 +1,7 @@
 import { RenderShowField } from "../../shared/show/RenderShowField"
 import { ShowFieldProps } from "../types/ShowFieldProps"
 
-export function UrlShowField(props: ShowFieldProps): JSX.Element {
+export function UrlShowField(props: ShowFieldProps) {
 	return (
 		<RenderShowField
 			{...props}

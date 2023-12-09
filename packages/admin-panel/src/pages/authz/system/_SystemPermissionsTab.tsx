@@ -6,7 +6,7 @@ type SystemPermissionsTabProps = {
 	allowedPermissions: Permission[]
 }
 
-export function SystemPermissionsTab(props: SystemPermissionsTabProps): JSX.Element {
+export function SystemPermissionsTab(props: SystemPermissionsTabProps) {
 	const { allowedPermissions } = props
 	return (
 		<TabsSection>

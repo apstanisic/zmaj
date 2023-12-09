@@ -4,7 +4,7 @@ import { useCallback } from "react"
 import { MdBrightness4, MdBrightness7 } from "react-icons/md"
 import { useTheme } from "../use-theme"
 
-export function ToggleThemeButton(): JSX.Element {
+export function ToggleThemeButton() {
 	const [theme, setTheme] = useTheme()
 
 	const changeTheme = useCallback(() => {

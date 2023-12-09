@@ -20,7 +20,7 @@ export function DeleteButton(props: {
 	disabled?: boolean
 	onlyIcon?: boolean
 	"aria-label"?: string
-}): JSX.Element {
+}) {
 	const resource = useResourceContext()
 	const record = useRecord()
 	const unselect = useUnselect(resource)

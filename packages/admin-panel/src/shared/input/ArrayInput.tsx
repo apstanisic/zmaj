@@ -25,7 +25,7 @@ type ArrayInputProps = {
 	render: (name: string, val: any) => ReactNode
 }
 
-export function ArrayInput(props: ArrayInputProps): JSX.Element {
+export function ArrayInput(props: ArrayInputProps) {
 	const { control, watch } = useFormContext()
 
 	const controller = useFieldArray({ name: props.source, control })

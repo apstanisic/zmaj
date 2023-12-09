@@ -11,7 +11,7 @@ import { Route } from "react-router"
 import { usePublicInfo } from "../../auth/hooks/use-public-info"
 import { useSdk } from "../../context/sdk-context"
 
-export function settingsPage(): JSX.Element {
+export function settingsPage() {
 	return (
 		<CustomRoutes>
 			<Route path="settings" element={<Settings />} />

@@ -8,7 +8,7 @@ type CircularProgressProps = {
 	className?: string
 }
 
-export function CircularProgress(props: CircularProgressProps): JSX.Element {
+export function CircularProgress(props: CircularProgressProps) {
 	return (
 		<ProgressBar
 			isIndeterminate

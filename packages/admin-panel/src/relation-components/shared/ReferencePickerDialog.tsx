@@ -13,7 +13,7 @@ type ChoicesPickerDialogProps = {
 	selected: IdType[]
 }
 
-export function ReferencesPickerDialog(props: ChoicesPickerDialogProps): JSX.Element {
+export function ReferencesPickerDialog(props: ChoicesPickerDialogProps) {
 	const { show, setShow, onSelect, template, selected } = props
 
 	const onClick = useCallback(

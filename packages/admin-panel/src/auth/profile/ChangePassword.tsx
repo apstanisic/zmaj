@@ -17,7 +17,7 @@ const schema = z.object({
 /**
  *  Change password form
  */
-export function ChangePassword(): JSX.Element {
+export function ChangePassword() {
 	const sdk = useSdk()
 	const notify = useNotify()
 	const redirect = useRedirect()

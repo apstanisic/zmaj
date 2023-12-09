@@ -38,7 +38,7 @@ const BaseQuickFilterInput = memo(({ field, disabled }: { field: string; disable
 	)
 })
 
-export function ListQuickFilterInput(): JSX.Element {
+export function ListQuickFilterInput() {
 	const selected = useListContext().selectedIds
 
 	const config = useListLayoutConfig()

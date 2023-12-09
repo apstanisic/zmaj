@@ -4,7 +4,7 @@ import { LayoutSection } from "../../../crud-layouts/ui/LayoutSection"
 import { useUserCollections } from "../../../hooks/use-user-collections"
 import { CollectionPermissionsRow } from "./CollectionPermissionsRow"
 
-export function PermissionsTable(props: { allowedPermissions: Permission[] }): JSX.Element {
+export function PermissionsTable(props: { allowedPermissions: Permission[] }) {
 	const nonSystemCollections = useUserCollections()
 
 	if (nonSystemCollections.length === 0) {

@@ -12,7 +12,7 @@ export type ManyToOneShowFieldProps = {
 	description?: string
 }
 
-export function ManyToOneShowField(props: ManyToOneShowFieldProps): JSX.Element {
+export function ManyToOneShowField(props: ManyToOneShowFieldProps) {
 	return (
 		<ManyToOneReference
 			// this is fk field that point to the other table

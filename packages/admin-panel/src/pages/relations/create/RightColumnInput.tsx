@@ -11,11 +11,7 @@ import { getFreeFkColumn } from "./get-free-fk-column"
  * because m2m and o2m always PK of left side, so we already know value
  * Default values is PK when it's required, {table}_id when it'll become FK
  */
-export function RightColumnInput({
-	rightCollection,
-}: {
-	rightCollection?: CollectionDef
-}): JSX.Element {
+export function RightColumnInput({ rightCollection }: { rightCollection?: CollectionDef }) {
 	const { setValue } = useFormContext<RelationCreateDto>()
 	const type = useWatch<RelationCreateDto, "type">({ name: "type" })
 	const leftCollection: string = useWatch<RelationCreateDto, "leftCollection">({

@@ -9,7 +9,7 @@ import { ReactNode, useMemo } from "react"
 
 export function ManyToOneReferenceInput(
 	props: UseReferenceInputControllerParams & { children?: ReactNode },
-): JSX.Element {
+) {
 	const { children, reference } = props
 	const fkValue = useRecord()?.[props.source]
 

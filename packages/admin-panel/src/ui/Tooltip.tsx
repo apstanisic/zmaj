@@ -25,7 +25,7 @@ type Props = {
 	children?: ReactNode
 }
 
-export function Tooltip({ children, ...props }: Props): JSX.Element {
+export function Tooltip({ children, ...props }: Props) {
 	if (props.text === "") return <>{children}</>
 	return <TooltipInner {...props}>{children}</TooltipInner>
 }
@@ -34,7 +34,7 @@ export function Tooltip({ children, ...props }: Props): JSX.Element {
  * I'm not sure how much performance impact does popper uses, so there is inner component
  * so we can call component without calling `useFloating` hook
  */
-function TooltipInner(props: Props): JSX.Element {
+function TooltipInner(props: Props) {
 	const [show, setShow] = useState(false)
 	const {
 		x,

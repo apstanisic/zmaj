@@ -8,10 +8,7 @@ import { useAuthzDialogState } from "./authz-dialog-state"
  * changing permission, not on create. In create case, we will fill it with data from dialog permission
  * and from role
  */
-export function PermissionInfo(props: {
-	permission?: Permission
-	role?: IdRecord<Role>
-}): JSX.Element {
+export function PermissionInfo(props: { permission?: Permission; role?: IdRecord<Role> }) {
 	const { permission, role } = props
 	const dialogPermission = useAuthzDialogState().permission
 
@@ -35,7 +32,10 @@ export function PermissionInfo(props: {
 				</List.Item>
 
 				<List.Item>
-					<List.TitleAndSub title={role?.name ?? role?.id ?? "Unknown Role"} subtitle="role" />
+					<List.TitleAndSub
+						title={role?.name ?? role?.id ?? "Unknown Role"}
+						subtitle="role"
+					/>
 				</List.Item>
 			</List>
 		</TabsSection>

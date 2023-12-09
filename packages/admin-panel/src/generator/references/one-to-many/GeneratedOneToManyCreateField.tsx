@@ -2,7 +2,7 @@ import { getFieldWidthCss } from "@admin-panel/crud-layouts/get-field-width-css"
 import { OneToManyCreateField } from "@admin-panel/relation-components/one-to-many/OneToManyCreateField"
 import { useOneToManyFieldProps } from "./useOneToManyFieldProps"
 
-export function GeneratedOneToManyCreateField(): JSX.Element {
+export function GeneratedOneToManyCreateField() {
 	const { template, label, relation } = useOneToManyFieldProps()
 
 	return (

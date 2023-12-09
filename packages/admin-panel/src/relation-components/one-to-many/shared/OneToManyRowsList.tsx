@@ -10,7 +10,7 @@ type OneToManyRowsListProps = {
 	data?: any[]
 }
 
-export function OneToManyRowsList(props: OneToManyRowsListProps): JSX.Element {
+export function OneToManyRowsList(props: OneToManyRowsListProps) {
 	// User can override data if they want. We will first try data, then fallback to list context
 	const { data = [] } = useListContext({ data: props.data })
 

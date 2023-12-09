@@ -11,7 +11,7 @@ export type OneToManyShowFieldProps = {
 	template?: string
 }
 
-export function OneToManyShowField(props: OneToManyShowFieldProps): JSX.Element {
+export function OneToManyShowField(props: OneToManyShowFieldProps) {
 	const { label, reference, target, className, template } = props
 
 	return (

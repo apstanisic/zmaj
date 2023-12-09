@@ -55,7 +55,7 @@ function EditForm({
 	children: ReactNode
 
 	schema?: z.AnyZodObject
-}): JSX.Element {
+}) {
 	const data = useRecord()
 
 	if (data === undefined) return <></>

@@ -8,7 +8,7 @@ import { MdCode } from "react-icons/md"
 /**
  * Renders button that when clicked shows Record as JSON
  */
-export function ShowRecordAsJsonDialog(): JSX.Element {
+export function ShowRecordAsJsonDialog() {
 	const record = useRecord()
 	const [visible, setVisible] = useState(false)
 

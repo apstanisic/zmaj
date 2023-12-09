@@ -37,7 +37,7 @@ const DirtyDirtyWorkaroundButton = forwardRef<
 	)
 })
 
-export function Menu(props: Props): JSX.Element {
+export function Menu(props: Props) {
 	const {
 		x,
 		y,
@@ -82,7 +82,10 @@ export function Menu(props: Props): JSX.Element {
 								// <li className="">
 								<Comp
 									{...(rest as any)}
-									className={clsx("flex w-full px-2 py-2", active && "bg-base-200")}
+									className={clsx(
+										"flex w-full px-2 py-2",
+										active && "bg-base-200",
+									)}
 								>
 									<span>{startIcon}</span>
 									<span className={clsx(startIcon && "ml-2")}>{title}</span>

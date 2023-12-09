@@ -15,7 +15,7 @@ import { ShowOtherSideOfRelation } from "./show/ShowOtherSideOfRelation"
 import { SplitRelationButton } from "./show/SplitRelationButton"
 
 // Display button to show collection page
-function GoToCollection(): JSX.Element {
+function GoToCollection() {
 	const relation = useRecord<RelationDef>()
 	const redirect = useRedirect()
 

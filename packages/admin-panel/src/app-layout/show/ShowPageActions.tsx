@@ -11,7 +11,7 @@ type ShowPageActionsProps = {
 	onDelete?: (record: RaRecord) => Promise<unknown>
 }
 
-export function ShowPageActions(props: ShowPageActionsProps): JSX.Element {
+export function ShowPageActions(props: ShowPageActionsProps) {
 	const { onDelete } = props
 	const resource = useResourceDefinition()
 	const config = useShowLayoutConfig()

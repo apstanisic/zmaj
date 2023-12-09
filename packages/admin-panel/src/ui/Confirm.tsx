@@ -9,7 +9,7 @@ export function Confirm(props: {
 	open: boolean
 	title: string
 	content?: ReactNode
-}): JSX.Element {
+}) {
 	return (
 		<Dialog open={props.open} onClose={props.onClose} className="max-w-2xl">
 			{props.title && <p className="mb-3 text-center text-xl">{props.title}</p>}

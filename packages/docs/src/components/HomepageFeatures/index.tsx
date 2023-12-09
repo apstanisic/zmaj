@@ -1,5 +1,5 @@
-import React from "react"
 import { clsx } from "clsx"
+import React from "react"
 import styles from "./styles.module.css"
 
 type FeatureItem = {
@@ -20,14 +20,14 @@ const FeatureList: FeatureItem[] = [
 		title: "Built on stable foundation",
 		description: (
 			<>
-				Built on top of React and React Admin for admin panel, <br /> and NestJS and Sequelize for
-				API.
+				Built on top of React and React Admin for admin panel, <br /> and NestJS and
+				Sequelize for API.
 			</>
 		),
 	},
 ]
 
-function Feature({ title, description }: FeatureItem): JSX.Element {
+function Feature({ title, description }: FeatureItem) {
 	return (
 		<div className={clsx("col col--4 text--center margin-vert--sm")}>
 			<div className="card padding---md" style={{ height: "100%" }}>
@@ -42,7 +42,7 @@ function Feature({ title, description }: FeatureItem): JSX.Element {
 	)
 }
 
-export default function HomepageFeatures(): JSX.Element {
+export default function HomepageFeatures() {
 	return (
 		<section className={styles.features}>
 			<div className="container">

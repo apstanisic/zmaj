@@ -9,7 +9,7 @@ import { Link } from "react-router-dom"
 import { AuthPageLayout } from "../components/AuthPageLayout"
 import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
 
-export function RequestPasswordResetPage(): JSX.Element {
+export function RequestPasswordResetPage() {
 	useHtmlTitle("Forgotten password")
 	const notify = useNotify()
 	const signedIn = useRedirectAuthenticated()

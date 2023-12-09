@@ -6,7 +6,7 @@ import { useSelectedStorage } from "../hooks/use-selected-storage"
  * Option to choose storage provider.
  * Disabled if user does not have permission, or there is only one provider
  */
-export function StorageProvidersDropdown(): JSX.Element {
+export function StorageProvidersDropdown() {
 	// const storageInfo = useStorageInfo()
 	const providers = ["hello", "world", "test"] // useAvailableStorageProviders().data
 	const [selected, setSelected] = useSelectedStorage()

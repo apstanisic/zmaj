@@ -6,7 +6,7 @@ import { extractTime } from "./_time-utils"
  * Date field
  */
 
-export function TimeListField(props: ListFieldProps): JSX.Element {
+export function TimeListField(props: ListFieldProps) {
 	return (
 		<RenderListField
 			{...props}

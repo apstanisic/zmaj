@@ -5,7 +5,7 @@ import { FileActionsToolbar } from "./components/FileActionsToolbar"
 import { FileUploadDialog } from "./components/FileUploadDialog"
 // import { FoldersSidebar } from "./components/FoldersSidebar"
 
-export function FilesList(): JSX.Element {
+export function FilesList() {
 	useHtmlTitle("Files")
 	return (
 		<>

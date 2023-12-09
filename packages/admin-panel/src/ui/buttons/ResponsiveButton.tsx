@@ -8,7 +8,7 @@ export type ResponsiveButtonProps = Except<ButtonProps, "children" | "startIcon"
 	icon: ReactNode
 }
 
-export function ResponsiveButton(props: ResponsiveButtonProps): JSX.Element {
+export function ResponsiveButton(props: ResponsiveButtonProps) {
 	const { label, icon, size = "small", color = "transparent", ...rest } = props
 
 	return (

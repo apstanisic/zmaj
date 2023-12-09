@@ -13,7 +13,7 @@ export function OneToManyAddedItems(props: {
 	reference: string
 	template?: string
 	onRevert: (id: IdType) => unknown
-}): JSX.Element {
+}) {
 	if (props.added.length === 0) return <p className="my-5 text-center">No Items</p>
 
 	return (

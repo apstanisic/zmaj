@@ -35,7 +35,7 @@ export const RefOneToOneListField = memo((props: Omit<RefOneToOneInternalProps, 
 /**
  * Needs to be separate component so we can access referenced record context
  */
-function RenderToOneListField(props: Pick<ToOneInternalProps, "label" | "template">): JSX.Element {
+function RenderToOneListField(props: Pick<ToOneInternalProps, "label" | "template">) {
 	const record = useRecord()
 
 	return (

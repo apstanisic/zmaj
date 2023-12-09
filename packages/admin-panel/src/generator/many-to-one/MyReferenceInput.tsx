@@ -7,7 +7,7 @@ import {
 
 export function MyReferenceInput(
 	props: UseReferenceInputControllerParams & { children?: JSX.Element },
-): JSX.Element {
+) {
 	//
 	const { children, reference } = props
 

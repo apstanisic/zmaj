@@ -8,7 +8,7 @@ import { FieldShow } from "./FieldShow"
 
 const field = FieldMetadataCollection
 
-export function fieldResource(props: { authz: Authz }): JSX.Element {
+export function fieldResource(props: { authz: Authz }) {
 	const read = checkSystem(props.authz, "infra", "read")
 	const modify = checkSystem(props.authz, "infra", "modify")
 	return (

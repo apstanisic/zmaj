@@ -43,7 +43,7 @@ export const RelationCreate = memo(() => {
 	)
 })
 
-function Content(): JSX.Element {
+function Content() {
 	const record = (useRecord() ?? {}) as Partial<RelationCreateDto>
 	// we expect that this value is provided with url
 	const redirect = useRedirect()

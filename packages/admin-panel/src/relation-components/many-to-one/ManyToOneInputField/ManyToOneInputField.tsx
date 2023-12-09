@@ -17,7 +17,7 @@ type ManyToOneInputFieldProps = {
 	filter?: Struct
 }
 
-export function ManyToOneInputField(props: ManyToOneInputFieldProps): JSX.Element {
+export function ManyToOneInputField(props: ManyToOneInputFieldProps) {
 	const { source, reference, label, disabled, template, className, filter } = props
 	const [show, setShow] = useState(false)
 	const { setValue } = useFormContext()

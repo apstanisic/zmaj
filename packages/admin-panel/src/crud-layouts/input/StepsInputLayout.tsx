@@ -36,7 +36,7 @@ export const StepsForm = memo(() => {
 	)
 })
 
-function Buttons(): JSX.Element {
+function Buttons() {
 	const { setStep, step, total } = useStepContext()
 	return (
 		<div className="flex justify-between gap-5 p-6">

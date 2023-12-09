@@ -9,7 +9,7 @@ type ManyToManyShowFieldProps = ManyToManyReferenceProps & {
 	template?: string
 }
 
-export function ManyToManyShowField(props: ManyToManyShowFieldProps): JSX.Element {
+export function ManyToManyShowField(props: ManyToManyShowFieldProps) {
 	const { label, className, template, ...rest } = props
 	return (
 		<ManyToManyReference {...rest}>

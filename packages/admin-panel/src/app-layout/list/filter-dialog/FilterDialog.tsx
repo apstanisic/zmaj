@@ -5,7 +5,7 @@ import { useShowFilterDialog } from "../use-show-filter-dialog"
 import { JsonFilterForm } from "./JsonFilterForm"
 import { UiFilterForm } from "./UiFilterForm"
 
-export function FilterDialog(): JSX.Element {
+export function FilterDialog() {
 	const [type, setType] = useState<"ui" | "json">("ui")
 	//
 	const [show, setShow] = useShowFilterDialog()

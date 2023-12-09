@@ -8,7 +8,7 @@ import { Columns } from "../../../ui/Columns"
 import { FkOptionsInput } from "./FkOptionsInput"
 import { JunctionOptions } from "./JunctionOptions"
 
-export function AdvancedOptions(): JSX.Element {
+export function AdvancedOptions() {
 	const type = useWatch<RelationCreateDto, "type">({ name: "type" })
 
 	return (

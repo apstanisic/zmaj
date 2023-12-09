@@ -19,7 +19,7 @@ export function MyReferenceOneField(
 		empty?: ReactNode
 		children: ReactNode
 	},
-): JSX.Element {
+) {
 	const definition = useResourceDefinition({ resource: props.reference })
 	const record = useRecord()
 

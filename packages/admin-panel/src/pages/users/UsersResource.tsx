@@ -7,7 +7,7 @@ import { GeneratedEditPage } from "../../generator/pages/GeneratedEditPage"
 import { GeneratedListPage } from "../../generator/pages/GeneratedListPage"
 import { GeneratedShowPage } from "../../generator/pages/GeneratedShowPage"
 
-export function usersResource(props: { authz: Authz }): JSX.Element {
+export function usersResource(props: { authz: Authz }) {
 	const read = checkSystem(props.authz, "users", "read")
 	const edit = checkSystem(props.authz, "users", "update")
 	const create = checkSystem(props.authz, "users", "create")

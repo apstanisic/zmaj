@@ -11,7 +11,7 @@ import { WebhookEventsInputField } from "./WebhookEventsInputField"
 
 const options = ["GET", "POST", "PUT", "PATCH", "DELETE"].map((value) => ({ value }))
 
-export function WebhookForm(): JSX.Element {
+export function WebhookForm() {
 	return (
 		<StepLayout sections={["Info", "Events"]}>
 			<StepSection index={0}>

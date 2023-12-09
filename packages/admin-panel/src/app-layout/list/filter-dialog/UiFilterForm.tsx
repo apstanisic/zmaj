@@ -94,7 +94,7 @@ const FormFields = memo((props: { filterableFields: FieldDef[] }) => {
 	)
 })
 
-export function UiFilterForm(props: { hideDialog: AnyFn }): JSX.Element {
+export function UiFilterForm(props: { hideDialog: AnyFn }) {
 	const { filterValues, setFilters } = useListContext()
 
 	const filterableFields = useFilterableFields()

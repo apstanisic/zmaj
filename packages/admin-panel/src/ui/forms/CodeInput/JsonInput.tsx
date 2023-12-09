@@ -19,7 +19,7 @@ export type JsonInputProps = Except<
  * we check if it's valid JSON, and only call parent's `onChange` if it's valid.
  * But we change internal value that is kept as string that input editor sees.
  */
-export function JsonInput(props: JsonInputProps): JSX.Element {
+export function JsonInput(props: JsonInputProps) {
 	const [internalValue, setInternalValue] = useState(
 		props.value
 			? typeof props.value === "string"

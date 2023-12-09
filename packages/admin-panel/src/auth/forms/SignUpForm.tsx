@@ -13,7 +13,7 @@ export function SignUpForm(props: {
 	type?: "sign-up" | "init-admin" | "invitation"
 	defaultData?: Partial<SignUpDto>
 	invitationToken?: string
-}): JSX.Element {
+}) {
 	const sdk = useSdk()
 	const notify = useNotify()
 	const redirect = useRedirect()

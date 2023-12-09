@@ -11,7 +11,7 @@ export const IntFieldConfigInput = (): JSX.Element => {
 	)
 }
 
-export function IntFieldConfigShow(): JSX.Element {
+export function IntFieldConfigShow() {
 	return (
 		<>
 			<ManualShowField source="fieldConfig.int.min" label="Min number" />

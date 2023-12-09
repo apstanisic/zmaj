@@ -3,7 +3,7 @@ import { RefOneToOneShowField, RefOneToOneShowFieldProps } from "./RefOneToOneSh
 /**
  * We currently do not offer editing one-to-one relation from ref side
  */
-export function RefOneToOneEditField(props: RefOneToOneShowFieldProps): JSX.Element {
+export function RefOneToOneEditField(props: RefOneToOneShowFieldProps) {
 	return (
 		<RefOneToOneShowField
 			{...props}

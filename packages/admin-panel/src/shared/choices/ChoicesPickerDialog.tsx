@@ -9,7 +9,7 @@ type ChoicesPickerDialogProps = {
 	keepOpenAfterClick?: boolean
 } & ChoicesPickerProps
 
-export function ChoicesPickerDialog(props: ChoicesPickerDialogProps): JSX.Element {
+export function ChoicesPickerDialog(props: ChoicesPickerDialogProps) {
 	const { show, setShow, keepOpenAfterClick, ...picker } = props
 	const resource = useChoicesContext().resource
 

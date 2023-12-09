@@ -3,9 +3,7 @@ import { useListContext } from "ra-core"
 import { unique } from "radash"
 import { useMemo } from "react"
 
-export function ListPagination(
-	props: Pick<PaginationProps, "perPageOptions" | "hidePerPage">,
-): JSX.Element {
+export function ListPagination(props: Pick<PaginationProps, "perPageOptions" | "hidePerPage">) {
 	const list = useListContext()
 
 	const perPageOptions = useMemo(() => {

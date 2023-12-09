@@ -1,5 +1,5 @@
 import React from "react"
-export function ShowVideoExample(props: { path: string; filename?: string }): JSX.Element {
+export function ShowVideoExample(props: { path: string; filename?: string }) {
 	const filename = props.filename ?? "video.webm"
 
 	const path = `/example-videos/${props.path}/${filename}`.replace("//", "/")

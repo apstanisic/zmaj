@@ -22,7 +22,7 @@ export type SwitchInputProps = Except<SwitchProps, "defaultSelected" | "isSelect
 	value?: boolean
 }
 
-export function SwitchInput(props: SwitchInputProps): JSX.Element {
+export function SwitchInput(props: SwitchInputProps) {
 	const { size = "medium", label, defaultValue, value, description, error, ...raProps } = props
 	const id = useId()
 

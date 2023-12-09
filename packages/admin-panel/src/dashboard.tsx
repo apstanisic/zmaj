@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 import { useHtmlTitle } from "./hooks/use-html-title"
 import { useUserCollections } from "./hooks/use-user-collections"
 
-export function Dashboard(): JSX.Element {
+export function Dashboard() {
 	const userCollections = useUserCollections()
 	useHtmlTitle("Dashboard")
 

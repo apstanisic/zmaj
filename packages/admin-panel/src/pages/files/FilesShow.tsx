@@ -12,7 +12,7 @@ import { GeneratedShowPage } from "../../generator/pages/GeneratedShowPage"
 import { DisplayZmajFile } from "../../ui/display-file"
 import { useDownloadFiles } from "./hooks/use-download-files"
 
-export function FilesShow(): JSX.Element {
+export function FilesShow() {
 	return (
 		<GeneratedShowPage
 			actions={
@@ -27,7 +27,7 @@ export function FilesShow(): JSX.Element {
 	)
 }
 
-function CustomActions(): JSX.Element {
+function CustomActions() {
 	const file = useRecord<IdRecord<FileInfo>>()
 	const downloadFile = useDownloadFiles(file ? [file] : [])
 
@@ -37,7 +37,7 @@ function CustomActions(): JSX.Element {
 /**
  * We need to keep this is separate function so we can access `RecordContext`
  */
-function FileShowContent(): JSX.Element {
+function FileShowContent() {
 	const file = useRecord<IdRecord<FileInfo>>()
 	const fileName = useMemo(() => template(file, "{name}"), [file])
 
@@ -92,7 +92,7 @@ function template(file: Partial<FileInfo> | undefined, field: string): string {
 /**
  * Render single file info
  */
-function FileInfoItem<T>({ value, label }: { label: string; value: ReactNode }): JSX.Element {
+function FileInfoItem<T>({ value, label }: { label: string; value: ReactNode }) {
 	// Don't return anything if null
 	if (isNil(value) || value === "") return <></>
 

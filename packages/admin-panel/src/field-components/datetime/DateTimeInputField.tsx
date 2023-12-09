@@ -1,7 +1,7 @@
 import { DefaultInputField } from "../../shared/input/DefaultInputField"
 import { InputFieldProps } from "../types/InputFieldProps"
 
-export function DateTimeInputField(props: InputFieldProps): JSX.Element {
+export function DateTimeInputField(props: InputFieldProps) {
 	return (
 		<DefaultInputField
 			{...props}

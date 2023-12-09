@@ -3,7 +3,7 @@ import { GeneratedManyToManyCreateField } from "./GeneratedManyToManyCreateField
 import { GeneratedManyToManyEditField } from "./GeneratedManyToManyEditField"
 import { GeneratedManyToManyShowField } from "./GeneratedManyToManyShowField"
 
-export function GeneratedManyToManyRouterField(): JSX.Element {
+export function GeneratedManyToManyRouterField() {
 	const action = useActionContext()
 	if (action === "show") return <GeneratedManyToManyShowField />
 	if (action === "create") return <GeneratedManyToManyCreateField />

@@ -12,7 +12,7 @@ import { LayoutSection } from "../../crud-layouts/ui/LayoutSection"
 import { ShowFieldContainer } from "@admin-panel/shared/show/ShowFieldContainer"
 import { useHasMfa, useUserProfile } from "./useUserProfile"
 
-export function UserProfilePage(): JSX.Element {
+export function UserProfilePage() {
 	useHtmlTitle("Profile")
 	const user = useUserProfile().data
 	const seeSessionsHref = useHref({ pathname: getCrudUrl(AuthSessionCollection, "list") })

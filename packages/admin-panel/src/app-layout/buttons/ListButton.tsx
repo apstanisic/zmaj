@@ -2,7 +2,7 @@ import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { useRedirect, useResourceContext } from "ra-core"
 import { MdViewList } from "react-icons/md"
 
-export function ListButton(): JSX.Element {
+export function ListButton() {
 	const resource = useResourceContext()
 	const redirect = useRedirect()
 

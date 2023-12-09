@@ -10,7 +10,7 @@ import { useSdk } from "../../context/sdk-context"
  * him/her somewhere, so we add this page, that will simply fetch access token
  * and redirect to home page
  */
-export function OAuthCallbackPage(): JSX.Element {
+export function OAuthCallbackPage() {
 	const sdk = useSdk()
 	const redirect = useRedirect()
 	const notify = useNotify()

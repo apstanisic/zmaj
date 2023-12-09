@@ -6,7 +6,7 @@ export function Table({
 	children,
 	noBorder,
 	...props
-}: JSX.IntrinsicElements["table"] & { noBorder?: boolean }): JSX.Element {
+}: JSX.IntrinsicElements["table"] & { noBorder?: boolean }) {
 	return (
 		<div className={clsx(" w-full overflow-x-auto rounded-lg", noBorder !== true && "border")}>
 			<table

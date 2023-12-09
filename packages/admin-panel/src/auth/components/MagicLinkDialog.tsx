@@ -9,7 +9,7 @@ import { usePublicInfo } from "../hooks/use-public-info"
 /**
  * It only renders button, but on click it will open a dialog where user can enter email
  */
-export function MagicLinkDialog(): JSX.Element {
+export function MagicLinkDialog() {
 	const [show, setShow] = useState(false)
 	const sdk = useSdk()
 	const notify = useNotify()

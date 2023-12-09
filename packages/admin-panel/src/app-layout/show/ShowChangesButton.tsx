@@ -18,7 +18,7 @@ import { useHref } from "react-router"
 /**
  * Do not use, for now
  */
-export function ShowChangesButton(): JSX.Element {
+export function ShowChangesButton() {
 	const config = useShowLayoutConfig()
 	const resource = useResourceContext()
 	const id = useRecord()?.id

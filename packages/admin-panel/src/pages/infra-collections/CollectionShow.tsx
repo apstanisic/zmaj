@@ -75,7 +75,7 @@ export const CollectionShow = memo(() => {
  * This button is useful when collection is hidden, this enables us to still see it's content
  * without cluttering sidebar
  */
-function VisitResourceButton(): JSX.Element {
+function VisitResourceButton() {
 	const show = useShowContext<CollectionDef>()
 	const redirect = useRedirect()
 	const allResources = useResourceDefinitions()

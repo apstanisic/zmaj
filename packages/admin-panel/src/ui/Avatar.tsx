@@ -12,7 +12,7 @@ const sizes: Record<SizeVariant, string> = {
 	small: cn("h-6 w-6"),
 }
 
-export function Avatar(props: AvatarProps): JSX.Element {
+export function Avatar(props: AvatarProps) {
 	const { children, className, size = "medium", ...rest } = props
 	return (
 		<div

@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import { fieldComponents } from "../../../field-components/field-components"
 
-export function FieldInfoInputDefaultValue(): JSX.Element {
+export function FieldInfoInputDefaultValue() {
 	const { setValue, watch } = useFormContext()
 	const componentName = useWatch({ name: "componentName" })
 	const dataType = useWatch({ name: "dataType", defaultValue: "short-text" })

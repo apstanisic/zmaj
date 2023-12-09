@@ -16,9 +16,7 @@ type SimpleListProps<T = RaRecord> = {
 /**
  *
  */
-export function SimpleListLayout<T extends RaRecord = RaRecord>(
-	props: SimpleListProps<T>,
-): JSX.Element {
+export function SimpleListLayout<T extends RaRecord = RaRecord>(props: SimpleListProps<T>) {
 	const list = useListContext({ data: props.data })
 	// const redirect = useRedirect()
 	const resource = useResourceDefinition()

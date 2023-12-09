@@ -13,7 +13,7 @@ type ChoicesDialogAndButtonProps = {
 	onShowChange?: (show: boolean) => void
 }
 
-export function ChoicesDialogAndButton(props: ChoicesDialogAndButtonProps): JSX.Element {
+export function ChoicesDialogAndButton(props: ChoicesDialogAndButtonProps) {
 	const { field } = props
 	const [show, _setShow] = useState(props.show ?? false)
 	const { setValue } = useFormContext()

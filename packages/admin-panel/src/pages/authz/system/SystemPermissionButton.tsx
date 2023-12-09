@@ -12,7 +12,7 @@ type SystemPermissionButtonProps = {
 	allowedPermissions: Permission[]
 }
 
-export function SystemPermissionButton(props: SystemPermissionButtonProps): JSX.Element {
+export function SystemPermissionButton(props: SystemPermissionButtonProps) {
 	const { allowedPermissions, permission, action } = props
 
 	const showDialog = useAuthzDialogState().showDialog

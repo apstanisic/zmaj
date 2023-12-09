@@ -3,7 +3,7 @@ import { InputFieldProps } from "../types/InputFieldProps"
 
 /**
  */
-export function DateInputField(props: InputFieldProps): JSX.Element {
+export function DateInputField(props: InputFieldProps) {
 	// it does not accept null as default value
 	return <DefaultInputField {...props} type="date" defaultValue={props.defaultValue ?? ""} />
 }

@@ -5,7 +5,7 @@ import { MdRefresh } from "react-icons/md"
 /**
  * Located in App bar
  */
-export function RefreshButton(): JSX.Element {
+export function RefreshButton() {
 	const refresh = useRefresh()
 
 	return (

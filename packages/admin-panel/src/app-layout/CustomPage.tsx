@@ -14,7 +14,7 @@ export type CustomPage = {
  * @param pages This has to be a function, since react admin is checking only first children
  * So this must not be element. Use memo when using in code to avoid rerender
  */
-export function renderCustomPages(pages: CustomPage[]): JSX.Element {
+export function renderCustomPages(pages: CustomPage[]) {
 	const withLayout = pages.filter((p) => p.hideLayout !== true)
 	const withoutLayout = pages.filter((p) => p.hideLayout)
 
@@ -23,7 +23,11 @@ export function renderCustomPages(pages: CustomPage[]): JSX.Element {
 			{withLayout.length > 0 && (
 				<CustomRoutes>
 					{withLayout.map((page, i) => (
-						<Route key={`page_layout${i}`} element={<page.Component />} path={page.path} />
+						<Route
+							key={`page_layout${i}`}
+							element={<page.Component />}
+							path={page.path}
+						/>
 					))}
 				</CustomRoutes>
 			)}
@@ -31,7 +35,11 @@ export function renderCustomPages(pages: CustomPage[]): JSX.Element {
 			{withoutLayout.length > 0 && (
 				<CustomRoutes noLayout>
 					{withoutLayout.map((page, i) => (
-						<Route key={`page_no_layout${i}`} element={<page.Component />} path={page.path} />
+						<Route
+							key={`page_no_layout${i}`}
+							element={<page.Component />}
+							path={page.path}
+						/>
 					))}
 				</CustomRoutes>
 			)}

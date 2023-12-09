@@ -13,7 +13,7 @@ export type MultilineTextInputProps = TextFieldProps & {
 	lines?: number
 }
 
-export function MultilineTextInput(props: MultilineTextInputProps): JSX.Element {
+export function MultilineTextInput(props: MultilineTextInputProps) {
 	const { label, description, error, placeholder, lines: lines = 5, ...raProps } = props
 
 	return (

@@ -9,7 +9,7 @@ export function OneToManyEditCurrentItems(
 		OneToManyEditFieldProps,
 		"reference" | "target" | "template" | "source" | "fkNullable"
 	>,
-): JSX.Element {
+) {
 	const record = useRecord()
 	const { reference, target, template } = props
 

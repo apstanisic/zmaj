@@ -6,7 +6,7 @@ import {
 } from "@admin-panel/ui/forms/MultilineTextInput"
 import { InputFieldProps } from "../types/InputFieldProps"
 
-export function TextareaInputField(props: InputFieldProps): JSX.Element {
+export function TextareaInputField(props: InputFieldProps) {
 	const rows = props.fieldConfig?.component?.textarea?.rows ?? 8
 
 	const validate = useStringValidation(props.fieldConfig?.component?.textarea, props.validate)

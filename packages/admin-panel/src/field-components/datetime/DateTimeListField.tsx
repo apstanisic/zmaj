@@ -7,7 +7,7 @@ type DateTimeListFieldProps = ListFieldProps & { relative?: boolean }
 /**
  * Date field
  */
-export function DateTimeListField(props: DateTimeListFieldProps): JSX.Element {
+export function DateTimeListField(props: DateTimeListFieldProps) {
 	const relative = props.relative ?? props.fieldConfig?.component?.dateTime?.showRelative ?? false
 	return (
 		<RenderListField

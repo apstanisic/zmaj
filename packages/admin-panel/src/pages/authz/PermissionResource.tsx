@@ -2,7 +2,7 @@ import { PermissionCollection } from "@zmaj-js/common"
 import { Resource } from "ra-core"
 
 const perm = PermissionCollection
-export function permissionResource(): JSX.Element {
+export function permissionResource() {
 	return (
 		<Resource
 			name={perm.collectionName}

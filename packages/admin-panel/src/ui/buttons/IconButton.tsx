@@ -14,7 +14,7 @@ export type IconButtonProps = ButtonProps &
 		shape?: "circle" | "square"
 	}
 
-export const IconButton = forwardRef<any, IconButtonProps>(function (props, ref): JSX.Element {
+export const IconButton = forwardRef<any, IconButtonProps>(function (props, ref) {
 	const { children, href, shape = "circle", className, variant, color, size, ...raProps } = props
 	const nav = useNavigate()
 	const style = useMemo(

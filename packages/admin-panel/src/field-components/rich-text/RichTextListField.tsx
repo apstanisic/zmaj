@@ -2,7 +2,7 @@ import { RenderListField } from "../../shared/list/RenderListField"
 import { ListFieldProps } from "../types/ListFieldProps"
 import { safeDom } from "./_rich-text-utils"
 
-export function RichTextListField(props: ListFieldProps): JSX.Element {
+export function RichTextListField(props: ListFieldProps) {
 	return (
 		<RenderListField
 			{...props} //

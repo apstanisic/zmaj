@@ -3,7 +3,7 @@ import { Resource } from "ra-core"
 import { ActivityLogList } from "./ActivityLogList"
 import { ActivityLogShow } from "./ActivityLogShow"
 
-export function activityLogResource(): JSX.Element {
+export function activityLogResource() {
 	return (
 		<Resource
 			name={ActivityLogCollection.collectionName}

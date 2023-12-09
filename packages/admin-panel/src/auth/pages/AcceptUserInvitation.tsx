@@ -8,7 +8,7 @@ import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
 /**
  * We don't check if admin is inited since it exposes confidential information
  */
-export function AcceptUserInvitation(): JSX.Element {
+export function AcceptUserInvitation() {
 	useHtmlTitle("Accept Invitation")
 	useRedirectAuthenticated()
 	const [query] = useSearchParams()

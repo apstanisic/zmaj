@@ -4,8 +4,10 @@ import { isString } from "radash"
 import { ReactNode, useCallback, useEffect, useState } from "react"
 import { useTimeoutFn } from "react-use"
 
-function NotificationGroup(props: { children: ReactNode }): JSX.Element {
-	return <div className=" fixed bottom-4 right-4 z-50 flex flex-col gap-y-3">{props.children}</div>
+function NotificationGroup(props: { children: ReactNode }) {
+	return (
+		<div className=" fixed bottom-4 right-4 z-50 flex flex-col gap-y-3">{props.children}</div>
+	)
 }
 
 /**
@@ -14,7 +16,7 @@ function NotificationGroup(props: { children: ReactNode }): JSX.Element {
  * Based from React-admin:
  * // packages/ra-ui-materialui/src/layout/Notification.tsx
  */
-export function AppNotification(): JSX.Element {
+export function AppNotification() {
 	const { notifications, takeNotification } = useNotificationContext()
 	// const [theme] = useTheme()
 	const translate = useTranslate()

@@ -8,7 +8,7 @@ import { SignInForm } from "../forms/SignInForm"
 import { usePublicInfo } from "../hooks/use-public-info"
 import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
 
-export function SignInPage(): JSX.Element {
+export function SignInPage() {
 	useHtmlTitle("Sign In")
 	const signedIn = useRedirectAuthenticated()
 	if (signedIn) return <></>

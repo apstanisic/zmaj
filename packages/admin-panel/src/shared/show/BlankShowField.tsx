@@ -3,7 +3,7 @@ import { RaRecord } from "ra-core"
 
 export function BlankShowField<T = RaRecord>(props: {
 	render: (record: T) => JSX.Element | string
-}): JSX.Element {
+}) {
 	const record = useRecord()
 
 	if (!record) return <></>

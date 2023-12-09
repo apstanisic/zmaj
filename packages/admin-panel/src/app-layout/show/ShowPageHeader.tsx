@@ -21,7 +21,7 @@ type ShowPageHeaderProps = {
 	actions?: ReactNode
 }
 
-export function ShowPageHeader(props: ShowPageHeaderProps): JSX.Element {
+export function ShowPageHeader(props: ShowPageHeaderProps) {
 	const { actions } = props
 	const title = useShowTitle()
 	return <PageHeader title={title} actions={actions ?? <ShowPageActions />} />

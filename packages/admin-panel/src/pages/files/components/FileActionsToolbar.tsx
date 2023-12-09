@@ -6,7 +6,7 @@ import { useShowUploadDialog } from "../hooks/use-show-upload-dialog"
 
 const { actions, resource } = systemPermissions.files
 
-export function FileActionsToolbar(): JSX.Element {
+export function FileActionsToolbar() {
 	const [, setShowDialog] = useShowUploadDialog()
 	// const [showFolders, setShowFolders] = useShowFoldersSidebar()
 

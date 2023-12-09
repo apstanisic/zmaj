@@ -45,7 +45,7 @@ export const InputLabel = forwardRef(
 	},
 )
 
-export function InputHelperText(props: { text?: string; error?: boolean }): JSX.Element {
+export function InputHelperText(props: { text?: string; error?: boolean }) {
 	if (props.text === undefined) return <></>
 	// 1rem is line height for text-xs
 	return <p className={helperTextCss(props)}>{props.text}</p>

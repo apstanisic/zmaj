@@ -5,7 +5,7 @@ import { RenderShowField } from "../../shared/show/RenderShowField"
 import { ShowFieldProps } from "../types/ShowFieldProps"
 import { safeDom } from "./_rich-text-utils"
 
-export function RichTextShowField(props: ShowFieldProps): JSX.Element {
+export function RichTextShowField(props: ShowFieldProps) {
 	const [isPreview, togglePreview] = useToggle(true)
 
 	return (

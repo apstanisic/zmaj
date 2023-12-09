@@ -3,7 +3,7 @@ import { IconButton } from "@admin-panel/ui/buttons/IconButton"
 import { MdAdd, MdRestartAlt } from "react-icons/md"
 import { useToManyInputContext } from "../../../../context/to-many-input-context"
 
-export function ToManyEditHeaderActions(): JSX.Element {
+export function ToManyEditHeaderActions() {
 	const { disabled, setPickerOpen, changes, label } = useToManyInputContext()
 
 	return (

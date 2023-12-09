@@ -8,7 +8,7 @@ type PermissionDialogButtonProps = {
 	refreshPermissions: () => unknown
 }
 
-export function PermissionDialogButtons(props: PermissionDialogButtonProps): JSX.Element {
+export function PermissionDialogButtons(props: PermissionDialogButtonProps) {
 	const { permission } = props
 	const [deleteOne] = useDelete()
 	const notify = useNotify()

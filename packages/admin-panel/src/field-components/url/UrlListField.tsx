@@ -1,7 +1,7 @@
 import { RenderListField } from "../../shared/list/RenderListField"
 import { ListFieldProps } from "../types/ListFieldProps"
 
-export function UrlListField(props: ListFieldProps): JSX.Element {
+export function UrlListField(props: ListFieldProps) {
 	return (
 		<RenderListField
 			{...props}

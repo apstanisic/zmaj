@@ -8,7 +8,7 @@ import { useCallback } from "react"
 import { useSdk } from "../../context/sdk-context"
 import { useUserProfile } from "./useUserProfile"
 
-export function ChangeUserInfo(): JSX.Element {
+export function ChangeUserInfo() {
 	const sdk = useSdk()
 	const notify = useNotify()
 	const redirect = useRedirect()

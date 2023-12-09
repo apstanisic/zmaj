@@ -33,7 +33,7 @@ export type OneToManyEditFieldProps = {
 	currentItems?: ReactNode
 }
 
-export function OneToManyEditField(props: OneToManyEditFieldProps): JSX.Element {
+export function OneToManyEditField(props: OneToManyEditFieldProps) {
 	const { fkNullable = false } = props
 	const { setValue, resetField } = useFormContext()
 	const [open, setOpen] = useState(false)
@@ -146,11 +146,7 @@ export function OneToManyEditField(props: OneToManyEditFieldProps): JSX.Element 
 	)
 }
 
-function ResetChanges(props: {
-	disabled?: boolean
-	reset: () => unknown
-	value: ToManyChange
-}): JSX.Element {
+function ResetChanges(props: { disabled?: boolean; reset: () => unknown; value: ToManyChange }) {
 	const noChanges = useMemo(
 		() => props.value.added.length === 0 && props.value.removed.length === 0,
 		[props.value.added, props.value.removed],
@@ -175,7 +171,7 @@ function ResetChanges(props: {
 	)
 }
 
-function AddItemButton(props: { disabled?: boolean; onPress: () => unknown }): JSX.Element {
+function AddItemButton(props: { disabled?: boolean; onPress: () => unknown }) {
 	return (
 		<Tooltip text="Add">
 			<IconButton

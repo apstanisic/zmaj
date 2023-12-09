@@ -9,7 +9,7 @@ type PermissionFieldsInput = {
 	fields: string[]
 }
 
-export function PermissionFieldsInput(props: PermissionFieldsInput): JSX.Element {
+export function PermissionFieldsInput(props: PermissionFieldsInput) {
 	const { setValue } = useFormContext<{ fields?: string[] | null }>()
 	const allFields = props.fields
 	const allowedFields = useWatch({ name: "fields" })

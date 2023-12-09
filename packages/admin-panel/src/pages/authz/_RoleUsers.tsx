@@ -11,7 +11,7 @@ import { useResourceCollection } from "../../hooks/use-resource-collection"
 /**
  * Show users that have current role
  */
-export function RoleUsers(): JSX.Element {
+export function RoleUsers() {
 	const col = useResourceCollection()
 	const rel = col.relations["users"]
 	const role = useRecord<Role>()

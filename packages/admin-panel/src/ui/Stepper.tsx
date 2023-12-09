@@ -12,7 +12,7 @@ type Props = JSX.IntrinsicElements["ul"] & {
 /**
  * TODO try to add animations
  */
-export function Stepper(props: Props): JSX.Element {
+export function Stepper(props: Props) {
 	const { className, steps, currentStep, variant, ...rest } = props
 
 	return (

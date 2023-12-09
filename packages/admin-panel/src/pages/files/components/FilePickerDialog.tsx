@@ -25,7 +25,7 @@ type FilePickerProps = {
 /**
  * Render dialog that shows file that user can pic
  */
-export function FilePickerDialog({ onPick, open, onClose }: FilePickerProps): JSX.Element {
+export function FilePickerDialog({ onPick, open, onClose }: FilePickerProps) {
 	const controller = useListController<IdRecord<FileInfo>>({
 		resource: "zmajFiles",
 		filter: { mimeType: { $like: "image/%" } },

@@ -12,7 +12,7 @@ type GeneratedPageProviderProps = {
 	children: ReactNode
 }
 
-export function GeneratedPageProvider(props: GeneratedPageProviderProps): JSX.Element {
+export function GeneratedPageProvider(props: GeneratedPageProviderProps) {
 	const { action, children } = props
 	const collection = useResourceCollection()
 

@@ -51,7 +51,7 @@ export const ToManyInputChanges = memo(({ ids, toggleItem }: ToManyInputChangesP
 /**
  * We need access to list context
  */
-function Pagination(): JSX.Element {
+function Pagination() {
 	const ctx = useListContext()
 
 	return ctx.data?.length > 0 ? <ListPagination /> : <></>

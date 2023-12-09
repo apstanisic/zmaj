@@ -6,7 +6,7 @@ import { clsx } from "clsx"
  *
  * It does not render anything if upload is not in progress
  */
-export function FileUploadProgressBars({ progress }: { progress: number[] }): JSX.Element {
+export function FileUploadProgressBars({ progress }: { progress: number[] }) {
 	if (progress.length === 0) return <></>
 	return (
 		<div className="absolute inset-0 z-20 overflow-auto rounded-sm bg-gray-100 px-2 py-3 dark:bg-stone-900">
@@ -19,7 +19,7 @@ export function FileUploadProgressBars({ progress }: { progress: number[] }): JS
 /**
  * Single progress bar
  */
-function SingleProgress({ progress }: { progress: number }): JSX.Element {
+function SingleProgress({ progress }: { progress: number }) {
 	return (
 		<ProgressBar
 			label="File upload progress"

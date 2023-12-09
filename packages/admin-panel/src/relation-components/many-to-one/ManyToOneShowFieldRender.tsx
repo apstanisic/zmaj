@@ -17,7 +17,7 @@ type ManyToOneShowFieldRendererProps = {
  * This need to be separate component so we can access proper record context
  */
 
-export function ManyToOneShowFieldRender(props: ManyToOneShowFieldRendererProps): JSX.Element {
+export function ManyToOneShowFieldRender(props: ManyToOneShowFieldRendererProps) {
 	// this is record from relation
 	const record = useRecord()
 

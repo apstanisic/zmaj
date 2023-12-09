@@ -28,7 +28,7 @@ const colors: Record<ButtonStyleColor, string> = {
 /**
  * Maybe move open state to outside
  */
-export function Chip(props: Props): JSX.Element {
+export function Chip(props: Props) {
 	const { color = "normal" } = props
 	const [open, setOpen] = useState(true)
 	if (!open) return <></>

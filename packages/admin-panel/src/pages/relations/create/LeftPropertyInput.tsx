@@ -8,7 +8,7 @@ import { useFormContext, useWatch } from "react-hook-form"
 /**
  * Property name for left column
  */
-export function LeftPropertyInput(): JSX.Element {
+export function LeftPropertyInput() {
 	const { setValue } = useFormContext<RelationCreateDto>()
 	const type = useWatch<RelationCreateDto, "type">({ name: "type", defaultValue: "many-to-one" })
 	const rightCollection = useWatch<RelationCreateDto, "rightCollection">({

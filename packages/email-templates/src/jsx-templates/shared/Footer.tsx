@@ -1,6 +1,6 @@
 import { MjmlColumn, MjmlDivider, MjmlSection } from "@faire/mjml-react"
 
-export function Footer(): JSX.Element {
+export function Footer() {
 	return (
 		<MjmlSection>
 			<MjmlColumn>

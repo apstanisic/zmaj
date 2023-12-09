@@ -12,7 +12,7 @@ type DropdownInputFieldProps = InputFieldProps & { choices?: any } // z.infer<ty
  * @param props Standard input props with option to provide choices directly
  * @returns Dropdown component
  */
-export function DropdownInputField(props: DropdownInputFieldProps): JSX.Element {
+export function DropdownInputField(props: DropdownInputFieldProps) {
 	const choices = useMemo(
 		() => props.choices ?? props.fieldConfig?.component?.dropdown?.choices ?? [],
 		[props.choices, props.fieldConfig],

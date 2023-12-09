@@ -2,7 +2,7 @@ import { ADMIN_ROLE_ID, Permission, Role } from "@zmaj-js/common"
 import { isEmpty } from "radash"
 import { MdCheck, MdClose, MdSettingsInputComponent } from "react-icons/md"
 
-export function PermissionStateIcon(props: { permission?: Permission; role?: Role }): JSX.Element {
+export function PermissionStateIcon(props: { permission?: Permission; role?: Role }) {
 	const { permission, role } = props
 
 	if (role?.id === ADMIN_ROLE_ID) {

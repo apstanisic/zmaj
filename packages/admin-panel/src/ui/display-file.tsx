@@ -10,7 +10,7 @@ type Props = {
 	className?: string
 }
 
-export function DisplayZmajFile({ file, size, className }: Props): JSX.Element {
+export function DisplayZmajFile({ file, size, className }: Props) {
 	const sdk = useSdk()
 
 	const canShow =

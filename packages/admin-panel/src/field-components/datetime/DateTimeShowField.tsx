@@ -7,7 +7,7 @@ import { ShowFieldProps } from "../types/ShowFieldProps"
  * For show always show relative after current date
  */
 
-export function DateTimeShowField(props: ShowFieldProps): JSX.Element {
+export function DateTimeShowField(props: ShowFieldProps) {
 	return (
 		<RenderShowField
 			{...props}

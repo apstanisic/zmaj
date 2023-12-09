@@ -34,7 +34,7 @@ export type AppProps = SetOptional<
 	sidebarItems?: SidebarItem[]
 }
 
-export function App(props: AppProps): JSX.Element {
+export function App(props: AppProps) {
 	useRegisterFieldComponents(props.fieldComponents)
 	useRegisterCrudLayout(props.crudLayouts)
 	useRegisterTemplatePipes(props.templatePipes)

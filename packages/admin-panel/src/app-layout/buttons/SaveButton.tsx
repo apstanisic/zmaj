@@ -3,7 +3,7 @@ import { MdSave } from "react-icons/md"
 // import { SaveButton as SB, useSaveContext } from "ra-core"
 import { useFormState } from "react-hook-form"
 
-export function SaveButton(props: { className?: string }): JSX.Element {
+export function SaveButton(props: { className?: string }) {
 	const { isSubmitting, isDirty } = useFormState()
 
 	return (

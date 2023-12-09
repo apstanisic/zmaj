@@ -7,7 +7,7 @@ import { WebhookCreate } from "./WebhookCreate"
 import { WebhookEdit } from "./WebhookEdit"
 import { WebhookShow } from "./WebhookShow"
 
-export function webhookResource(props: { authz: Authz }): JSX.Element {
+export function webhookResource(props: { authz: Authz }) {
 	const read = checkSystem(props.authz, "webhooks", "read")
 	const edit = checkSystem(props.authz, "webhooks", "update")
 	const create = checkSystem(props.authz, "webhooks", "create")

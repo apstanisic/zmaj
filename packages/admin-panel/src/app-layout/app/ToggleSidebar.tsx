@@ -2,7 +2,7 @@ import { IconToggleButton } from "@admin-panel/ui/IconToggleButton"
 import { cn } from "@admin-panel/utils/cn"
 import { MdClose, MdMenu } from "react-icons/md"
 import { useSidebarOpen } from "./use-sidebar-open"
-export function ToggleSidebar(): JSX.Element {
+export function ToggleSidebar() {
 	const [open, setOpen] = useSidebarOpen()
 
 	return (

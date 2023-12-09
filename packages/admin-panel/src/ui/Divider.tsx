@@ -5,7 +5,7 @@ type Props = SeparatorProps & {
 	vertical?: boolean
 	className?: string
 }
-export function Divider(props: Props): JSX.Element {
+export function Divider(props: Props) {
 	const { separatorProps } = useSeparator(props)
 	return (
 		<div

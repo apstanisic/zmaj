@@ -5,7 +5,7 @@ import { TextInput, TextInputProps } from "./TextInput"
 
 export type PasswordInputProps = Omit<TextInputProps, "type">
 
-export function PasswordInput(props: PasswordInputProps): JSX.Element {
+export function PasswordInput(props: PasswordInputProps) {
 	const [showPassword, setShowPassword] = useState(false)
 
 	const toggleVisibility = useCallback(() => setShowPassword((prev) => !prev), [])

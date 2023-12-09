@@ -7,7 +7,7 @@ type SystemPermissionGroupProps = {
 	allowedPermissions: Permission[]
 }
 
-export function SystemPermissionGroup(props: SystemPermissionGroupProps): JSX.Element {
+export function SystemPermissionGroup(props: SystemPermissionGroupProps) {
 	const { allowedPermissions, permission } = props
 
 	return (

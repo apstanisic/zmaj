@@ -20,7 +20,7 @@ type OneToManyEditAddPickerProps = {
 	template?: string
 }
 
-export function OneToManyEditAddPicker(props: OneToManyEditAddPickerProps): JSX.Element {
+export function OneToManyEditAddPicker(props: OneToManyEditAddPickerProps) {
 	const { source, reference, target, disabled, open, setOpen, template } = props
 	const { setValue } = useFormContext()
 	const value = useWatch({

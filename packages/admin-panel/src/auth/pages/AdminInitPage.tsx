@@ -6,7 +6,7 @@ import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
 /**
  * We don't check if admin is inited since it exposes confidential information
  */
-export function AdminInitPage(): JSX.Element {
+export function AdminInitPage() {
 	// const inited = usePublicInfo().data?.adminInitialized ?? false //useIsAdminInited().data
 	useHtmlTitle("Create Admin User")
 

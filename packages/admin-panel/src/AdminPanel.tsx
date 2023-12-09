@@ -48,7 +48,7 @@ declare module "ra-core" {
  * Maybe define with hooks
  * @see https://github.com/marmelab/react-admin/issues/7623
  */
-export function AdminPanel(props: { customPages?: CustomPage[] }): JSX.Element {
+export function AdminPanel(props: { customPages?: CustomPage[] }) {
 	const sdk = useSdk()
 	// const client = useQueryClient()
 	const store = useStoreContext()

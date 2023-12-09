@@ -40,7 +40,7 @@ export function generateContext<T>(
 		return val
 	}
 
-	function ProvideCtx(props: PropsWithChildren<{ value: T }>): JSX.Element {
+	function ProvideCtx(props: PropsWithChildren<{ value: T }>) {
 		return <Ctx.Provider value={props.value}>{props.children}</Ctx.Provider>
 	}
 

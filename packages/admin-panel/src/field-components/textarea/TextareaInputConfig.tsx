@@ -2,7 +2,7 @@ import { FormNumberInput } from "@admin-panel/ui/Controlled"
 import { createTextFieldConfigInput } from "../text/TextFieldConfig"
 
 const CommonTextConfig = createTextFieldConfigInput("textarea")
-export function TextareaConfigInput(): JSX.Element {
+export function TextareaConfigInput() {
 	return (
 		<>
 			<CommonTextConfig />

@@ -14,7 +14,7 @@ type ManyToOneShowFieldProps = {
 	template?: string
 }
 
-export function OwnerOneToOneShowField(props: ManyToOneShowFieldProps): JSX.Element {
+export function OwnerOneToOneShowField(props: ManyToOneShowFieldProps) {
 	return (
 		<ManyToOneReference
 			// this is fk field that point to the other table
@@ -37,9 +37,7 @@ export function OwnerOneToOneShowField(props: ManyToOneShowFieldProps): JSX.Elem
 /**
  * This need to be separate component so we can access proper record context
  */
-function Renderer(
-	props: Pick<ManyToOneShowFieldProps, "label" | "template" | "className">,
-): JSX.Element {
+function Renderer(props: Pick<ManyToOneShowFieldProps, "label" | "template" | "className">) {
 	// this is record from relation
 	const record = useRecord()
 

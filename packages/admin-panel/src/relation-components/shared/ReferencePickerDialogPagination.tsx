@@ -2,7 +2,7 @@ import { Pagination } from "@admin-panel/ui/Pagination"
 import { useChoicesContext } from "ra-core"
 import { isInt } from "radash"
 
-export function ReferencePickerDialogPagination(): JSX.Element {
+export function ReferencePickerDialogPagination() {
 	const choices = useChoicesContext()
 
 	return (

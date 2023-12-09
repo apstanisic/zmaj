@@ -8,7 +8,7 @@ type CreateButtonProps = Partial<ResponsiveButtonProps> & {
 	resource?: string
 }
 
-export function CreateButton(props: CreateButtonProps): JSX.Element {
+export function CreateButton(props: CreateButtonProps) {
 	const resource = useResourceContext()
 	const href = useHref({
 		pathname: `/${props.resource ?? resource}/create`,

@@ -11,7 +11,7 @@ const { actions, resource } = systemPermissions.files
 /**
  * Renders file download button that will download all selected files from react admin list context
  */
-export function BulkFileDownloadButton(): JSX.Element {
+export function BulkFileDownloadButton() {
 	const { data, selectedIds, onSelect } = useListContext<FileInfo>()
 	const notify = useNotify()
 

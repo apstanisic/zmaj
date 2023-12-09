@@ -15,7 +15,7 @@ export type ChoicesPickerProps = {
 	isSelected?: (record: RaRecord) => boolean
 }
 
-export function ChoicesPicker(props: ChoicesPickerProps): JSX.Element {
+export function ChoicesPicker(props: ChoicesPickerProps) {
 	const { onClick, template, className, isSelected } = props
 	const choices = useChoicesContext()
 

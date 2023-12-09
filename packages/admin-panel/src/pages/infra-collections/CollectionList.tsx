@@ -24,7 +24,9 @@ export const CollectionList = memo(() => {
 				select: (result) => ({
 					...result,
 					// remove system collections
-					data: result.data.filter((col: CollectionDef) => !col.tableName.startsWith("zmaj")),
+					data: result.data.filter(
+						(col: CollectionDef) => !col.tableName.startsWith("zmaj"),
+					),
 				}),
 			}}
 		>
@@ -50,7 +52,7 @@ export const CollectionList = memo(() => {
 	)
 })
 
-function Empty(): JSX.Element {
+function Empty() {
 	const list = useListContext()
 	if (list.data?.length === 0) {
 		return <div className="mb-8 mt-10 w-full text-center text-xl">No collections</div>

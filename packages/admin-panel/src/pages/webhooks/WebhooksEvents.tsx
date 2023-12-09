@@ -10,7 +10,7 @@ type WebhooksEventsProps = {
 	onClick?: (event: string, newValue: boolean) => unknown
 }
 
-export function WebhooksEvents(props: WebhooksEventsProps): JSX.Element {
+export function WebhooksEvents(props: WebhooksEventsProps) {
 	const col = useUserCollections()
 
 	const webhookCollections = useMemo(() => col.map((c) => c.collectionName), [col])
@@ -48,9 +48,7 @@ export function WebhooksEvents(props: WebhooksEventsProps): JSX.Element {
 	)
 }
 
-function EventButton(
-	props: WebhooksEventsProps & { action: string; collection: string },
-): JSX.Element {
+function EventButton(props: WebhooksEventsProps & { action: string; collection: string }) {
 	const { action, collection, events, onClick } = props
 
 	if (!onClick) {

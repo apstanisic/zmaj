@@ -30,7 +30,7 @@ export type ListPageLayoutProps = {
 /**
  * Page layout for List
  */
-export function ListPageLayout(props: ListPageLayoutProps): JSX.Element {
+export function ListPageLayout(props: ListPageLayoutProps) {
 	const { children, queryOptions, ...passthrough } = props
 	const config = useListLayoutConfig()
 
@@ -50,7 +50,7 @@ export function ListPageLayout(props: ListPageLayoutProps): JSX.Element {
 /**
  * This needs to be separate function so we can access `useListContext`
  */
-function ListLayout(props: ListPageLayoutProps): JSX.Element {
+function ListLayout(props: ListPageLayoutProps) {
 	const list = useListContext(props)
 	const collection = useResourceCollection() ?? throwInApp("572934")
 	const config = useListLayoutConfig()

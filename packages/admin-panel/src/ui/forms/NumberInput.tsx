@@ -15,7 +15,7 @@ export type NumberInputProps = NumberFieldProps & {
 	hideButtons?: boolean
 }
 
-export function NumberInput(props: NumberInputProps): JSX.Element {
+export function NumberInput(props: NumberInputProps) {
 	const { label, description, error, placeholder, hideButtons, ...raProps } = props
 
 	return (

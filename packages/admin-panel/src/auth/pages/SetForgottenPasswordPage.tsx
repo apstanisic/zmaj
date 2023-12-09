@@ -9,7 +9,7 @@ import { useSearchParams } from "react-router-dom"
 import { AuthPageLayout } from "../components/AuthPageLayout"
 import { useRedirectAuthenticated } from "../hooks/use-redirect-authenticated"
 
-export function SetForgottenPasswordPage(): JSX.Element {
+export function SetForgottenPasswordPage() {
 	useHtmlTitle("Set forgotten password")
 	const notify = useNotify()
 	const signedIn = useRedirectAuthenticated()

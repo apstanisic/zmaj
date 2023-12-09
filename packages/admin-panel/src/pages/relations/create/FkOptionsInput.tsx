@@ -1,7 +1,7 @@
 import { FormSelectInput, FormTextInput } from "@admin-panel/ui/Controlled"
 import { RelationCreateDto } from "@zmaj-js/common"
 
-export function FkOptionsInput(props: Pick<RelationCreateDto, "type">): JSX.Element {
+export function FkOptionsInput(props: Pick<RelationCreateDto, "type">) {
 	return (
 		<>
 			<FormTextInput

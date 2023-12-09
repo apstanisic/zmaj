@@ -12,7 +12,7 @@ import { StorageProvidersDropdown } from "./StorageProvidersDropdown"
  */
 export function FileUploadDropzone(
 	props: UseUploadFileProps & { className?: string; maxFiles?: number },
-): JSX.Element {
+) {
 	const abort = useRef(new AbortController())
 	const { upload, progress } = useUploadFiles(props)
 	const { getRootProps, getInputProps } = useDropzone({

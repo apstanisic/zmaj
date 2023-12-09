@@ -13,7 +13,7 @@ type NotificationProps = {
 	type?: "standard" | "info" | "warning" | "error" | "success"
 	children?: ReactNode
 }
-export function Notification(props: NotificationProps): JSX.Element {
+export function Notification(props: NotificationProps) {
 	return (
 		<div
 			className={clsx("du-alert w-auto rounded-md shadow", classes[props.type ?? "standard"])}

@@ -31,7 +31,7 @@ import { SignUpPage } from "./SignUpPage"
  *
  * @returns Custom routes
  */
-export function authPages(): JSX.Element {
+export function authPages() {
 	return (
 		<>
 			<CustomRoutes noLayout>

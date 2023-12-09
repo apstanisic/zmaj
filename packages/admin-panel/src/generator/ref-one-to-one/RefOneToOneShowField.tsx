@@ -35,7 +35,7 @@ export const RefOneToOneShowField = memo((props: RefOneToOneInternalProps) => {
 /**
  * This need to be separate component so we can access proper record context
  */
-function RenderField(props: Pick<ToOneInternalProps, "label" | "template">): JSX.Element {
+function RenderField(props: Pick<ToOneInternalProps, "label" | "template">) {
 	// this is record from relation
 	const record = useRecord()
 

@@ -5,7 +5,7 @@ import { usePublicInfo } from "../hooks/use-public-info"
  *
  * @returns Component that renders all OpenID Connect providers
  */
-export function OidcProviders(): JSX.Element {
+export function OidcProviders() {
 	const oidc = usePublicInfo().data?.oidc ?? []
 
 	return (

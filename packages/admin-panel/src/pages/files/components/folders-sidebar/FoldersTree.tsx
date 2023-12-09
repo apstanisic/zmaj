@@ -18,7 +18,7 @@
 // 	base?: string
 // }
 
-// export function FoldersTree(props: FoldersTreeProps): JSX.Element {
+// export function FoldersTree(props: FoldersTreeProps) {
 // 	const { folders, base } = props
 
 // 	return (

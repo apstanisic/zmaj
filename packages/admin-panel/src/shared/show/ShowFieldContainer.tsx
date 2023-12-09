@@ -17,7 +17,7 @@ type Props = {
  * This is a low level component, and should not be used in most cases.
  * Try `DefaultShowField` instead.
  */
-export function ShowFieldContainer(props: Props): JSX.Element {
+export function ShowFieldContainer(props: Props) {
 	const content = isNil(props.children) ? (
 		<div className="w-8 text-info">
 			<Tooltip text="There is no value provided">-</Tooltip>
@@ -47,7 +47,7 @@ export function ShowFieldContainer(props: Props): JSX.Element {
 	)
 }
 
-export function ShowFieldContainerTitle(props: Pick<Props, "label" | "description">): JSX.Element {
+export function ShowFieldContainerTitle(props: Pick<Props, "label" | "description">) {
 	const { label, description } = props
 
 	return (

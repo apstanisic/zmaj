@@ -5,7 +5,7 @@ import { useResourceDefinition } from "ra-core"
 import { MdVisibility } from "react-icons/md"
 import { useHref } from "react-router"
 
-export function ShowButton(props: { onlyIcon?: boolean }): JSX.Element {
+export function ShowButton(props: { onlyIcon?: boolean }) {
 	const resource = useResourceDefinition()
 	const record = useRecord()
 	const href = useHref({ pathname: `/${resource.name}/${record?.id ?? ""}/show` })

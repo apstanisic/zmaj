@@ -12,7 +12,7 @@ type CreatePageHeaderProps = {
 	actions?: ReactNode
 }
 
-export function CreatePageHeader(props: CreatePageHeaderProps): JSX.Element {
+export function CreatePageHeader(props: CreatePageHeaderProps) {
 	const title = useCreateTitle()
 	return <PageHeader title={title} actions={props.actions} />
 }

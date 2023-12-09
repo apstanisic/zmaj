@@ -5,7 +5,7 @@ import { useResourceDefinition } from "ra-core"
 import { MdEdit } from "react-icons/md"
 import { useHref } from "react-router"
 
-export function EditButton(props: { onlyIcon?: boolean }): JSX.Element {
+export function EditButton(props: { onlyIcon?: boolean }) {
 	const resource = useResourceDefinition()
 	const record = useRecord()
 	const href = useHref({ pathname: `/${resource.name}/${record?.id ?? ""}` })

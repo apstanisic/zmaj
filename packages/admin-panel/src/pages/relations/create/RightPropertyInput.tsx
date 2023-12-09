@@ -7,9 +7,7 @@ import { useFormContext } from "react-hook-form"
 /**
  * Property name for right column
  */
-export function RightPropertyInput(
-	props: Pick<RelationCreateDto, "type" | "leftCollection">,
-): JSX.Element {
+export function RightPropertyInput(props: Pick<RelationCreateDto, "type" | "leftCollection">) {
 	const { leftCollection, type } = props
 	const { setValue } = useFormContext<RelationCreateDto>()
 	// When other table and relation type change, generate new property name

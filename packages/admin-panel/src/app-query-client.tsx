@@ -10,6 +10,6 @@ const appQueryClient = new QueryClient({
 	},
 })
 
-export function ZmajQueryClientProvider(props: { children?: ReactNode }): JSX.Element {
+export function ZmajQueryClientProvider(props: { children?: ReactNode }) {
 	return <QueryClientProvider client={appQueryClient}>{props.children}</QueryClientProvider>
 }

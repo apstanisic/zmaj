@@ -10,7 +10,7 @@ export type RefOneToOneShowFieldProps = Except<ManyToOneShowFieldProps, "source"
 	newTab?: boolean
 }
 
-export function RefOneToOneShowField(props: RefOneToOneShowFieldProps): JSX.Element {
+export function RefOneToOneShowField(props: RefOneToOneShowFieldProps) {
 	const { label, reference, target, className, template, description, newTab } = props
 	const mainRecord = useRecord()
 

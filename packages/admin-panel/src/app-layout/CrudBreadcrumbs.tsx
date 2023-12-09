@@ -4,7 +4,7 @@ import { capitalize } from "radash"
 import { useHref } from "react-router"
 import { useActionContext } from "../context/action-context"
 
-export function CrudBreadcrumbs(): JSX.Element {
+export function CrudBreadcrumbs() {
 	const action = useActionContext()
 	const resource = useResourceDefinition()
 	const record = useRecord()

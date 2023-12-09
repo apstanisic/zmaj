@@ -7,7 +7,7 @@ type ManyToOneLinkProps = {
 	newTab?: boolean
 }
 
-export function ManyToOneLink(props: ManyToOneLinkProps): JSX.Element {
+export function ManyToOneLink(props: ManyToOneLinkProps) {
 	const { children, newTab = false } = props
 	// this is record from relation
 

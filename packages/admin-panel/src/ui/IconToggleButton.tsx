@@ -7,7 +7,7 @@ type IconToggleProps = Omit<IconButtonProps, "children"> & {
 	off: ReactNode
 }
 
-export function IconToggleButton(props: IconToggleProps): JSX.Element {
+export function IconToggleButton(props: IconToggleProps) {
 	const { isOn, on, off, ...rest } = props
 
 	return (

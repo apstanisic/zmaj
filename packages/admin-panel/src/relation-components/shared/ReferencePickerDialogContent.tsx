@@ -16,7 +16,7 @@ export type ChoicesPickerProps = {
 	selected: IdType[]
 }
 
-export function ReferencePickerDialogContent(props: ChoicesPickerProps): JSX.Element {
+export function ReferencePickerDialogContent(props: ChoicesPickerProps) {
 	const { template, className, onSelect, renderAvatar, selected } = props
 	const choices = useChoicesContext()
 

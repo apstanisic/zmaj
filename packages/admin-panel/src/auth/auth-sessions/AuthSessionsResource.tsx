@@ -6,7 +6,7 @@ import { AuthSessionsShow } from "./AuthSessionsShow"
 /**
  * This won't get all auth session, but only those that
  */
-export function authSessionsResource(): JSX.Element {
+export function authSessionsResource() {
 	return (
 		<Resource
 			name={AuthSessionCollection.collectionName}

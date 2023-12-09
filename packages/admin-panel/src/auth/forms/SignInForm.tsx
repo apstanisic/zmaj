@@ -9,7 +9,7 @@ import { Form, useLogin, useNotify } from "ra-core"
 import { useCallback, useState } from "react"
 import { DisplayMfaQrCode } from "../components/DisplayMfaQrCode"
 
-export function SignInForm(): JSX.Element {
+export function SignInForm() {
 	const login = useLogin()
 	const notify = useNotify()
 	const sdk = useSdk()

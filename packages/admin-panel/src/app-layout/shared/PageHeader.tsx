@@ -1,7 +1,7 @@
 import { cn } from "@admin-panel/utils/cn"
 import { ReactNode } from "react"
 
-export function PageHeader(props: { title: string; actions?: ReactNode }): JSX.Element {
+export function PageHeader(props: { title: string; actions?: ReactNode }) {
 	const { title, actions } = props
 	return (
 		<div className="mt-4 mb-6 flex items-center justify-between">

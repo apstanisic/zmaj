@@ -21,7 +21,7 @@ type EditPageHeaderProps = {
 	actions?: ReactNode
 }
 
-export function EditPageHeader(props: EditPageHeaderProps): JSX.Element {
+export function EditPageHeader(props: EditPageHeaderProps) {
 	const title = useEditTitle()
 	return <PageHeader title={title} actions={props.actions ?? <EditPageActions />} />
 }

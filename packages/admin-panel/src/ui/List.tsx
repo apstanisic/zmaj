@@ -4,7 +4,7 @@ import { ComponentProps, Fragment, ReactNode } from "react"
 import { Button, ButtonProps } from "react-aria-components"
 import { Link, LinkProps } from "react-router-dom"
 
-export function List(props: JSX.IntrinsicElements["ul"] & { divider?: boolean }): JSX.Element {
+export function List(props: JSX.IntrinsicElements["ul"] & { divider?: boolean }) {
 	const { divider, className, children, ...rest } = props
 	return (
 		<ul {...rest} className={cn("", className, divider && "divide-y")}>

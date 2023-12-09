@@ -6,7 +6,7 @@ import { Form, useNotify, useRedirect } from "ra-core"
 import { useCallback } from "react"
 import { useSdk } from "../../context/sdk-context"
 
-export function ChangeEmail(): JSX.Element {
+export function ChangeEmail() {
 	const sdk = useSdk()
 	const notify = useNotify()
 	const redirect = useRedirect()

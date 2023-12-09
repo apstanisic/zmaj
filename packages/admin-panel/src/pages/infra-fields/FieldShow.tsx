@@ -35,7 +35,7 @@ export const FieldShow = memo(() => {
 })
 
 // Display button to show collection page
-function StartButtons(): JSX.Element {
+function StartButtons() {
 	const field = useRecord<FieldDef>()
 	const redirect = useRedirect()
 

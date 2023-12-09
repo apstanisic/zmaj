@@ -13,7 +13,7 @@ import { RenderListField } from "./RenderListField"
  * It would hurt UX for short values
  *
  */
-export function ListTrimmedField(props: ListFieldProps): JSX.Element {
+export function ListTrimmedField(props: ListFieldProps) {
 	return (
 		<RenderListField
 			{...props}

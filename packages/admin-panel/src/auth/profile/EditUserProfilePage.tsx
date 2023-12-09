@@ -6,7 +6,7 @@ import { ChangePassword } from "./ChangePassword"
 import { ChangeUserInfo } from "./ChangeUserInfo"
 import { useUserProfile } from "./useUserProfile"
 
-export function UserProfileEdit(): JSX.Element {
+export function UserProfileEdit() {
 	useHtmlTitle("Edit profile")
 	const query = useUserProfile()
 
@@ -22,7 +22,9 @@ export function UserProfileEdit(): JSX.Element {
 			<Card className="p-4">
 				<h2 className="text-center   text-xl">
 					Info
-					{!changeProfile && <span className="ml-3 text-sm text-warning">(Forbidden)</span>}
+					{!changeProfile && (
+						<span className="ml-3 text-sm text-warning">(Forbidden)</span>
+					)}
 				</h2>
 				<ChangeUserInfo />
 			</Card>
@@ -38,7 +40,9 @@ export function UserProfileEdit(): JSX.Element {
 			<Card className="mt-6 p-4">
 				<h2 className="text-center text-xl">
 					Password
-					{!changePassword && <span className="ml-3 text-sm text-warning">(Forbidden)</span>}
+					{!changePassword && (
+						<span className="ml-3 text-sm text-warning">(Forbidden)</span>
+					)}
 				</h2>
 				<ChangePassword />
 			</Card>

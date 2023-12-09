@@ -23,7 +23,7 @@
 // /**
 //  * @todo Enable this in the future
 //  */
-// export function FoldersSidebar(props: { folders?: string[] }): JSX.Element {
+// export function FoldersSidebar(props: { folders?: string[] }) {
 // 	const [showFolders] = useShowFoldersSidebar()
 // 	const [expanded, setExpanded] = useExpandedFolders()
 // 	const folders = useFileFolders().data

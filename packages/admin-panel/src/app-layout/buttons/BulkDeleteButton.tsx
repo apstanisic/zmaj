@@ -8,7 +8,7 @@ import { MdViewList } from "react-icons/md"
 export function BulkDeleteButton(props: {
 	onSuccess?: (record: RaRecord[]) => void | Promise<unknown>
 	label?: string
-}): JSX.Element {
+}) {
 	const notify = useNotify()
 	const [showConfirm, setShowConfirm] = useState(false)
 	const { selectedIds, onUnselectItems, resource } = useListContext()

@@ -8,7 +8,7 @@ import { memo, useCallback, useState } from "react"
 import { DisplayMfaQrCode } from "../components/DisplayMfaQrCode"
 import { useHasMfa } from "./useUserProfile"
 
-export function Enable2FA(): JSX.Element {
+export function Enable2FA() {
 	const sdk = useSdk()
 	useHtmlTitle("Enable 2FA")
 	const redirect = useRedirect()

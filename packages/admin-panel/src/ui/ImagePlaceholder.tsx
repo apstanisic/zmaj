@@ -1,7 +1,7 @@
 /**
  * This is just a regular placeholder svg image
  */
-export function ImagePlaceholder(): JSX.Element {
+export function ImagePlaceholder() {
 	return (
 		<>
 			<svg

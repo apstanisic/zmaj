@@ -25,7 +25,7 @@ export type PaginationProps = {
 	className?: string
 }
 
-export function Pagination(props: PaginationProps): JSX.Element {
+export function Pagination(props: PaginationProps) {
 	const { page, setPage } = props
 	const totalPages = max([Math.ceil(props.total / props.perPage), 1])!
 
@@ -96,7 +96,7 @@ type PerPageProps = {
 	className?: string
 }
 
-function PaginationPerPage(props: PerPageProps): JSX.Element {
+function PaginationPerPage(props: PerPageProps) {
 	const id = useId()
 	return (
 		<div className={clsx("mr-4 flex gap-x-2 items-center", props.className)}>
