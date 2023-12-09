@@ -51,7 +51,7 @@ export function SetForgottenPasswordPage(): JSX.Element {
 				defaultValues={{ password: "" }}
 				className="grid w-full gap-y-1"
 			>
-				<FormPasswordInput name="password" isRequired />
+				<FormPasswordInput name="password" isRequired label="Password" />
 
 				<Button type="submit" variant="outlined" className="ml-auto">
 					Change Password

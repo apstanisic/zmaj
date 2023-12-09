@@ -1,7 +1,7 @@
 import { cn } from "@admin-panel/utils/cn"
 import { clsx } from "clsx"
 import { CodeJar } from "codejar"
-import { memo, useCallback, useEffect, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useId, useRef, useState } from "react"
 import { FormControl } from "../FormControl"
 import { TextInputProps } from "../TextInput"
 import { getInputBoxCss, getLabelCss } from "../forms-css"
@@ -32,23 +32,24 @@ export const CodeInput = memo((props: CodeInputProps) => {
 		description,
 		error,
 		defaultValue,
-		id = "test",
+		id,
 		onChange: propsOnChange,
 		language = "plain",
 	} = props
+
+	const labelId = useId()
 
 	const [internalValue, setInternalValue] = useState(defaultValue ?? "")
 
 	const value = props.value ?? internalValue
 	const onChange = useCallback(
 		(newValue: string) => {
-			props.value ? propsOnChange?.(newValue) : setInternalValue(newValue)
-			// propsOnChange ? propsOnChange(val) : setInternalValue(val)
+			props.value !== undefined ? propsOnChange?.(newValue) : setInternalValue(newValue)
 		},
 		[props.value, propsOnChange],
 	)
 
-	const inputRef = useRef<HTMLElement>(null)
+	const inputRef = useRef<HTMLInputElement>(null)
 	const jar = useRef<CodeJar | null>(null)
 
 	useEffect(() => {
@@ -88,25 +89,27 @@ export const CodeInput = memo((props: CodeInputProps) => {
 					name={name}
 					value={value}
 					disabled={isDisabled}
-					id={id}
+					id={id ? `hidden_input_${id}` : undefined}
 					aria-description={error ?? description}
-					aria-label={label}
+					aria-labelledby={labelId}
 					onChange={(e) => props.onChange?.(e.target.value)}
 				/>
 				{label && (
-					<p
+					<label
 						className={cn(getLabelCss(props), "cursor-default")}
 						aria-hidden
 						onClick={() => inputRef.current?.focus()}
+						id={labelId}
 					>
 						{label}
-					</p>
+					</label>
 				)}
-				<div className={getInputBoxCss(props)} aria-hidden>
+				<div className={getInputBoxCss(props)}>
 					<code
 						contentEditable={!props.isDisabled}
 						className={clsx(`language-${language} w-full min-h-[196px] p-2`)}
 						ref={inputRef}
+						id={id ? `code_input_${id}` : undefined}
 					></code>
 				</div>
 			</FormControl>

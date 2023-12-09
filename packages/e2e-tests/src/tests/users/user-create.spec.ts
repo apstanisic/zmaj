@@ -20,16 +20,18 @@ test("Create User", async ({ page, userPage, userFx }) => {
 	await userPage.goToList()
 	await userPage.clickCreateRecordButton()
 
-	await page.getByRole("switch", { name: "Confirmed Email" }).click()
+	// await page.getByRole("switch", { name: "Confirmed Email" }).click()
+	await page.getByText("Confirmed Email", { exact: true }).click()
 
 	await page.getByLabel("First Name").fill(data.firstName)
 	await page.getByLabel("Last Name").fill(data.lastName)
 	await page.getByLabel(/^Email$/).fill(data.email)
 
-	await page.getByRole("button", { name: /Status/ }).click()
+	// await page.getByRole("button", { name: /Status/ }).click()
+	await page.getByLabel("Status").click()
 	await page.getByRole("option", { name: /Disabled/ }).click()
 
-	await page.locator("form #zmaj_x2o_input_roleId").locator("button").click()
+	await page.getByLabel("Role").click()
 	await page.getByRole("button", { name: "Public" }).click()
 
 	await userPage.clickSaveButton()

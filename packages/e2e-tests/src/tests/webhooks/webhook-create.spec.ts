@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test"
 import { UnknownValues, Webhook, uuidRegex } from "@zmaj-js/common"
+import { sleep } from "radash"
 import { test } from "../../setup/e2e-fixture.js"
 import { getUniqueTitle } from "../../setup/e2e-unique-id.js"
 
@@ -9,7 +10,7 @@ test.afterEach(async ({ webhookFx }) => {
 	await webhookFx.deleteWhere({ name: hookName })
 })
 
-test("Create Webhook", async ({ page, webhookPage, webhookFx }) => {
+test("Create Webhook", async ({ page, webhookPage, webhookFx, selectorFx }) => {
 	await webhookPage.goHome()
 
 	await webhookPage.goToList()
@@ -17,23 +18,28 @@ test("Create Webhook", async ({ page, webhookPage, webhookFx }) => {
 	await webhookPage.clickCreateRecordButton()
 	await webhookPage.toHaveUrl("/create")
 
-	await page.getByLabel("Name").fill(hookName)
+	// await page.getByLabel("Name").fill(hookName)
+	await selectorFx.textInput("Name").fill(hookName)
 
-	await page.getByRole("button", { name: /Http Method/ }).click()
-	await page.getByRole("option", { name: /POST/ }).click()
+	// await page.getByLabel("HTTP Method").click()
+	// await page.getByRole("option", { name: /POST/ }).click()
+	await selectorFx.pickSelectValue("HTTP Method", "POST")
+	await selectorFx.multilineTextInput("Description").fill("This is created by test")
+	// await page.getByLabel("Description").fill("This is created by test")
 
-	await page.getByLabel("Description").fill("This is created by test")
+	await selectorFx.switchInput("Enabled").click()
+	// await page.locator("label").getByText("Enabled").click()
+	await selectorFx.switchInput("Send data").click()
 
-	await page.getByRole("switch", { name: "Enabled" }).click()
+	await selectorFx.urlInput("URL").fill("http://localhost:5000")
 
-	await page.getByRole("switch", { name: "Send Data" }).click()
-
-	await page.getByLabel("Url").fill("http://localhost:5000")
-
-	await page.locator("#zmaj_input_httpHeaders").click()
+	// await page.locator("#zmaj_input_httpHeaders").click()
+	page.locator("label").getByText("HTTP Headers (as JSON)").click()
+	// await page.getByLabel("HTTP Headers (as JSON)").click()
 	const customHeaders = {
 		"test-header": "hello-world",
 	}
+	await sleep(100)
 	await page.keyboard.type(JSON.stringify(customHeaders))
 
 	await page.getByRole("button", { name: "Next" }).click()

@@ -1,8 +1,12 @@
 import { Locator, Page, expect } from "@playwright/test"
 import { escapeRegExp } from "@zmaj-js/common"
+import { SelectorFixture } from "./selector.fx.js"
 
 export class GlobalPageFx {
-	constructor(protected page: Page) {}
+	constructor(
+		protected page: Page,
+		protected selector: SelectorFixture,
+	) {}
 
 	private homeUrl = "/admin"
 

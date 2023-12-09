@@ -14,7 +14,7 @@ import { getFreeFkColumn } from "./get-free-fk-column"
 export function RightColumnInput({
 	rightCollection,
 }: {
-	rightCollection: CollectionDef
+	rightCollection?: CollectionDef
 }): JSX.Element {
 	const { setValue } = useFormContext<RelationCreateDto>()
 	const type = useWatch<RelationCreateDto, "type">({ name: "type" })
@@ -23,6 +23,7 @@ export function RightColumnInput({
 	})
 
 	const getDefaultValue = useCallback(() => {
+		if (!rightCollection) return ""
 		// if o2m or m2m, pk must be used
 		if (type === "many-to-one" || type === "many-to-many" || type === "owner-one-to-one") {
 			return rightCollection.pkField
@@ -42,8 +43,8 @@ export function RightColumnInput({
 	return (
 		<FormTextInput
 			name="right.column"
-			isDisabled={type !== "one-to-many" && type !== "ref-one-to-one"}
-			defaultValue={getDefaultValue()}
+			isDisabled={(type !== "one-to-many" && type !== "ref-one-to-one") || !rightCollection}
+			// defaultValue={getDefaultValue()}
 			label="Database Column (other side)"
 			isRequired
 		/>

@@ -1,4 +1,3 @@
-import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { FieldUpdateDto } from "@zmaj-js/common"
 import { memo } from "react"
 import { CustomInputLayout } from "../../crud-layouts/input/ManualInputLayout"
@@ -13,12 +12,9 @@ import { FieldForm } from "./input/_FieldForm"
 
 export const FieldEdit = memo(() => {
 	const infra = useInfraState()
-	const onDelete = useOnInfraPropertyDelete()
 
 	return (
 		<GeneratedEditPage
-			disableDeleteRedirect
-			onDelete={onDelete}
 			schema={FieldUpdateDto.zodSchema}
 			onSuccess={async () => infra.refetch()}
 		>

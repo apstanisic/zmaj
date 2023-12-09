@@ -43,7 +43,7 @@ export function MagicLinkDialog(): JSX.Element {
 					defaultValues={{ email: "" }}
 					onSubmit={async (data) => onSubmit(data as any)}
 				>
-					<FormEmailInput name="email" isRequired />
+					<FormEmailInput name="email" isRequired aria-label="Email" />
 
 					<Button className="mt-4" type="submit">
 						Send link

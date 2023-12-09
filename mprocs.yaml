@@ -1,19 +1,22 @@
 procs:
-  libs:
-    shell: "make dev_build"
-    autostart: false
-  docker:
-    shell: "make docker_dev_up"
-    # SIGINT not working for some reason. This sends ctrl+c to process
-    stop:
-      "send-keys": ["<C-c>"]
-    autostart: false
-  api:
-    shell: "make serve_api"
-    autostart: false
-  panel:
-    shell: "make serve_admin_panel"
-    autostart: false
-  docs:
-    shell: "make docs"
-    autostart: false
+    libs:
+        shell: "make dev_build"
+        autostart: false
+    docker:
+        shell: "make docker_dev_up"
+        # SIGINT not working for some reason. This sends ctrl+c to process
+        stop:
+            "send-keys": ["<C-c>"]
+        autostart: false
+    api:
+        shell: "make serve_api"
+        autostart: false
+    panel:
+        shell: "make serve_admin_panel"
+        autostart: false
+    panel_dev:
+        shell: "make build_dev_panel"
+        autostart: false
+    docs:
+        shell: "make docs"
+        autostart: false

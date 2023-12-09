@@ -1,4 +1,4 @@
-import { useLayoutConfig } from "@admin-panel/context/layout-config-context"
+import { useShowLayoutConfig } from "@admin-panel/context/layout-config-context"
 import { useRecord } from "@admin-panel/hooks/use-record"
 import { ResponsiveButton } from "@admin-panel/ui/buttons/ResponsiveButton"
 import { getCrudUrl } from "@admin-panel/utils/get-crud-url"
@@ -19,7 +19,7 @@ import { useHref } from "react-router"
  * Do not use, for now
  */
 export function ShowChangesButton(): JSX.Element {
-	const config = useLayoutConfig()
+	const config = useShowLayoutConfig()
 	const resource = useResourceContext()
 	const id = useRecord()?.id
 

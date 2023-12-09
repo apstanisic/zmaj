@@ -27,21 +27,22 @@ export const CollectionShow = memo(() => {
 			actions={
 				<>
 					<VisitResourceButton />
-					<ShowPageActions />
+					<ShowPageActions
+						onDelete={async (res) => {
+							const col = res as CollectionDef
+							await infraState.refetch()
+							// version.refresh()
+							manageResources.unregister({
+								name: col.tableName,
+								hasCreate: false,
+								hasEdit: false,
+								hasList: false,
+								hasShow: false,
+							})
+						}}
+					/>
 				</>
 			}
-			onDelete={async (res) => {
-				const col = res as CollectionDef
-				await infraState.refetch()
-				// version.refresh()
-				manageResources.unregister({
-					name: col.tableName,
-					hasCreate: false,
-					hasEdit: false,
-					hasList: false,
-					hasShow: false,
-				})
-			}}
 		>
 			<TabsLayout sections={["Main", "Fields", "Relations"]}>
 				{/* Tab 1 */}

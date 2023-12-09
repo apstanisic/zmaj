@@ -23,7 +23,8 @@ export const RelationCreateForm = ({ collections }: RelationFormProps): JSX.Elem
 		name: "rightCollection",
 	})
 	const leftCollection = useGetCollection(leftCollectionName) ?? throwInApp("49327")
-	const rightCollection = useGetCollection(rightCollectionName) ?? throwInApp("907213")
+
+	const rightCollection = useGetCollection(rightCollectionName) //?? throwInApp("907213")
 
 	const { setValue } = useFormContext<RelationCreateDto>()
 

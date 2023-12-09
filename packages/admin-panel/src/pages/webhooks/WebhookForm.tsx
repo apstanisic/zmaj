@@ -30,7 +30,7 @@ export function WebhookForm(): JSX.Element {
 				<FormJsonInput
 					name="httpHeaders"
 					label="HTTP Headers (as JSON)"
-					defaultValue={{}}
+					defaultValue={""}
 				/>
 			</StepSection>
 			<StepSection index={1}>

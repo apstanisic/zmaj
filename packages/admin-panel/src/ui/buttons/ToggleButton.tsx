@@ -1,4 +1,5 @@
 import { cn } from "@admin-panel/utils/cn"
+import { forwardRef } from "react"
 import {
 	ToggleButton as RaToggleButton,
 	ToggleButtonProps as RaToggleButtonProps,
@@ -20,11 +21,11 @@ export type ToggleButtonProps = RaToggleButtonProps & {
  * Not same as switch
  * @see https://github.com/adobe/react-spectrum/issues/1264
  */
-export function ToggleButton(props: ToggleButtonProps): JSX.Element {
+export const ToggleButton = forwardRef<any, ToggleButtonProps>((props, ref) => {
 	const { size = "medium", label, ...raProps } = props
 	return (
 		<div>
-			<RaToggleButton {...raProps} className={cn("outline-none", props.className)}>
+			<RaToggleButton ref={ref} {...raProps} className={cn("outline-none", props.className)}>
 				{({ isSelected, isDisabled, isFocusVisible }) => (
 					<div className="flex gap-x-2 items-center">
 						<div
@@ -48,4 +49,4 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
 			</RaToggleButton>
 		</div>
 	)
-}
+})

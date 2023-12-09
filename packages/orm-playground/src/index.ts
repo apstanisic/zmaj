@@ -23,6 +23,17 @@ async function run(): Promise<void> {
 	const postRepo = orm.repoManager.getRepo(PostModel)
 	const postInfoRepo = orm.repoManager.getRepo(PostInfoModel)
 	const commentsRepo = orm.repoManager.getRepo(CommentModel)
+
+	const res333 = await postRepo.findOneOrThrow({
+		// includeHidden: true,
+		fields: {
+			body: true,
+			// id: true,
+			likes: true,
+			comments: { id: true, postId: true, post: true },
+		},
+	})
+
 	const post1 = await postRepo.findOneOrThrow({
 		where: {
 			title: { $ne: "Hello World!" },

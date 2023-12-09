@@ -10,6 +10,7 @@ import { Orm, OrmRepository, RepoFilter } from "zmaj"
 import { ZmajCrudPage } from "../../setup/ZmajCrudPage.js"
 import { e2eRoot } from "../../setup/e2e-env.js"
 import { getUniqueId } from "../../setup/e2e-unique-id.js"
+import { SelectorFixture } from "../../setup/selector.fx.js"
 
 export class FilePageFx extends ZmajCrudPage {
 	override title = "Files"
@@ -91,11 +92,8 @@ export class FilePageFx extends ZmajCrudPage {
 		await expect(this.page.locator(".crud-content img")).toHaveCount(n)
 	}
 
-	async selectNthFileInList(n: number): Promise<void> {
-		await this.page
-			.getByRole("checkbox", { name: /Select file/ })
-			.nth(n)
-			.click()
+	async selectNthFileInList(selector: SelectorFixture, n: number): Promise<void> {
+		await selector.checkboxInput("Select file").nth(n).click()
 	}
 
 	async clickOnDownloadButton(): Promise<void> {

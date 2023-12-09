@@ -66,8 +66,9 @@ export const CheckboxInput = forwardRef<any, CheckboxProps>((props, ref) => {
 							data-indeterminate={isIndeterminate}
 							data-focus-visible={isFocusVisible}
 							data-disabled={isDisabled}
+							aria-label={rest["aria-label"] ?? label}
 						></div>
-						<span className={cn(getLabelCss(props), "pb-0")}>{label}</span>
+						{label && <p className={cn(getLabelCss(props), "pb-0")}>{label}</p>}
 					</div>
 
 					{description && !error && (

@@ -22,7 +22,9 @@ test("Update Webhook", async ({ webhookFx, webhookPage, page, webhookItem }) => 
 	const newName = getUniqueTitle()
 
 	await page.getByLabel("Name").fill(newName)
-	await page.getByRole("switch", { name: "Enabled" }).click()
+	// await page.getByRole("switch", { name: "Enabled" }).click()
+	await page.locator("label").getByText("Enabled").click()
+
 	await page.getByRole("button", { name: "Next" }).click()
 
 	// removing

@@ -25,7 +25,7 @@ export const RelationCreate = memo(() => {
 				const leftCollection = String(record?.["leftCollection"] ?? "") ?? "zmajUsers"
 				return {
 					type: "many-to-one",
-					rightCollection: "",
+					rightCollection: "zmajUsers",
 					leftCollection: leftCollection,
 					left: {
 						propertyName: "",
@@ -71,7 +71,7 @@ function Content(): JSX.Element {
 			defaultValues={
 				{
 					type: "many-to-one",
-					rightCollection: rightCollection,
+					rightCollection: "zmajUsers", //rightCollection,
 					leftCollection: leftCollection,
 					left: {
 						propertyName: singular(rightCollection),

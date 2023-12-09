@@ -64,6 +64,7 @@ export function SelectInput(props: SelectInputProps): JSX.Element {
 			onSelectionChange={onChange as SelectProps<any>["onSelectionChange"]}
 			disabledKeys={disabledItems}
 			className={cn("w-full my-1", raProps.className)}
+			aria-label={label}
 		>
 			<FormControl
 				description={description}

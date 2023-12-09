@@ -29,12 +29,14 @@ import { createOrm } from "./e2e-orm.js"
 import { createSdk } from "./e2e-sdk.js"
 import { getUniqueEmail, getUniqueTitle } from "./e2e-unique-id.js"
 import { GlobalPageFx } from "./global.fx.js"
+import { SelectorFixture } from "./selector.fx.js"
 
 type MyFixtures = {
 	orm: Orm
 	sdk: ZmajSdk
 	//
 	globalFx: GlobalPageFx
+	selectorFx: SelectorFixture
 	//
 	webhookPage: WebhookPages
 	webhookFx: WebhookUtilsFx
@@ -87,11 +89,14 @@ export const test = base.extend<MyFixtures>({
 		await use(sdk)
 	},
 	//
-	globalFx: async ({ page }, use) => {
-		const fx = new GlobalPageFx(page)
+	selectorFx: async ({ page }, use) => {
+		const fx = new SelectorFixture(page)
 		await use(fx)
 	},
-	//
+	globalFx: async ({ page, selectorFx }, use) => {
+		const fx = new GlobalPageFx(page, selectorFx)
+		await use(fx)
+	},
 	webhookPage: async ({ page }, use) => {
 		await use(new WebhookPages(page))
 	},
@@ -111,9 +116,9 @@ export const test = base.extend<MyFixtures>({
 		await webhookFx.deleteWhere({ id: wh.id })
 	},
 	//
-	postPage: async ({ page }, use) => {
+	postPage: async ({ page, selectorFx }, use) => {
 		// await use(new PostPageFx(page, "/#/posts"))
-		await use(new PostPageFx(page))
+		await use(new PostPageFx(page, selectorFx))
 	},
 	postFx: async ({ orm }, use) => {
 		await use(new PostUtilsFx(orm))

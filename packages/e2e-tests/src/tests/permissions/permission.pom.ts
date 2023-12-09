@@ -19,7 +19,10 @@ export class PermissionPage extends ZmajPage {
 
 	async openPermissionDialog(action: string, resource: string): Promise<void> {
 		await this.page
-			.getByRole("cell", { name: `Show permission dialog for ${action} ${resource}`, exact: true })
+			.getByRole("cell", {
+				name: `Show permission dialog for ${action} ${resource}`,
+				exact: true,
+			})
 			.click()
 	}
 
@@ -37,7 +40,9 @@ export class PermissionPage extends ZmajPage {
 
 	async hasAllowedFieldsAmount(n: number): Promise<void> {
 		await expect(
-			this.page.getByRole("tabpanel", { name: "Fields" }).getByRole("checkbox", { checked: true }),
+			this.page
+				.getByRole("tabpanel", { name: "Fields" })
+				.getByRole("checkbox", { checked: true }),
 		).toHaveCount(n)
 	}
 
@@ -58,7 +63,7 @@ export class PermissionPage extends ZmajPage {
 	}
 
 	async hasCondition(conditions: unknown): Promise<void> {
-		await expect(this.page.locator("#zmaj_input_conditions")).toContainText(
+		await expect(this.page.locator("#code_input_conditionsInput")).toContainText(
 			JSON.stringify(conditions, null, 4),
 		)
 	}

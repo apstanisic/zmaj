@@ -14,9 +14,11 @@ test("Update User", async ({ page, userPage, userItem }) => {
 	await page.getByLabel("Last Name").fill("Data")
 
 	await page.getByRole("button", { name: /Active/ }).click()
-	await page.getByText("Disabled").click()
+	// await page.getByText("Disabled").click()
+	await page.getByRole("option", { name: "Disabled" }).click()
 
-	await page.getByRole("button", { name: /Admin/ }).click()
+	// await page.getByRole("button", { name: /Admin/ }).click()
+	await page.getByLabel("Role").click()
 
 	await page.getByRole("button", { name: /Public/ }).click()
 

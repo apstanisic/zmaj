@@ -25,7 +25,7 @@ export class PostPageFx extends GlobalPageFx {
 		return this.page.getByLabel("Body")
 	}
 	get likesInput(): Locator {
-		return this.page.getByLabel("Likes")
+		return this.selector.numberInput("Likes")
 	}
 
 	async isOnPostsList(): Promise<void> {

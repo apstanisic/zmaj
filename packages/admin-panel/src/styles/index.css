@@ -193,3 +193,9 @@ Taken from Daisy UI
 	background-color: hsl(var(--bc) / var(--tw-bg-opacity));
 	opacity: 0.2;
 }
+
+.du-toggle[data-checked="true"] {
+	--handleoffsetcalculator: var(--handleoffset);
+	--tw-border-opacity: 1;
+	--tw-bg-opacity: 1;
+}

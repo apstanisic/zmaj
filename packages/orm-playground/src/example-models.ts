@@ -6,7 +6,7 @@ export class PostModel extends BaseModel {
 		id: f.uuid({ isPk: true }),
 		body: f.text({}),
 		createdAt: f.createdAt({}),
-		likes: f.int({}),
+		likes: f.int({ canRead: false }),
 		title: f.text({}),
 	}))
 

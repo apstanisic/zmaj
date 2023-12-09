@@ -1,4 +1,3 @@
-import { useOnInfraPropertyDelete } from "@admin-panel/hooks/use-on-infra-property-delete"
 import { useInfraState } from "@admin-panel/state/useInfraState"
 import { FormTextInput } from "@admin-panel/ui/Controlled"
 import { RelationUpdateDto } from "@zmaj-js/common"
@@ -8,12 +7,9 @@ import { GeneratedEditPage } from "../../generator/pages/GeneratedEditPage"
 import { Columns } from "../../ui/Columns"
 
 export const RelationEdit = memo(() => {
-	const onDelete = useOnInfraPropertyDelete()
 	const infra = useInfraState()
 	return (
 		<GeneratedEditPage
-			disableDeleteRedirect
-			onDelete={onDelete}
 			onSuccess={async () => infra.refetch()}
 			schema={RelationUpdateDto.zodSchema}
 		>

@@ -4,7 +4,7 @@ import { TabsSection } from "../../../crud-layouts/ui/tabs/TabsSection"
 export function PermissionConditionsInput(): JSX.Element {
 	return (
 		<TabsSection>
-			<FormJsonInput name="conditions" label="Conditions" />
+			<FormJsonInput name="conditions" label="Conditions" id="conditionsInput" />
 		</TabsSection>
 	)
 }

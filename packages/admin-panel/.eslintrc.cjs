@@ -6,7 +6,8 @@ module.exports = {
 		"plugin:react/recommended",
 		"plugin:react/jsx-runtime",
 		"plugin:react-hooks/recommended",
-		"prettier", // prettier should always be last
+		"prettier",
+		"plugin:storybook/recommended",
 	],
 	env: {
 		browser: true,

@@ -208,6 +208,7 @@ export function useInputAdapter<T extends CommonInputProps>(
 		disabled: props.disabled,
 		...custom,
 	})
+
 	return {
 		isRequired, // why does `useInput` always return false
 		...inputPropsAdapter(props),

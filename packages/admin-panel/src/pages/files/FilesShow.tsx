@@ -72,7 +72,7 @@ function FileShowContent(): JSX.Element {
 							</ManyToOneReference>
 						}
 					/>
-					<FileInfoItem label="Storage provider" value={file.storageProvider} />
+					{/* <FileInfoItem label="Storage provider" value={file.storageProvider} /> */}
 					<FileInfoItem label="Folder" value={file.folderPath} />
 					<FileInfoItem label="Mime Type" value={template(file, "{mimeType}")} />
 					<FileInfoItem label="Created At" value={template(file, "{createdAt|date}")} />

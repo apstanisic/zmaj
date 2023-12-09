@@ -55,11 +55,10 @@ export function SwitchInput(props: SwitchInputProps): JSX.Element {
 										sizes[size],
 										isDisabled && "pointer-events-none bg-base-200",
 									)}
-									aria-checked={isSelected}
-									aria-hidden={true}
+									data-checked={isSelected}
 								/>
 							</div>
-							{label && <span className={cn(getLabelCss({}), "pb-0")}>{label}</span>}
+							{label && <p className={cn(getLabelCss({}), "pb-0")}>{label}</p>}
 						</div>
 					)}
 				</Switch>

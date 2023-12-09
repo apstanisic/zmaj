@@ -16,14 +16,17 @@ test("Invite user", async ({ page, context, userPage, userFx }) => {
 	await userPage.goToList()
 	await userPage.clickCreateRecordButton()
 
-	await page.getByRole("switch", { name: "Confirmed Email" }).click()
+	// await page.getByRole("switch", { name: "Confirmed Email" }).click()
+	await page.getByText("Confirmed Email", { exact: true }).click()
+	// await page.getByLabel("Confirmed Email").click()
 
 	await page.getByLabel(/^Email$/).fill(email)
 
 	await page.getByRole("button", { name: /Status/ }).click()
 	await page.getByRole("option", { name: /Invited/ }).click()
 
-	await page.locator("form #zmaj_x2o_input_roleId").locator("button").click()
+	await page.getByLabel("Role").click()
+	// await page.locator("form #zmaj_x2o_input_roleId").locator("button").click()
 	await page.getByRole("button", { name: "Admin" }).click()
 
 	await userPage.clickSaveButton()
@@ -61,8 +64,8 @@ test("Invite user", async ({ page, context, userPage, userFx }) => {
 	// it should take us to invitation page
 	await expect(page2).toHaveURL(/http:\/\/localhost:7100\/admin\/#\/auth\/invite/)
 
-	await page2.getByLabel(/First Name/).fill("End")
-	await page2.getByLabel(/Last Name/).fill("Test")
+	await page2.getByLabel(/First name/).fill("End")
+	await page2.getByLabel(/Last name/).fill("Test")
 	await page2.getByLabel(/Password/).fill("my-password")
 	await page2.getByRole("button", { name: /Sign Up/ }).click()
 

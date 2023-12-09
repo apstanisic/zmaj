@@ -17,13 +17,14 @@ test.afterEach(async ({ fileFx }) => {
 	await fileFx.deleteWhere({ name: imgName2 })
 })
 
-test("Download multiple files", async ({ filePage }) => {
+test("Download multiple files", async ({ filePage, selectorFx }) => {
 	await filePage.goHome()
 	// This will display just those 2 files
 	await filePage.goToListWithQuery({ filter: { name: { $in: [imgName1, imgName2] } } })
 
-	await filePage.selectNthFileInList(0)
-	await filePage.selectNthFileInList(1)
+	// todo move to class selectorFx
+	await filePage.selectNthFileInList(selectorFx, 0)
+	await filePage.selectNthFileInList(selectorFx, 1)
 
 	// we expect 2 downloads, so we can't simply react to event (i think??)
 	const downloadCounter = filePage.startCountingDownloads()

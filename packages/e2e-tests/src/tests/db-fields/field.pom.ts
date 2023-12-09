@@ -22,7 +22,7 @@ export class FieldPage extends ZmajPage {
 	}
 
 	get columnNameInput(): Locator {
-		return this.page.getByLabel("Column Name")
+		return this.page.getByLabel("Column")
 	}
 
 	async goToCollectionsList(): Promise<void> {

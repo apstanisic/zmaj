@@ -4,12 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { EditBase, Form, RaRecord } from "ra-core"
 import { ReactNode, memo, useCallback } from "react"
 import { z } from "zod"
-import { NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
+// import { NonListToolbarProps } from "../../app-layout/non-list/NonListToolbar"
 import { useSuccessRedirect } from "../../hooks/use-success-redirect"
 import { GeneratedEditLayout } from "../layouts/GeneratedEditLayout"
 import { GeneratedPageProvider } from "./GeneratedPageProvider"
 
-type GeneratedEditPageProps = NonListToolbarProps & {
+type GeneratedEditPageProps = {
 	onSuccess?: (created: RaRecord) => Promise<unknown>
 	header?: ReactNode
 	children?: ReactNode
