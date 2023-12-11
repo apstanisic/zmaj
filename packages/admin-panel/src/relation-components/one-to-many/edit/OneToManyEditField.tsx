@@ -81,6 +81,7 @@ export function OneToManyEditField(props: OneToManyEditFieldProps) {
 							/>
 							<div className="flex gap-x-2 ">
 								<AddItemButton
+									resource={props.reference}
 									disabled={props.disabled}
 									onPress={() => setOpen(true)}
 								/>
@@ -171,12 +172,12 @@ function ResetChanges(props: { disabled?: boolean; reset: () => unknown; value: 
 	)
 }
 
-function AddItemButton(props: { disabled?: boolean; onPress: () => unknown }) {
+function AddItemButton(props: { disabled?: boolean; onPress: () => unknown; resource: string }) {
 	return (
 		<Tooltip text="Add">
 			<IconButton
 				size="small"
-				aria-label={`Add records`}
+				aria-label={`Add ${props.resource}`}
 				className="ml-auto"
 				isDisabled={props.disabled}
 				onPress={props.onPress}

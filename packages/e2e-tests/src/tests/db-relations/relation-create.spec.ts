@@ -20,7 +20,7 @@ test("Create many-to-one relation", async ({
 		`zmajRelationMetadata/create?disable_leftCollection=true&source={%22leftCollection%22:%22${col1.collectionName}%22}`,
 	)
 
-	await page.getByRole("button", { name: /Type/ }).click()
+	await page.getByLabel("Relation type").click()
 	await page.getByRole("option", { name: /Many to One/ }).click()
 
 	await page.getByRole("button", { name: /Collection \(other side\)/ }).click()

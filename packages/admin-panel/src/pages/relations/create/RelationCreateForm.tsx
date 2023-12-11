@@ -61,14 +61,14 @@ export const RelationCreateForm = ({ collections }: RelationFormProps): JSX.Elem
 
 	return (
 		<div className="crud-content">
-			<p className="mb-3 text-xl">Create Relation</p>
+			{/* <p className="mb-3 text-xl">Create Relation</p> */}
 
 			<FormSelectInput
 				isRequired
 				name="type"
 				defaultValue="many-to-one"
 				className="col-span-2"
-				aria-label="Relation type"
+				label="Relation type"
 				options={[
 					{ value: "many-to-one", label: ">-- Many to One" },
 					{ value: "one-to-many", label: "--< One to Many " },

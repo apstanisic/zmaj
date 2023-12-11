@@ -23,7 +23,7 @@ test("Sign Up", async ({ page, authPage }) => {
 
 	await page.getByLabel("First Name").fill("John")
 	await page.getByLabel("Last Name").fill("Smith")
-	await page.getByLabel("Email").fill("test123@example.com")
+	await page.getByLabel("Email").fill(email)
 	await page.getByLabel(/^Password$/).fill("password")
 
 	await page.getByRole("button", { name: "Sign Up" }).click()

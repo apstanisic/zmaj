@@ -34,19 +34,19 @@ test("Update record with relations", async ({ page, postPage, postItem }) => {
 	// await page.getByRole("button", { name: /Remove Com 0/ }).click()
 	// await page.getByRole("button", { name: /Remove Com 2/ }).click()
 
-	await page.getByRole("button", { name: "Add Comments" }).click()
+	await page.getByRole("button", { name: "Add comments" }).click()
 	await page.getByRole("button", { name: /UPcm3/ }).click()
 
-	await page.getByRole("button", { name: "Add Comments" }).click()
+	await page.getByRole("button", { name: "Add comments" }).click()
 	await page.getByRole("button", { name: /UPcm4/ }).click()
 
 	await page.getByRole("button", { name: /Remove UPtag1/ }).click()
 	await page.getByRole("button", { name: /Remove UPtag2/ }).click()
 
-	await page.getByRole("button", { name: "Add Tags" }).click()
+	await page.getByRole("button", { name: "Add tags" }).click()
 	await page.getByRole("button", { name: /UPtag3/ }).click()
 
-	await page.getByRole("button", { name: "Add Tags" }).click()
+	await page.getByRole("button", { name: "Add tags" }).click()
 	await page.getByRole("button", { name: /UPtag4/ }).click()
 
 	await postPage.saveButton.click()

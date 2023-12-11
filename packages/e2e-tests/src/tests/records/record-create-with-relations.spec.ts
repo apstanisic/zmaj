@@ -26,16 +26,16 @@ test("Create record with relations", async ({ page, postPage }) => {
 	await postPage.bodyInput.fill("Hello World")
 	await postPage.likesInput.fill("1234")
 
-	await page.getByRole("button", { name: "Add Comments" }).click()
+	await page.getByRole("button", { name: "Add comments" }).click()
 	await page.getByRole("button", { name: /CRcm1/ }).click()
 
-	await page.getByRole("button", { name: "Add Comments" }).click()
+	await page.getByRole("button", { name: "Add comments" }).click()
 	await page.getByRole("button", { name: /CRcm3/ }).click()
 
-	await page.getByRole("button", { name: "Add Tags" }).click()
+	await page.getByRole("button", { name: "Add tags" }).click()
 	await page.getByRole("button", { name: /CRtag2/ }).click()
 
-	await page.getByRole("button", { name: "Add Tags" }).click()
+	await page.getByRole("button", { name: "Add tags" }).click()
 	await page.getByRole("button", { name: /CRtag3/ }).click()
 
 	await page.getByRole("button", { name: "Save" }).click()

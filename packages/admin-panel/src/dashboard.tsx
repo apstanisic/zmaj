@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { useHtmlTitle } from "./hooks/use-html-title"
 import { useUserCollections } from "./hooks/use-user-collections"
+import { CheckboxInput } from "./ui/forms/CheckboxInput"
 
 export function Dashboard() {
 	const userCollections = useUserCollections()
@@ -11,6 +12,7 @@ export function Dashboard() {
 			<h1 className="mt-3 mb-8 text-center text-2xl">Admin panel</h1>
 
 			<div className="">
+				<CheckboxInput name="test" isSelected />
 				{userCollections.length === 0 && (
 					<div className="col-span-3 mt-12  text-center text-xl">No collections</div>
 				)}
