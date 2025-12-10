@@ -47,7 +47,7 @@
 	"dependencies": {
 		"@tiptap/extension-bold": "2.1.12",
 		"@tiptap/extension-image": "2.1.12",
-		"@tiptap/extension-link": "2.1.12",
+		"@tiptap/extension-link": "2.10.4",
 		"@tiptap/extension-placeholder": "2.1.12",
 		"@tiptap/extension-text-align": "2.1.12",
 		"@tiptap/extension-underline": "2.1.12",
